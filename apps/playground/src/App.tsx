@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MonacoEditor } from "./components/MonacoEditor";
+import { RunnableExample } from "./components/RunnableExample";
 import {
   CONSOLE_EXAMPLES,
   DEFAULT_CONSOLE_EXAMPLE,
@@ -10,7 +10,6 @@ export function App() {
   const example =
     CONSOLE_EXAMPLES.find((candidate) => candidate.id === exampleId) ??
     DEFAULT_CONSOLE_EXAMPLE;
-  const Example = example.Component;
 
   return (
     <div className="site-shell">
@@ -40,7 +39,7 @@ export function App() {
           <span className="eyebrow">Interactive playground</span>
           <h1>Inspect console output without leaving your app.</h1>
           <p>
-            Explore copy-paste React examples for page capture, iframe
+            Edit and run copy-paste React examples for page capture, iframe
             transport, WebSocket transport, and migration from console-feed.
           </p>
         </section>
@@ -78,52 +77,12 @@ export function App() {
             </div>
 
             <div className="sidebar-note">
-              Every source example is intended to be copied directly into a
-              React app.
+              Edit the source, click Run, and copy the same example into a React
+              app when you are ready.
             </div>
           </aside>
 
-          <div className="content-stack">
-            <section className="playground-panel source-panel" aria-label="Example source">
-              <div className="panel-toolbar source-toolbar">
-                <div>
-                  <span className="panel-kicker">Source</span>
-                  <strong>example.tsx</strong>
-                </div>
-                <span className="language-badge">TypeScript + React</span>
-              </div>
-
-              <div className="example-source-editor">
-                <MonacoEditor
-                  path={example.id + "/example.tsx"}
-                  language="typescript"
-                  value={example.exampleSource}
-                  options={{
-                    readOnly: true,
-                    domReadOnly: true,
-                    contextmenu: true,
-                    renderLineHighlight: "none",
-                  }}
-                />
-              </div>
-            </section>
-
-            <section className="playground-panel preview-panel">
-              <div className="panel-toolbar">
-                <div>
-                  <span className="panel-kicker">Preview</span>
-                  <strong>{example.label}</strong>
-                </div>
-                <span className="live-badge">
-                  <span className="live-dot" aria-hidden="true" />
-                  Live
-                </span>
-              </div>
-
-              <div className="preview-stage">
-                <Example />
-              </div>
-            </section>          </div>
+          <RunnableExample example={example} />
         </div>
       </main>
 
