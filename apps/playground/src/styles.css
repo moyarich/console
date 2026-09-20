@@ -291,13 +291,13 @@ a {
 }
 
 .example-picker-popover {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
+  position: fixed;
+  inset: unset;
   z-index: 100;
-  width: 100%;
   min-width: 0;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  margin: 0;
   overflow: hidden;
   border: 1px solid #dfe4ec;
   border-radius: 16px;
@@ -433,30 +433,9 @@ a {
   background: #e7eafd;
 }
 
-.example-picker-option-copy {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
 .example-picker-option strong {
   font-size: 0.79rem;
   font-weight: 750;
-}
-
-.example-picker-option small {
-  display: -webkit-box;
-  min-width: 0;
-  overflow: hidden;
-  color: #8a94a6;
-  font-size: 0.68rem;
-  line-height: 1.35;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.example-picker-option.active small {
-  color: #6f72a8;
 }
 
 .example-picker-check {
@@ -992,9 +971,5 @@ a {
 @media (max-width: 760px) {
   .example-picker-list {
     max-height: min(360px, calc(100vh - 250px));
-  }
-
-  .example-picker-option small {
-    -webkit-line-clamp: 1;
   }
 }
