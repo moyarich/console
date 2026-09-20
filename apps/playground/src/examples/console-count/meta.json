@@ -1,0 +1,6 @@
+{
+  "id": "console-count",
+  "label": "console.count",
+  "description": "Capture and render a console.count value for a label.",
+  "order": 10
+}
