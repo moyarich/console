@@ -1,4 +1,4 @@
-import type { ConsoleEventChannel } from "./createConsoleEventChannel";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import type { ConsoleEventSink } from "../types";
 import {
   createConsoleEnvelope,
@@ -29,7 +29,7 @@ export function createConsolePostMessageSender({
 }
 
 export interface ListenForConsolePostMessagesOptions {
-  events: ConsoleEventChannel;
+  events: ConsoleEventEmitter;
   channel?: string;
   origin?: string | RegExp | ((origin: string) => boolean);
   source?: MessageEventSource | null;
@@ -59,11 +59,17 @@ export function listenForConsolePostMessages({
     if (!isConsoleEnvelope(event.data)) return;
     if (event.data.channel !== channel) return;
 
-    events.emit(event.data.event);
+    events.emitEvent(event.data.event);
   };
 
-  targetWindow.addEventListener("message", handler as EventListener);
+  targetWindow.addEventListener(
+    "message",
+    handler as EventListener,
+  );
 
   return () =>
-    targetWindow.removeEventListener("message", handler as EventListener);
+    targetWindow.removeEventListener(
+      "message",
+      handler as EventListener,
+    );
 }

@@ -1,14 +1,12 @@
 import {
-  useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import {
   Console,
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsoleProxy,
-  type ConsoleEvent,
   type ConsoleMessageData,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
@@ -19,11 +17,11 @@ export default function ConsoleWithoutConsoleHookExample() {
   const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
 
   const events = useMemo(
-    () => createConsoleEventChannel(),
+    () => createConsoleEventEmitter(),
     [],
   );
 
-  const runtimeConsole = useMemo(
+  const console = useMemo(
     () =>
       createConsoleProxy({
         events,
@@ -32,37 +30,34 @@ export default function ConsoleWithoutConsoleHookExample() {
     [events],
   );
 
-  const handleEvent = useCallback((event: ConsoleEvent) => {
-    if (event.type === "clear") {
-      setMessages([]);
-      return;
-    }
+  useEffect(() => {
+    const offMessage = events.on("message", (message) => {
+      setMessages((current) => {
+        const next = [...current, message];
 
-    setMessages((current) => {
-      const next = [...current, event.message];
-
-      return next.length > MAX_MESSAGES
-        ? next.slice(-MAX_MESSAGES)
-        : next;
+        return next.length > MAX_MESSAGES
+          ? next.slice(-MAX_MESSAGES)
+          : next;
+      });
     });
-  }, []);
 
-  useEffect(
-    () => events.subscribe(handleEvent),
-    [events, handleEvent],
-  );
+    const offClear = events.on("clear", () => {
+      setMessages([]);
+    });
 
-  const clear = useCallback(() => {
-    events.emit({ type: "clear" });
+    return () => {
+      offMessage();
+      offClear();
+    };
   }, [events]);
 
-  const runExample = useCallback(() => {
-    runtimeConsole.log("Hello without useConsoleMessages", {
-      channel: "ConsoleEventChannel",
+  const runExample = () => {
+    console.log("Hello without useConsoleMessages", {
+      events: "ConsoleEventEmitter",
     });
-    runtimeConsole.info("Standard React hooks manage the component state.");
-    runtimeConsole.warn("The component subscribes directly to console events.");
-  }, [runtimeConsole]);
+    console.info("Standard React hooks manage the component state.");
+    console.warn("The component listens directly to console events.");
+  };
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -70,14 +65,15 @@ export default function ConsoleWithoutConsoleHookExample() {
         <button type="button" onClick={runExample}>
           Run example
         </button>
-        <button type="button" onClick={clear}>
+
+        <button type="button" onClick={console.clear}>
           Clear
         </button>
       </div>
 
       <Console
         messages={messages}
-        onClear={clear}
+        onClear={console.clear}
       />
     </div>
   );

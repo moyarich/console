@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createConsoleEnvelope,
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsolePostMessageSender,
   createConsoleWebSocketSender,
   isConsoleEnvelope,
@@ -56,9 +56,9 @@ describe("console transport", () => {
     const listeners = new Set<(event: MessageEvent) => void>();
     const received: ConsoleEvent[] = [];
     const sent: string[] = [];
-    const events = createConsoleEventChannel();
+    const events = createConsoleEventEmitter();
 
-    events.subscribe((value) => received.push(value));
+    events.onEvent((value) => received.push(value));
 
     const socket: ConsoleWebSocketLike = {
       send(data) {
