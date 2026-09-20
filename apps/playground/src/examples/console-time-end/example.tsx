@@ -13,7 +13,10 @@ export default function ConsoleTimeEndExample() {
 
   const runExample = () => {
     console.time("Timer message");
-    console.timeEnd("Timer message");
+
+    setTimeout(() => {
+      console.timeEnd("Timer message");
+    }, 500);
   };
 
   return (
