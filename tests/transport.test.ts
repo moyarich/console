@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
-  createConsoleEnvelope,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
   isConsoleEnvelope,
   listenForConsoleWebSocket,
+  serializeConsoleEvent,
   serializeConsoleValue,
   type ConsoleEvent,
   type ConsoleWebSocketLike,
@@ -19,8 +21,13 @@ describe("console transport", () => {
     },
   };
 
-  it("creates versioned envelopes", () => {
-    const envelope = createConsoleEnvelope(event, "test");
+  it("validates a versioned transport envelope", () => {
+    const envelope = {
+      type: CONSOLE_TRANSPORT_TYPE,
+      version: CONSOLE_TRANSPORT_VERSION,
+      channel: "test",
+      event: serializeConsoleEvent(event),
+    };
 
     expect(isConsoleEnvelope(envelope)).toBe(true);
     expect(envelope.channel).toBe("test");
@@ -38,13 +45,6 @@ describe("console transport", () => {
       missing: "[undefined]",
       fn: "[Function fn]",
     });
-  });
-
-  it("creates an envelope ready for window.postMessage", () => {
-    const envelope = createConsoleEnvelope(event, "iframe");
-
-    expect(isConsoleEnvelope(envelope)).toBe(true);
-    expect(envelope.channel).toBe("iframe");
   });
 
   it("sends and receives WebSocket envelopes through an event emitter", () => {
@@ -74,7 +74,12 @@ describe("console transport", () => {
     });
 
     socket.send(
-      JSON.stringify(createConsoleEnvelope(event, "server")),
+      JSON.stringify({
+        type: CONSOLE_TRANSPORT_TYPE,
+        version: CONSOLE_TRANSPORT_VERSION,
+        channel: "server",
+        event: serializeConsoleEvent(event),
+      }),
     );
 
     for (const listener of listeners) {
