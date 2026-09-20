@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Console,
-  createConsoleWebSocketSender,
+  createConsoleEnvelope,
   listenForConsoleWebSocket,
   useConsoleMessages,
   type ConsoleEvent,
@@ -49,11 +49,6 @@ export default function WebSocketConsole() {
     const socket = socketRef.current;
     if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
-    const send = createConsoleWebSocketSender({
-      socket,
-      channel: CHANNEL,
-    });
-
     const event: ConsoleEvent = {
       type: "message",
       message: {
@@ -65,7 +60,9 @@ export default function WebSocketConsole() {
       },
     };
 
-    send(event);
+    socket.send(
+      JSON.stringify(createConsoleEnvelope(event, CHANNEL)),
+    );
   };
 
   return (

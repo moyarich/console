@@ -1,32 +1,8 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import type { ConsoleEventSink } from "../types";
 import {
-  createConsoleEnvelope,
   DEFAULT_CONSOLE_CHANNEL,
   isConsoleEnvelope,
 } from "./transport";
-
-export interface PostMessageTarget {
-  postMessage(message: unknown, targetOrigin: string): void;
-}
-
-export interface CreateConsolePostMessageSenderOptions {
-  targetWindow: PostMessageTarget;
-  targetOrigin?: string;
-  channel?: string;
-}
-
-export function createConsolePostMessageSender({
-  targetWindow,
-  targetOrigin = "*",
-  channel = DEFAULT_CONSOLE_CHANNEL,
-}: CreateConsolePostMessageSenderOptions): ConsoleEventSink {
-  return (event) =>
-    targetWindow.postMessage(
-      createConsoleEnvelope(event, channel),
-      targetOrigin,
-    );
-}
 
 export interface ListenForConsolePostMessagesOptions {
   events: ConsoleEventEmitter;

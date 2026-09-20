@@ -1,7 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import type { ConsoleEventSink } from "../types";
 import {
-  createConsoleEnvelope,
   DEFAULT_CONSOLE_CHANNEL,
   isConsoleEnvelope,
 } from "./transport";
@@ -16,21 +14,6 @@ export interface ConsoleWebSocketLike {
     type: "message",
     listener: (event: MessageEvent) => void,
   ): void;
-}
-
-export interface CreateConsoleWebSocketSenderOptions {
-  socket: Pick<ConsoleWebSocketLike, "send">;
-  channel?: string;
-}
-
-export function createConsoleWebSocketSender({
-  socket,
-  channel = DEFAULT_CONSOLE_CHANNEL,
-}: CreateConsoleWebSocketSenderOptions): ConsoleEventSink {
-  return (event) =>
-    socket.send(
-      JSON.stringify(createConsoleEnvelope(event, channel)),
-    );
 }
 
 export interface ListenForConsoleWebSocketOptions {
