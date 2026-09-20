@@ -14,8 +14,8 @@ const IFRAME_SOURCE = [
   "<!doctype html>",
   "<html>",
   "<body style=\"font-family:system-ui;padding:16px\">",
-  "  <button id=\"send\">Send iframe → parent</button>",
-  "  <pre id=\"received\">Waiting for parent → iframe…</pre>",
+  "  <button id=\"send\">Send console event to parent</button>",
+  "  <pre id=\"received\">No console event received from parent yet.</pre>",
   "  <script>",
   "    document.querySelector(\"#send\").addEventListener(\"click\", () => {",
   "      parent.postMessage({",
@@ -26,7 +26,7 @@ const IFRAME_SOURCE = [
   "          type: \"message\",",
   "          message: {",
   "            method: \"log\",",
-  "            data: [\"Hello from the iframe\", { frame: true }],",
+  "            data: [\"Console event sent from iframe to parent\", { frame: true }],",
   "            depth: 0,",
   "            timestamp: Date.now(),",
   "            source: \"iframe\"",
@@ -69,7 +69,7 @@ export default function IframeConsole() {
       type: "message",
       message: {
         method: "log",
-        data: ["Hello from the parent", { parent: true }],
+        data: ["Console event sent from parent to iframe", { parent: true }],
         depth: 0,
         timestamp: Date.now(),
         source: "parent",
@@ -82,7 +82,7 @@ export default function IframeConsole() {
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <button type="button" onClick={sendToIframe}>
-        Send parent → iframe
+        Send console event to iframe
       </button>
 
       <iframe
@@ -99,7 +99,7 @@ export default function IframeConsole() {
       <Console
         messages={messages}
         onClear={clear}
-        subtitle="Received from iframe"
+        subtitle="Console events received from iframe"
       />
     </div>
   );
