@@ -9,8 +9,26 @@ export function createConsoleEnvelope(event: ConsoleEvent, channel = DEFAULT_CON
   return { type: CONSOLE_TRANSPORT_TYPE, version: CONSOLE_TRANSPORT_VERSION, channel, event: serializeConsoleEvent(event) };
 }
 
+const CONSOLE_METHODS = new Set([
+  "log", "debug", "info", "warn", "error", "assert", "dir", "table",
+  "count", "timeEnd", "trace", "group", "groupCollapsed",
+]);
+
 export function isConsoleEnvelope(value: unknown): value is ConsoleTransportEnvelope {
   if (!value || typeof value !== "object") return false;
   const envelope = value as Partial<ConsoleTransportEnvelope>;
-  return envelope.type === CONSOLE_TRANSPORT_TYPE && envelope.version === CONSOLE_TRANSPORT_VERSION && typeof envelope.channel === "string" && !!envelope.event && typeof envelope.event === "object" && (envelope.event.type === "message" || envelope.event.type === "clear");
+  if (envelope.type !== CONSOLE_TRANSPORT_TYPE || envelope.version !== CONSOLE_TRANSPORT_VERSION ||
+      typeof envelope.channel !== "string" || !envelope.event || typeof envelope.event !== "object") return false;
+  if (envelope.event.type === "clear") return true;
+  if (envelope.event.type !== "message") return false;
+  const message = envelope.event.message;
+  if (!message || typeof message !== "object") return false;
+  return CONSOLE_METHODS.has(message.method) && Array.isArray(message.data) &&
+    Number.isInteger(message.depth) && message.depth >= 0 &&
+    (message.id === undefined || typeof message.id === "string") &&
+    (message.source === undefined || typeof message.source === "string") &&
+    (message.timestamp === undefined || (typeof message.timestamp === "number" && Number.isFinite(message.timestamp))) &&
+    (message.columns === undefined || (Array.isArray(message.columns) && message.columns.every(column => typeof column === "string"))) &&
+    (message.expandLevel === undefined || (typeof message.expandLevel === "number" && Number.isFinite(message.expandLevel) && message.expandLevel >= 0)) &&
+    (message.showNonenumerable === undefined || typeof message.showNonenumerable === "boolean");
 }

@@ -57,3 +57,39 @@ describe("console transport", () => {
     expect(listeners.size).toBe(0);
   });
 });
+
+describe("transport regression cases", () => {
+  it.each([
+    undefined, null, {},
+    { method: "log", data: "hello", depth: 0 },
+    { method: "unknown", data: [], depth: 0 },
+    { method: "log", data: [], depth: -1 },
+    { method: "log", data: [], depth: NaN },
+    { method: "table", data: [], depth: 0, columns: "name" },
+    { method: "log", data: [], depth: 0, source: {} },
+  ])("rejects malformed messages: %j", (message) => {
+    expect(isConsoleEnvelope({
+      type: "@moyarich/console", version: 1, channel: "default",
+      event: { type: "message", message },
+    })).toBe(false);
+  });
+
+  it("preserves repeated references while stopping actual cycles", () => {
+    const shared = { ok: true };
+    const cyclic: Record<string, unknown> = { first: shared, second: shared };
+    cyclic.self = cyclic;
+    expect(serializeConsoleValue(cyclic)).toEqual({
+      first: { ok: true }, second: { ok: true }, self: "[Circular]",
+    });
+  });
+
+  it("serializes invalid dates without throwing", () => {
+    expect(serializeConsoleValue(new Date(NaN))).toBe("Invalid Date");
+  });
+
+  it("handles objects whose getters and string conversion throw", () => {
+    const value = Object.create(null);
+    Object.defineProperty(value, "broken", { enumerable: true, get() { throw new Error("broken"); } });
+    expect(serializeConsoleValue(value)).toBe("[Unserializable]");
+  });
+});

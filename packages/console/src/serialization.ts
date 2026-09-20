@@ -8,7 +8,7 @@ function normalizeValue(value: unknown, seen: WeakSet<object>, depth: number, ma
   if (typeof value === "function") return `[Function ${value.name || "anonymous"}]`;
   if (value === null || typeof value !== "object") return value;
   if (value instanceof Error) return value.stack || `${value.name}: ${value.message}`;
-  if (value instanceof Date) return value.toISOString();
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? "Invalid Date" : value.toISOString();
   if (value instanceof RegExp) return String(value);
   if (seen.has(value)) return "[Circular]";
   if (depth >= maxDepth) return `[${value.constructor?.name || "Object"}]`;
@@ -24,7 +24,11 @@ function normalizeValue(value: unknown, seen: WeakSet<object>, depth: number, ma
     const total = Object.keys(value).length;
     if (total > maxEntries) result["…"] = `[+${total - maxEntries} more]`;
     return result;
-  } catch { return String(value); }
+  } catch {
+    try { return String(value); } catch { return "[Unserializable]"; }
+  } finally {
+    seen.delete(value);
+  }
 }
 export function serializeConsoleValue(value: unknown, { maxDepth = 8, maxEntries = 100 }: SerializeConsoleValueOptions = {}): unknown { return normalizeValue(value, new WeakSet<object>(), 0, maxDepth, maxEntries); }
 export function serializeConsoleMessage(message: ConsoleMessageData): ConsoleMessageData { return { ...message, data: message.data.map((value) => serializeConsoleValue(value)) }; }
