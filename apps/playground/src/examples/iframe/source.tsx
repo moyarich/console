@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 
 const CHANNEL = "preview";
 
-const iframeSource = \`<!doctype html>
+const iframeSource = `<!doctype html>
 <html>
 <body style="font-family:system-ui;padding:16px">
   <strong>Iframe runtime</strong>
@@ -42,7 +42,7 @@ const iframeSource = \`<!doctype html>
     });
   <\/script>
 </body>
-</html>\`;
+</html>`;
 
 export default function IframeExample() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
