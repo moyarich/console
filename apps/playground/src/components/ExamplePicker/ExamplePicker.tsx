@@ -1,0 +1,265 @@
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
+import type { ConsoleExample } from "../../examples";
+
+interface ExamplePickerProps {
+  examples: readonly ConsoleExample[];
+  value: string;
+  onChange: (id: string) => void;
+}
+
+const GROUP_ORDER = [
+  "Getting started",
+  "Console methods",
+  "Transports",
+  "Migration",
+] as const;
+
+type ExampleGroup = (typeof GROUP_ORDER)[number];
+
+function getExampleGroup(example: ConsoleExample): ExampleGroup {
+  if (example.id === "current-page") {
+    return "Getting started";
+  }
+
+  if (example.id === "iframe" || example.id === "websocket") {
+    return "Transports";
+  }
+
+  if (example.id === "console-feed-equivalent") {
+    return "Migration";
+  }
+
+  return "Console methods";
+}
+
+export function ExamplePicker({
+  examples,
+  value,
+  onChange,
+}: ExamplePickerProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [highlightedId, setHighlightedId] = useState(value);
+
+  const selected =
+    examples.find((example) => example.id === value) ?? examples[0];
+
+  const filteredExamples = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return examples;
+    }
+
+    return examples.filter((example) =>
+      [
+        example.label,
+        example.description,
+        example.id,
+        getExampleGroup(example),
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery),
+    );
+  }, [examples, query]);
+
+  const groupedExamples = useMemo(
+    () =>
+      GROUP_ORDER.map((group) => ({
+        group,
+        examples: filteredExamples.filter(
+          (example) => getExampleGroup(example) === group,
+        ),
+      })).filter(({ examples: groupExamples }) => groupExamples.length > 0),
+    [filteredExamples],
+  );
+
+  useEffect(() => {
+    if (!open) return;
+
+    const firstVisible =
+      filteredExamples.find((example) => example.id === value) ??
+      filteredExamples[0];
+
+    setHighlightedId(firstVisible?.id ?? "");
+    requestAnimationFrame(() => searchRef.current?.focus());
+  }, [filteredExamples, open, value]);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        setQuery("");
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  const selectExample = (id: string) => {
+    onChange(id);
+    setHighlightedId(id);
+    setOpen(false);
+    setQuery("");
+  };
+
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      setQuery("");
+      return;
+    }
+
+    if (!filteredExamples.length) {
+      return;
+    }
+
+    const currentIndex = Math.max(
+      0,
+      filteredExamples.findIndex((example) => example.id === highlightedId),
+    );
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      const nextIndex =
+        (currentIndex + direction + filteredExamples.length) %
+        filteredExamples.length;
+      setHighlightedId(filteredExamples[nextIndex]!.id);
+      return;
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const target =
+        filteredExamples.find((example) => example.id === highlightedId) ??
+        filteredExamples[0];
+
+      if (target) {
+        selectExample(target.id);
+      }
+    }
+  };
+
+  return (
+    <div className="example-picker" ref={rootRef}>
+      <span className="example-picker-label">Example</span>
+
+      <button
+        type="button"
+        className="example-picker-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span className="example-picker-trigger-copy">
+          <span className="example-picker-trigger-title">
+            {selected?.label ?? "Choose an example"}
+          </span>
+          <span className="example-picker-trigger-meta">
+            {selected ? getExampleGroup(selected) : "Examples"}
+          </span>
+        </span>
+
+        <svg
+          className="example-picker-chevron"
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path d="m6 8 4 4 4-4" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="example-picker-popover">
+          <div className="example-picker-search">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="9" cy="9" r="5.5" />
+              <path d="m13 13 4 4" />
+            </svg>
+            <input
+              ref={searchRef}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search examples…"
+              aria-label="Search examples"
+            />
+            <kbd>⌘K</kbd>
+          </div>
+
+          <div
+            className="example-picker-list"
+            role="listbox"
+            aria-label="Console examples"
+          >
+            {groupedExamples.map(({ group, examples: groupExamples }) => (
+              <div className="example-picker-group" key={group}>
+                <div className="example-picker-group-heading">
+                  <span>{group}</span>
+                  <span>{groupExamples.length}</span>
+                </div>
+
+                {groupExamples.map((example) => {
+                  const active = example.id === value;
+                  const highlighted = example.id === highlightedId;
+
+                  return (
+                    <button
+                      key={example.id}
+                      type="button"
+                      role="option"
+                      aria-selected={active}
+                      className={[
+                        "example-picker-option",
+                        active ? "active" : "",
+                        highlighted ? "highlighted" : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onMouseEnter={() => setHighlightedId(example.id)}
+                      onClick={() => selectExample(example.id)}
+                    >
+                      <span className="example-picker-option-copy">
+                        <strong>{example.label}</strong>
+                        <small>{example.description}</small>
+                      </span>
+
+                      {active && (
+                        <svg
+                          className="example-picker-check"
+                          viewBox="0 0 20 20"
+                          aria-hidden="true"
+                        >
+                          <path d="m5 10 3 3 7-7" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+
+            {!filteredExamples.length && (
+              <div className="example-picker-empty">
+                <strong>No examples found</strong>
+                <span>Try a method name like log, table, iframe, or trace.</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
