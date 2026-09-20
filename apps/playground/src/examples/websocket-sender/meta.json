@@ -1,6 +1,0 @@
-{
-  "id": "websocket-sender",
-  "label": "WebSocket sender",
-  "description": "Send a console event through a WebSocket transport.",
-  "order": 4
-}
