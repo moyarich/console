@@ -9,6 +9,8 @@ export { formatConsoleObjectForCopy } from "./utils/consoleCopyObject";
 export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
 export { capturePageConsole } from "./utils/capturePageConsole";
+export { createConsoleEventChannel } from "./utils/createConsoleEventChannel";
+export type { ConsoleEventChannel } from "./utils/createConsoleEventChannel";
 export type { CapturePageConsoleOptions } from "./utils/capturePageConsole";
 export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
