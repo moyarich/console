@@ -1,6 +1,6 @@
 {
   "id": "websocket",
   "label": "Server / WebSocket",
-  "description": "Send and receive console events through a WebSocket relay using the shared transport envelope.",
+  "description": "Send and receive console events through a secure WebSocket echo server using the shared transport envelope.",
   "order": 3
 }
