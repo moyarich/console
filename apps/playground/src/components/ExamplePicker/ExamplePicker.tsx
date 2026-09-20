@@ -1,10 +1,11 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
   type KeyboardEvent,
-  type ToggleEvent,
+  type SyntheticEvent,
 } from "react";
 import type { ConsoleExample } from "../../examples";
 
@@ -85,7 +86,7 @@ export function ExamplePicker({
     [filteredExamples],
   );
 
-  const positionPopover = () => {
+  const positionPopover = useCallback(() => {
     const trigger = triggerRef.current;
     const popover = popoverRef.current;
 
@@ -98,9 +99,9 @@ export function ExamplePicker({
     popover.style.left = `${rect.left}px`;
     popover.style.top = `${rect.bottom + 8}px`;
     popover.style.width = `${rect.width}px`;
-  };
+  }, []);
 
-  const openPopover = () => {
+  const openPopover = useCallback(() => {
     const popover = popoverRef.current;
 
     if (!popover || popover.matches(":popover-open")) {
@@ -109,18 +110,18 @@ export function ExamplePicker({
 
     positionPopover();
     popover.showPopover();
-  };
+  }, [positionPopover]);
 
-  const closePopover = () => {
+  const closePopover = useCallback(() => {
     const popover = popoverRef.current;
 
     if (popover?.matches(":popover-open")) {
       popover.hidePopover();
     }
-  };
+  }, []);
 
-  const handlePopoverToggle = (event: ToggleEvent<HTMLDivElement>) => {
-    const isOpen = event.newState === "open";
+  const handlePopoverToggle = (event: SyntheticEvent<HTMLDivElement>) => {
+    const isOpen = event.currentTarget.matches(":popover-open");
 
     setOpen(isOpen);
 
@@ -151,7 +152,7 @@ export function ExamplePicker({
 
     document.addEventListener("keydown", handleShortcut);
     return () => document.removeEventListener("keydown", handleShortcut);
-  });
+  }, [openPopover]);
 
   useEffect(() => {
     if (!open) {
@@ -167,7 +168,7 @@ export function ExamplePicker({
       window.removeEventListener("resize", handleViewportChange);
       window.removeEventListener("scroll", handleViewportChange, true);
     };
-  }, [open]);
+  }, [open, positionPopover]);
 
   const selectExample = (id: string) => {
     onChange(id);
