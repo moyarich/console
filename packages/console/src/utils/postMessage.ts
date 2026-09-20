@@ -1,5 +1,5 @@
 import { createConsoleEnvelope, DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
-import type { ConsoleEventSink } from "./types";
+import type { ConsoleEventSink } from "../types";
 
 export interface PostMessageTarget { postMessage(message: unknown, targetOrigin: string): void; }
 export interface CreateConsolePostMessageSenderOptions { targetWindow: PostMessageTarget; targetOrigin?: string; channel?: string; }

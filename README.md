@@ -187,7 +187,7 @@ Messages are transported as:
 
 ```ts
 {
-  type: "@moyarich/console",
+  type: "CONSOLE_PANEL",
   version: 1,
   channel: "default",
   event: {

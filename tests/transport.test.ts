@@ -69,7 +69,7 @@ describe("transport regression cases", () => {
     { method: "log", data: [], depth: 0, source: {} },
   ])("rejects malformed messages: %j", (message) => {
     expect(isConsoleEnvelope({
-      type: "@moyarich/console", version: 1, channel: "default",
+      type: "CONSOLE_PANEL", version: 1, channel: "default",
       event: { type: "message", message },
     })).toBe(false);
   });

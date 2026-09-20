@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import type { ConsoleEvent, ConsoleMessageData, RunOutput } from "./types";
+import type { ConsoleEvent, ConsoleMessageData, RunOutput } from "../types";
 
 export interface UseConsoleMessagesOptions {
   initialMessages?: ConsoleMessageData[];

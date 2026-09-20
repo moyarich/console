@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { Braces, Bug, ChevronDown, CircleX, Hash, Info, ListTree, Table2, Terminal, Timer, TriangleAlert } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleValue } from "./ConsoleValue";
-import type { ConsoleMessageData } from "./types";
+import type { ConsoleMessageData } from "../types";
 
 export interface ConsoleMessageProps { message: ConsoleMessageData; }
 function getMessageIcon(method: ConsoleMessageData["method"]): LucideIcon {
