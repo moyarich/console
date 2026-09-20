@@ -9,18 +9,27 @@ import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
 } from "../utils/createConsoleEventEmitter";
+import { capturePageConsole } from "../utils/capturePageConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
 export interface UseConsoleMessagesOptions {
   initialMessages?: ConsoleMessageData[];
   maxMessages?: number;
   events?: ConsoleEventEmitter;
+  capture?: boolean;
+  source?: string;
+  passThrough?: boolean;
+  target?: Console;
 }
 
 export function useConsoleMessages({
   initialMessages = [],
   maxMessages = 1000,
   events: providedEvents,
+  capture = false,
+  source = "page",
+  passThrough = true,
+  target,
 }: UseConsoleMessagesOptions = {}) {
   const internalEventsRef = useRef<ConsoleEventEmitter | null>(null);
   const events =
@@ -55,6 +64,19 @@ export function useConsoleMessages({
       offClear();
     };
   }, [events, handleMessage, handleClear]);
+
+  useEffect(() => {
+    if (!capture) {
+      return;
+    }
+
+    return capturePageConsole({
+      events,
+      target,
+      source,
+      passThrough,
+    });
+  }, [capture, events, target, source, passThrough]);
 
   const append = useCallback(
     (message: ConsoleMessageData) => {
