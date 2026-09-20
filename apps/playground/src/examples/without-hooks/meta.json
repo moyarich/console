@@ -2,5 +2,5 @@
   "id": "without-hooks",
   "label": "React hooks, no console hook",
   "description": "Use standard React hooks with ConsoleEventEmitter directly, without useConsoleMessages.",
-  "order": 18
+  "order": 19
 }

@@ -17,6 +17,7 @@ interface ExamplePickerProps {
 
 const GROUP_ORDER = [
   "Getting started",
+  "Events",
   "Console methods",
   "Transports",
   "Migration",
@@ -27,6 +28,10 @@ type ExampleGroup = (typeof GROUP_ORDER)[number];
 function getExampleGroup(example: ConsoleExample): ExampleGroup {
   if (example.id === "current-page") {
     return "Getting started";
+  }
+
+  if (example.id === "console-event" || example.id === "without-hooks") {
+    return "Events";
   }
 
   if (example.id === "iframe" || example.id === "websocket") {
