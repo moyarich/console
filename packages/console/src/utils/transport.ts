@@ -1,5 +1,6 @@
-import { serializeConsoleEvent } from "./serialization";
+import { isConsoleMethod } from "../consoleMethods";
 import type { ConsoleEvent, ConsoleTransportEnvelope } from "../types";
+import { serializeConsoleEvent } from "./serialization";
 
 export const CONSOLE_TRANSPORT_TYPE = "CONSOLE_PANEL" as const;
 export const CONSOLE_TRANSPORT_VERSION = 1 as const;
@@ -16,22 +17,6 @@ export function createConsoleEnvelope(
     event: serializeConsoleEvent(event),
   };
 }
-
-const CONSOLE_METHODS = new Set([
-  "log",
-  "debug",
-  "info",
-  "warn",
-  "error",
-  "assert",
-  "dir",
-  "table",
-  "count",
-  "timeEnd",
-  "trace",
-  "group",
-  "groupCollapsed",
-]);
 
 export function isConsoleEnvelope(
   value: unknown,
@@ -51,7 +36,7 @@ export function isConsoleEnvelope(
   const message = envelope.event.message;
   if (!message || typeof message !== "object") return false;
   return (
-    CONSOLE_METHODS.has(message.method) &&
+    isConsoleMethod(message.method) &&
     Array.isArray(message.data) &&
     Number.isInteger(message.depth) &&
     message.depth >= 0 &&

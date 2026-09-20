@@ -1,17 +1,6 @@
-export type ConsoleMethod =
-  | "log"
-  | "debug"
-  | "info"
-  | "warn"
-  | "error"
-  | "assert"
-  | "dir"
-  | "table"
-  | "count"
-  | "timeEnd"
-  | "trace"
-  | "group"
-  | "groupCollapsed";
+import type { ConsoleMethod } from "./consoleMethods";
+
+export type { ConsoleMethod } from "./consoleMethods";
 
 export interface ConsoleMessageData {
   id?: string;

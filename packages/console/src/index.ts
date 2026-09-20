@@ -3,6 +3,7 @@ export type { ConsoleProps } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
+export { CONSOLE_METHODS } from "./consoleMethods";
 export { normalizeConsoleTableData } from "./utils/consoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/consoleCopyObject";
 export { createConsoleProxy } from "./utils/createConsoleProxy";
