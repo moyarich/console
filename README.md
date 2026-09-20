@@ -93,9 +93,9 @@ Use `createConsoleProxy()` when you control the `console` object supplied to eva
 import { createConsoleProxy } from "@moyarich/console";
 
 const messages = [];
-const runtimeConsole = createConsoleProxy(messages);
+const console = createConsoleProxy(messages);
 
-runtimeConsole.log("hello", { from: "sandbox" });
+console.log("hello", { from: "sandbox" });
 ```
 
 To publish proxy output through an event channel:
@@ -107,7 +107,7 @@ import {
 } from "@moyarich/console";
 
 const events = createConsoleEventChannel();
-const runtimeConsole = createConsoleProxy({ events });
+const console = createConsoleProxy({ events });
 ```
 
 ## Fan out console events
