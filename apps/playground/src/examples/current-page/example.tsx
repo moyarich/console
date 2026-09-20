@@ -1,21 +1,15 @@
-import { useEffect } from "react";
 import {
   Console,
-  capturePageConsole,
   useConsoleMessages,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function CurrentPageConsole() {
-  const { messages, clear, events } = useConsoleMessages();
-
-  useEffect(() => {
-    return capturePageConsole({
-      events,
-      source: "current-page",
-      passThrough: true,
-    });
-  }, [events]);
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    source: "current-page",
+    passThrough: true,
+  });
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
