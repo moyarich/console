@@ -12,7 +12,19 @@ export default function ConsoleDirExample() {
   });
 
   const runExample = () => {
-    console.dir("Directory message");
+    const object = {
+      name: "Directory message",
+      details: {
+        nested: true,
+      },
+    };
+
+    const options = {
+      depth: 2,
+      showHidden: false,
+    };
+
+    console.dir(object, options);
   };
 
   return (
