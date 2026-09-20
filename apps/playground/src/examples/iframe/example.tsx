@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import {
   Console,
-  createConsolePostMessageSender,
+  createConsoleEnvelope,
   listenForConsolePostMessages,
   useConsoleMessages,
   type ConsoleEvent,
@@ -14,11 +14,11 @@ const IFRAME_SOURCE = [
   "<!doctype html>",
   "<html>",
   "<body style=\"font-family:system-ui;padding:16px\">",
-  "  <button id=\"send\">Send console event to parent</button>",
-  "  <pre id=\"received\">No console event received from parent yet.</pre>",
+  "  <button id=\"send\">Send console event to host page</button>",
+  "  <pre id=\"received\">No console event received from host page yet.</pre>",
   "  <script>",
   "    document.querySelector(\"#send\").addEventListener(\"click\", () => {",
-  "      parent.postMessage({",
+  "      window.parent.postMessage({",
   "        type: \"CONSOLE_PANEL\",",
   "        version: 1,",
   "        channel: \"iframe-demo\",",
@@ -26,7 +26,7 @@ const IFRAME_SOURCE = [
   "          type: \"message\",",
   "          message: {",
   "            method: \"log\",",
-  "            data: [\"Console event sent from iframe to parent\", { frame: true }],",
+  "            data: [\"Console event sent from iframe to host page\", { frame: true }],",
   "            depth: 0,",
   "            timestamp: Date.now(),",
   "            source: \"iframe\"",
@@ -59,24 +59,24 @@ export default function IframeConsole() {
     const targetWindow = iframeRef.current?.contentWindow;
     if (!targetWindow) return;
 
-    const send = createConsolePostMessageSender({
-      targetWindow,
-      targetOrigin: "*",
-      channel: CHANNEL,
-    });
-
     const event: ConsoleEvent = {
       type: "message",
       message: {
         method: "log",
-        data: ["Console event sent from parent to iframe", { parent: true }],
+        data: [
+          "Console event sent from host page to iframe",
+          { host: true },
+        ],
         depth: 0,
         timestamp: Date.now(),
-        source: "parent",
+        source: "host-page",
       },
     };
 
-    send(event);
+    targetWindow.postMessage(
+      createConsoleEnvelope(event, CHANNEL),
+      "*",
+    );
   };
 
   return (

@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   createConsoleEnvelope,
   createConsoleEventEmitter,
-  createConsolePostMessageSender,
-  createConsoleWebSocketSender,
   isConsoleEnvelope,
   listenForConsoleWebSocket,
   serializeConsoleValue,
@@ -14,11 +12,16 @@ import {
 describe("console transport", () => {
   const event: ConsoleEvent = {
     type: "message",
-    message: { method: "log", data: ["hello", { ok: true }], depth: 0 },
+    message: {
+      method: "log",
+      data: ["hello", { ok: true }],
+      depth: 0,
+    },
   };
 
   it("creates versioned envelopes", () => {
     const envelope = createConsoleEnvelope(event, "test");
+
     expect(isConsoleEnvelope(envelope)).toBe(true);
     expect(envelope.channel).toBe("test");
   });
@@ -37,22 +40,14 @@ describe("console transport", () => {
     });
   });
 
-  it("sends postMessage envelopes", () => {
-    const sent: unknown[] = [];
-    const send = createConsolePostMessageSender({
-      targetWindow: {
-        postMessage: (message) => sent.push(message),
-      },
-      channel: "iframe",
-    });
+  it("creates an envelope ready for window.postMessage", () => {
+    const envelope = createConsoleEnvelope(event, "iframe");
 
-    send(event);
-
-    expect(sent).toHaveLength(1);
-    expect(isConsoleEnvelope(sent[0])).toBe(true);
+    expect(isConsoleEnvelope(envelope)).toBe(true);
+    expect(envelope.channel).toBe("iframe");
   });
 
-  it("sends and receives WebSocket envelopes through an event channel", () => {
+  it("sends and receives WebSocket envelopes through an event emitter", () => {
     const listeners = new Set<(event: MessageEvent) => void>();
     const received: ConsoleEvent[] = [];
     const sent: string[] = [];
@@ -78,10 +73,9 @@ describe("console transport", () => {
       events,
     });
 
-    createConsoleWebSocketSender({
-      socket,
-      channel: "server",
-    })(event);
+    socket.send(
+      JSON.stringify(createConsoleEnvelope(event, "server")),
+    );
 
     for (const listener of listeners) {
       listener({ data: sent[0] } as MessageEvent);

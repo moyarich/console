@@ -117,8 +117,8 @@ A `ConsoleEventEmitter` lets multiple independent consumers observe the same eve
 ```ts
 import {
   capturePageConsole,
+  createConsoleEnvelope,
   createConsoleEventEmitter,
-  createConsoleWebSocketSender,
 } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
@@ -127,12 +127,12 @@ const stopCapture = capturePageConsole({
   events,
 });
 
-const send = createConsoleWebSocketSender({
-  socket,
-  channel: "session-42",
+const stopSocket = events.onEvent((event) => {
+  socket.send(
+    JSON.stringify(createConsoleEnvelope(event, "session-42")),
+  );
 });
 
-const stopSocket = events.onEvent(send);
 const stopAudit = events.onEvent(saveConsoleEvent);
 ```
 
@@ -148,24 +148,23 @@ Application code can listen to typed events with `events.on("message", ...)` and
 
 ## Iframe transport
 
-Inside the iframe, capture into an event channel and subscribe the postMessage sender:
+Inside the iframe, send the console envelope with the browser's native `postMessage()` API:
 
 ```ts
 import {
   capturePageConsole,
+  createConsoleEnvelope,
   createConsoleEventEmitter,
-  createConsolePostMessageSender,
 } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
 
-const send = createConsolePostMessageSender({
-  targetWindow: window.parent,
-  targetOrigin: "https://parent.example.com",
-  channel: "preview",
+const stopForwarding = events.onEvent((event) => {
+  window.parent.postMessage(
+    createConsoleEnvelope(event, "preview"),
+    "https://host.example.com",
+  );
 });
-
-const stopForwarding = events.onEvent(send);
 
 const restore = capturePageConsole({
   events,
@@ -200,19 +199,19 @@ Sender:
 ```ts
 import {
   capturePageConsole,
+  createConsoleEnvelope,
   createConsoleEventEmitter,
-  createConsoleWebSocketSender,
 } from "@moyarich/console";
 
 const socket = new WebSocket("wss://example.com/console");
 const events = createConsoleEventEmitter();
 
-const send = createConsoleWebSocketSender({
-  socket,
-  channel: "session-42",
+const stopSending = events.onEvent((event) => {
+  socket.send(
+    JSON.stringify(createConsoleEnvelope(event, "session-42")),
+  );
 });
 
-const stopSending = events.onEvent(send);
 const restore = capturePageConsole({ events });
 ```
 
