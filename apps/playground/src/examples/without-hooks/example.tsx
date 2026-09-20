@@ -1,4 +1,9 @@
-import { Component } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Console,
   createConsoleEventChannel,
@@ -10,79 +15,70 @@ import "@moyarich/console/styles.css";
 
 const MAX_MESSAGES = 1000;
 
-interface State {
-  messages: ConsoleMessageData[];
-}
+export default function ConsoleWithoutConsoleHookExample() {
+  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
 
-export default class ConsoleWithoutHooksExample extends Component<{}, State> {
-  state: State = {
-    messages: [],
-  };
+  const events = useMemo(
+    () => createConsoleEventChannel(),
+    [],
+  );
 
-  private readonly events = createConsoleEventChannel();
+  const runtimeConsole = useMemo(
+    () =>
+      createConsoleProxy({
+        events,
+        source: "without-console-hook",
+      }),
+    [events],
+  );
 
-  private readonly runtimeConsole = createConsoleProxy({
-    events: this.events,
-    source: "without-hooks",
-  });
-
-  private unsubscribe?: () => void;
-
-  componentDidMount() {
-    this.unsubscribe = this.events.subscribe(this.handleEvent);
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe?.();
-  }
-
-  private handleEvent = (event: ConsoleEvent) => {
+  const handleEvent = useCallback((event: ConsoleEvent) => {
     if (event.type === "clear") {
-      this.setState({ messages: [] });
+      setMessages([]);
       return;
     }
 
-    this.setState((current) => {
-      const next = [...current.messages, event.message];
+    setMessages((current) => {
+      const next = [...current, event.message];
 
-      return {
-        messages:
-          next.length > MAX_MESSAGES
-            ? next.slice(-MAX_MESSAGES)
-            : next,
-      };
+      return next.length > MAX_MESSAGES
+        ? next.slice(-MAX_MESSAGES)
+        : next;
     });
-  };
+  }, []);
 
-  private clear = () => {
-    this.events.emit({ type: "clear" });
-  };
+  useEffect(
+    () => events.subscribe(handleEvent),
+    [events, handleEvent],
+  );
 
-  private runExample = () => {
-    this.runtimeConsole.log("Hello without hooks", {
+  const clear = useCallback(() => {
+    events.emit({ type: "clear" });
+  }, [events]);
+
+  const runExample = useCallback(() => {
+    runtimeConsole.log("Hello without useConsoleMessages", {
       channel: "ConsoleEventChannel",
     });
-    this.runtimeConsole.info("No useConsoleMessages hook is used.");
-    this.runtimeConsole.warn("The class subscribes directly to console events.");
-  };
+    runtimeConsole.info("Standard React hooks manage the component state.");
+    runtimeConsole.warn("The component subscribes directly to console events.");
+  }, [runtimeConsole]);
 
-  render() {
-    return (
-      <div style={{ display: "grid", gap: 12 }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button type="button" onClick={this.runExample}>
-            Run example
-          </button>
-          <button type="button" onClick={this.clear}>
-            Clear
-          </button>
-        </div>
-
-        <Console
-          messages={this.state.messages}
-          onClear={this.clear}
-        />
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <div style={{ display: "flex", gap: 8 }}>
+        <button type="button" onClick={runExample}>
+          Run example
+        </button>
+        <button type="button" onClick={clear}>
+          Clear
+        </button>
       </div>
-    );
-  }
+
+      <Console
+        messages={messages}
+        onClear={clear}
+      />
+    </div>
+  );
 }
