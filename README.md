@@ -60,30 +60,26 @@ export function Example() {
 
 ## Capture the current page
 
-`useConsoleMessages()` owns a stable `ConsoleEventEmitter`. Pass that channel directly to producers such as `capturePageConsole()`.
+Turn on page capture directly through `useConsoleMessages()`. The hook starts and cleans up `capturePageConsole()` internally.
 
 ```tsx
-import { useEffect } from "react";
 import {
   Console,
-  capturePageConsole,
   useConsoleMessages,
 } from "@moyarich/console";
 
 export function PageConsole() {
-  const { messages, clear, events } = useConsoleMessages();
-
-  useEffect(() => {
-    return capturePageConsole({
-      events,
-      source: "current-page",
-      passThrough: true,
-    });
-  }, [events]);
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    source: "current-page",
+    passThrough: true,
+  });
 
   return <Console messages={messages} onClear={clear} />;
 }
 ```
+
+Page capture is off by default. Use the lower-level `capturePageConsole()` utility when you need capture outside React.
 
 ## Capture evaluated/sandboxed code
 
