@@ -1,6 +1,0 @@
-{
-  "id": "websocket-receiver",
-  "label": "WebSocket receiver",
-  "description": "Listen for console transport envelopes from a WebSocket and render them.",
-  "order": 5
-}
