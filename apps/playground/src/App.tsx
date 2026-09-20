@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MonacoEditor } from "./components/MonacoEditor";
 import {
   CONSOLE_EXAMPLES,
   DEFAULT_CONSOLE_EXAMPLE,
@@ -40,9 +41,20 @@ export function App() {
             <strong>example.tsx</strong>
           </div>
         </div>
-        <pre className="example-source">
-          <code>{example.exampleSource}</code>
-        </pre>
+
+        <div className="example-source-editor">
+          <MonacoEditor
+            path={`${example.id}/example.tsx`}
+            language="typescript"
+            value={example.exampleSource}
+            options={{
+              readOnly: true,
+              domReadOnly: true,
+              contextmenu: true,
+              renderLineHighlight: "none",
+            }}
+          />
+        </div>
       </section>
     </main>
   );
