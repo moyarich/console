@@ -1,6 +1,6 @@
 {
   "id": "without-hooks",
-  "label": "Without hooks",
-  "description": "Use ConsoleEventChannel directly with a React class component instead of useConsoleMessages or other React hooks.",
+  "label": "React hooks, no console hook",
+  "description": "Use standard React hooks with ConsoleEventChannel directly, without useConsoleMessages.",
   "order": 18
 }
