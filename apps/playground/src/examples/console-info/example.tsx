@@ -1,21 +1,15 @@
-import { useEffect } from "react";
 import {
   Console,
-  capturePageConsole,
   useConsoleMessages,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleInfoExample() {
-  const { messages, clear, events } = useConsoleMessages();
-
-  useEffect(() => {
-    return capturePageConsole({
-      events,
-      source: "console-info",
-      passThrough: true,
-    });
-  }, [events]);
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    source: "console-info",
+    passThrough: true,
+  });
 
   const runExample = () => {
     console.info("Info message");
