@@ -39,7 +39,7 @@ const IFRAME_SOURCE = [
   "      document.querySelector(\"#received\").textContent =",
   "        JSON.stringify(event.data, null, 2);",
   "    });",
-  "  <\\/script>",
+  "  </script>",
   "</body>",
   "</html>",
 ].join("\n");
