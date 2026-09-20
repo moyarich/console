@@ -1,6 +1,0 @@
-{
-  "id": "console-methods",
-  "label": "Console methods",
-  "description": "Run a simple message example for every console method supported by @moyarich/console.",
-  "order": 2
-}
