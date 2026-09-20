@@ -1,6 +1,6 @@
 {
   "id": "websocket",
   "label": "Server / WebSocket",
-  "description": "Send and receive console events through a secure WebSocket echo server using the shared transport envelope.",
+  "description": "Send and receive console events through Postman's public WebSocket Echo service using the shared transport envelope.",
   "order": 3
 }
