@@ -7,15 +7,15 @@ import {
 import "@moyarich/console/styles.css";
 
 export default function ConsoleInfoExample() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       source: "console-info",
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   const runExample = () => {
     console.info("Info message");

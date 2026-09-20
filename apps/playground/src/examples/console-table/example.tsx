@@ -7,15 +7,15 @@ import {
 import "@moyarich/console/styles.css";
 
 export default function ConsoleTableExample() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       source: "console-table",
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   const runExample = () => {
     console.table([{ message: "Table message" }]);

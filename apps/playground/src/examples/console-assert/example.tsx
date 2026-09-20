@@ -7,15 +7,15 @@ import {
 import "@moyarich/console/styles.css";
 
 export default function ConsoleAssertExample() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       source: "console-assert",
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   const runExample = () => {
     console.assert(false, "Assertion message");

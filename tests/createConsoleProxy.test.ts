@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { createConsoleProxy, type ConsoleEvent, type ConsoleMessageData } from "@moyarich/console";
+import {
+  createConsoleEventChannel,
+  createConsoleProxy,
+  type ConsoleEvent,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 
 describe("createConsoleProxy", () => {
   it("captures messages and group depth", () => {
     const messages: ConsoleMessageData[] = [];
     const proxy = createConsoleProxy(messages);
+
     proxy.log("root");
     proxy.group("group");
     proxy.warn("nested");
@@ -17,12 +23,18 @@ describe("createConsoleProxy", () => {
     ]);
   });
 
-  it("emits clear as an event", () => {
-    const events: ConsoleEvent[] = [];
-    const proxy = createConsoleProxy({ onEvent: (event) => events.push(event) });
+  it("emits clear through a ConsoleEventChannel", () => {
+    const received: ConsoleEvent[] = [];
+    const events = createConsoleEventChannel();
+
+    events.subscribe((event) => received.push(event));
+
+    const proxy = createConsoleProxy({ events });
+
     proxy.log("one");
     proxy.clear();
-    expect(events[0]?.type).toBe("message");
-    expect(events[1]).toEqual({ type: "clear" });
+
+    expect(received[0]?.type).toBe("message");
+    expect(received[1]).toEqual({ type: "clear" });
   });
 });

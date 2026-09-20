@@ -19,7 +19,7 @@ const IFRAME_SOURCE = [
   "  <script>",
   "    document.querySelector(\"#send\").addEventListener(\"click\", () => {",
   "      parent.postMessage({",
-  "        type: \"@moyarich/console\",",
+  "        type: \"CONSOLE_PANEL\",",
   "        version: 1,",
   "        channel: \"iframe-demo\",",
   "        event: {",
@@ -46,14 +46,14 @@ const IFRAME_SOURCE = [
 
 export default function IframeConsole() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return listenForConsolePostMessages({
-      onEvent,
+      events,
       channel: CHANNEL,
     });
-  }, [onEvent]);
+  }, [events]);
 
   const sendToIframe = () => {
     const targetWindow = iframeRef.current?.contentWindow;
@@ -89,7 +89,11 @@ export default function IframeConsole() {
         ref={iframeRef}
         title="Console iframe demo"
         srcDoc={IFRAME_SOURCE}
-        style={{ width: "100%", minHeight: 180, border: "1px solid #ccc" }}
+        style={{
+          width: "100%",
+          minHeight: 180,
+          border: "1px solid #ccc",
+        }}
       />
 
       <Console

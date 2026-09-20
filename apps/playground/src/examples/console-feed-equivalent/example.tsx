@@ -7,15 +7,15 @@ import {
 import "@moyarich/console/styles.css";
 
 const LogsContainer = () => {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       target: window.console,
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   return <Console messages={messages} onClear={clear} />;
 };
