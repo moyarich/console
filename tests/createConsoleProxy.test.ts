@@ -22,6 +22,25 @@ describe("createConsoleProxy", () => {
     ]);
   });
 
+  it("tracks console.time and console.timeEnd", () => {
+    const messages: ConsoleMessageData[] = [];
+    let currentTime = 1000;
+    const console = createConsoleProxy({
+      messages,
+      now: () => currentTime,
+    });
+
+    console.time("Timer");
+    currentTime = 1250;
+    console.timeEnd("Timer");
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toMatchObject({
+      method: "timeEnd",
+      data: ["Timer: 250.00 ms"],
+    });
+  });
+
   it("emits clear through a ConsoleEventEmitter", () => {
     const events = createConsoleEventEmitter();
     const received: string[] = [];
