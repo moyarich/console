@@ -9,7 +9,7 @@ import "@moyarich/console/styles.css";
 
 export default function ConsoleEventExample() {
   const [events] = useState(createConsoleEventEmitter);
-  const { messages, clear } = useConsoleMessages({ events });
+  const { messages } = useConsoleMessages({ events });
 
   const emitMessageEvent = () => {
     const event: ConsoleEvent = {
@@ -51,7 +51,7 @@ export default function ConsoleEventExample() {
 
       <Console
         messages={messages}
-        onClear={clear}
+        onClear={emitClearEvent}
         subtitle="ConsoleEvent transport/data union"
       />
     </div>
