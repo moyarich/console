@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Console,
-  createConsoleEnvelope,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   listenForConsoleWebSocket,
+  serializeConsoleEvent,
   useConsoleMessages,
   type ConsoleEvent,
 } from "@moyarich/console";
@@ -61,7 +63,12 @@ export default function WebSocketConsole() {
     };
 
     socket.send(
-      JSON.stringify(createConsoleEnvelope(event, CHANNEL)),
+      JSON.stringify({
+        type: CONSOLE_TRANSPORT_TYPE,
+        version: CONSOLE_TRANSPORT_VERSION,
+        channel: CHANNEL,
+        event: serializeConsoleEvent(event),
+      }),
     );
   };
 

@@ -16,7 +16,7 @@ export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export { serializeConsoleValue, serializeConsoleMessage, serializeConsoleEvent } from "./utils/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
-export { CONSOLE_TRANSPORT_TYPE, CONSOLE_TRANSPORT_VERSION, DEFAULT_CONSOLE_CHANNEL, createConsoleEnvelope, isConsoleEnvelope } from "./utils/transport";
+export { CONSOLE_TRANSPORT_TYPE, CONSOLE_TRANSPORT_VERSION, DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./utils/transport";
 export { listenForConsolePostMessages } from "./utils/postMessage";
 export type { ListenForConsolePostMessagesOptions } from "./utils/postMessage";
 export { listenForConsoleWebSocket } from "./utils/websocket";

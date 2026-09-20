@@ -117,8 +117,10 @@ A `ConsoleEventEmitter` lets multiple independent consumers observe the same eve
 ```ts
 import {
   capturePageConsole,
-  createConsoleEnvelope,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
+  serializeConsoleEvent,
 } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
@@ -129,7 +131,12 @@ const stopCapture = capturePageConsole({
 
 const stopSocket = events.onEvent((event) => {
   socket.send(
-    JSON.stringify(createConsoleEnvelope(event, "session-42")),
+    JSON.stringify({
+      type: CONSOLE_TRANSPORT_TYPE,
+      version: CONSOLE_TRANSPORT_VERSION,
+      channel: "session-42",
+      event: serializeConsoleEvent(event),
+    }),
   );
 });
 
@@ -153,15 +160,22 @@ Inside the iframe, send the console envelope with the browser's native `postMess
 ```ts
 import {
   capturePageConsole,
-  createConsoleEnvelope,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
+  serializeConsoleEvent,
 } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
 
 const stopForwarding = events.onEvent((event) => {
   window.parent.postMessage(
-    createConsoleEnvelope(event, "preview"),
+    {
+      type: CONSOLE_TRANSPORT_TYPE,
+      version: CONSOLE_TRANSPORT_VERSION,
+      channel: "preview",
+      event: serializeConsoleEvent(event),
+    },
     "https://host.example.com",
   );
 });
@@ -199,7 +213,6 @@ Sender:
 ```ts
 import {
   capturePageConsole,
-  createConsoleEnvelope,
   createConsoleEventEmitter,
 } from "@moyarich/console";
 
@@ -208,7 +221,12 @@ const events = createConsoleEventEmitter();
 
 const stopSending = events.onEvent((event) => {
   socket.send(
-    JSON.stringify(createConsoleEnvelope(event, "session-42")),
+    JSON.stringify({
+      type: CONSOLE_TRANSPORT_TYPE,
+      version: CONSOLE_TRANSPORT_VERSION,
+      channel: "session-42",
+      event: serializeConsoleEvent(event),
+    }),
   );
 });
 

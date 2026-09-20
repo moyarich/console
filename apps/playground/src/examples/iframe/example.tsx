@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import {
   Console,
-  createConsoleEnvelope,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   listenForConsolePostMessages,
+  serializeConsoleEvent,
   useConsoleMessages,
   type ConsoleEvent,
 } from "@moyarich/console";
@@ -74,7 +76,12 @@ export default function IframeConsole() {
     };
 
     targetWindow.postMessage(
-      createConsoleEnvelope(event, CHANNEL),
+      {
+        type: CONSOLE_TRANSPORT_TYPE,
+        version: CONSOLE_TRANSPORT_VERSION,
+        channel: CHANNEL,
+        event: serializeConsoleEvent(event),
+      },
       "*",
     );
   };
