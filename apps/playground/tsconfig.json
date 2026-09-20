@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@moyarich/console": ["../../packages/console/src/index.ts"],
+      "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

@@ -1,0 +1,36 @@
+name: Publish GitHub Package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-github-package
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@moyarich"
+      - name: Install dependencies
+        run: npm install --include=optional
+      - name: Validate
+        run: npm run typecheck && npm test && npm run build:package
+      - name: Show version
+        run: node -p "'Publishing @moyarich/console@' + require('./packages/console/package.json').version"
+      - name: Publish
+        run: npm publish --workspace @moyarich/console
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
