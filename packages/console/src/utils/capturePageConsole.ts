@@ -1,5 +1,6 @@
-import { createConsoleProxy } from "./createConsoleProxy";
+import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
 import type { ConsoleEventSink } from "../types";
+import { createConsoleProxy } from "./createConsoleProxy";
 
 export interface CapturePageConsoleOptions {
   onEvent: ConsoleEventSink;
@@ -7,29 +8,6 @@ export interface CapturePageConsoleOptions {
   passThrough?: boolean;
   source?: string;
 }
-
-const METHODS = [
-  "log",
-  "debug",
-  "info",
-  "warn",
-  "error",
-  "assert",
-  "clear",
-  "count",
-  "countReset",
-  "dir",
-  "dirxml",
-  "group",
-  "groupCollapsed",
-  "groupEnd",
-  "table",
-  "time",
-  "timeEnd",
-  "timeLog",
-  "timeStamp",
-  "trace",
-] as const;
 
 export function capturePageConsole({
   onEvent,
@@ -39,7 +17,7 @@ export function capturePageConsole({
 }: CapturePageConsoleOptions): () => void {
   const proxy = createConsoleProxy({ onEvent, source });
   const originals = new Map<string, (...args: unknown[]) => unknown>();
-  for (const method of METHODS) {
+  for (const method of CAPTURED_CONSOLE_METHODS) {
     const original = target[method] as unknown;
     if (typeof original !== "function") continue;
     const boundOriginal = original.bind(target) as (

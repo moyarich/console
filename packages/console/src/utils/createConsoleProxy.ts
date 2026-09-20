@@ -1,3 +1,8 @@
+import {
+  CAPTURED_CONSOLE_METHODS,
+  getConsoleMessageMethod,
+  isDirectConsoleMethod,
+} from "../consoleMethods";
 import type {
   ConsoleEvent,
   ConsoleEventSink,
@@ -58,20 +63,19 @@ export function createConsoleProxy(
       : typeof requestedDepth === "number"
         ? Math.max(0, requestedDepth)
         : 1;
-  const messageMethods = {
-    debug: "debug",
-    error: "error",
-    info: "info",
-    log: "log",
-    warn: "warn",
-  } satisfies Record<string, ConsoleMethod>;
+
+  const directMessageMethods = Object.fromEntries(
+    CAPTURED_CONSOLE_METHODS.filter(isDirectConsoleMethod).map((name) => [
+      name,
+      (...data: unknown[]) => {
+        const method = getConsoleMessageMethod(name);
+        if (method) emit(method, data);
+      },
+    ]),
+  );
+
   const consoleMethods = {
-    ...Object.fromEntries(
-      Object.entries(messageMethods).map(([name, method]) => [
-        name,
-        (...data: unknown[]) => emit(method, data),
-      ]),
-    ),
+    ...directMessageMethods,
     assert(condition?: boolean, ...data: unknown[]) {
       if (!condition) emit("assert", data.length ? data : ["Assertion failed"]);
     },
