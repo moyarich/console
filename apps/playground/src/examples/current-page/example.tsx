@@ -7,22 +7,24 @@ import {
 import "@moyarich/console/styles.css";
 
 export default function CurrentPageConsole() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       source: "current-page",
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <button
         type="button"
         onClick={() =>
-          console.log("Hello from the current page", { package: "@moyarich/console" })
+          console.log("Hello from the current page", {
+            package: "@moyarich/console",
+          })
         }
       >
         Write to console

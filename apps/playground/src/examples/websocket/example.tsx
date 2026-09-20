@@ -14,7 +14,7 @@ const CHANNEL = "console-demo";
 type SocketStatus = "connecting" | "connected" | "disconnected" | "error";
 
 export default function WebSocketConsole() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
   const socketRef = useRef<WebSocket | null>(null);
   const [status, setStatus] = useState<SocketStatus>("connecting");
 
@@ -25,7 +25,7 @@ export default function WebSocketConsole() {
     const stopListening = listenForConsoleWebSocket({
       socket,
       channel: CHANNEL,
-      onEvent,
+      events,
     });
 
     const handleOpen = () => setStatus("connected");
@@ -43,7 +43,7 @@ export default function WebSocketConsole() {
       stopListening();
       socket.close();
     };
-  }, [onEvent]);
+  }, [events]);
 
   const sendDemo = () => {
     const socket = socketRef.current;

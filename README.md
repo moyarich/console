@@ -60,7 +60,7 @@ export function Example() {
 
 ## Capture the current page
 
-`capturePageConsole()` temporarily wraps standard `console.*` methods. By default the original browser console still receives the calls.
+`useConsoleMessages()` owns a stable `ConsoleEventChannel`. Pass that channel directly to producers such as `capturePageConsole()`.
 
 ```tsx
 import { useEffect } from "react";
@@ -71,15 +71,15 @@ import {
 } from "@moyarich/console";
 
 export function PageConsole() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
 
   useEffect(() => {
     return capturePageConsole({
-      onEvent,
+      events,
       source: "current-page",
       passThrough: true,
     });
-  }, [onEvent]);
+  }, [events]);
 
   return <Console messages={messages} onClear={clear} />;
 }
@@ -98,11 +98,21 @@ const runtimeConsole = createConsoleProxy(messages);
 runtimeConsole.log("hello", { from: "sandbox" });
 ```
 
-It supports common methods including `log`, `debug`, `info`, `warn`, `error`, `assert`, `dir`, `table`, `count`, timers, traces, and groups.
+To publish proxy output through an event channel:
+
+```ts
+import {
+  createConsoleEventChannel,
+  createConsoleProxy,
+} from "@moyarich/console";
+
+const events = createConsoleEventChannel();
+const runtimeConsole = createConsoleProxy({ events });
+```
 
 ## Fan out console events
 
-Use `createConsoleEventChannel()` when one console event should be consumed by multiple independent parts of your app.
+A `ConsoleEventChannel` lets multiple independent consumers observe the same event stream without composing producer callbacks.
 
 ```ts
 import {
@@ -114,10 +124,8 @@ import {
 const events = createConsoleEventChannel();
 
 const stopCapture = capturePageConsole({
-  onEvent: events.emit,
+  events,
 });
-
-const stopUi = events.subscribe(consoleState.onEvent);
 
 const send = createConsoleWebSocketSender({
   socket,
@@ -125,27 +133,31 @@ const send = createConsoleWebSocketSender({
 });
 
 const stopSocket = events.subscribe(send);
+const stopAudit = events.subscribe(saveConsoleEvent);
 ```
 
-Each subscription is independent and returns its own cleanup function:
+Each subscription is independent:
 
 ```ts
-stopUi();
+stopAudit();
 stopSocket();
 stopCapture();
 ```
 
-For a single consumer, passing an `onEvent` callback directly is still the simplest option. The event channel is intended for fan-out, not as a replacement for the existing callback APIs.
+The subscription callback is intentionally kept at the consumer boundary. Producers and transport listeners use the channel directly.
 
 ## Iframe transport
 
-Inside the iframe, forward captured events to the parent:
+Inside the iframe, capture into an event channel and subscribe the postMessage sender:
 
 ```ts
 import {
   capturePageConsole,
+  createConsoleEventChannel,
   createConsolePostMessageSender,
 } from "@moyarich/console";
+
+const events = createConsoleEventChannel();
 
 const send = createConsolePostMessageSender({
   targetWindow: window.parent,
@@ -153,22 +165,29 @@ const send = createConsolePostMessageSender({
   channel: "preview",
 });
 
+const stopForwarding = events.subscribe(send);
+
 const restore = capturePageConsole({
-  onEvent: send,
+  events,
   source: "iframe",
 });
 ```
 
-In the parent:
+In the parent, received transport events publish directly into the channel:
 
 ```ts
-import { listenForConsolePostMessages } from "@moyarich/console";
+import {
+  createConsoleEventChannel,
+  listenForConsolePostMessages,
+} from "@moyarich/console";
+
+const events = createConsoleEventChannel();
 
 const stop = listenForConsolePostMessages({
+  events,
   channel: "preview",
   source: iframe.contentWindow,
   origin: "https://preview.example.com",
-  onEvent,
 });
 ```
 
@@ -176,31 +195,41 @@ Use a specific `targetOrigin`/`origin` in production instead of `*`.
 
 ## Server / WebSocket transport
 
-The transport envelope is JSON-safe and versioned. A server can relay it without understanding the console payload.
-
 Sender:
 
 ```ts
 import {
   capturePageConsole,
+  createConsoleEventChannel,
   createConsoleWebSocketSender,
 } from "@moyarich/console";
 
 const socket = new WebSocket("wss://example.com/console");
-const send = createConsoleWebSocketSender({ socket, channel: "session-42" });
+const events = createConsoleEventChannel();
 
-const restore = capturePageConsole({ onEvent: send });
+const send = createConsoleWebSocketSender({
+  socket,
+  channel: "session-42",
+});
+
+const stopSending = events.subscribe(send);
+const restore = capturePageConsole({ events });
 ```
 
 Receiver:
 
 ```ts
-import { listenForConsoleWebSocket } from "@moyarich/console";
+import {
+  createConsoleEventChannel,
+  listenForConsoleWebSocket,
+} from "@moyarich/console";
+
+const events = createConsoleEventChannel();
 
 const stop = listenForConsoleWebSocket({
   socket,
   channel: "session-42",
-  onEvent,
+  events,
 });
 ```
 
