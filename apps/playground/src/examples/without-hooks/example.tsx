@@ -16,10 +16,7 @@ const MAX_MESSAGES = 1000;
 export default function ConsoleWithoutConsoleHookExample() {
   const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
 
-  const events = useMemo(
-    () => createConsoleEventEmitter(),
-    [],
-  );
+  const [events] = useState(createConsoleEventEmitter);
 
   const console = useMemo(
     () =>
