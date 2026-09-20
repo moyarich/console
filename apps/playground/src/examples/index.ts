@@ -8,7 +8,7 @@ export interface ConsoleExampleMeta {
 }
 
 export interface ConsoleExample extends ConsoleExampleMeta {
-  source: string;
+  exampleSource: string;
   Component: ComponentType;
 }
 
@@ -16,11 +16,11 @@ interface ConsoleExampleModule {
   default: ComponentType;
 }
 
-const sourceModules = import.meta.glob("./*/source.tsx", {
+const playgroundModules = import.meta.glob("./*/source.tsx", {
   eager: true,
 }) as Record<string, ConsoleExampleModule>;
 
-const sourceTextModules = import.meta.glob("./*/source.tsx", {
+const exampleSourceModules = import.meta.glob("./*/example.tsx", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -36,16 +36,17 @@ export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = Object.entries(
 )
   .map(([path, metadata]) => {
     const id = path.split("/").at(-2)!;
-    const modulePath = `./${id}/source.tsx`;
-    const sourceModule = sourceModules[modulePath];
-    const source = sourceTextModules[modulePath];
+    const playgroundPath = `./${id}/source.tsx`;
+    const examplePath = `./${id}/example.tsx`;
+    const playgroundModule = playgroundModules[playgroundPath];
+    const exampleSource = exampleSourceModules[examplePath];
 
-    if (!sourceModule) {
-      throw new Error(`Missing source.tsx module for console example: ${id}`);
+    if (!playgroundModule) {
+      throw new Error(`Missing source.tsx playground harness: ${id}`);
     }
 
-    if (!source) {
-      throw new Error(`Missing source.tsx text for console example: ${id}`);
+    if (!exampleSource) {
+      throw new Error(`Missing example.tsx consumer example: ${id}`);
     }
 
     if (metadata.id !== id) {
@@ -54,8 +55,8 @@ export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = Object.entries(
 
     return {
       ...metadata,
-      source,
-      Component: sourceModule.default,
+      exampleSource,
+      Component: playgroundModule.default,
     };
   })
   .sort((a, b) => a.order - b.order);

@@ -32,6 +32,18 @@ export function App() {
       </nav>
 
       <Example />
+
+      <section className="example-source-card" aria-label="Example source">
+        <div className="example-source-header">
+          <div>
+            <span className="panel-kicker">Source</span>
+            <strong>example.tsx</strong>
+          </div>
+        </div>
+        <pre className="example-source">
+          <code>{example.exampleSource}</code>
+        </pre>
+      </section>
     </main>
   );
 }
