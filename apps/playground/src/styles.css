@@ -34,3 +34,23 @@ button { cursor: pointer; }
 .editor-loading { display: grid; min-height: 100%; place-items: center; background: #1e1e1e; color: #cbd5e1; font-size: .85rem; }
 .transport-output { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
 @media (max-width: 880px) { .workspace { grid-template-columns: 1fr; } .console-panel { min-height: 460px; } .example-source-editor { height: 400px; } }
+
+
+.source-file-select {
+  display: grid;
+  grid-template-columns: auto minmax(130px, 190px);
+  align-items: center;
+  gap: 8px;
+  color: #667085;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.source-file-select select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  color: #344054;
+}
