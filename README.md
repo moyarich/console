@@ -100,6 +100,43 @@ runtimeConsole.log("hello", { from: "sandbox" });
 
 It supports common methods including `log`, `debug`, `info`, `warn`, `error`, `assert`, `dir`, `table`, `count`, timers, traces, and groups.
 
+## Fan out console events
+
+Use `createConsoleEventChannel()` when one console event should be consumed by multiple independent parts of your app.
+
+```ts
+import {
+  capturePageConsole,
+  createConsoleEventChannel,
+  createConsoleWebSocketSender,
+} from "@moyarich/console";
+
+const events = createConsoleEventChannel();
+
+const stopCapture = capturePageConsole({
+  onEvent: events.emit,
+});
+
+const stopUi = events.subscribe(consoleState.onEvent);
+
+const send = createConsoleWebSocketSender({
+  socket,
+  channel: "session-42",
+});
+
+const stopSocket = events.subscribe(send);
+```
+
+Each subscription is independent and returns its own cleanup function:
+
+```ts
+stopUi();
+stopSocket();
+stopCapture();
+```
+
+For a single consumer, passing an `onEvent` callback directly is still the simplest option. The event channel is intended for fan-out, not as a replacement for the existing callback APIs.
+
 ## Iframe transport
 
 Inside the iframe, forward captured events to the parent:
