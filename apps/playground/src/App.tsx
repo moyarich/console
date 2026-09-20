@@ -125,7 +125,7 @@ export function App() {
                 <button onClick={() => console.warn("warning from the current page")}>console.warn</button>
                 <button onClick={() => console.error("error from the current page")}>console.error</button>
                 <button onClick={() => console.table([{ name: "margin", value: "10px" }, { name: "padding", value: "8px" }])}>console.table</button>
-                <button onClick={() => console.group("group"); console.log("nested message"); console.groupEnd();}>console.group</button>
+                <button onClick={() => { console.group("group"); console.log("nested message"); console.groupEnd(); }}>console.group</button>
               </div>
             </>
           )}
