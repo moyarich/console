@@ -84,23 +84,6 @@ export function App() {
           </aside>
 
           <div className="content-stack">
-            <section className="playground-panel preview-panel">
-              <div className="panel-toolbar">
-                <div>
-                  <span className="panel-kicker">Preview</span>
-                  <strong>{example.label}</strong>
-                </div>
-                <span className="live-badge">
-                  <span className="live-dot" aria-hidden="true" />
-                  Live
-                </span>
-              </div>
-
-              <div className="preview-stage">
-                <Example />
-              </div>
-            </section>
-
             <section className="playground-panel source-panel" aria-label="Example source">
               <div className="panel-toolbar source-toolbar">
                 <div>
@@ -124,7 +107,23 @@ export function App() {
                 />
               </div>
             </section>
-          </div>
+
+            <section className="playground-panel preview-panel">
+              <div className="panel-toolbar">
+                <div>
+                  <span className="panel-kicker">Preview</span>
+                  <strong>{example.label}</strong>
+                </div>
+                <span className="live-badge">
+                  <span className="live-dot" aria-hidden="true" />
+                  Live
+                </span>
+              </div>
+
+              <div className="preview-stage">
+                <Example />
+              </div>
+            </section>          </div>
         </div>
       </main>
 
