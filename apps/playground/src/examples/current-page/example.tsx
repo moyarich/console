@@ -18,10 +18,21 @@ export default function CurrentPageConsole() {
   }, [onEvent]);
 
   return (
-    <Console
-      messages={messages}
-      onClear={clear}
-      subtitle="Captured from this page"
-    />
+    <div style={{ display: "grid", gap: 12 }}>
+      <button
+        type="button"
+        onClick={() =>
+          console.log("Hello from the current page", { package: "@moyarich/console" })
+        }
+      >
+        Write to console
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="Captured from this page"
+      />
+    </div>
   );
 }
