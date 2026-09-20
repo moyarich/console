@@ -1,0 +1,6 @@
+{
+  "id": "console-trace",
+  "label": "console.trace",
+  "description": "Capture and render a console.trace message and stack.",
+  "order": 12
+}
