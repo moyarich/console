@@ -17,12 +17,6 @@ export interface CreateConsoleProxyOptions {
   now?: () => number;
 }
 
-function normalizeOptions(
-  target: ConsoleMessageData[] | CreateConsoleProxyOptions,
-): CreateConsoleProxyOptions {
-  return Array.isArray(target) ? { messages: target } : target;
-}
-
 export function createConsoleProxy(
   target: ConsoleMessageData[] | CreateConsoleProxyOptions = {},
 ): Console {
@@ -31,7 +25,7 @@ export function createConsoleProxy(
     events,
     source,
     now = () => Date.now(),
-  } = normalizeOptions(target);
+  } = Array.isArray(target) ? { messages: target } : target;
 
   const counts = new Map<string, number>();
   const timers = new Map<string, number>();
