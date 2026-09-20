@@ -1,20 +1,19 @@
 import { describe, expect, it } from "vitest";
 import {
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsoleProxy,
-  type ConsoleEvent,
   type ConsoleMessageData,
 } from "@moyarich/console";
 
 describe("createConsoleProxy", () => {
   it("captures messages and group depth", () => {
     const messages: ConsoleMessageData[] = [];
-    const proxy = createConsoleProxy(messages);
+    const console = createConsoleProxy(messages);
 
-    proxy.log("root");
-    proxy.group("group");
-    proxy.warn("nested");
-    proxy.groupEnd();
+    console.log("root");
+    console.group("group");
+    console.warn("nested");
+    console.groupEnd();
 
     expect(messages.map(({ method, depth }) => ({ method, depth }))).toEqual([
       { method: "log", depth: 0 },
@@ -23,18 +22,18 @@ describe("createConsoleProxy", () => {
     ]);
   });
 
-  it("emits clear through a ConsoleEventChannel", () => {
-    const received: ConsoleEvent[] = [];
-    const events = createConsoleEventChannel();
+  it("emits clear through a ConsoleEventEmitter", () => {
+    const events = createConsoleEventEmitter();
+    const received: string[] = [];
 
-    events.subscribe((event) => received.push(event));
+    events.on("message", () => received.push("message"));
+    events.on("clear", () => received.push("clear"));
 
-    const proxy = createConsoleProxy({ events });
+    const console = createConsoleProxy({ events });
 
-    proxy.log("one");
-    proxy.clear();
+    console.log("one");
+    console.clear();
 
-    expect(received[0]?.type).toBe("message");
-    expect(received[1]).toEqual({ type: "clear" });
+    expect(received).toEqual(["message", "clear"]);
   });
 });

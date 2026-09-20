@@ -60,7 +60,7 @@ export function Example() {
 
 ## Capture the current page
 
-`useConsoleMessages()` owns a stable `ConsoleEventChannel`. Pass that channel directly to producers such as `capturePageConsole()`.
+`useConsoleMessages()` owns a stable `ConsoleEventEmitter`. Pass that channel directly to producers such as `capturePageConsole()`.
 
 ```tsx
 import { useEffect } from "react";
@@ -102,26 +102,26 @@ To publish proxy output through an event channel:
 
 ```ts
 import {
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsoleProxy,
 } from "@moyarich/console";
 
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 const console = createConsoleProxy({ events });
 ```
 
 ## Fan out console events
 
-A `ConsoleEventChannel` lets multiple independent consumers observe the same event stream without composing producer callbacks.
+A `ConsoleEventEmitter` lets multiple independent consumers observe the same event stream without composing producer callbacks.
 
 ```ts
 import {
   capturePageConsole,
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsoleWebSocketSender,
 } from "@moyarich/console";
 
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 
 const stopCapture = capturePageConsole({
   events,
@@ -132,8 +132,8 @@ const send = createConsoleWebSocketSender({
   channel: "session-42",
 });
 
-const stopSocket = events.subscribe(send);
-const stopAudit = events.subscribe(saveConsoleEvent);
+const stopSocket = events.onEvent(send);
+const stopAudit = events.onEvent(saveConsoleEvent);
 ```
 
 Each subscription is independent:
@@ -144,7 +144,7 @@ stopSocket();
 stopCapture();
 ```
 
-The subscription callback is intentionally kept at the consumer boundary. Producers and transport listeners use the channel directly.
+Application code can listen to typed events with `events.on("message", ...)` and `events.on("clear", ...)`. `onEvent()` and `emitEvent()` bridge the discriminated `ConsoleEvent` union used by transports.
 
 ## Iframe transport
 
@@ -153,11 +153,11 @@ Inside the iframe, capture into an event channel and subscribe the postMessage s
 ```ts
 import {
   capturePageConsole,
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsolePostMessageSender,
 } from "@moyarich/console";
 
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 
 const send = createConsolePostMessageSender({
   targetWindow: window.parent,
@@ -165,7 +165,7 @@ const send = createConsolePostMessageSender({
   channel: "preview",
 });
 
-const stopForwarding = events.subscribe(send);
+const stopForwarding = events.onEvent(send);
 
 const restore = capturePageConsole({
   events,
@@ -177,11 +177,11 @@ In the parent, received transport events publish directly into the channel:
 
 ```ts
 import {
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   listenForConsolePostMessages,
 } from "@moyarich/console";
 
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 
 const stop = listenForConsolePostMessages({
   events,
@@ -200,19 +200,19 @@ Sender:
 ```ts
 import {
   capturePageConsole,
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   createConsoleWebSocketSender,
 } from "@moyarich/console";
 
 const socket = new WebSocket("wss://example.com/console");
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 
 const send = createConsoleWebSocketSender({
   socket,
   channel: "session-42",
 });
 
-const stopSending = events.subscribe(send);
+const stopSending = events.onEvent(send);
 const restore = capturePageConsole({ events });
 ```
 
@@ -220,11 +220,11 @@ Receiver:
 
 ```ts
 import {
-  createConsoleEventChannel,
+  createConsoleEventEmitter,
   listenForConsoleWebSocket,
 } from "@moyarich/console";
 
-const events = createConsoleEventChannel();
+const events = createConsoleEventEmitter();
 
 const stop = listenForConsoleWebSocket({
   socket,

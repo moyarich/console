@@ -6,15 +6,15 @@ import {
   useState,
 } from "react";
 import {
-  createConsoleEventChannel,
-  type ConsoleEventChannel,
-} from "../utils/createConsoleEventChannel";
-import type { ConsoleEvent, ConsoleMessageData, RunOutput } from "../types";
+  createConsoleEventEmitter,
+  type ConsoleEventEmitter,
+} from "../utils/createConsoleEventEmitter";
+import type { ConsoleMessageData, RunOutput } from "../types";
 
 export interface UseConsoleMessagesOptions {
   initialMessages?: ConsoleMessageData[];
   maxMessages?: number;
-  events?: ConsoleEventChannel;
+  events?: ConsoleEventEmitter;
 }
 
 export function useConsoleMessages({
@@ -22,41 +22,53 @@ export function useConsoleMessages({
   maxMessages = 1000,
   events: providedEvents,
 }: UseConsoleMessagesOptions = {}) {
-  const internalEventsRef = useRef<ConsoleEventChannel | null>(null);
+  const internalEventsRef = useRef<ConsoleEventEmitter | null>(null);
 
   if (!internalEventsRef.current) {
-    internalEventsRef.current = createConsoleEventChannel();
+    internalEventsRef.current = createConsoleEventEmitter();
   }
 
   const events = providedEvents ?? internalEventsRef.current;
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
 
-  const clear = useCallback(() => setMessages([]), []);
-
-  const append = useCallback(
+  const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
       setMessages((current) => {
         const next = [...current, message];
-        return next.length > maxMessages ? next.slice(-maxMessages) : next;
+
+        return next.length > maxMessages
+          ? next.slice(-maxMessages)
+          : next;
       });
     },
     [maxMessages],
   );
 
-  const handleEvent = useCallback(
-    (event: ConsoleEvent) => {
-      if (event.type === "clear") {
-        clear();
-        return;
-      }
+  const handleClear = useCallback(() => {
+    setMessages([]);
+  }, []);
 
-      append(event.message);
+  useEffect(() => {
+    const offMessage = events.on("message", handleMessage);
+    const offClear = events.on("clear", handleClear);
+
+    return () => {
+      offMessage();
+      offClear();
+    };
+  }, [events, handleMessage, handleClear]);
+
+  const append = useCallback(
+    (message: ConsoleMessageData) => {
+      events.emit("message", message);
     },
-    [append, clear],
+    [events],
   );
 
-  useEffect(() => events.subscribe(handleEvent), [events, handleEvent]);
+  const clear = useCallback(() => {
+    events.emit("clear");
+  }, [events]);
 
   const output = useMemo<RunOutput>(
     () => ({ messages, error: "" }),

@@ -1,4 +1,4 @@
-import type { ConsoleEventChannel } from "./createConsoleEventChannel";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import type { ConsoleEventSink } from "../types";
 import {
   createConsoleEnvelope,
@@ -28,12 +28,14 @@ export function createConsoleWebSocketSender({
   channel = DEFAULT_CONSOLE_CHANNEL,
 }: CreateConsoleWebSocketSenderOptions): ConsoleEventSink {
   return (event) =>
-    socket.send(JSON.stringify(createConsoleEnvelope(event, channel)));
+    socket.send(
+      JSON.stringify(createConsoleEnvelope(event, channel)),
+    );
 }
 
 export interface ListenForConsoleWebSocketOptions {
   socket: ConsoleWebSocketLike;
-  events: ConsoleEventChannel;
+  events: ConsoleEventEmitter;
   channel?: string;
 }
 
@@ -43,7 +45,9 @@ export function listenForConsoleWebSocket({
   channel = DEFAULT_CONSOLE_CHANNEL,
 }: ListenForConsoleWebSocketOptions): () => void {
   const handler = (event: MessageEvent) => {
-    if (typeof event.data !== "string") return;
+    if (typeof event.data !== "string") {
+      return;
+    }
 
     try {
       const data = JSON.parse(event.data) as unknown;
@@ -52,7 +56,7 @@ export function listenForConsoleWebSocket({
         return;
       }
 
-      events.emit(data.event);
+      events.emitEvent(data.event);
     } catch {}
   };
 

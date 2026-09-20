@@ -1,9 +1,9 @@
 import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
-import type { ConsoleEventChannel } from "./createConsoleEventChannel";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import { createConsoleProxy } from "./createConsoleProxy";
 
 export interface CapturePageConsoleOptions {
-  events: ConsoleEventChannel;
+  events: ConsoleEventEmitter;
   target?: Console;
   passThrough?: boolean;
   source?: string;
@@ -20,7 +20,10 @@ export function capturePageConsole({
 
   for (const method of CAPTURED_CONSOLE_METHODS) {
     const original = target[method] as unknown;
-    if (typeof original !== "function") continue;
+
+    if (typeof original !== "function") {
+      continue;
+    }
 
     const boundOriginal = original.bind(target) as (
       ...args: unknown[]
