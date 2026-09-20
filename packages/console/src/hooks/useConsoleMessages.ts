@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -21,8 +22,10 @@ export function useConsoleMessages({
   maxMessages = 1000,
   events: providedEvents,
 }: UseConsoleMessagesOptions = {}) {
-  const [internalEvents] = useState(createConsoleEventEmitter);
-  const events = providedEvents ?? internalEvents;
+  const internalEventsRef = useRef<ConsoleEventEmitter | null>(null);
+  const events =
+    providedEvents ??
+    (internalEventsRef.current ??= createConsoleEventEmitter());
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
 
