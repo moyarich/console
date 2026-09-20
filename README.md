@@ -213,7 +213,10 @@ Sender:
 ```ts
 import {
   capturePageConsole,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
+  serializeConsoleEvent,
 } from "@moyarich/console";
 
 const socket = new WebSocket("wss://example.com/console");
