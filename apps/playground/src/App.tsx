@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ExamplePicker } from "./components/ExamplePicker/ExamplePicker";
 import { RunnableExample } from "./components/RunnableExample";
 import {
   CONSOLE_EXAMPLES,
@@ -54,20 +55,11 @@ export function App() {
               <span className="example-count">{CONSOLE_EXAMPLES.length}</span>
             </div>
 
-            <label className="example-select-field" htmlFor="example-select">
-              <span>Example</span>
-              <select
-                id="example-select"
-                value={example.id}
-                onChange={(event) => setExampleId(event.target.value)}
-              >
-                {CONSOLE_EXAMPLES.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ExamplePicker
+              examples={CONSOLE_EXAMPLES}
+              value={example.id}
+              onChange={setExampleId}
+            />
 
             <div className="selected-example">
               <span className="selected-example-label">Selected</span>
