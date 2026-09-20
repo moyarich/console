@@ -1,4 +1,4 @@
-import type { ConsoleEvent, ConsoleMessageData } from "./types";
+import type { ConsoleEvent, ConsoleMessageData } from "../types";
 
 export interface SerializeConsoleValueOptions { maxDepth?: number; maxEntries?: number; }
 function normalizeValue(value: unknown, seen: WeakSet<object>, depth: number, maxDepth: number, maxEntries: number): unknown {

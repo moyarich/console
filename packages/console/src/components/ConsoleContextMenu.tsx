@@ -1,8 +1,6 @@
 import { Braces, Copy, Trash2 } from "lucide-react";
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -12,7 +10,8 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { formatConsoleObjectForCopy } from "./consoleCopyObject";
+import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
+import { formatConsoleObjectForCopy } from "../utils/consoleCopyObject";
 
 export interface ConsoleContextMenuProps {
   children: ReactNode;
@@ -26,12 +25,6 @@ interface MenuState {
   value?: object;
 }
 
-interface ConsoleContextMenuApi {
-  copyObject: (value: object) => void;
-  openForValue: (event: MouseEvent<HTMLElement>, value: object) => void;
-}
-
-const ConsoleContextMenuContext = createContext<ConsoleContextMenuApi | null>(null);
 const MENU_WIDTH = 220;
 const MENU_HEIGHT = 86;
 const MENU_HEIGHT_WITH_OBJECT = 122;
@@ -61,14 +54,6 @@ async function writeClipboardText(value: string) {
   textarea.select();
   document.execCommand("copy");
   textarea.remove();
-}
-
-export function useConsoleContextMenu() {
-  const context = useContext(ConsoleContextMenuContext);
-  if (!context) {
-    throw new Error("useConsoleContextMenu must be used within ConsoleContextMenu.");
-  }
-  return context;
 }
 
 export function ConsoleContextMenu({

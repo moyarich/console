@@ -2,7 +2,7 @@ import { SquareTerminal, Trash2 } from "lucide-react";
 import type { CSSProperties } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
-import type { ConsoleMessageData, RunOutput } from "./types";
+import type { ConsoleMessageData, RunOutput } from "../types";
 
 export interface ConsoleProps {
   output?: RunOutput;

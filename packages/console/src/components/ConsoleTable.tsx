@@ -1,7 +1,7 @@
 import { Copy } from "lucide-react";
-import { useConsoleContextMenu } from "./ConsoleContextMenu";
+import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
-import { normalizeConsoleTableData } from "./consoleTableData";
+import { normalizeConsoleTableData } from "../utils/consoleTableData";
 
 export interface ConsoleTableProps { data: unknown; columns?: string[]; }
 interface TableRow { index: string; value: Record<string, unknown>; }

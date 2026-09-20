@@ -1,6 +1,6 @@
 import { ChevronRight, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { useConsoleContextMenu } from "./ConsoleContextMenu";
+import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 
 export interface ConsoleValueProps {
   value: unknown;
