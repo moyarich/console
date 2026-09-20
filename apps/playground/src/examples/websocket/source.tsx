@@ -13,7 +13,7 @@ type SocketStatus =
   | "connected"
   | "error";
 
-const DEFAULT_SOCKET_URL = "wss://echo.websocket.org";
+const DEFAULT_SOCKET_URL = "wss://ws.postman-echo.com/raw";
 
 export default function WebSocketExample() {
   const { messages, clear, onEvent } = useConsoleMessages({ maxMessages: 500 });
@@ -89,7 +89,7 @@ export default function WebSocketExample() {
       if (socketRef.current !== socket) return;
       setSocketStatus("error");
       setSocketError(
-        "The WebSocket connection failed. Check the URL or try the public echo server.",
+        "The WebSocket connection failed. Check the URL or reset it to Postman WebSocket Echo.",
       );
     });
   };
@@ -125,7 +125,7 @@ export default function WebSocketExample() {
       <aside className="controls-card">
         <h2>Server transport</h2>
         <p>
-          The demo uses a public secure WebSocket echo server by default, so it
+          The demo uses Postman&apos;s public WebSocket Echo service by default, so it
           works without starting a local relay. Replace the URL with your own
           relay when needed.
         </p>
@@ -167,8 +167,8 @@ export default function WebSocketExample() {
         </button>
 
         <p className="hint">
-          Connect, then send a demo event. The echo server returns the transport
-          envelope and it appears in the console panel.
+          Connect to Postman WebSocket Echo, then send a demo event. Postman echoes
+          the transport envelope back and it appears in the console panel.
         </p>
       </aside>
 
