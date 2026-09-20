@@ -1,28 +1,10 @@
 import { useEffect } from "react";
 import {
   Console,
-  capturePageConsole,
-  createConsolePostMessageSender,
   listenForConsolePostMessages,
   useConsoleMessages,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
-
-const CHANNEL = "preview";
-
-export function startIframeConsoleForwarding() {
-  const send = createConsolePostMessageSender({
-    targetWindow: window.parent,
-    targetOrigin: window.location.origin,
-    channel: CHANNEL,
-  });
-
-  return capturePageConsole({
-    onEvent: send,
-    source: "iframe",
-    passThrough: true,
-  });
-}
 
 export default function IframeConsole() {
   const { messages, clear, onEvent } = useConsoleMessages();
@@ -30,7 +12,7 @@ export default function IframeConsole() {
   useEffect(() => {
     return listenForConsolePostMessages({
       onEvent,
-      channel: CHANNEL,
+      channel: "preview",
       origin: window.location.origin,
     });
   }, [onEvent]);

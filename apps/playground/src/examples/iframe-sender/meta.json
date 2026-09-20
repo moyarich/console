@@ -1,0 +1,6 @@
+{
+  "id": "iframe-sender",
+  "label": "Iframe sender",
+  "description": "Send console events to another window with postMessage.",
+  "order": 2
+}

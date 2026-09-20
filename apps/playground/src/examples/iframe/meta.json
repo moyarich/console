@@ -1,6 +1,0 @@
-{
-  "id": "iframe",
-  "label": "Iframe",
-  "description": "Receive versioned console events from an iframe through window.postMessage.",
-  "order": 2
-}

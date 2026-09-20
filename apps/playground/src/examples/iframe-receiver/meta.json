@@ -1,0 +1,6 @@
+{
+  "id": "iframe-receiver",
+  "label": "Iframe receiver",
+  "description": "Receive console events from an iframe and display them in the Console component.",
+  "order": 3
+}
