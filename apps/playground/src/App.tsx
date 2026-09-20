@@ -20,17 +20,20 @@ export function App() {
         <p>{example.description}</p>
       </header>
 
-      <nav className="source-tabs" aria-label="Console example">
-        {CONSOLE_EXAMPLES.map((candidate) => (
-          <button
-            key={candidate.id}
-            className={candidate.id === example.id ? "active" : ""}
-            onClick={() => setExampleId(candidate.id)}
-          >
-            {candidate.label}
-          </button>
-        ))}
-      </nav>
+      <section className="example-picker" aria-label="Example selector">
+        <label htmlFor="example-select">Example</label>
+        <select
+          id="example-select"
+          value={example.id}
+          onChange={(event) => setExampleId(event.target.value)}
+        >
+          {CONSOLE_EXAMPLES.map((candidate) => (
+            <option key={candidate.id} value={candidate.id}>
+              {candidate.label}
+            </option>
+          ))}
+        </select>
+      </section>
 
       <Example />
 
