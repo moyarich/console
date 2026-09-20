@@ -59,7 +59,7 @@ export function createConsoleProxy(
 
   const getElapsedTime = (label: string) => {
     const startedAt = timers.get(label);
-    return startedAt === undefined ? null : performance.now() - startedAt;
+    return startedAt === undefined ? null : now() - startedAt;
   };
 
   const getDirExpandLevel = (requestedDepth?: number | null) =>
@@ -144,7 +144,7 @@ export function createConsoleProxy(
     },
 
     time(label = "default") {
-      timers.set(label, performance.now());
+      timers.set(label, now());
     },
 
     timeEnd(label = "default") {
