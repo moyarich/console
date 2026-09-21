@@ -276,6 +276,7 @@ describe("Console rendering", () => {
     expect(html).toContain('data-method="error"');
     expect(html).toContain("Error: boom");
   });
+
   it("dispatches custom message renderers by method", () => {
     const html = renderToStaticMarkup(
       <Console
@@ -311,7 +312,9 @@ describe("Console rendering", () => {
           {
             type: "number",
             render: (value) =>
-              value === 42 ? <mark data-custom-value="answer">42</mark> : undefined,
+              value === 42 ? (
+                <mark data-custom-value="answer">42</mark>
+              ) : undefined,
           },
         ]}
       />,
@@ -340,5 +343,4 @@ describe("Console rendering", () => {
     expect(html).toContain('data-method="log"');
     expect(html).toContain("safe fallback");
   });
-
 });
