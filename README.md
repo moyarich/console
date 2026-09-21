@@ -134,10 +134,7 @@ Use `createConsoleProxy()` when you control the console object supplied to evalu
 ### Capture into an array
 
 ```ts
-import {
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { createConsoleProxy, type ConsoleMessageData } from "@moyarich/console";
 
 const messages: ConsoleMessageData[] = [];
 const runtimeConsole = createConsoleProxy(messages);
@@ -329,7 +326,7 @@ A clear operation is represented by:
 
 ```ts
 {
-  type: "clear"
+  type: "clear";
 }
 ```
 
