@@ -1,8 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Console,
   useConsoleMessages,
-  type ConsoleRef,
   type ConsoleStdoutEntry,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
@@ -10,7 +9,6 @@ import "@moyarich/console/styles.css";
 const escape = String.fromCharCode(27);
 
 export default function ConsoleEnhancementsExample() {
-  const consoleRef = useRef<ConsoleRef>(null);
   const [showDebug, setShowDebug] = useState(false);
   const [session, setSession] = useState(1);
   const [stdout, setStdout] = useState<ConsoleStdoutEntry[]>([
@@ -73,7 +71,6 @@ export default function ConsoleEnhancementsExample() {
       </div>
 
       <Console
-        ref={consoleRef}
         messages={messages}
         stdout={stdout}
         consoleTabLabel="Client"
@@ -83,19 +80,14 @@ export default function ConsoleEnhancementsExample() {
         onRestart={restartServer}
         filter={(message) => showDebug || message.method !== "debug"}
         actions={
-          <>
-            <button
-              type="button"
-              onClick={() => setShowDebug((current) => !current)}
-            >
-              {showDebug ? "Hide debug" : "Show debug"}
-            </button>
-            <button type="button" onClick={() => consoleRef.current?.reset()}>
-              Reset
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => setShowDebug((current) => !current)}
+          >
+            {showDebug ? "Hide debug" : "Show debug"}
+          </button>
         }
-        subtitle="Filtering, ANSI stdout, restart, dedupe, reset, and smart auto-scroll"
+        subtitle="Client console and server stdout"
       />
     </div>
   );

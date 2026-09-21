@@ -183,7 +183,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
 
   const restart = () => {
     onRestart?.();
-    reset();
     shouldAutoScrollRef.current = true;
   };
 
@@ -214,20 +213,49 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     >
       {showHeader && (
         <div className="console-panel-header panel-header">
-          <div className="console-heading-area">
+          <div className="console-panel-header-main">
             <div className="console-heading">
               <SquareTerminal
                 className="console-heading-icon"
                 size={19}
                 aria-hidden="true"
               />
-              <div>
+              <div className="console-heading-copy">
                 <h2>{title}</h2>
                 <p>{subtitle}</p>
               </div>
             </div>
 
-            {shouldShowViewTabs && (
+            {showActions && (
+              <div className="console-actions result-actions">
+                {actions}
+
+                {showRestart && (
+                  <button
+                    type="button"
+                    className="console-restart-button"
+                    onClick={restart}
+                  >
+                    <RotateCcw size={14} aria-hidden="true" /> Restart
+                  </button>
+                )}
+
+                {showClearButton && canClearActive && (
+                  <button
+                    type="button"
+                    className="console-clear-button"
+                    disabled={!hasActiveOutput}
+                    onClick={clearActive}
+                  >
+                    <Trash2 size={14} aria-hidden="true" /> Clear
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {shouldShowViewTabs && (
+            <div className="console-view-bar">
               <div
                 className="console-view-tabs"
                 role="tablist"
@@ -252,33 +280,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
                   {stdoutTabLabel}
                 </button>
               </div>
-            )}
-          </div>
-
-          {showActions && (
-            <div className="console-actions result-actions">
-              {actions}
-
-              {showRestart && (
-                <button
-                  type="button"
-                  className="console-restart-button"
-                  onClick={restart}
-                >
-                  <RotateCcw size={14} aria-hidden="true" /> Restart
-                </button>
-              )}
-
-              {showClearButton && canClearActive && (
-                <button
-                  type="button"
-                  className="console-clear-button"
-                  disabled={!hasActiveOutput}
-                  onClick={clearActive}
-                >
-                  <Trash2 size={14} aria-hidden="true" /> Clear
-                </button>
-              )}
             </div>
           )}
         </div>

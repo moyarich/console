@@ -141,7 +141,7 @@ const stdout = [
 
 When `stdout` is provided, the console shows two tabs. The labels are configurable and the views can also be controlled with `view`, `defaultView`, and `onViewChange`.
 
-The restart action is shown in the stdout view when `onRestart` is provided. Restarting also resets both output collections through their clear callbacks.
+The restart action is shown in the stdout view when `onRestart` is provided. Restart delegates runtime behavior to `onRestart` and does not clear either output collection automatically. `Clear` only clears the active view through its corresponding clear callback.
 
 ### Clear marker
 
