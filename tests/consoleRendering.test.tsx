@@ -122,23 +122,7 @@ describe("Console rendering", () => {
     expect(html).not.toContain("> Clear<");
   });
 
-  it("renders custom runtime actions without built-in restart behavior", () => {
-    const html = renderToStaticMarkup(
-      <Console
-        messages={[]}
-        actions={<button type="button">Restart server</button>}
-      />,
-    );
-
-    expect(html).toContain("Restart server");
-    expect(html).toContain("console-toolbar");
-    expect(html).toContain('aria-label="Console actions"');
-    expect(html).toContain("popovertarget=");
-    expect(html).toContain('popover="auto"');
-    expect(html).not.toContain("console-restart-button");
-  });
-
-  it("renders toolbar actions behind an ellipsis trigger", () => {
+  it("renders console actions behind an ellipsis popover", () => {
     const html = renderToStaticMarkup(
       <Console
         messages={[{ method: "log", data: ["hello"], depth: 0 }]}
@@ -152,32 +136,8 @@ describe("Console rendering", () => {
     expect(html).toContain('popover="auto"');
     expect(html).toContain(">Export<");
     expect(html).toContain(">Clear<");
-  });
-
-  it("renders view tabs in their own toolbar", () => {
-    const html = renderToStaticMarkup(<Console messages={[]} stdout={[]} />);
-
-    expect(html).toContain("console-panel-header-main");
-    expect(html).toContain("console-toolbar");
-    expect(html).toContain('role="tablist"');
-  });
-
-  it("renders stdout tabs and ANSI output", () => {
-    const html = renderToStaticMarkup(
-      <Console
-        messages={[]}
-        stdout={[`${escape}[32mready${escape}[0m`]}
-        defaultView="stdout"
-        consoleTabLabel="Client"
-        stdoutTabLabel="Server"
-      />,
-    );
-
-    expect(html).toContain('role="tablist"');
-    expect(html).toContain("Client");
-    expect(html).toContain("Server");
-    expect(html).toContain("ready");
-    expect(html).toContain("color:#0dbc79");
+    expect(html).not.toContain("console-toolbar");
+    expect(html).not.toContain('role="tablist"');
   });
 
   it("renders ConsoleStdout independently", () => {

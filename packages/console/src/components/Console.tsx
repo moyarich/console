@@ -1,10 +1,8 @@
 import { MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
-  forwardRef,
   useCallback,
   useEffect,
   useId,
-  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -14,7 +12,6 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
-import { ConsoleStdout, type ConsoleStdoutEntry } from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
 export type ConsoleMessageFilter = (
@@ -23,25 +20,11 @@ export type ConsoleMessageFilter = (
   messages: readonly ConsoleMessageData[],
 ) => boolean;
 
-export type ConsoleView = "console" | "stdout";
-
-export interface ConsoleRef {
-  reset(): void;
-}
-
 export interface ConsoleProps {
   output?: RunOutput;
   messages?: ConsoleMessageData[];
-  stdout?: readonly (ConsoleStdoutEntry | string)[];
-  view?: ConsoleView;
-  defaultView?: ConsoleView;
-  onViewChange?: (view: ConsoleView) => void;
-  consoleTabLabel?: string;
-  stdoutTabLabel?: string;
-  showViewTabs?: boolean;
   error?: string;
   onClear?: () => void;
-  onClearStdout?: () => void;
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
   filter?: ConsoleMessageFilter;
   autoScroll?: boolean;
@@ -51,54 +34,33 @@ export interface ConsoleProps {
   title?: string;
   subtitle?: string;
   emptyMessage?: string;
-  stdoutEmptyMessage?: string;
   className?: string;
   style?: CSSProperties;
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
-const EMPTY_STDOUT: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
 
-export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
-  {
-    output,
-    messages: messagesProp,
-    stdout: stdoutProp,
-    view: viewProp,
-    defaultView = "console",
-    onViewChange,
-    consoleTabLabel = "Console",
-    stdoutTabLabel = "Stdout",
-    showViewTabs,
-    error: errorProp,
-    onClear,
-    onClearStdout,
-    onMessagesChange,
-    filter,
-    autoScroll = true,
-    showHeader = true,
-    showClearButton = true,
-    actions,
-    title = "Console",
-    subtitle = "Runtime output from console.*()",
-    emptyMessage = "No console output yet.",
-    stdoutEmptyMessage = "No stdout output yet.",
-    className = "",
-    style,
-  },
-  ref,
-) {
+export function Console({
+  output,
+  messages: messagesProp,
+  error: errorProp,
+  onClear,
+  onMessagesChange,
+  filter,
+  autoScroll = true,
+  showHeader = true,
+  showClearButton = true,
+  actions,
+  title = "Console",
+  subtitle = "Runtime output from console.*()",
+  emptyMessage = "No console output yet.",
+  className = "",
+  style,
+}: ConsoleProps) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
   const actionsPopoverId = useId();
-  const [internalView, setInternalView] = useState<ConsoleView>(defaultView);
-  const hasStdoutView = stdoutProp !== undefined;
-  const view =
-    (viewProp ?? internalView) === "stdout" && hasStdoutView
-      ? "stdout"
-      : "console";
-  const stdout = stdoutProp ?? EMPTY_STDOUT;
   const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
   const runtimeError = errorProp ?? output?.error ?? "";
   const messages = useMemo<ConsoleMessageData[]>(
@@ -118,33 +80,14 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
         : messages,
     [filter, messages],
   );
-  const hasConsoleMessages = messages.length > 0;
-  const hasActiveOutput =
-    view === "stdout" ? stdout.length > 0 : hasConsoleMessages;
-  const isEmpty =
-    view === "stdout" ? stdout.length === 0 : visibleMessages.length === 0;
-
-  const clearConsole = useCallback(() => {
+  const hasMessages = messages.length > 0;
+  const isEmpty = visibleMessages.length === 0;
+  const clear = useCallback(() => {
     onClear?.();
   }, [onClear]);
-
-  const clearStdout = useCallback(() => {
-    onClearStdout?.();
-  }, [onClearStdout]);
-
-  const reset = useCallback(() => {
-    onClear?.();
-    onClearStdout?.();
-  }, [onClear, onClearStdout]);
-
-  const clearActive = view === "stdout" ? clearStdout : clearConsole;
-  const canClearActive =
-    view === "stdout" ? Boolean(onClearStdout) : Boolean(onClear);
   const [expandedMessages, setExpandedMessages] = useState<
     Map<ConsoleMessageData, number>
   >(() => new Map());
-
-  useImperativeHandle(ref, () => ({ reset }), [reset]);
 
   useEffect(() => {
     onMessagesChange?.(sourceMessages);
@@ -158,7 +101,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     }
 
     surface.scrollTop = surface.scrollHeight;
-  }, [autoScroll, stdout, view, visibleMessages]);
+  }, [autoScroll, visibleMessages]);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const surface = event.currentTarget;
@@ -166,17 +109,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
       surface.scrollHeight - surface.scrollTop - surface.clientHeight;
 
     shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
-  };
-
-  const changeView = (nextView: ConsoleView) => {
-    if (nextView === "stdout" && !hasStdoutView) return;
-
-    if (viewProp === undefined) {
-      setInternalView(nextView);
-    }
-
-    shouldAutoScrollRef.current = true;
-    onViewChange?.(nextView);
   };
 
   const hasExpandableValues = visibleMessages.some(
@@ -193,8 +125,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     });
   };
 
-  const shouldShowViewTabs = hasStdoutView && (showViewTabs ?? true);
-  const showActions = actions || (showClearButton && canClearActive);
+  const showActions = actions || (showClearButton && onClear);
 
   return (
     <article
@@ -215,92 +146,58 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
                 <p>{subtitle}</p>
               </div>
             </div>
-          </div>
 
-          {(shouldShowViewTabs || showActions) && (
-            <div className="console-toolbar">
-              {shouldShowViewTabs && (
-                <div
-                  className="console-view-tabs"
-                  role="tablist"
-                  aria-label="Console output view"
+            {showActions && (
+              <div className="console-actions-popover-shell">
+                <button
+                  type="button"
+                  className="console-actions-trigger"
+                  aria-label="Console actions"
+                  aria-haspopup="menu"
+                  popoverTarget={actionsPopoverId}
+                  title="Console actions"
                 >
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={view === "console"}
-                    className="console-view-tab"
-                    onClick={() => changeView("console")}
-                  >
-                    {consoleTabLabel}
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={view === "stdout"}
-                    className="console-view-tab"
-                    onClick={() => changeView("stdout")}
-                  >
-                    {stdoutTabLabel}
-                  </button>
-                </div>
-              )}
+                  <MoreHorizontal size={18} aria-hidden="true" />
+                </button>
 
-              {showActions && (
-                <div className="console-actions-popover-shell">
-                  <button
-                    type="button"
-                    className="console-actions-trigger"
-                    aria-label="Console actions"
-                    aria-haspopup="menu"
-                    popoverTarget={actionsPopoverId}
-                    title="Console actions"
-                  >
-                    <MoreHorizontal size={18} aria-hidden="true" />
-                  </button>
+                <div
+                  id={actionsPopoverId}
+                  className="console-actions-popover"
+                  popover="auto"
+                  aria-label="Console actions"
+                  onClickCapture={(event) => {
+                    const target = event.target;
 
-                  <div
-                    id={actionsPopoverId}
-                    className="console-actions-popover"
-                    popover="auto"
-                    aria-label="Console actions"
-                    onClickCapture={(event) => {
-                      const target = event.target;
+                    if (
+                      target instanceof Element &&
+                      target.closest("button, a, [role='menuitem']")
+                    ) {
+                      event.currentTarget.hidePopover();
+                    }
+                  }}
+                >
+                  <div className="console-actions result-actions">
+                    {actions}
 
-                      if (
-                        target instanceof Element &&
-                        target.closest("button, a, [role='menuitem']")
-                      ) {
-                        event.currentTarget.hidePopover();
-                      }
-                    }}
-                  >
-                    <div className="console-actions result-actions">
-                      {actions}
-
-                      {showClearButton && canClearActive && (
-                        <button
-                          type="button"
-                          className="console-clear-button"
-                          disabled={!hasActiveOutput}
-                          onClick={clearActive}
-                        >
-                          <Trash2 size={14} aria-hidden="true" /> Clear
-                        </button>
-                      )}
-                    </div>
+                    {showClearButton && onClear && (
+                      <button
+                        type="button"
+                        className="console-clear-button"
+                        disabled={!hasMessages}
+                        onClick={clear}
+                      >
+                        <Trash2 size={14} aria-hidden="true" /> Clear
+                      </button>
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      <ConsoleContextMenu
-        disabled={!hasActiveOutput || !canClearActive}
-        onClear={clearActive}
-      >
+      <ConsoleContextMenu disabled={!hasMessages || !onClear} onClear={clear}>
         <div
           ref={surfaceRef}
           className="console-surface"
@@ -308,9 +205,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
           aria-live="polite"
           onScroll={handleScroll}
         >
-          {view === "stdout" ? (
-            <ConsoleStdout entries={stdout} emptyMessage={stdoutEmptyMessage} />
-          ) : isEmpty ? (
+          {isEmpty ? (
             <div className="console-empty">
               <SquareTerminal
                 className="console-empty-icon"
@@ -338,4 +233,4 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
       </ConsoleContextMenu>
     </article>
   );
-});
+}

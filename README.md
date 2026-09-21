@@ -16,8 +16,8 @@ Use it to build embedded developer consoles, playgrounds, code runners, iframe p
 - WebSocket transport support
 - JSON-safe serialization for transported values
 - controlled message state through `useConsoleMessages()`
-- optional stdout view with ANSI terminal rendering
-- optional console/stdout tabs and custom actions
+- standalone ANSI-aware stdout renderer
+- header actions in a native ellipsis popover
 - smart auto-scroll, filtering, reset, and message deduplication
 - rich transport value restoration
 - TypeScript types
@@ -84,16 +84,10 @@ export function AppConsole() {
 
 ## Console controls
 
-`Console` supports smart auto-scroll, filtering, custom header actions, optional header controls, a message-change callback, and an imperative reset ref:
+`Console` supports smart auto-scroll, filtering, custom actions, optional header controls, and a message-change callback. Header actions are placed behind a native ellipsis popover so they do not compete with the title or subtitle:
 
 ```tsx
-import { useRef } from "react";
-import { Console, type ConsoleRef } from "@moyarich/console";
-
-const consoleRef = useRef<ConsoleRef>(null);
-
 <Console
-  ref={consoleRef}
   messages={messages}
   onClear={clear}
   filter={(message) => message.method !== "debug"}
@@ -103,8 +97,6 @@ const consoleRef = useRef<ConsoleRef>(null);
   actions={<button onClick={() => exportLogs(messages)}>Export</button>}
   onMessagesChange={(nextMessages) => saveLogs(nextMessages)}
 />;
-
-consoleRef.current?.reset();
 ```
 
 Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
@@ -120,29 +112,20 @@ const { messages, clear } = useConsoleMessages({
 
 ## Stdout and ANSI output
 
-Pass a `stdout` collection to add a second output view. ANSI SGR color/style sequences are rendered automatically.
+`ConsoleStdout` is a separate ANSI-aware renderer. It is not a second mode of `Console`, so applications can compose it however they need without introducing server/client concepts into the console component.
 
 ```tsx
+import { ConsoleStdout } from "@moyarich/console";
+
 const stdout = [
   { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
   { id: "2", data: "Listening on port 3000" },
 ];
 
-<button onClick={restartServer}>Restart server</button>
-
-<Console
-  messages={messages}
-  stdout={stdout}
-  consoleTabLabel="Client"
-  stdoutTabLabel="Server"
-  onClear={clear}
-  onClearStdout={() => setStdout([])}
-/>;
+<ConsoleStdout entries={stdout} />;
 ```
 
-When `stdout` is provided, the console shows two tabs. The labels are configurable and the views can also be controlled with `view`, `defaultView`, and `onViewChange`.
-
-`Clear` is a console concern and clears only the active view through its corresponding clear callback. Runtime-specific controls such as restart belong outside the console or can be supplied through the generic `actions` slot.
+If an application wants tabs, panes, or a restart button, those controls belong to the application around `Console` and `ConsoleStdout`.
 
 ### Clear marker
 
@@ -412,7 +395,7 @@ Values are normalized before transport and restored on receipt. The transport pr
 
 | Export                         | Purpose                                                         |
 | ------------------------------ | --------------------------------------------------------------- |
-| `Console`                      | Render console messages and optional stdout                     |
+| `Console`                      | Render browser-style console messages                           |
 | `ConsoleStdout`                | Render ANSI-aware stdout entries                                |
 | `parseAnsi`                    | Parse ANSI SGR text into styled segments                        |
 | `useConsoleMessages`           | Manage console message state and optional page capture          |

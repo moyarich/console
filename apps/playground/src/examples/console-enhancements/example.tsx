@@ -1,22 +1,10 @@
 import { useState } from "react";
-import {
-  Console,
-  useConsoleMessages,
-  type ConsoleStdoutEntry,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
-
-const escape = String.fromCharCode(27);
 
 export default function ConsoleEnhancementsExample() {
   const [showDebug, setShowDebug] = useState(false);
   const [session, setSession] = useState(1);
-  const [stdout, setStdout] = useState<ConsoleStdoutEntry[]>([
-    {
-      id: "boot",
-      data: `${escape}[32mServer ready${escape}[0m on port ${escape}[36m3000${escape}[0m`,
-    },
-  ]);
   const { messages, append, clear } = useConsoleMessages({
     resetKey: session,
     clearMessage: "Console was cleared",
@@ -37,16 +25,6 @@ export default function ConsoleEnhancementsExample() {
     });
   };
 
-  const restartServer = () => {
-    setSession((current) => current + 1);
-    setStdout([
-      {
-        id: `restart-${Date.now()}`,
-        data: `${escape}[33mServer restarted${escape}[0m`,
-      },
-    ]);
-  };
-
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div className="button-row">
@@ -56,31 +34,15 @@ export default function ConsoleEnhancementsExample() {
 
         <button
           type="button"
-          onClick={() =>
-            setStdout((current) => [
-              ...current,
-              {
-                id: String(Date.now()),
-                data: `${escape}[35mstdout:${escape}[0m request completed`,
-              },
-            ])
-          }
+          onClick={() => setSession((current) => current + 1)}
         >
-          Add stdout
-        </button>
-
-        <button type="button" onClick={restartServer}>
-          Restart server
+          Start new session
         </button>
       </div>
 
       <Console
         messages={messages}
-        stdout={stdout}
-        consoleTabLabel="Client"
-        stdoutTabLabel="Server"
         onClear={clear}
-        onClearStdout={() => setStdout([])}
         filter={(message) => showDebug || message.method !== "debug"}
         actions={
           <button
@@ -90,7 +52,7 @@ export default function ConsoleEnhancementsExample() {
             {showDebug ? "Hide debug" : "Show debug"}
           </button>
         }
-        subtitle="Client console and server stdout"
+        subtitle="Filtering, actions, dedupe, reset keys, and smart auto-scroll"
       />
     </div>
   );

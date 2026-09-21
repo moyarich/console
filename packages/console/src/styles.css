@@ -18,7 +18,10 @@
 }
 
 .console-panel .console-panel-header-main {
+  display: flex;
   min-width: 0;
+  align-items: flex-start;
+  gap: 12px;
   padding: 14px 16px;
 }
 
@@ -37,7 +40,6 @@
 }
 
 .console-panel .console-actions-popover-shell {
-  position: relative;
   flex: 0 0 auto;
   margin-left: auto;
 }
@@ -192,46 +194,6 @@
 .console-panel .console-heading-copy {
   min-width: 0;
   flex: 1;
-}
-
-.console-panel .console-toolbar {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  min-width: 0;
-  min-height: 44px;
-  align-items: center;
-  gap: 12px;
-  border-top: 1px solid #edf1f6;
-  padding: 6px 16px;
-  background: #f8fafc;
-}
-
-.console-panel .console-view-tabs {
-  display: inline-flex;
-  width: fit-content;
-  gap: 4px;
-  border-radius: 8px;
-  padding: 3px;
-  background: #eef2f7;
-}
-
-.console-panel .console-view-tab {
-  border: 0;
-  border-radius: 6px;
-  padding: 5px 9px;
-  background: transparent;
-  color: #6b778c;
-  font: inherit;
-  font-size: 0.74rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.console-panel .console-view-tab[aria-selected="true"] {
-  background: #fff;
-  color: #26344b;
-  box-shadow: 0 1px 3px rgb(45 60 85 / 0.12);
 }
 
 .console-panel .console-heading-icon {
@@ -705,11 +667,6 @@
 @media (max-width: 700px) {
   .console-panel {
     --console-min-height: var(--console-mobile-min-height);
-  }
-
-  .console-panel .console-toolbar {
-    align-items: center;
-    flex-direction: row;
   }
 
   .console-panel .console-actions-popover[popover] {
