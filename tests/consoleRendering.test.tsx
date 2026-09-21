@@ -150,18 +150,14 @@ describe("Console rendering", () => {
   });
 
   it("parses extended ANSI colors", () => {
-    expect(
-      parseAnsi(`${escape}[38;5;196mred${escape}[0m`)[0],
-    ).toMatchObject({
+    expect(parseAnsi(`${escape}[38;5;196mred${escape}[0m`)[0]).toMatchObject({
       text: "red",
       style: { color: "rgb(255 0 0)" },
     });
   });
 
   it("resets ANSI styles", () => {
-    const segments = parseAnsi(
-      `${escape}[31mred${escape}[0mplain`,
-    );
+    const segments = parseAnsi(`${escape}[31mred${escape}[0mplain`);
 
     expect(segments[0]).toMatchObject({
       text: "red",
