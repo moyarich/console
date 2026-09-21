@@ -122,6 +122,18 @@ describe("Console rendering", () => {
     expect(html).not.toContain("> Clear<");
   });
 
+  it("renders custom runtime actions without built-in restart behavior", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[]}
+        actions={<button type="button">Restart server</button>}
+      />,
+    );
+
+    expect(html).toContain("Restart server");
+    expect(html).not.toContain("console-restart-button");
+  });
+
   it("renders view tabs in their own toolbar", () => {
     const html = renderToStaticMarkup(
       <Console messages={[]} stdout={[]} />,
