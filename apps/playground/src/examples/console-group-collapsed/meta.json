@@ -1,6 +1,0 @@
-{
-  "id": "console-group-collapsed",
-  "label": "console.groupCollapsed",
-  "description": "Capture and render a collapsed console group heading.",
-  "order": 14
-}

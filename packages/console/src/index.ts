@@ -1,6 +1,18 @@
 export { Console } from "./components/Console";
-export type { ConsoleProps } from "./components/Console";
+export type {
+  ConsoleAnsiModeProps,
+  ConsoleMessageFilter,
+  ConsoleMessageModeProps,
+  ConsoleMode,
+  ConsoleProps,
+} from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
+export { ConsoleStdout } from "./components/ConsoleStdout";
+export type {
+  ConsoleOutputStream,
+  ConsoleStdoutEntry,
+  ConsoleStdoutProps,
+} from "./components/ConsoleStdout";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
 export { CONSOLE_METHODS } from "./consoleMethods";
@@ -19,8 +31,11 @@ export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
   serializeConsoleValue,
+  deserializeConsoleValue,
   serializeConsoleMessage,
+  deserializeConsoleMessage,
   serializeConsoleEvent,
+  deserializeConsoleEvent,
 } from "./utils/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
 export {

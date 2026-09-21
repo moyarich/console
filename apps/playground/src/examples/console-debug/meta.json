@@ -1,6 +1,0 @@
-{
-  "id": "console-debug",
-  "label": "console.debug",
-  "description": "Capture and render a console.debug message.",
-  "order": 3
-}

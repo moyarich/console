@@ -1,0 +1,4 @@
+{
+  "label": "console.assert",
+  "description": "Capture a failed console.assert with a message."
+}

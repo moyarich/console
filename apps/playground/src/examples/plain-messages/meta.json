@@ -1,7 +1,0 @@
-{
-  "id": "plain-messages",
-  "label": "Plain messages",
-  "description": "Render ConsoleMessageData objects directly with no events or useConsoleMessages.",
-  "order": 20,
-  "groupId": "getting-started"
-}

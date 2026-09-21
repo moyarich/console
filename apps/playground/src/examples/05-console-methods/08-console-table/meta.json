@@ -1,0 +1,4 @@
+{
+  "label": "console.table",
+  "description": "Capture and render data passed to console.table."
+}

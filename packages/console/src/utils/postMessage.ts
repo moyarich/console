@@ -1,4 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { deserializeConsoleEvent } from "./serialization";
 import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 export interface ListenForConsolePostMessagesOptions {
@@ -32,7 +33,7 @@ export function listenForConsolePostMessages({
     if (!isConsoleEnvelope(event.data)) return;
     if (event.data.channel !== channel) return;
 
-    events.emitEvent(event.data.event);
+    events.emitEvent(deserializeConsoleEvent(event.data.event));
   };
 
   targetWindow.addEventListener("message", handler as EventListener);

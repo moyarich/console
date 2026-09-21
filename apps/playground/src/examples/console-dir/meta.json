@@ -1,6 +1,0 @@
-{
-  "id": "console-dir",
-  "label": "console.dir",
-  "description": "Capture and render a value passed to console.dir.",
-  "order": 8
-}
