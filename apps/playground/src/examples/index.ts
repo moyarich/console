@@ -72,7 +72,7 @@ function parseExamplePath(path: string) {
   };
 }
 
-const playgroundModules = import.meta.glob("./*/*/source.tsx", {
+const playgroundModules = import.meta.glob("./*/*/index.tsx", {
   eager: true,
 }) as Record<string, ConsoleExampleModule>;
 
@@ -122,14 +122,14 @@ export const CONSOLE_EXAMPLE_GROUPS: readonly ConsoleExampleGroup[] =
 
 export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
   .map(({ metadata, group, example }) => {
-    const playgroundPath = `./${group.directory}/${example.directory}/source.tsx`;
+    const playgroundPath = `./${group.directory}/${example.directory}/index.tsx`;
     const examplePath = `./${group.directory}/${example.directory}/example.tsx`;
     const playgroundModule = playgroundModules[playgroundPath];
     const exampleSource = exampleSourceModules[examplePath];
 
     if (!playgroundModule) {
       throw new Error(
-        `Missing source.tsx playground harness: ${group.directory}/${example.directory}`,
+        `Missing index.tsx playground harness: ${group.directory}/${example.directory}`,
       );
     }
 

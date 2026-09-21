@@ -524,14 +524,6 @@ a {
   font-size: 0.7rem;
 }
 
-.sidebar-note {
-  border-top: 1px solid #edf0f4;
-  padding-top: 16px;
-  color: #7b8496;
-  font-size: 0.76rem;
-  line-height: 1.55;
-}
-
 .content-stack {
   position: relative;
   z-index: 1;
@@ -922,8 +914,7 @@ a {
     align-items: start;
   }
 
-  .sidebar-heading,
-  .sidebar-note {
+  .sidebar-heading {
     grid-column: 1 / -1;
   }
 
@@ -960,8 +951,7 @@ a {
     padding: 16px;
   }
 
-  .sidebar-heading,
-  .sidebar-note {
+  .sidebar-heading {
     grid-column: auto;
   }
 
