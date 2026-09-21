@@ -29,7 +29,10 @@ function formatDiagnostics(
     .join("\n");
 }
 
-function resolveRuntimeModule(moduleId: string) {
+function resolveRuntimeModule(
+  moduleId: string,
+  ts: TypeScriptModule,
+) {
   switch (moduleId) {
     case "react":
       return React;
@@ -40,9 +43,11 @@ function resolveRuntimeModule(moduleId: string) {
       return ConsolePackage;
     case "@moyarich/console/styles.css":
       return {};
+    case "typescript":
+      return ts;
     default:
       throw new Error(
-        `Unsupported import "${moduleId}". Runnable examples currently support React and @moyarich/console imports.`,
+        `Unsupported import "${moduleId}". Runnable examples currently support React, TypeScript, and @moyarich/console imports.`,
       );
   }
 }
@@ -110,7 +115,11 @@ export async function compileExampleSource(
     `${result.outputText}\n//# sourceURL=${sourceName}`,
   );
 
-  execute(resolveRuntimeModule, runtimeModule, runtimeModule.exports);
+  execute(
+    (moduleId: string) => resolveRuntimeModule(moduleId, ts),
+    runtimeModule,
+    runtimeModule.exports,
+  );
 
   return findComponent(runtimeModule.exports);
 }
