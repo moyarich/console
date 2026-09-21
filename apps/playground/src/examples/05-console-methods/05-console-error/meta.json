@@ -1,4 +1,4 @@
 {
   "label": "console.error",
-  "description": "Capture and render a console.error message."
+  "description": "Render a console.error message with an Error value immediately."
 }
