@@ -2,5 +2,6 @@
   "id": "console-event",
   "label": "ConsoleEvent",
   "description": "Create message and clear ConsoleEvent values and publish them through ConsoleEventEmitter.",
-  "order": 2
+  "order": 2,
+  "groupId": "events"
 }
