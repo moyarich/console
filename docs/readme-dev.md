@@ -38,7 +38,22 @@ CI currently runs on Node 24.
 
 ## Install
 
-From the repository root:
+Here’s a cleaner version with the token name corrected and the steps made clearer:
+
+### Install from GitHub Packages
+
+Configure the `@moyarich` scope in a project-level `.npmrc` file:
+
+```ini
+registry=https://registry.npmjs.org/
+
+@moyarich:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+Set `GITHUB_TOKEN` in your environment to a GitHub token with permission to read packages.
+
+Then install dependencies from the repository root:
 
 ```bash
 npm install

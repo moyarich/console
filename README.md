@@ -4,8 +4,6 @@ A React console toolkit for **capturing, transporting, and rendering runtime out
 
 Use it when an application runs code, embeds a preview, connects to a remote runtime, or needs an in-app developer console. It can render browser-style `console.*` messages with inspectable JavaScript values or ANSI-formatted `stdout` / `stderr` from a process.
 
-`@moyarich/console` does **not** execute code and is not a terminal emulator. Your application owns the runtime. This package handles the console layer around it:
-
 ```text
 page / sandbox / iframe / remote runtime
                   |
@@ -23,7 +21,7 @@ page / sandbox / iframe / remote runtime
             <Console />
 ```
 
-It also provides utilities for capturing a real `console`, creating a console-compatible proxy for sandboxed code, sharing events, serializing rich JavaScript values, and moving console events across iframe or WebSocket boundaries.
+Provides utilities for capturing a real `console`, creating a console-compatible proxy for sandboxed code, sharing events, serializing rich JavaScript values, and moving console events across iframe or WebSocket boundaries.
 
 ## Choose the API for your use case
 
@@ -43,13 +41,6 @@ It also provides utilities for capturing a real `console`, creating a console-co
 ## Install
 
 `@moyarich/console` is published to GitHub Packages and requires React 18 or newer.
-
-Configure the `@moyarich` scope:
-
-```ini
-@moyarich:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
 
 Install:
 
