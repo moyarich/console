@@ -23,10 +23,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Check formatting
-        run: |
-          npx prettier README.md > /tmp/README.formatted.md
-          diff -u README.md /tmp/README.formatted.md || true
-          npm run format:check
+        run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test
