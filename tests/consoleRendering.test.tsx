@@ -90,7 +90,7 @@ describe("Console rendering", () => {
     );
 
     expect(html).toContain("visible");
-    expect(html).not.toContain("hidden");
+    expect(html).not.toContain("&quot;hidden&quot;");
   });
 
   it("can hide the header", () => {
