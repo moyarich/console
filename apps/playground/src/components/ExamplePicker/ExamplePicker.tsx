@@ -20,7 +20,6 @@ const GROUP_ORDER = [
   "Events",
   "Console methods",
   "Transports",
-  "Migration",
 ] as const;
 
 type ExampleGroup = (typeof GROUP_ORDER)[number];
@@ -39,10 +38,6 @@ function getExampleGroup(example: ConsoleExample): ExampleGroup {
 
   if (example.id === "iframe" || example.id === "websocket") {
     return "Transports";
-  }
-
-  if (example.id === "console-feed-equivalent") {
-    return "Migration";
   }
 
   return "Console methods";

@@ -1,6 +1,0 @@
-{
-  "id": "console-feed-equivalent",
-  "label": "console-feed equivalent",
-  "description": "The @moyarich/console equivalent of console-feed Hook, Unhook, and Console logs.",
-  "order": 15
-}
