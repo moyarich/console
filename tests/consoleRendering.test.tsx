@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   Console,
   ConsoleStdout,
-  parseAnsi,
   type ConsoleMessageData,
 } from "@moyarich/console";
 
@@ -149,24 +148,22 @@ describe("Console rendering", () => {
     expect(html).toContain("two");
   });
 
-  it("parses extended ANSI colors", () => {
-    expect(parseAnsi(`${escape}[38;5;196mred${escape}[0m`)[0]).toMatchObject({
-      text: "red",
-      style: { color: "rgb(255 0 0)" },
-    });
+  it("renders ANSI stdout with Anser", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout entries={[`${escape}[38;5;196mred${escape}[0m`]} />,
+    );
+
+    expect(html).toContain("red");
+    expect(html).toContain("rgb(255, 0, 0)");
   });
 
-  it("resets ANSI styles", () => {
-    const segments = parseAnsi(`${escape}[31mred${escape}[0mplain`);
+  it("escapes stdout HTML before ANSI conversion", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout entries={["<script>alert('x')</script>"]} />,
+    );
 
-    expect(segments[0]).toMatchObject({
-      text: "red",
-      style: { color: "#cd3131" },
-    });
-    expect(segments[1]).toEqual({
-      text: "plain",
-      style: {},
-    });
+    expect(html).toContain("&lt;script&gt;");
+    expect(html).not.toContain("<script>");
   });
 
   it("appends runtime errors", () => {

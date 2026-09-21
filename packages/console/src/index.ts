@@ -34,8 +34,6 @@ export {
   deserializeConsoleEvent,
 } from "./utils/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
-export { parseAnsi } from "./utils/ansi";
-export type { AnsiSegment } from "./utils/ansi";
 export {
   CONSOLE_TRANSPORT_TYPE,
   CONSOLE_TRANSPORT_VERSION,

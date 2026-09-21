@@ -1,5 +1,4 @@
-import type { CSSProperties } from "react";
-import { parseAnsi } from "../utils/ansi";
+import Anser from "anser";
 
 export interface ConsoleStdoutEntry {
   id?: string;
@@ -27,15 +26,14 @@ export function ConsoleStdout({
           typeof entry === "string"
             ? `stdout-${index}`
             : (entry.id ?? `stdout-${index}`);
+        const html = Anser.ansiToHtml(Anser.escapeForHtml(data));
 
         return (
-          <pre className="console-stdout-line" key={key}>
-            {parseAnsi(data).map((segment, segmentIndex) => (
-              <span key={segmentIndex} style={segment.style as CSSProperties}>
-                {segment.text}
-              </span>
-            ))}
-          </pre>
+          <pre
+            className="console-stdout-line"
+            key={key}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
         );
       })}
     </div>

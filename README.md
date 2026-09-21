@@ -16,7 +16,7 @@ Use it to build embedded developer consoles, playgrounds, code runners, iframe p
 - WebSocket transport support
 - JSON-safe serialization for transported values
 - controlled message state through `useConsoleMessages()`
-- standalone ANSI-aware stdout renderer
+- standalone ANSI-aware stdout renderer powered by `anser`
 - header actions in a native ellipsis popover
 - smart auto-scroll, filtering, reset, and message deduplication
 - rich transport value restoration
@@ -397,7 +397,6 @@ Values are normalized before transport and restored on receipt. The transport pr
 | ------------------------------ | --------------------------------------------------------------- |
 | `Console`                      | Render browser-style console messages                           |
 | `ConsoleStdout`                | Render ANSI-aware stdout entries                                |
-| `parseAnsi`                    | Parse ANSI SGR text into styled segments                        |
 | `useConsoleMessages`           | Manage console message state and optional page capture          |
 | `capturePageConsole`           | Capture calls from a console object                             |
 | `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |
