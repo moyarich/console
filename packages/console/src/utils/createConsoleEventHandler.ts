@@ -7,6 +7,10 @@ type ConsoleEventHandlers = {
   ) => void;
 };
 
+/**
+ * Creates a transport-facing handler that forwards a discriminated
+ * {@link ConsoleEvent} into a {@link ConsoleEventEmitter}.
+ */
 export function createConsoleEventHandler(events: ConsoleEventEmitter) {
   const handlers: ConsoleEventHandlers = {
     message: (event) => {
