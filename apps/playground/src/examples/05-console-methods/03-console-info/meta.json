@@ -1,4 +1,4 @@
 {
   "label": "console.info",
-  "description": "Capture and render a console.info message."
+  "description": "Render a console.info message immediately."
 }
