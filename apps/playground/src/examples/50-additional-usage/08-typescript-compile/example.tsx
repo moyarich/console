@@ -1,10 +1,6 @@
 import { useState } from "react";
 import * as ts from "typescript";
-import {
-  Console,
-  createConsoleProxy,
-  useConsoleMessages,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const TYPESCRIPT_SOURCE = `
@@ -22,7 +18,9 @@ console.log("Compiled TypeScript", user);
 `;
 
 export default function TypeScriptCompileExample() {
-  const { messages, clear, events } = useConsoleMessages();
+  const { messages, clear, console } = useConsoleMessages({
+    source: "typescript-compile",
+  });
   const [compiledJavaScript, setCompiledJavaScript] = useState("");
 
   const compileAndRun = () => {
@@ -35,12 +33,7 @@ export default function TypeScriptCompileExample() {
 
     setCompiledJavaScript(result.outputText);
 
-    const runtimeConsole = createConsoleProxy({
-      events,
-      source: "typescript-compile",
-    });
-
-    new Function("console", result.outputText)(runtimeConsole);
+    new Function("console", result.outputText)(console);
   };
 
   return (
