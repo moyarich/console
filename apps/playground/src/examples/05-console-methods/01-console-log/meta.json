@@ -1,4 +1,4 @@
 {
   "label": "console.log",
-  "description": "Capture and render a standard console.log message."
+  "description": "Render a standard console.log message immediately."
 }
