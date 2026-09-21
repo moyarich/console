@@ -124,10 +124,8 @@ Structured console output:
 ```tsx
 <Console
   mode="console"
-  messages={[
-    { method: "log", data: ["Hello", { ready: true }], depth: 0 },
-  ]}
-/>;
+  messages={[{ method: "log", data: ["Hello", { ready: true }], depth: 0 }]}
+/>
 ```
 
 ANSI/process output:
