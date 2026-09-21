@@ -176,7 +176,7 @@ export function ConsoleStdout({
           (token) => token.clearLine,
         );
 
-        if (structuredValue) {
+        if (structuredValue !== undefined) {
           return (
             <div
               className="console-stdout-line console-stdout-structured"
