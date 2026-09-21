@@ -20,6 +20,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm install --include=optional
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test

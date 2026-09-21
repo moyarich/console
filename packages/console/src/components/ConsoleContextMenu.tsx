@@ -31,8 +31,14 @@ const MENU_HEIGHT_WITH_OBJECT = 122;
 const VIEWPORT_MARGIN = 8;
 
 function getMenuPosition(clientX: number, clientY: number, height: number) {
-  const maxX = Math.max(VIEWPORT_MARGIN, window.innerWidth - MENU_WIDTH - VIEWPORT_MARGIN);
-  const maxY = Math.max(VIEWPORT_MARGIN, window.innerHeight - height - VIEWPORT_MARGIN);
+  const maxX = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerWidth - MENU_WIDTH - VIEWPORT_MARGIN,
+  );
+  const maxY = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerHeight - height - VIEWPORT_MARGIN,
+  );
   return {
     x: Math.min(Math.max(VIEWPORT_MARGIN, clientX), maxX),
     y: Math.min(Math.max(VIEWPORT_MARGIN, clientY), maxY),
@@ -67,10 +73,13 @@ export function ConsoleContextMenu({
   const [menu, setMenu] = useState<MenuState | null>(null);
   const closeMenu = useCallback(() => setMenu(null), []);
 
-  const openMenu = useCallback((clientX: number, clientY: number, value?: object) => {
-    const height = value ? MENU_HEIGHT_WITH_OBJECT : MENU_HEIGHT;
-    setMenu({ ...getMenuPosition(clientX, clientY, height), value });
-  }, []);
+  const openMenu = useCallback(
+    (clientX: number, clientY: number, value?: object) => {
+      const height = value ? MENU_HEIGHT_WITH_OBJECT : MENU_HEIGHT;
+      setMenu({ ...getMenuPosition(clientX, clientY, height), value });
+    },
+    [],
+  );
 
   const openForValue = useCallback(
     (event: MouseEvent<HTMLElement>, value: object) => {

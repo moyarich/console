@@ -1,6 +1,7 @@
 function normalizeConsoleValue(value: unknown, seen: WeakSet<object>): unknown {
   if (typeof value === "bigint") return `${value}n`;
-  if (typeof value === "function") return `[Function ${value.name || "anonymous"}]`;
+  if (typeof value === "function")
+    return `[Function ${value.name || "anonymous"}]`;
   if (typeof value === "symbol") return String(value);
   if (typeof value === "undefined") return "[undefined]";
   if (value === null || typeof value !== "object") return value;
@@ -9,11 +10,24 @@ function normalizeConsoleValue(value: unknown, seen: WeakSet<object>): unknown {
   if (value instanceof Error) return value.stack || value.message;
   if (seen.has(value)) return "[Circular]";
   seen.add(value);
-  if (Array.isArray(value)) return value.map((item) => normalizeConsoleValue(item, seen));
-  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, normalizeConsoleValue(item, seen)]));
+  if (Array.isArray(value))
+    return value.map((item) => normalizeConsoleValue(item, seen));
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [
+      key,
+      normalizeConsoleValue(item, seen),
+    ]),
+  );
 }
 
 export function formatConsoleObjectForCopy(value: object): string {
-  try { return JSON.stringify(normalizeConsoleValue(value, new WeakSet<object>()), null, 2); }
-  catch { return String(value); }
+  try {
+    return JSON.stringify(
+      normalizeConsoleValue(value, new WeakSet<object>()),
+      null,
+      2,
+    );
+  } catch {
+    return String(value);
+  }
 }

@@ -129,7 +129,9 @@ export default function IframeConsoleCaptureExample() {
   const handleIframeLoad = () => {
     stopCaptureRef.current?.();
 
-    const iframeConsole = iframeRef.current?.contentWindow?.console;
+    const iframeWindow = iframeRef.current?.contentWindow as
+      (Window & typeof globalThis) | null | undefined;
+    const iframeConsole = iframeWindow?.console;
 
     if (!iframeConsole) {
       return;

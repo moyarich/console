@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { ExamplePicker } from "./components/ExamplePicker/ExamplePicker";
 import { RunnableExample } from "./components/RunnableExample";
-import {
-  CONSOLE_EXAMPLES,
-  DEFAULT_CONSOLE_EXAMPLE,
-} from "./examples";
+import { CONSOLE_EXAMPLES, DEFAULT_CONSOLE_EXAMPLE } from "./examples";
 
 export function App() {
   const [exampleId, setExampleId] = useState(DEFAULT_CONSOLE_EXAMPLE.id);

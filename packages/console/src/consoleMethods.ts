@@ -45,14 +45,11 @@ export const CONSOLE_METHODS = Object.freeze(Array.from(consoleMethodSet));
 
 export function isConsoleMethod(value: unknown): value is ConsoleMethod {
   return (
-    typeof value === "string" &&
-    consoleMethodSet.has(value as ConsoleMethod)
+    typeof value === "string" && consoleMethodSet.has(value as ConsoleMethod)
   );
 }
 
-export function isDirectConsoleMethod(
-  method: CapturedConsoleMethod,
-): boolean {
+export function isDirectConsoleMethod(method: CapturedConsoleMethod): boolean {
   return CONSOLE_METHOD_REGISTRY[method].direct;
 }
 
