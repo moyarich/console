@@ -62,6 +62,47 @@ describe("Console rendering", () => {
     expect(html).toContain("padding-left:30px");
   });
 
+  it("filters visible messages", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          { method: "log", data: ["visible"], depth: 0 },
+          { method: "debug", data: ["hidden"], depth: 0 },
+        ]}
+        filter={(message) => message.method !== "debug"}
+      />,
+    );
+
+    expect(html).toContain("visible");
+    expect(html).not.toContain("hidden");
+  });
+
+  it("can hide the header", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "log", data: ["hello"], depth: 0 }]}
+        showHeader={false}
+      />,
+    );
+
+    expect(html).not.toContain("console-panel-header");
+    expect(html).toContain("hello");
+  });
+
+  it("can hide the clear button while rendering custom actions", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "log", data: ["hello"], depth: 0 }]}
+        onClear={() => undefined}
+        showClearButton={false}
+        actions={<button type="button">Custom action</button>}
+      />,
+    );
+
+    expect(html).toContain("Custom action");
+    expect(html).not.toContain("> Clear<");
+  });
+
   it("appends runtime errors", () => {
     const html = renderConsole(
       [{ method: "log", data: ["before"], depth: 0 }],
