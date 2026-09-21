@@ -14,6 +14,10 @@ import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import { ConsoleStdout, type ConsoleStdoutEntry } from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
+import type {
+  ConsoleMessageRenderer,
+  ConsoleValueRenderer,
+} from "../renderers";
 import { writeClipboardText } from "../utils/clipboard";
 
 export type ConsoleMode = "console" | "ansi";
@@ -38,6 +42,7 @@ interface ConsoleSharedProps {
   emptyMessage?: string;
   className?: string;
   style?: CSSProperties;
+  valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
 export interface ConsoleMessageModeProps extends ConsoleSharedProps {
@@ -47,6 +52,7 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   error?: string;
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
   filter?: ConsoleMessageFilter;
+  messageRenderers?: readonly ConsoleMessageRenderer[];
 }
 
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
@@ -57,6 +63,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   error?: never;
   onMessagesChange?: never;
   filter?: never;
+  messageRenderers?: never;
 }
 
 export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
@@ -246,6 +253,8 @@ function ConsoleMessageMode({
   error: errorProp,
   onMessagesChange,
   filter,
+  messageRenderers,
+  valueRenderers,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
   ...frameProps
@@ -308,8 +317,12 @@ function ConsoleMessageMode({
             `${message.method}-${message.timestamp ?? "na"}-${index}`
           }
           message={message}
+          index={index}
+          messages={visibleMessages}
           expandAllVersion={expandedMessages.get(message)}
           onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+          renderers={messageRenderers}
+          valueRenderers={valueRenderers}
         />
       ))}
     </ConsoleFrame>
@@ -319,6 +332,7 @@ function ConsoleMessageMode({
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
+  valueRenderers,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
@@ -336,6 +350,7 @@ function ConsoleAnsiMode({
       <ConsoleStdout
         entries={messages}
         parseStructuredOutput={parseStructuredOutput}
+        valueRenderers={valueRenderers}
       />
     </ConsoleFrame>
   );
