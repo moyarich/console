@@ -140,7 +140,7 @@ The emitter is deliberately separate from React state so non-React producers and
 
 ### Event flow
 
-The central event abstraction is `createConsoleEventEmitter()`.
+The central event channel is `createConsoleEventEmitter()`. `createConsoleEventHandler(events)` adapts the transport-facing `ConsoleEvent` union into the emitter's named events.
 
 It handles two logical events:
 
@@ -172,7 +172,7 @@ ConsoleEventEmitter
   +--> audit/debug subscriber
 ```
 
-A producer should publish to the event emitter rather than requiring callback composition from every consumer.
+A producer can publish named events directly with `events.emit(...)`. Producers that already produce the discriminated `ConsoleEvent` union should use `createConsoleEventHandler(events)` as the adapter instead of adding transport-specific methods to the emitter.
 
 ### Producers
 
@@ -182,7 +182,7 @@ Current producers include:
 - `createConsoleProxy()`
 - `listenForConsolePostMessages()`
 - `listenForConsoleWebSocket()`
-- application code calling `events.emit(...)` or `events.dispatch(...)`
+- application code calling `events.emit(...)`
 
 ### Page capture
 
@@ -219,7 +219,7 @@ postMessage / WebSocket / relay
   |
 isConsoleEnvelope()
   |
-ConsoleEventEmitter.dispatch()
+createConsoleEventHandler(events) -> ConsoleEventEmitter.emit()
 ```
 
 The transport protocol should remain independent of the React UI.
