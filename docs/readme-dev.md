@@ -249,21 +249,26 @@ Examples use numbered directories as the source of truth for grouping and order:
 
 ```text
 apps/playground/src/examples/
-  01-getting-started/
-    01-current-page/
+  00-ansi/
+    01-terminal/
       example.tsx
       index.tsx
       meta.json
-    02-console-enhancements/
+    02-typescript-compile-error/
       ...
-  02-events/
-    01-console-event/
-      ...
-  03-console-methods/
+  05-console-methods/
     01-console-log/
       ...
-  04-transports/
+    13-console-group-collapsed/
+      ...
+  30-transports/
     01-iframe/
+      ...
+  40-events/
+    01-console-event/
+      ...
+  50-additional-usage/
+    07-plain-messages/
       ...
 ```
 
