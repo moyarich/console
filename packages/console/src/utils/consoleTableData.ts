@@ -4,6 +4,10 @@ function isTableRecord(value: unknown): value is Record<string, unknown> {
 function allRowsAreRecords(values: unknown[]): boolean {
   return values.length > 0 && values.every(isTableRecord);
 }
+/**
+ * Normalizes `console.table()` input so scalar array/object entries are wrapped
+ * in a `Value` column while row-like records keep their original shape.
+ */
 export function normalizeConsoleTableData(data: unknown): unknown {
   if (Array.isArray(data))
     return allRowsAreRecords(data)
