@@ -31,6 +31,7 @@ export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
 export { capturePageConsole } from "./utils/capturePageConsole";
 export { createConsoleEventEmitter } from "./utils/createConsoleEventEmitter";
+export { createConsoleEventHandler } from "./utils/createConsoleEventHandler";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
