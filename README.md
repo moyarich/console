@@ -146,11 +146,7 @@ const messages = [
   },
 ];
 
-<Console
-  mode="ansi"
-  messages={messages}
-  parseStructuredOutput
-/>
+<Console mode="ansi" messages={messages} parseStructuredOutput />
 ```
 
 Set `parseStructuredOutput` to promote complete strict-JSON object or array

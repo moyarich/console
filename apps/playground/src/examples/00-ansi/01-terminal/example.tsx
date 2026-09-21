@@ -130,7 +130,10 @@ export default function TerminalExample() {
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <div className="button-row">
-        <button type="button" onClick={() => appendOutput(getDevServerOutput())}>
+        <button
+          type="button"
+          onClick={() => appendOutput(getDevServerOutput())}
+        >
           Run dev server
         </button>
 
@@ -145,7 +148,10 @@ export default function TerminalExample() {
           Show ANSI formatting
         </button>
 
-        <button type="button" onClick={() => appendOutput(getStructuredOutput())}>
+        <button
+          type="button"
+          onClick={() => appendOutput(getStructuredOutput())}
+        >
           Log JSON
         </button>
       </div>
