@@ -44,6 +44,22 @@ describe("Console rendering", () => {
     expect(html).toContain("inner");
   });
 
+  it("renders Map and Set inspectors", () => {
+    const html = renderConsole([
+      {
+        method: "log",
+        data: [
+          new Map([["name", "console"]]),
+          new Set(["log", "warn"]),
+        ],
+        depth: 0,
+      },
+    ]);
+
+    expect(html).toContain("Map(1)");
+    expect(html).toContain("Set(2)");
+  });
+
   it("renders console.table", () => {
     const html = renderConsole([
       { method: "table", data: [[3, 23, 34]], depth: 0 },
