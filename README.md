@@ -260,7 +260,7 @@ interface ConsoleMessageData {
 | `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
 | `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
 | `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
-| `clear()`                    | Emits `clear` through the proxy's event channel                                                                         |
+| `clear()`                    | Emits `clear` through the proxy's event channel                                                                        |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
@@ -404,9 +404,7 @@ runtimeConsole.warn("warning");
 const events = createConsoleEventEmitter();
 
 const { messages } = useConsoleMessages({ events });
-const runtimeConsole = createConsoleProxy({
-  events,
-});
+const runtimeConsole = createConsoleProxy({ events });
 
 runtimeConsole.log("shared event stream");
 ```
