@@ -7,6 +7,18 @@ export type {
   ConsoleProps,
 } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
+export type {
+  ConsoleAction,
+  ConsoleActionContextBase,
+  ConsoleActionPredicate,
+  ConsoleActionVariant,
+  ConsoleContextMenuAction,
+  ConsoleContextMenuActionContext,
+  ConsoleMessageAction,
+  ConsoleMessageActionContext,
+  ConsoleObjectActionContext,
+  ConsoleSurfaceActionContext,
+} from "./actions";
 export { ConsoleStdout } from "./components/ConsoleStdout";
 export type {
   ConsoleOutputStream,

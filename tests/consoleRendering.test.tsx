@@ -141,6 +141,51 @@ describe("Console rendering", () => {
     expect(html).not.toContain('role="tablist"');
   });
 
+  it("registers keyboard-focusable targets for per-message actions", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "error-1",
+            method: "error",
+            data: ["boom"],
+            depth: 0,
+            source: "worker.ts:42",
+          },
+        ]}
+        messageActions={[
+          {
+            id: "open-source",
+            label: "Open source",
+            onSelect: () => undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("console-message-action-target");
+    expect(html).toContain('aria-label="error console message"');
+    expect(html).toContain('tabindex="0"');
+  });
+
+  it("registers message targets for custom context menu actions", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "log", data: ["hello"], depth: 0 }]}
+        contextMenuActions={[
+          {
+            id: "inspect",
+            label: "Inspect",
+            visible: (context) => context.kind === "message",
+            onSelect: () => undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("console-message-action-target");
+  });
+
   it("renders ANSI messages through Console mode", () => {
     const html = renderToStaticMarkup(
       <Console

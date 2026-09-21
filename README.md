@@ -434,6 +434,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `showHeader`          | Show/hide the panel header                                                     |
 | `showClearButton`     | Show clear when `onClear` is available                                         |
 | `actions`             | Add application-defined actions to the ellipsis popover                        |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
 | `title` / `subtitle`  | Customize panel heading text                                                   |
 | `emptyMessage`        | Customize the empty state                                                      |
 | `className` / `style` | Host-owned layout and styling                                                  |
@@ -451,6 +452,7 @@ The host application owns min/max dimensions. The library only applies the reque
 | `filter`           | Predicate that controls which messages are visible |
 | `onMessagesChange` | Observes the source message list                   |
 | `messageRenderers` | Override rendering for matching messages           |
+| `messageActions`   | Add actions that receive the selected message context |
 
 ### ANSI-mode props
 
@@ -462,6 +464,72 @@ The host application owns min/max dimensions. The library only applies the reque
 | `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
+
+## Extensible context and message actions
+
+Use descriptor-based actions when the host application needs commands in the
+console context menu or on individual structured messages. This is separate
+from the `actions` prop, which continues to accept arbitrary React content for
+the header ellipsis popover.
+
+```tsx
+import {
+  Console,
+  type ConsoleContextMenuAction,
+  type ConsoleMessageAction,
+  type ConsoleMessageData,
+} from "@moyarich/console";
+
+const contextMenuActions: ConsoleContextMenuAction[] = [
+  {
+    id: "copy-debug-context",
+    label: "Copy debug context",
+    visible: ({ kind }) => kind !== "object",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: (context) => copyDebugContext(context),
+  },
+];
+
+const messageActions: ConsoleMessageAction[] = [
+  {
+    id: "bookmark",
+    label: "Bookmark",
+    onSelect: ({ message, index }) => bookmarkMessage(message, index),
+  },
+  {
+    id: "open-source",
+    label: "Open source",
+    disabled: ({ message }) => !message.source,
+    onSelect: ({ message }) => openSource(message.source!),
+  },
+];
+
+export function RuntimeConsole({ messages }: { messages: ConsoleMessageData[] }) {
+  return (
+    <Console
+      messages={messages}
+      contextMenuActions={contextMenuActions}
+      messageActions={messageActions}
+    />
+  );
+}
+```
+
+Each action supports `id`, `label`, `onSelect`, optional `icon`,
+`ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and
+`disabled` can be booleans or predicates evaluated when the menu opens.
+
+`contextMenuActions` receive a discriminated context with
+`kind: "console" | "object" | "message"`. Object contexts include `value`;
+message contexts include `message`, its visible `index`, and the visible
+`messages` list. `messageActions` always receive the message context and are
+available in structured console mode.
+
+Custom actions appear before the built-in copy/clear commands. Enabled menu
+items participate in the existing Arrow Up/Down, Home, and End keyboard
+navigation. Messages become focusable when custom context or message actions
+are configured, so the browser context-menu keyboard command can open the same
+action menu.
 
 ## Custom message and value renderers
 

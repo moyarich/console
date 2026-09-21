@@ -17,14 +17,22 @@ import {
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
-import type { ConsoleMessageData, RunOutput } from "../types";
+import type {
+  ConsoleMessageData,
+  ConsoleMode as ConsoleModeType,
+  RunOutput,
+} from "../types";
 import type {
   ConsoleMessageRenderer,
   ConsoleValueRenderer,
 } from "../renderers";
+import type {
+  ConsoleContextMenuAction,
+  ConsoleMessageAction,
+} from "../actions";
 import { writeClipboardText } from "../utils/clipboard";
 
-export type ConsoleMode = "console" | "ansi";
+export type ConsoleMode = ConsoleModeType;
 export type ConsoleResizeDirection =
   "vertical" | "horizontal" | "both" | "block" | "inline";
 
@@ -41,6 +49,7 @@ interface ConsoleSharedProps {
   showHeader?: boolean;
   showClearButton?: boolean;
   actions?: ReactNode;
+  contextMenuActions?: readonly ConsoleContextMenuAction[];
   title?: string;
   subtitle?: string;
   emptyMessage?: string;
@@ -57,6 +66,7 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
   filter?: ConsoleMessageFilter;
   messageRenderers?: readonly ConsoleMessageRenderer[];
+  messageActions?: readonly ConsoleMessageAction[];
 }
 
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
@@ -79,6 +89,7 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   isEmpty: boolean;
   scrollKey: unknown;
   children: ReactNode;
+  messageActions?: readonly ConsoleMessageAction[];
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
@@ -93,6 +104,7 @@ function ConsoleFrame({
   showHeader = true,
   showClearButton = true,
   actions,
+  contextMenuActions,
   title = "Console",
   subtitle,
   emptyMessage,
@@ -102,6 +114,7 @@ function ConsoleFrame({
   isEmpty,
   scrollKey,
   children,
+  messageActions,
 }: ConsoleFrameProps) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -223,6 +236,10 @@ function ConsoleFrame({
       )}
 
       <ConsoleContextMenu
+        mode={mode}
+        hasMessages={hasMessages}
+        actions={contextMenuActions}
+        messageActions={messageActions}
         copyDisabled={!hasMessages}
         clearDisabled={!hasMessages || !onClear}
         onClear={onClear ? clear : undefined}
@@ -259,6 +276,7 @@ function ConsoleMessageMode({
   onMessagesChange,
   filter,
   messageRenderers,
+  messageActions,
   valueRenderers,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
@@ -314,6 +332,7 @@ function ConsoleMessageMode({
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0}
       scrollKey={visibleMessages}
+      messageActions={messageActions}
     >
       {visibleMessages.map((message, index) => (
         <ConsoleMessage
