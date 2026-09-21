@@ -26,13 +26,21 @@ import { writeClipboardText } from "../utils/clipboard";
 
 /** Props for the console's built-in right-click action surface. */
 export interface ConsoleContextMenuProps {
+  /** Console surface wrapped by the context-menu provider. */
   children: ReactNode;
+  /** Current console rendering mode. */
   mode: ConsoleMode;
+  /** Whether the console currently contains any source messages. */
   hasMessages: boolean;
+  /** Host-defined actions available for console/object/message targets. */
   actions?: readonly ConsoleContextMenuAction[];
+  /** Host-defined actions available only for message targets. */
   messageActions?: readonly ConsoleMessageAction[];
+  /** Whether the built-in copy-console command is disabled. */
   copyDisabled?: boolean;
+  /** Whether the built-in clear command is disabled. */
   clearDisabled?: boolean;
+  /** Invoked by the built-in clear command. */
   onClear?: () => void;
 }
 
