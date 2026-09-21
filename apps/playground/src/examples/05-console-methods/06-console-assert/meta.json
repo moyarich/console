@@ -1,4 +1,4 @@
 {
   "label": "console.assert",
-  "description": "Capture a failed console.assert with a message."
+  "description": "Render only the failed console.assert call."
 }

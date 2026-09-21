@@ -2,36 +2,39 @@ import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import { createConsoleProxy } from "./createConsoleProxy";
 
-export interface CapturePageConsoleOptions {
+export interface CaptureConsoleOptions {
   events: ConsoleEventEmitter;
-  target?: Console;
+  consoleTarget?: Console;
   passThrough?: boolean;
   source?: string;
 }
 
-export function capturePageConsole({
+export function captureConsole({
   events,
-  target = globalThis.console,
+  consoleTarget = globalThis.console,
   passThrough = true,
   source = "page",
-}: CapturePageConsoleOptions): () => void {
-  const proxy = createConsoleProxy({ events, source });
+}: CaptureConsoleOptions): () => void {
+  const proxy = createConsoleProxy({
+    events,
+    source,
+  });
   const originals = new Map<string, (...args: unknown[]) => unknown>();
 
   for (const method of CAPTURED_CONSOLE_METHODS) {
-    const original = target[method] as unknown;
+    const original = consoleTarget[method] as unknown;
 
     if (typeof original !== "function") {
       continue;
     }
 
-    const boundOriginal = original.bind(target) as (
+    const boundOriginal = original.bind(consoleTarget) as (
       ...args: unknown[]
     ) => unknown;
 
     originals.set(method, boundOriginal);
 
-    Object.defineProperty(target, method, {
+    Object.defineProperty(consoleTarget, method, {
       configurable: true,
       writable: true,
       value: (...args: unknown[]) => {
@@ -50,7 +53,7 @@ export function capturePageConsole({
 
   return () => {
     for (const [method, original] of originals) {
-      Object.defineProperty(target, method, {
+      Object.defineProperty(consoleTarget, method, {
         configurable: true,
         writable: true,
         value: original,

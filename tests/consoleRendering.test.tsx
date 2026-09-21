@@ -245,6 +245,89 @@ describe("Console rendering", () => {
     expect(html).toContain('aria-label="Copy object"');
   });
 
+  it("parses structured ANSI output with custom parser hooks", () => {
+    let receivedText = "";
+    let receivedId: string | undefined;
+    let receivedStream: string | undefined;
+    let receivedIndex = -1;
+    let receivedRawData = "";
+
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[
+          {
+            id: "diagnostic-1",
+            data: `  ${escape}[31mERROR TS2322: invalid value${escape}[0m  `,
+            stream: "stderr",
+          },
+        ]}
+        structuredOutputParsers={[
+          (text, context) => {
+            receivedText = text;
+            receivedId = context.id;
+            receivedStream = context.stream;
+            receivedIndex = context.index;
+            receivedRawData =
+              typeof context.entry === "string"
+                ? context.entry
+                : context.entry.data;
+
+            if (!text.includes("TS2322")) {
+              return undefined;
+            }
+
+            return {
+              kind: "diagnostic",
+              code: "TS2322",
+              message: text.trim(),
+            };
+          },
+        ]}
+      />,
+    );
+
+    expect(receivedText).toBe("  ERROR TS2322: invalid value  ");
+    expect(receivedId).toBe("diagnostic-1");
+    expect(receivedStream).toBe("stderr");
+    expect(receivedIndex).toBe(0);
+    expect(receivedRawData).toContain(`${escape}[31m`);
+    expect(html).toContain("Object");
+    expect(html).toContain("diagnostic");
+    expect(html).toContain("TS2322");
+    expect(html).toContain('data-stream="stderr"');
+  });
+
+  it("uses undefined as the parser opt-out sentinel", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={["zero"]}
+        structuredOutputParsers={[() => undefined, () => 0]}
+      />,
+    );
+
+    expect(html).toContain(">0<");
+    expect(html).not.toContain("zero");
+  });
+
+  it("falls back to ANSI text when a structured output parser throws", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={["plain fallback"]}
+        structuredOutputParsers={[
+          () => {
+            throw new Error("parser failed");
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("plain fallback");
+    expect(html).not.toContain('aria-label="Copy object"');
+  });
+
   it("leaves JavaScript-like terminal objects as text", () => {
     const html = renderToStaticMarkup(
       <Console

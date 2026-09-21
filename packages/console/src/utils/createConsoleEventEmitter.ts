@@ -1,8 +1,4 @@
-import type {
-  ConsoleEvent,
-  ConsoleEventSink,
-  ConsoleMessageData,
-} from "../types";
+import type { ConsoleMessageData } from "../types";
 
 export type ConsoleEventName = "message" | "clear";
 
@@ -27,8 +23,6 @@ export interface ConsoleEventEmitter {
 
   emit<T extends ConsoleEventName>(type: T, ...args: ConsoleEventArgs<T>): void;
 
-  onEvent(listener: ConsoleEventSink): () => void;
-  emitEvent(event: ConsoleEvent): void;
   removeAllListeners(type?: ConsoleEventName): void;
 }
 
@@ -74,30 +68,6 @@ export function createConsoleEventEmitter(): ConsoleEventEmitter {
     }
   };
 
-  const onEvent = (listener: ConsoleEventSink) => {
-    const offMessage = on("message", (message) => {
-      listener({ type: "message", message });
-    });
-
-    const offClear = on("clear", () => {
-      listener({ type: "clear" });
-    });
-
-    return () => {
-      offMessage();
-      offClear();
-    };
-  };
-
-  const emitEvent = (event: ConsoleEvent) => {
-    if (event.type === "clear") {
-      emit("clear");
-      return;
-    }
-
-    emit("message", event.message);
-  };
-
   const removeAllListeners = (type?: ConsoleEventName) => {
     if (type) {
       listeners.delete(type);
@@ -111,8 +81,6 @@ export function createConsoleEventEmitter(): ConsoleEventEmitter {
     on,
     off,
     emit,
-    onEvent,
-    emitEvent,
     removeAllListeners,
   };
 }

@@ -1,4 +1,4 @@
 {
   "label": "console.groupCollapsed",
-  "description": "Capture and render a collapsed console group heading."
+  "description": "Render a collapsed console group heading with nested messages."
 }

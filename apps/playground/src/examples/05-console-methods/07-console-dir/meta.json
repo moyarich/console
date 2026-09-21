@@ -1,4 +1,4 @@
 {
   "label": "console.dir",
-  "description": "Capture and render a value passed to console.dir."
+  "description": "Render an inspectable value passed to console.dir."
 }

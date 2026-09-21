@@ -3,11 +3,10 @@ import {
   getConsoleMessageMethod,
   isDirectConsoleMethod,
 } from "../consoleMethods";
-import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 
 export interface CreateConsoleProxyOptions {
-  messages?: ConsoleMessageData[];
   events?: ConsoleEventEmitter;
   source?: string;
   now?: () => number;
@@ -19,17 +18,12 @@ const defaultTimerNow = () =>
     ? performance.now()
     : Date.now();
 
-export function createConsoleProxy(
-  target: ConsoleMessageData[] | CreateConsoleProxyOptions = {},
-): Console {
-  const {
-    messages,
-    events,
-    source,
-    now = () => Date.now(),
-    timerNow = defaultTimerNow,
-  } = Array.isArray(target) ? { messages: target } : target;
-
+export function createConsoleProxy({
+  events,
+  source,
+  now = () => Date.now(),
+  timerNow = defaultTimerNow,
+}: CreateConsoleProxyOptions = {}): Console {
   const counts = new Map<string, number>();
   const timers = new Map<string, number>();
   let depth = 0;
@@ -48,15 +42,10 @@ export function createConsoleProxy(
       ...extra,
     };
 
-    messages?.push(message);
     events?.emit("message", message);
   };
 
   const clearMessages = () => {
-    if (messages) {
-      messages.length = 0;
-    }
-
     events?.emit("clear");
   };
 
