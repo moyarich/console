@@ -1,21 +1,26 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-});
-
-exampleConsole.debug("Debug message", { phase: "render" });
-
 export default function ConsoleDebugExample() {
-  return <Console messages={messages} subtitle="console.debug example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-debug",
+  });
+
+  const runExample = () => {
+    console.debug("Debug message", { phase: "render" });
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.debug(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.debug example"
+      />
+    </div>
+  );
 }
