@@ -1,7 +1,0 @@
-{
-  "id": "console-enhancements",
-  "label": "Console enhancements",
-  "description": "Filtering, custom actions, message dedupe, reset behavior, and smart auto-scroll.",
-  "order": 4,
-  "groupId": "getting-started"
-}

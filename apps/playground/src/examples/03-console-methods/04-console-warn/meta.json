@@ -1,0 +1,4 @@
+{
+  "label": "console.warn",
+  "description": "Capture and render a console.warn message."
+}

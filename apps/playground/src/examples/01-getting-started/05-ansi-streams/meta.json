@@ -1,0 +1,4 @@
+{
+  "label": "Terminal · stdout/stderr",
+  "description": "Preserve stdout/stderr channel metadata when the runtime exposes it, while still accepting untyped output."
+}

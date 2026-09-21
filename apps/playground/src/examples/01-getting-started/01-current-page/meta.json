@@ -1,0 +1,4 @@
+{
+  "label": "Current page",
+  "description": "Capture console messages from the current page and render them with the React console component."
+}

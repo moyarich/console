@@ -1,6 +1,0 @@
-{
-  "id": "console-assert",
-  "label": "console.assert",
-  "description": "Capture a failed console.assert with a message.",
-  "order": 7
-}

@@ -1,6 +1,0 @@
-{
-  "id": "console-time-end",
-  "label": "console.timeEnd",
-  "description": "Capture and render elapsed time from console.timeEnd.",
-  "order": 11
-}

@@ -1,6 +1,0 @@
-{
-  "id": "console-warn",
-  "label": "console.warn",
-  "description": "Capture and render a console.warn message.",
-  "order": 5
-}

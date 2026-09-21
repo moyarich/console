@@ -1,6 +1,0 @@
-{
-  "id": "console-error",
-  "label": "console.error",
-  "description": "Capture and render a console.error message.",
-  "order": 6
-}
