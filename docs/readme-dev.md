@@ -184,7 +184,7 @@ Current producers include:
 - `listenForConsoleWebSocket()`
 - application code calling `events.emit(...)`
 
-### Page capture
+### Console capture
 
 `captureConsole()` wraps methods on an existing `Console` object and returns a cleanup function that restores the previous methods. The option is named `consoleTarget` rather than `target` because `target` already represents other concepts in the codebase.
 
