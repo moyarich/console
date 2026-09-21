@@ -31,8 +31,9 @@ const INITIAL_MESSAGES: ConsoleMessageData[] = [
 ];
 
 export default function ExtensibleActionsExample() {
-  const [messages, setMessages] =
-    useState<ConsoleMessageData[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<ConsoleMessageData[]>(
+    INITIAL_MESSAGES,
+  );
   const [bookmarks, setBookmarks] = useState<Set<string>>(() => new Set());
   const [lastAction, setLastAction] = useState(
     "Right-click the console, an object, or a message to try the actions.",
@@ -81,20 +82,24 @@ export default function ExtensibleActionsExample() {
       icon: <span aria-hidden="true">★</span>,
       onSelect: ({ message, index }) => {
         const key = message.id ?? `message-${index}`;
+        const wasBookmarked = bookmarks.has(key);
 
         setBookmarks((current) => {
           const next = new Set(current);
 
-          if (next.has(key)) {
+          if (wasBookmarked) {
             next.delete(key);
-            setLastAction(`Removed bookmark from message #${index + 1}.`);
           } else {
             next.add(key);
-            setLastAction(`Bookmarked message #${index + 1}.`);
           }
 
           return next;
         });
+        setLastAction(
+          wasBookmarked
+            ? `Removed bookmark from message #${index + 1}.`
+            : `Bookmarked message #${index + 1}.`,
+        );
       },
     },
     {
