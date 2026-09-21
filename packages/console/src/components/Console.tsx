@@ -83,9 +83,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
   const visibleMessages = useMemo(
     () =>
       filter
-        ? messages.filter((message, index) =>
-            filter(message, index, messages),
-          )
+        ? messages.filter((message, index) => filter(message, index, messages))
         : messages,
     [filter, messages],
   );
@@ -119,25 +117,20 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     const distanceFromBottom =
       surface.scrollHeight - surface.scrollTop - surface.clientHeight;
 
-    shouldAutoScrollRef.current =
-      distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
+    shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
   };
 
   const hasExpandableValues = visibleMessages.some(
     (message) =>
       message.method !== "table" &&
-      message.data.some(
-        (value) => typeof value === "object" && value !== null,
-      ),
+      message.data.some((value) => typeof value === "object" && value !== null),
   );
 
   const expandAllCollapsed = () => {
     setExpandedMessages((current) => {
       const version = Math.max(0, ...Array.from(current.values())) + 1;
 
-      return new Map(
-        visibleMessages.map((message) => [message, version]),
-      );
+      return new Map(visibleMessages.map((message) => [message, version]));
     });
   };
 

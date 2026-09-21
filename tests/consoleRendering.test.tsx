@@ -48,10 +48,7 @@ describe("Console rendering", () => {
     const html = renderConsole([
       {
         method: "log",
-        data: [
-          new Map([["name", "console"]]),
-          new Set(["log", "warn"]),
-        ],
+        data: [new Map([["name", "console"]]), new Set(["log", "warn"])],
         depth: 0,
       },
     ]);
