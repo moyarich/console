@@ -276,4 +276,69 @@ describe("Console rendering", () => {
     expect(html).toContain('data-method="error"');
     expect(html).toContain("Error: boom");
   });
+  it("dispatches custom message renderers by method", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "warn", data: ["custom warning"], depth: 0 }]}
+        messageRenderers={[
+          {
+            method: "warn",
+            render: (_message, { renderDefault }) => (
+              <section data-custom-message="warning">{renderDefault()}</section>
+            ),
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('data-custom-message="warning"');
+    expect(html).toContain('data-method="warn"');
+    expect(html).toContain("custom warning");
+  });
+
+  it("dispatches nested value renderers and falls back on undefined", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            method: "dir",
+            data: [{ answer: 42, other: 7 }],
+            depth: 0,
+            expandLevel: 1,
+          },
+        ]}
+        valueRenderers={[
+          {
+            type: "number",
+            render: (value) =>
+              value === 42 ? <mark data-custom-value="answer">42</mark> : undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('data-custom-value="answer"');
+    expect(html).toContain(">42<");
+    expect(html).toContain(">7<");
+  });
+
+  it("falls back to built-in rendering when a custom renderer throws", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "log", data: ["safe fallback"], depth: 0 }]}
+        messageRenderers={[
+          {
+            match: () => true,
+            render: () => {
+              throw new Error("renderer failed");
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('data-method="log"');
+    expect(html).toContain("safe fallback");
+  });
+
 });
