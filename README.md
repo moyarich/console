@@ -115,7 +115,7 @@ const { messages, clear } = useConsoleMessages({
 `Console` renders one of two message shapes through the same component:
 
 - `mode="console"` (the default) accepts `ConsoleMessageData[]`
-- `mode="ansi"` accepts strings or `{ id?, data }` stdout entries and renders ANSI escape sequences with `anser`; its actions menu includes **Copy output**, which copies the rendered plain text without ANSI escape codes
+- `mode="ansi"` accepts strings or `{ id?, data, stream? }` process-output entries and renders ANSI escape sequences with `anser`; `stream` is optional and may be `"stdout"` or `"stderr"`. Its actions menu includes **Copy output**, which copies the rendered plain text without ANSI escape codes
 
 Structured console output:
 
@@ -133,11 +133,18 @@ ANSI/stdout output:
 ```tsx
 const messages = [
   { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
+  {
+    id: "2",
+    data: "\\u001b[31mConnection failed\\u001b[0m",
+    stream: "stderr",
+  },
   "Listening on port 3000",
 ];
 
 <Console mode="ansi" messages={messages} />;
 ```
+
+`stream` is metadata about the process channel, not a console method. A `stderr` entry is not treated as `console.error()`.
 
 `ConsoleStdout` remains available as the lower-level ANSI list renderer when the surrounding Console panel UI is not needed.
 

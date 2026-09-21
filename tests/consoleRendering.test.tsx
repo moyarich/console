@@ -147,6 +147,7 @@ describe("Console rendering", () => {
         messages={[
           `${escape}[38;5;196mred${escape}[0m`,
           { id: "plain", data: "plain stdout" },
+          { id: "stderr", data: "stderr output", stream: "stderr" },
         ]}
       />,
     );
@@ -154,7 +155,8 @@ describe("Console rendering", () => {
     expect(html).toContain("red");
     expect(html).toContain("rgb(255, 0, 0)");
     expect(html).toContain("plain stdout");
-    expect(html).toContain("ANSI-aware stdout output");
+    expect(html).toContain("ANSI-aware process output");
+    expect(html).toContain('data-stream="stderr"');
     expect(html).toContain(">Copy output<");
     expect(html).toContain('data-console-mode="ansi"');
   });
@@ -171,7 +173,7 @@ describe("Console rendering", () => {
   it("renders the ANSI empty state through Console", () => {
     const html = renderToStaticMarkup(<Console mode="ansi" messages={[]} />);
 
-    expect(html).toContain("No stdout output yet.");
+    expect(html).toContain("No process output yet.");
   });
 
   it("renders ConsoleStdout independently", () => {

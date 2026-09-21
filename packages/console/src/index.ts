@@ -9,6 +9,7 @@ export type {
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export { ConsoleStdout } from "./components/ConsoleStdout";
 export type {
+  ConsoleOutputStream,
   ConsoleStdoutEntry,
   ConsoleStdoutProps,
 } from "./components/ConsoleStdout";

@@ -1,8 +1,11 @@
 import Anser from "anser";
 
+export type ConsoleOutputStream = "stdout" | "stderr";
+
 export interface ConsoleStdoutEntry {
   id?: string;
   data: string;
+  stream?: ConsoleOutputStream;
 }
 
 export interface ConsoleStdoutProps {
@@ -22,6 +25,7 @@ export function ConsoleStdout({
     <div className="console-stdout-list">
       {entries.map((entry, index) => {
         const data = typeof entry === "string" ? entry : entry.data;
+        const stream = typeof entry === "string" ? undefined : entry.stream;
         const key =
           typeof entry === "string"
             ? `stdout-${index}`
@@ -31,6 +35,7 @@ export function ConsoleStdout({
         return (
           <pre
             className="console-stdout-line"
+            data-stream={stream}
             key={key}
             dangerouslySetInnerHTML={{ __html: html }}
           />
