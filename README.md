@@ -260,7 +260,7 @@ interface ConsoleMessageData {
 | `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
 | `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
 | `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
-| `clear()`                    | Produces a `clear` event through the proxy's `onEvent` callback                                                        |
+| `clear()`                    | Emits `clear` through the proxy's event channel                                                                         |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
@@ -268,9 +268,7 @@ If sandboxed code calls an unknown console method on the proxy, the proxy does n
 
 ```ts
 const events = createConsoleEventEmitter();
-const runtimeConsole = createConsoleProxy({
-  onEvent: createConsoleEventHandler(events),
-});
+const runtimeConsole = createConsoleProxy({ events });
 
 runtimeConsole.group("build");
 runtimeConsole.time("compile");
@@ -371,13 +369,13 @@ The returned function restores the original console methods.
 
 ## Give sandboxed code a console
 
-`createConsoleProxy()` returns a console-compatible object without patching the page's real console. It reports each produced `ConsoleEvent` through `onEvent`; storage and transport stay outside the proxy.
+`createConsoleProxy()` returns a console-compatible object without patching the page's real console. It publishes `message` and `clear` events into the provided `ConsoleEventEmitter`; storage and rendering stay outside the proxy.
 
 ```ts
 const events = createConsoleEventEmitter();
 
 const runtimeConsole = createConsoleProxy({
-  onEvent: createConsoleEventHandler(events),
+  events,
   source: "sandbox",
 });
 
@@ -389,23 +387,11 @@ runtimeConsole.log("hello", { from: "sandbox" });
 runtimeConsole.warn("warning");
 ```
 
-You can also handle the event directly when no emitter is needed:
-
-```ts
-const runtimeConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      saveMessage(event.message);
-    }
-  },
-});
-```
-
 ### Proxy options
 
 | Option     | Purpose                                                   |
 | ---------- | --------------------------------------------------------- |
-| `onEvent`  | Receives each produced `ConsoleEvent`                     |
+| `events`   | Event channel that receives `message` / `clear` events    |
 | `source`   | Adds source metadata to every emitted message             |
 | `now`      | Overrides wall-clock timestamp generation                 |
 | `timerNow` | Overrides the high-resolution clock used by timer methods |
@@ -419,7 +405,7 @@ const events = createConsoleEventEmitter();
 
 const { messages } = useConsoleMessages({ events });
 const runtimeConsole = createConsoleProxy({
-  onEvent: createConsoleEventHandler(events),
+  events,
 });
 
 runtimeConsole.log("shared event stream");
@@ -667,7 +653,6 @@ Available helpers:
 | `captureConsole`            | Temporarily wrap an existing `Console` object              |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code    |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                    |
-| `createConsoleEventHandler` | Adapt a `ConsoleEvent` producer to a `ConsoleEventEmitter` |
 
 ### Structured-output parsing
 
