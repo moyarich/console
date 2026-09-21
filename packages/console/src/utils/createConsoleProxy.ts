@@ -15,7 +15,14 @@ export interface CreateConsoleProxyOptions {
   events?: ConsoleEventEmitter;
   source?: string;
   now?: () => number;
+  timerNow?: () => number;
 }
+
+const defaultTimerNow = () =>
+  typeof performance !== "undefined" &&
+  typeof performance.now === "function"
+    ? performance.now()
+    : Date.now();
 
 export function createConsoleProxy(
   target: ConsoleMessageData[] | CreateConsoleProxyOptions = {},
@@ -25,6 +32,7 @@ export function createConsoleProxy(
     events,
     source,
     now = () => Date.now(),
+    timerNow = defaultTimerNow,
   } = Array.isArray(target) ? { messages: target } : target;
 
   const counts = new Map<string, number>();
@@ -59,7 +67,7 @@ export function createConsoleProxy(
 
   const getElapsedTime = (label: string) => {
     const startedAt = timers.get(label);
-    return startedAt === undefined ? null : now() - startedAt;
+    return startedAt === undefined ? null : timerNow() - startedAt;
   };
 
   const getDirExpandLevel = (requestedDepth?: number | null) =>
@@ -144,7 +152,7 @@ export function createConsoleProxy(
     },
 
     time(label = "default") {
-      timers.set(label, now());
+      timers.set(label, timerNow());
     },
 
     timeEnd(label = "default") {
