@@ -9,6 +9,8 @@ import type { ConsoleMessageData, RunOutput } from "../types";
 export interface UseConsoleMessagesOptions {
   initialMessages?: ConsoleMessageData[];
   maxMessages?: number;
+  dedupeById?: boolean;
+  resetKey?: unknown;
   events?: ConsoleEventEmitter;
   capture?: boolean;
   source?: string;
@@ -19,6 +21,8 @@ export interface UseConsoleMessagesOptions {
 export function useConsoleMessages({
   initialMessages = [],
   maxMessages = 1000,
+  dedupeById = true,
+  resetKey,
   events: providedEvents,
   capture = false,
   source = "page",
@@ -26,6 +30,7 @@ export function useConsoleMessages({
   target,
 }: UseConsoleMessagesOptions = {}) {
   const internalEventsRef = useRef<ConsoleEventEmitter | null>(null);
+  const resetKeyRef = useRef(resetKey);
   const events =
     providedEvents ??
     (internalEventsRef.current ??= createConsoleEventEmitter());
@@ -35,12 +40,20 @@ export function useConsoleMessages({
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
       setMessages((current) => {
+        if (
+          dedupeById &&
+          message.id &&
+          current.some((item) => item.id === message.id)
+        ) {
+          return current;
+        }
+
         const next = [...current, message];
 
         return next.length > maxMessages ? next.slice(-maxMessages) : next;
       });
     },
-    [maxMessages],
+    [dedupeById, maxMessages],
   );
 
   const handleClear = useCallback(() => {
@@ -69,6 +82,15 @@ export function useConsoleMessages({
       passThrough,
     });
   }, [capture, events, target, source, passThrough]);
+
+  useEffect(() => {
+    if (Object.is(resetKeyRef.current, resetKey)) {
+      return;
+    }
+
+    resetKeyRef.current = resetKey;
+    events.emit("clear");
+  }, [events, resetKey]);
 
   const append = useCallback(
     (message: ConsoleMessageData) => {
