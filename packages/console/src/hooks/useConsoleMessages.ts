@@ -4,7 +4,7 @@ import {
   type ConsoleEventEmitter,
 } from "../utils/createConsoleEventEmitter";
 import { createConsoleProxy } from "../utils/createConsoleProxy";
-import { capturePageConsole } from "../utils/capturePageConsole";
+import { captureConsole } from "../utils/captureConsole";
 import type { ConsoleEvent, ConsoleMessageData, RunOutput } from "../types";
 
 export interface UseConsoleMessagesOptions {
@@ -16,7 +16,7 @@ export interface UseConsoleMessagesOptions {
   capture?: boolean;
   source?: string;
   passThrough?: boolean;
-  target?: Console;
+  consoleTarget?: Console;
 }
 
 export function useConsoleMessages({
@@ -28,7 +28,7 @@ export function useConsoleMessages({
   capture = false,
   source = "page",
   passThrough = true,
-  target,
+  consoleTarget,
 }: UseConsoleMessagesOptions = {}) {
   const internalEventsRef = useRef<ConsoleEventEmitter | null>(null);
   const resetKeyRef = useRef(resetKey);
@@ -97,13 +97,13 @@ export function useConsoleMessages({
       return;
     }
 
-    return capturePageConsole({
+    return captureConsole({
       events,
-      target,
+      consoleTarget,
       source,
       passThrough,
     });
-  }, [capture, events, target, source, passThrough]);
+  }, [capture, events, consoleTarget, source, passThrough]);
 
   useEffect(() => {
     if (Object.is(resetKeyRef.current, resetKey)) {
