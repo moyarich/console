@@ -238,21 +238,51 @@ The playground is the primary interactive development surface.
 npm run dev
 ```
 
-Examples live under:
+Examples use numbered directories as the source of truth for grouping and order:
 
 ```text
 apps/playground/src/examples/
+  01-getting-started/
+    01-current-page/
+      example.tsx
+      source.tsx
+      meta.json
+    02-console-enhancements/
+      ...
+  02-events/
+    01-console-event/
+      ...
+  03-console-methods/
+    01-console-log/
+      ...
+  04-transports/
+    01-iframe/
+      ...
 ```
 
-Each example should focus on one public usage pattern or console behavior.
+The numeric prefix on a group directory controls group order. The numeric prefix on an example directory controls order within that group. The suffix after the prefix becomes the runtime `groupId` or example `id`.
 
-When adding an example:
+`meta.json` contains display metadata only:
 
-1. add its example files
-2. give it the correct example group metadata
-3. register it in the examples index
-4. keep example code representative of the public package API
-5. avoid depending on private implementation details
+```json
+{
+  "label": "console.log",
+  "description": "Capture and render a standard console.log message."
+}
+```
+
+The examples index auto-discovers `NN-group/NN-example` directories, so examples do not need manual registration and ordering must not be duplicated in metadata.
+
+When adding or reordering an example:
+
+1. place it under the appropriate numbered group directory
+2. use an `NN-example-name` directory prefix for its order
+3. include `example.tsx`, `source.tsx`, and `meta.json`
+4. change numeric prefixes to reorder groups or examples
+5. keep example code representative of the public package API
+6. avoid depending on private implementation details
+
+Renaming only a numeric prefix changes order without changing the example `id`. Changing the suffix changes the derived `id`, so suffixes should remain stable unless an ID change is intentional.
 
 ## Storybook
 

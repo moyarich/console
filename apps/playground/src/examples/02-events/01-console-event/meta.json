@@ -1,0 +1,4 @@
+{
+  "label": "ConsoleEvent",
+  "description": "Create message and clear ConsoleEvent values and publish them through ConsoleEventEmitter."
+}
