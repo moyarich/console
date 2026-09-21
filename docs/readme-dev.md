@@ -74,18 +74,24 @@ The package is intentionally split into a few responsibilities.
 
 ### Rendering
 
-The React components render normalized `ConsoleMessageData` values.
+`Console` has two rendering modes:
+
+- `mode="console"` renders normalized `ConsoleMessageData` values
+- `mode="ansi"` renders process-output entries with ANSI styling through `anser`
+
+`ConsoleStdout` is the lower-level ANSI list renderer used when the surrounding console panel UI is not needed. ANSI mode is a process-output viewer, not a terminal emulator; application-specific shells, tabs, restart controls, and runtime orchestration belong outside the package.
 
 Key files include:
 
 ```text
 packages/console/src/components/Console.tsx
+packages/console/src/components/ConsoleStdout.tsx
 packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
 ```
 
-Rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket.
+Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
 
 ### Message state
 
@@ -202,16 +208,17 @@ Serialization protects transport boundaries from values JSON cannot represent sa
 
 Regression coverage should include:
 
-- `BigInt`
-- `undefined`
-- functions
-- symbols
-- errors
-- dates
-- regular expressions
+- `BigInt` and `undefined`
+- functions and symbols
+- `NaN`, infinities, and negative zero
+- errors, dates, and regular expressions
+- maps and sets
+- ArrayBuffers, DataViews, and typed arrays
+- DOM elements and NodeLists
 - circular references
 - repeated non-circular references
 - objects with throwing getters/string conversion
+- serialize/deserialize round trips across postMessage and WebSocket listeners
 
 ## Console methods
 
@@ -400,6 +407,19 @@ import "@moyarich/console/styles.css";
 ```
 
 React and React DOM are peer dependencies and currently require version 18 or newer.
+
+## Package metadata
+
+Keep the public metadata in `packages/console/package.json` aligned with the actual library surface.
+
+When capabilities change, review:
+
+- `description` for a concise statement of the package's current purpose
+- `keywords` for relevant discovery terms without claiming unsupported behavior
+- `repository`, `bugs`, and `homepage` links
+- the root README, which is copied into the package during `npm pack` / `npm publish`
+
+The package should describe ANSI support as process-output rendering rather than as a full terminal emulator.
 
 ## Publishing
 
