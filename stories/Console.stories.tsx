@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Console,
-  type ConsoleMessageModeProps,
-} from "@moyarich/console";
+import { Console, type ConsoleMessageModeProps } from "@moyarich/console";
 
 const nestedEnterprise = {
   enterpriseName: "TechNova Global",
