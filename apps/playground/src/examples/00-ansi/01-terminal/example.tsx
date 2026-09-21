@@ -119,9 +119,7 @@ export default function TerminalExample() {
 
     setMessages((current) => [
       ...current,
-      ...(current.length
-        ? [{ id: `${runId}-separator`, data: "" }]
-        : []),
+      ...(current.length ? [{ id: `${runId}-separator`, data: "" }] : []),
       ...entries.map((entry, index) => ({
         ...entry,
         id: `${runId}-${entry.id ?? index}`,
@@ -132,10 +130,7 @@ export default function TerminalExample() {
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <div className="button-row">
-        <button
-          type="button"
-          onClick={() => appendOutput(getDevServerOutput())}
-        >
+        <button type="button" onClick={() => appendOutput(getDevServerOutput())}>
           Run dev server
         </button>
 
@@ -150,10 +145,7 @@ export default function TerminalExample() {
           Show ANSI formatting
         </button>
 
-        <button
-          type="button"
-          onClick={() => appendOutput(getStructuredOutput())}
-        >
+        <button type="button" onClick={() => appendOutput(getStructuredOutput())}>
           Log JSON
         </button>
       </div>

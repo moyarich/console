@@ -64,7 +64,6 @@ export function App() {
               <p>{example.description}</p>
               <code>{example.id}</code>
             </div>
-
           </aside>
 
           <RunnableExample example={example} />
