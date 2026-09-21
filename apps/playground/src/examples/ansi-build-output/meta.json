@@ -1,0 +1,7 @@
+{
+  "id": "ansi-build-output",
+  "label": "Terminal · Build output",
+  "description": "Show npm/Vite-style build output with ANSI formatting and optional stdout/stderr metadata.",
+  "order": 6,
+  "groupId": "getting-started"
+}
