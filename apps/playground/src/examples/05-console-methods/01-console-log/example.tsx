@@ -2,14 +2,12 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleLogExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-log",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.log("Log message");
+    console.log("Log message", { ready: true });
   };
 
   return (

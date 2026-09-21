@@ -2,18 +2,13 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleTimeEndExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-time-end",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.time("Timer message");
-
-    setTimeout(() => {
-      console.timeEnd("Timer message");
-    }, 500);
+    console.time("compile");
+    console.timeEnd("compile");
   };
 
   return (

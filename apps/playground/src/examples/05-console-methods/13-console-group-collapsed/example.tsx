@@ -2,14 +2,14 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleGroupCollapsedExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-group-collapsed",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.groupCollapsed("Collapsed group message");
+    console.groupCollapsed("Request details");
+    console.log("GET /api/users");
+    console.log({ status: 200, cached: true });
     console.groupEnd();
   };
 

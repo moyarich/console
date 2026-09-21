@@ -2,10 +2,8 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleTraceExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-trace",
-    passThrough: true,
   });
 
   const runExample = () => {

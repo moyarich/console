@@ -2,14 +2,13 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleAssertExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-assert",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.assert(false, "Assertion message");
+    console.assert(true, "This assertion is not emitted");
+    console.assert(false, "Assertion message", { expected: true });
   };
 
   return (

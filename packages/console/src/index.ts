@@ -12,6 +12,8 @@ export type {
   ConsoleOutputStream,
   ConsoleStdoutEntry,
   ConsoleStdoutProps,
+  ConsoleStructuredOutputParser,
+  ConsoleStructuredOutputParserContext,
 } from "./components/ConsoleStdout";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
@@ -27,13 +29,13 @@ export { normalizeConsoleTableData } from "./utils/consoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/consoleCopyObject";
 export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
-export { capturePageConsole } from "./utils/capturePageConsole";
+export { captureConsole } from "./utils/captureConsole";
 export { createConsoleEventEmitter } from "./utils/createConsoleEventEmitter";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
 } from "./utils/createConsoleEventEmitter";
-export type { CapturePageConsoleOptions } from "./utils/capturePageConsole";
+export type { CaptureConsoleOptions } from "./utils/captureConsole";
 export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
@@ -64,6 +66,5 @@ export type {
   RunOutput,
   DirOptions,
   ConsoleEvent,
-  ConsoleEventSink,
   ConsoleTransportEnvelope,
 } from "./types";

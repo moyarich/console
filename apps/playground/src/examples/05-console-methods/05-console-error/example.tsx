@@ -2,14 +2,12 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleErrorExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-error",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.error("Error message");
+    console.error("Error message", new Error("Example failure"));
   };
 
   return (

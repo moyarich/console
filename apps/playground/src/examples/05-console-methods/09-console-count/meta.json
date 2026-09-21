@@ -1,4 +1,4 @@
 {
   "label": "console.count",
-  "description": "Capture and render a console.count value for a label."
+  "description": "Render repeated console.count values for the same label."
 }

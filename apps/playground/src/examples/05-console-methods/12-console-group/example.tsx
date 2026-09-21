@@ -2,14 +2,14 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleGroupExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-group",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.group("Group message");
+    console.group("Build");
+    console.log("Compiling application");
+    console.log("Writing output", { files: 42 });
     console.groupEnd();
   };
 

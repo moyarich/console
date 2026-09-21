@@ -2,14 +2,12 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleDebugExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-debug",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.debug("Debug message");
+    console.debug("Debug message", { phase: "render" });
   };
 
   return (

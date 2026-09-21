@@ -2,14 +2,12 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleWarnExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-warn",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.warn("Warning message");
+    console.warn("Warning message", { retryable: true });
   };
 
   return (

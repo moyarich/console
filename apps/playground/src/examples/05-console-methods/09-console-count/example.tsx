@@ -2,14 +2,14 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleCountExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-count",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.count("Count message");
+    console.count("requests");
+    console.count("requests");
+    console.count("requests");
   };
 
   return (

@@ -31,11 +31,12 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Render ANSI `stdout` / `stderr`                    | `<Console mode="ansi" messages={entries} />` |
 | Keep console messages in React state               | `useConsoleMessages()`                       |
 | Capture the current page's real `console.*` calls  | `useConsoleMessages({ capture: true })`      |
-| Capture a different `Console` object               | `capturePageConsole()`                       |
+| Capture a different `Console` object               | `captureConsole()`                           |
 | Give evaluated or sandboxed code its own `console` | `createConsoleProxy()`                       |
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
 | Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
+| Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
 ## Install
@@ -64,19 +65,11 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export function AppConsole() {
-  const { messages, append, clear } = useConsoleMessages();
+  const { messages, console, clear } = useConsoleMessages();
 
   return (
     <>
-      <button
-        onClick={() =>
-          append({
-            method: "log",
-            data: ["Hello", { ready: true }],
-            depth: 0,
-          })
-        }
-      >
+      <button onClick={() => console.log("Hello", { ready: true })}>
         Add message
       </button>
 
@@ -89,9 +82,12 @@ export function AppConsole() {
 The important separation is:
 
 - `useConsoleMessages()` owns message state.
-- `append()` produces a structured console message.
+- the returned `console` is a console-compatible producer for callbacks and runtime code.
+- `append()` remains available when you already have a `ConsoleMessageData`.
 - `<Console />` renders the messages.
 - `onClear={clear}` connects the panel's clear action back to state.
+
+Do not call the returned `console` during React render. Use it from event handlers, runtime callbacks, or effects whose lifecycle you control.
 
 If your runtime already returns `{ messages, error }`, structured mode also accepts `output={runOutput}`.
 
@@ -147,9 +143,9 @@ ANSI rendering uses `anser` and supports standard and bright colors, 256-color, 
 
 ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
 
-### Promote strict JSON from ANSI output
+### Parse structured values from ANSI output
 
-If a process prints complete JSON objects or arrays, `parseStructuredOutput` can render them through the normal expandable value inspector:
+If a process prints complete JSON objects or arrays, `parseStructuredOutput` keeps the built-in strict-JSON behavior and renders matching values through the normal expandable inspector:
 
 ```tsx
 <Console
@@ -159,7 +155,53 @@ If a process prints complete JSON objects or arrays, `parseStructuredOutput` can
 />
 ```
 
-ANSI codes may surround the JSON because the renderer extracts plain text before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text because they are not valid JSON.
+For NDJSON records, compiler diagnostics, test-runner events, or application-specific lines, pass one or more `structuredOutputParsers`:
+
+```tsx
+import type { ConsoleStructuredOutputParser } from "@moyarich/console";
+
+const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
+  const match = text.match(/^ERROR\s+(TS\d+):\s+(.+)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    kind: "diagnostic",
+    code: match[1],
+    message: match[2],
+    stream: context.stream,
+  };
+};
+
+<Console
+  mode="ansi"
+  messages={[
+    {
+      id: "diagnostic-1",
+      data: "\u001b[31mERROR TS2322: invalid value\u001b[0m",
+      stream: "stderr",
+    },
+  ]}
+  structuredOutputParsers={[diagnosticParser]}
+/>;
+```
+
+Parsers run in order and receive ANSI-stripped text plus the original entry context:
+
+```ts
+interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: "stdout" | "stderr";
+}
+```
+
+Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to the original ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+
+ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
 
 Use `ConsoleStdout` directly if you only need the lower-level ANSI list without the surrounding panel.
 
@@ -195,7 +237,7 @@ interface ConsoleMessageData {
 
 ## Supported `console.*` methods
 
-`createConsoleProxy()` implements the following console methods. `capturePageConsole()` wraps the same method set when capturing a real console.
+`createConsoleProxy()` implements the following console methods. `captureConsole()` wraps the same method set when capturing a real console.
 
 | Console call                 | Message/output behavior                                                                                                |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -218,13 +260,14 @@ interface ConsoleMessageData {
 | `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
 | `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
 | `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
-| `clear()`                    | Clears the target message array when present and emits a `clear` event                                                 |
+| `clear()`                    | Emits `clear` through the proxy's event channel                                                                        |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
 ### Example: timers and groups
 
 ```ts
+const events = createConsoleEventEmitter();
 const runtimeConsole = createConsoleProxy({ events });
 
 runtimeConsole.group("build");
@@ -244,7 +287,7 @@ The messages contain the calculated group depth and timer output, so the rendere
 `useConsoleMessages()` is the easiest way to connect event producers to React state.
 
 ```tsx
-const { messages, output, append, clear, events, setMessages } =
+const { messages, output, console, append, clear, events, setMessages } =
   useConsoleMessages({
     maxMessages: 1000,
     dedupeById: true,
@@ -264,22 +307,23 @@ const { messages, output, append, clear, events, setMessages } =
 | `capture`         | `false`          | Capture calls from a real console                          |
 | `source`          | `"page"`         | Source metadata added during capture                       |
 | `passThrough`     | `true`           | Also call the original console method while capturing      |
-| `target`          | global console   | Alternate `Console` object to capture                      |
+| `consoleTarget`   | global console   | Existing `Console` object to capture                       |
 
 ### Returned values
 
-| Value             | Purpose                                       |
-| ----------------- | --------------------------------------------- |
-| `messages`        | Current `ConsoleMessageData[]`                |
-| `output`          | Convenience `{ messages, error: "" }` object  |
-| `append(message)` | Emits a message into the hook's event channel |
-| `clear()`         | Emits a clear event                           |
-| `events`          | The `ConsoleEventEmitter` used by the hook    |
-| `setMessages`     | Direct React state setter for advanced cases  |
+| Value             | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `messages`        | Current `ConsoleMessageData[]`                          |
+| `output`          | Convenience `{ messages, error: "" }` object            |
+| `console`         | Stable console-compatible producer backed by hook state |
+| `append(message)` | Emits a message into the hook's event channel           |
+| `clear()`         | Emits a clear event                                     |
+| `events`          | The `ConsoleEventEmitter` used by the hook              |
+| `setMessages`     | Direct React state setter for advanced cases            |
 
-## Capture a real console
+## Capture an existing console
 
-### Capture from React
+### Capture the global console from React
 
 ```tsx
 const { messages, clear } = useConsoleMessages({
@@ -293,15 +337,26 @@ const { messages, clear } = useConsoleMessages({
 
 With `passThrough: true`, calls are both captured and forwarded to the original console, so they still appear in browser DevTools.
 
+To capture a different existing `Console` object, provide `consoleTarget`:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  capture: true,
+  consoleTarget: iframe.contentWindow.console,
+  source: "iframe",
+});
+```
+
 ### Capture outside React
 
-Use `capturePageConsole()` when you want capture without the state hook.
+Use `captureConsole()` when you want capture without the state hook.
 
 ```ts
 const events = createConsoleEventEmitter();
 
-const restore = capturePageConsole({
+const restore = captureConsole({
   events,
+  consoleTarget: previewConsole,
   source: "preview",
   passThrough: true,
 });
@@ -314,19 +369,7 @@ The returned function restores the original console methods.
 
 ## Give sandboxed code a console
 
-`createConsoleProxy()` returns a console-compatible object without patching the page's real console.
-
-Write directly to an array:
-
-```ts
-const messages: ConsoleMessageData[] = [];
-const runtimeConsole = createConsoleProxy(messages);
-
-runtimeConsole.log("hello", { from: "sandbox" });
-runtimeConsole.warn("warning");
-```
-
-Or publish to an event channel:
+`createConsoleProxy()` returns a console-compatible object without patching the page's real console. It publishes `message` and `clear` events into the provided `ConsoleEventEmitter`; storage and rendering stay outside the proxy.
 
 ```ts
 const events = createConsoleEventEmitter();
@@ -339,19 +382,19 @@ const runtimeConsole = createConsoleProxy({
 events.on("message", (message) => {
   // store, render, or transport the message
 });
+
+runtimeConsole.log("hello", { from: "sandbox" });
+runtimeConsole.warn("warning");
 ```
 
 ### Proxy options
 
 | Option     | Purpose                                                   |
 | ---------- | --------------------------------------------------------- |
-| `messages` | Array that receives emitted messages                      |
-| `events`   | Event emitter that receives `message` / `clear` events    |
+| `events`   | Event channel that receives `message` / `clear` events    |
 | `source`   | Adds source metadata to every emitted message             |
 | `now`      | Overrides wall-clock timestamp generation                 |
 | `timerNow` | Overrides the high-resolution clock used by timer methods |
-
-Both `messages` and `events` may be supplied, allowing the same proxy to write to both.
 
 ## Event channel
 
@@ -375,8 +418,6 @@ runtimeConsole.log("shared event stream");
 | `off(type, listener)`       | Remove one listener                                               |
 | `emit("message", message)`  | Publish one structured message                                    |
 | `emit("clear")`             | Publish a clear event                                             |
-| `onEvent(listener)`         | Subscribe to the discriminated `ConsoleEvent` union               |
-| `emitEvent(event)`          | Publish a `ConsoleEvent` union value                              |
 | `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
 
 ## `Console` component configuration
@@ -413,11 +454,12 @@ The host application owns min/max dimensions. The library only applies the reque
 
 ### ANSI-mode props
 
-| Prop                    | Purpose                                                       |
-| ----------------------- | ------------------------------------------------------------- |
-| `messages`              | Strings or `ConsoleStdoutEntry[]`                             |
-| `parseStructuredOutput` | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
-| `valueRenderers`        | Customize promoted structured values                          |
+| Prop                      | Purpose                                                       |
+| ------------------------- | ------------------------------------------------------------- |
+| `messages`                | Strings or `ConsoleStdoutEntry[]`                             |
+| `parseStructuredOutput`   | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
+| `structuredOutputParsers` | Parse ANSI-stripped text into application-defined values      |
+| `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
 
@@ -606,9 +648,16 @@ Available helpers:
 | Export                      | Purpose                                                  |
 | --------------------------- | -------------------------------------------------------- |
 | `useConsoleMessages`        | React message state connected to a console event channel |
-| `capturePageConsole`        | Temporarily wrap an existing `Console` object            |
+| `captureConsole`            | Temporarily wrap an existing `Console` object            |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
+
+### Structured-output parsing
+
+| Export                                 | Purpose                                                   |
+| -------------------------------------- | --------------------------------------------------------- |
+| `ConsoleStructuredOutputParser`        | Parse one ANSI-stripped output entry into a value         |
+| `ConsoleStructuredOutputParserContext` | Original entry metadata passed to structured-output hooks |
 
 ### Custom rendering
 

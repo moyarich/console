@@ -1,4 +1,4 @@
 {
   "label": "console.trace",
-  "description": "Capture and render a console.trace message and stack."
+  "description": "Render a console.trace message and generated stack."
 }

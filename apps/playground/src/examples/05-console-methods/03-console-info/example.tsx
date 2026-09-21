@@ -2,14 +2,12 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleInfoExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
+  const { messages, console, clear } = useConsoleMessages({
     source: "console-info",
-    passThrough: true,
   });
 
   const runExample = () => {
-    console.info("Info message");
+    console.info("Info message", { version: "1.0.0" });
   };
 
   return (

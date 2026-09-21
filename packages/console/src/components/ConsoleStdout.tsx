@@ -11,10 +11,23 @@ export interface ConsoleStdoutEntry {
   stream?: ConsoleOutputStream;
 }
 
+export interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: ConsoleOutputStream;
+}
+
+export type ConsoleStructuredOutputParser = (
+  text: string,
+  context: ConsoleStructuredOutputParserContext,
+) => unknown | undefined;
+
 export interface ConsoleStdoutProps {
   entries: readonly (ConsoleStdoutEntry | string)[];
   emptyMessage?: string;
   parseStructuredOutput?: boolean;
+  structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
@@ -68,20 +81,51 @@ function getAnsiTokenStyle(token: AnserToken): CSSProperties {
   return style;
 }
 
-function parseStructuredOutput(data: string): object | undefined {
-  const text = Anser.ansiToText(data).trim();
+function parseStrictJsonOutput(text: string): object | undefined {
+  const trimmedText = text.trim();
 
-  if (!text || (!text.startsWith("{") && !text.startsWith("["))) {
+  if (
+    !trimmedText ||
+    (!trimmedText.startsWith("{") && !trimmedText.startsWith("["))
+  ) {
     return undefined;
   }
 
   try {
-    const value: unknown = JSON.parse(text);
+    const value: unknown = JSON.parse(trimmedText);
 
     return typeof value === "object" && value !== null ? value : undefined;
   } catch {
     return undefined;
   }
+}
+
+function parseStructuredOutput(
+  data: string,
+  entry: ConsoleStdoutEntry | string,
+  index: number,
+  shouldParseStrictJson: boolean,
+  parsers: readonly ConsoleStructuredOutputParser[] | undefined,
+): unknown | undefined {
+  const text = Anser.ansiToText(data);
+  const metadata =
+    typeof entry === "string"
+      ? { entry, index }
+      : { entry, index, id: entry.id, stream: entry.stream };
+
+  for (const parser of parsers ?? []) {
+    try {
+      const value = parser(text, metadata);
+
+      if (value !== undefined) {
+        return value;
+      }
+    } catch {
+      // A custom parser must not prevent the original output from rendering.
+    }
+  }
+
+  return shouldParseStrictJson ? parseStrictJsonOutput(text) : undefined;
 }
 
 function AnsiText({ data }: { data: string }) {
@@ -102,6 +146,7 @@ export function ConsoleStdout({
   entries,
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
+  structuredOutputParsers,
   valueRenderers,
 }: ConsoleStdoutProps) {
   if (!entries.length) {
@@ -117,14 +162,21 @@ export function ConsoleStdout({
           typeof entry === "string"
             ? `stdout-${index}`
             : (entry.id ?? `stdout-${index}`);
-        const structuredValue = shouldParseStructuredOutput
-          ? parseStructuredOutput(data)
-          : undefined;
+        const structuredValue =
+          shouldParseStructuredOutput || structuredOutputParsers?.length
+            ? parseStructuredOutput(
+                data,
+                entry,
+                index,
+                shouldParseStructuredOutput,
+                structuredOutputParsers,
+              )
+            : undefined;
         const clearLine = Anser.ansiToJson(data).some(
           (token) => token.clearLine,
         );
 
-        if (structuredValue) {
+        if (structuredValue !== undefined) {
           return (
             <div
               className="console-stdout-line console-stdout-structured"

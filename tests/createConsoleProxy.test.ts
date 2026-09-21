@@ -6,9 +6,13 @@ import {
 } from "@moyarich/console";
 
 describe("createConsoleProxy", () => {
-  it("captures messages and group depth", () => {
+  it("emits messages and group depth through the event channel", () => {
+    const events = createConsoleEventEmitter();
     const messages: ConsoleMessageData[] = [];
-    const console = createConsoleProxy(messages);
+
+    events.on("message", (message) => messages.push(message));
+
+    const console = createConsoleProxy({ events });
 
     console.log("root");
     console.group("group");
@@ -23,10 +27,14 @@ describe("createConsoleProxy", () => {
   });
 
   it("tracks console.time and console.timeEnd", () => {
+    const events = createConsoleEventEmitter();
     const messages: ConsoleMessageData[] = [];
     let currentTime = 1000;
+
+    events.on("message", (message) => messages.push(message));
+
     const console = createConsoleProxy({
-      messages,
+      events,
       timerNow: () => currentTime,
     });
 
@@ -41,7 +49,7 @@ describe("createConsoleProxy", () => {
     });
   });
 
-  it("emits clear through a ConsoleEventEmitter", () => {
+  it("emits message and clear through the same event channel", () => {
     const events = createConsoleEventEmitter();
     const received: string[] = [];
 
