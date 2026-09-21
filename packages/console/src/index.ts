@@ -3,8 +3,14 @@ export type {
   ConsoleMessageFilter,
   ConsoleProps,
   ConsoleRef,
+  ConsoleView,
 } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
+export { ConsoleStdout } from "./components/ConsoleStdout";
+export type {
+  ConsoleStdoutEntry,
+  ConsoleStdoutProps,
+} from "./components/ConsoleStdout";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
 export { CONSOLE_METHODS } from "./consoleMethods";
@@ -30,6 +36,8 @@ export {
   deserializeConsoleEvent,
 } from "./utils/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
+export { parseAnsi } from "./utils/ansi";
+export type { AnsiSegment } from "./utils/ansi";
 export {
   CONSOLE_TRANSPORT_TYPE,
   CONSOLE_TRANSPORT_VERSION,
