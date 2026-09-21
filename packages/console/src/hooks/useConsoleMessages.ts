@@ -3,8 +3,9 @@ import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
 } from "../utils/createConsoleEventEmitter";
+import { createConsoleProxy } from "../utils/createConsoleProxy";
 import { capturePageConsole } from "../utils/capturePageConsole";
-import type { ConsoleMessageData, RunOutput } from "../types";
+import type { ConsoleEvent, ConsoleMessageData, RunOutput } from "../types";
 
 export interface UseConsoleMessagesOptions {
   initialMessages?: ConsoleMessageData[];
@@ -60,6 +61,27 @@ export function useConsoleMessages({
     setMessages([]);
   }, []);
 
+  const handleConsoleEvent = useCallback(
+    (event: ConsoleEvent) => {
+      if (event.type === "clear") {
+        handleClear();
+        return;
+      }
+
+      handleMessage(event.message);
+    },
+    [handleClear, handleMessage],
+  );
+
+  const console = useMemo(
+    () =>
+      createConsoleProxy({
+        onEvent: handleConsoleEvent,
+        source,
+      }),
+    [handleConsoleEvent, source],
+  );
+
   useEffect(() => {
     const offMessage = events.on("message", handleMessage);
     const offClear = events.on("clear", handleClear);
@@ -111,6 +133,7 @@ export function useConsoleMessages({
   return {
     messages,
     output,
+    console,
     append,
     clear,
     events,
