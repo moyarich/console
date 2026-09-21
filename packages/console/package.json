@@ -1,7 +1,7 @@
 {
   "name": "@moyarich/console",
   "version": "0.1.0",
-  "description": "React console UI with capture and transport adapters for pages, iframes, and WebSockets.",
+  "description": "React console and ANSI process-output UI with capture, object inspection, serialization, and iframe/WebSocket transports.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -57,12 +57,26 @@
   },
   "homepage": "https://github.com/moyarich/console#readme",
   "keywords": [
-    "console",
     "react",
+    "console",
+    "react-console",
+    "console-ui",
+    "browser-console",
     "developer-tools",
+    "devtools",
+    "ansi",
+    "stdout",
+    "stderr",
+    "log-viewer",
+    "console-capture",
+    "logging",
+    "code-playground",
+    "code-runner",
+    "sandbox",
     "iframe",
     "postmessage",
     "websocket",
-    "logging"
+    "serialization",
+    "typescript"
   ]
 }
