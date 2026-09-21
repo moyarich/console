@@ -133,7 +133,7 @@ describe("Console rendering", () => {
     expect(html).toContain("Restart server");
     expect(html).toContain("console-toolbar");
     expect(html).toContain('aria-label="Console actions"');
-    expect(html).toContain('popovertarget=');
+    expect(html).toContain("popovertarget=");
     expect(html).toContain('popover="auto"');
     expect(html).not.toContain("console-restart-button");
   });
@@ -148,7 +148,7 @@ describe("Console rendering", () => {
     );
 
     expect(html).toContain("console-actions-trigger");
-    expect(html).toContain('popovertarget=');
+    expect(html).toContain("popovertarget=");
     expect(html).toContain('popover="auto"');
     expect(html).toContain(">Export<");
     expect(html).toContain(">Clear<");
