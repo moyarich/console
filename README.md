@@ -31,7 +31,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Render ANSI `stdout` / `stderr`                    | `<Console mode="ansi" messages={entries} />` |
 | Keep console messages in React state               | `useConsoleMessages()`                       |
 | Capture the current page's real `console.*` calls  | `useConsoleMessages({ capture: true })`      |
-| Capture a different `Console` object               | `captureConsole()`                       |
+| Capture a different `Console` object               | `captureConsole()`                           |
 | Give evaluated or sandboxed code its own `console` | `createConsoleProxy()`                       |
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
@@ -665,7 +665,7 @@ Available helpers:
 | Export                      | Purpose                                                    |
 | --------------------------- | ---------------------------------------------------------- |
 | `useConsoleMessages`        | React message state connected to a console event channel   |
-| `captureConsole`        | Temporarily wrap an existing `Console` object              |
+| `captureConsole`            | Temporarily wrap an existing `Console` object              |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code    |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                    |
 | `createConsoleEventHandler` | Adapt a `ConsoleEvent` producer to a `ConsoleEventEmitter` |
