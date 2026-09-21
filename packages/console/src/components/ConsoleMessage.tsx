@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useContext } from "react";
 import {
   Braces,
   Bug,
@@ -13,6 +14,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
+import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { ConsoleValue } from "./ConsoleValue";
 import {
   dispatchMessageRenderer,
@@ -136,6 +138,7 @@ export function ConsoleMessage({
   valueRenderers,
 }: ConsoleMessageProps) {
   const sourceMessages = messages ?? [message];
+  const contextMenu = useContext(ConsoleContextMenuContext);
   const renderDefault = () => (
     <DefaultConsoleMessage
       message={message}
@@ -153,5 +156,23 @@ export function ConsoleMessage({
     renderDefault,
   });
 
-  return custom === undefined ? renderDefault() : custom;
+  const renderedMessage = custom === undefined ? renderDefault() : custom;
+
+  if (!contextMenu?.messageContextEnabled) {
+    return renderedMessage;
+  }
+
+  return (
+    <div
+      className="console-message-action-target"
+      role="group"
+      aria-label={`${message.method} console message`}
+      tabIndex={0}
+      onContextMenu={(event) =>
+        contextMenu.openForMessage(event, message, index, sourceMessages)
+      }
+    >
+      {renderedMessage}
+    </div>
+  );
 }

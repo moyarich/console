@@ -2,6 +2,8 @@ import type { ConsoleMethod } from "./consoleMethods";
 
 export type { ConsoleMethod } from "./consoleMethods";
 
+export type ConsoleMode = "console" | "ansi";
+
 export interface ConsoleMessageData {
   id?: string;
   method: ConsoleMethod;
