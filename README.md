@@ -27,18 +27,18 @@ It also provides utilities for capturing a real `console`, creating a console-co
 
 ## Choose the API for your use case
 
-| What you need | Start with |
-| --- | --- |
-| Render `ConsoleMessageData[]` you already have | `<Console messages={messages} />` |
-| Render ANSI `stdout` / `stderr` | `<Console mode="ansi" messages={entries} />` |
-| Keep console messages in React state | `useConsoleMessages()` |
-| Capture the current page's real `console.*` calls | `useConsoleMessages({ capture: true })` |
-| Capture a different `Console` object | `capturePageConsole()` |
-| Give evaluated or sandboxed code its own `console` | `createConsoleProxy()` |
-| Connect producers and consumers without React | `createConsoleEventEmitter()` |
-| Receive console events from an iframe | `listenForConsolePostMessages()` |
-| Receive console events from a WebSocket | `listenForConsoleWebSocket()` |
-| Customize how messages or values render | `messageRenderers` / `valueRenderers` |
+| What you need                                      | Start with                                   |
+| -------------------------------------------------- | -------------------------------------------- |
+| Render `ConsoleMessageData[]` you already have     | `<Console messages={messages} />`            |
+| Render ANSI `stdout` / `stderr`                    | `<Console mode="ansi" messages={entries} />` |
+| Keep console messages in React state               | `useConsoleMessages()`                       |
+| Capture the current page's real `console.*` calls  | `useConsoleMessages({ capture: true })`      |
+| Capture a different `Console` object               | `capturePageConsole()`                       |
+| Give evaluated or sandboxed code its own `console` | `createConsoleProxy()`                       |
+| Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
+| Receive console events from an iframe              | `listenForConsolePostMessages()`             |
+| Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
+| Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
 ## Install
 
@@ -108,10 +108,10 @@ If your runtime already returns `{ messages, error }`, structured mode also acce
 
 `Console` has two distinct modes because browser console messages and process output have different semantics.
 
-| Mode | Input | Best for |
-| --- | --- | --- |
+| Mode      | Input                                 | Best for                                                                  |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------- |
 | `console` | `ConsoleMessageData[]` or `RunOutput` | Browser-style `console.*`, rich JavaScript values, groups, tables, traces |
-| `ansi` | strings or `ConsoleStdoutEntry[]` | Process `stdout` / `stderr`, build output, CLI output, ANSI colors |
+| `ansi`    | strings or `ConsoleStdoutEntry[]`     | Process `stdout` / `stderr`, build output, CLI output, ANSI colors        |
 
 ### Structured console mode
 
@@ -190,44 +190,44 @@ interface ConsoleMessageData {
 }
 ```
 
-| Field | Meaning |
-| --- | --- |
-| `method` | Visual/semantic console method such as `log`, `warn`, `table`, or `trace` |
-| `data` | Original values passed to the console call |
-| `depth` | Group nesting level |
-| `id` | Optional stable identifier used by message state for deduplication |
-| `timestamp` | Optional message creation time |
-| `source` | Optional producer label such as `page`, `iframe`, or `sandbox` |
-| `columns` | Optional requested columns for `console.table()` |
-| `expandLevel` | Initial object expansion depth, used by `console.dir()` |
-| `showNonenumerable` | Metadata corresponding to `console.dir(..., { showHidden: true })` |
+| Field               | Meaning                                                                   |
+| ------------------- | ------------------------------------------------------------------------- |
+| `method`            | Visual/semantic console method such as `log`, `warn`, `table`, or `trace` |
+| `data`              | Original values passed to the console call                                |
+| `depth`             | Group nesting level                                                       |
+| `id`                | Optional stable identifier used by message state for deduplication        |
+| `timestamp`         | Optional message creation time                                            |
+| `source`            | Optional producer label such as `page`, `iframe`, or `sandbox`            |
+| `columns`           | Optional requested columns for `console.table()`                          |
+| `expandLevel`       | Initial object expansion depth, used by `console.dir()`                   |
+| `showNonenumerable` | Metadata corresponding to `console.dir(..., { showHidden: true })`        |
 
 ## Supported `console.*` methods
 
 `createConsoleProxy()` implements the following console methods. `capturePageConsole()` wraps the same method set when capturing a real console.
 
-| Console call | Message/output behavior |
-| --- | --- |
-| `log(...data)` | Emits a `log` message with the original values |
-| `debug(...data)` | Emits a `debug` message |
-| `info(...data)` | Emits an `info` message |
-| `warn(...data)` | Emits a `warn` message |
-| `error(...data)` | Emits an `error` message |
-| `assert(condition, ...data)` | Emits `assert` only when the condition is false; defaults to `"Assertion failed"` when no message is supplied |
-| `dir(value, options)` | Emits one `dir` message and records the requested expansion depth; default depth is 1 and `depth: null` expands deeply |
-| `dirxml(...data)` | Emits a `dir` message with expansion depth 1 |
-| `table(data, columns?)` | Emits a `table` message and preserves optional requested columns |
-| `count(label?)` | Increments an internal counter and emits `"label: n"`; label defaults to `"default"` |
-| `countReset(label?)` | Resets the internal counter to 0 and emits no message |
-| `time(label?)` | Starts/restarts an internal timer and emits no message |
-| `timeLog(label?, ...data)` | Emits a `log` message with elapsed milliseconds plus additional values; emits `warn` if the timer does not exist |
-| `timeEnd(label?)` | Emits a `timeEnd` message with elapsed milliseconds and removes the timer; emits `warn` if it does not exist |
-| `timeStamp()` | Currently a no-op |
-| `trace(...data)` | Emits a `trace` message and appends a generated JavaScript stack trace when available |
-| `group(...data)` | Optionally emits a group header, then increases nesting depth |
-| `groupCollapsed(...data)` | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata |
-| `groupEnd()` | Decreases nesting depth without emitting a message |
-| `clear()` | Clears the target message array when present and emits a `clear` event |
+| Console call                 | Message/output behavior                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `log(...data)`               | Emits a `log` message with the original values                                                                         |
+| `debug(...data)`             | Emits a `debug` message                                                                                                |
+| `info(...data)`              | Emits an `info` message                                                                                                |
+| `warn(...data)`              | Emits a `warn` message                                                                                                 |
+| `error(...data)`             | Emits an `error` message                                                                                               |
+| `assert(condition, ...data)` | Emits `assert` only when the condition is false; defaults to `"Assertion failed"` when no message is supplied          |
+| `dir(value, options)`        | Emits one `dir` message and records the requested expansion depth; default depth is 1 and `depth: null` expands deeply |
+| `dirxml(...data)`            | Emits a `dir` message with expansion depth 1                                                                           |
+| `table(data, columns?)`      | Emits a `table` message and preserves optional requested columns                                                       |
+| `count(label?)`              | Increments an internal counter and emits `"label: n"`; label defaults to `"default"`                                   |
+| `countReset(label?)`         | Resets the internal counter to 0 and emits no message                                                                  |
+| `time(label?)`               | Starts/restarts an internal timer and emits no message                                                                 |
+| `timeLog(label?, ...data)`   | Emits a `log` message with elapsed milliseconds plus additional values; emits `warn` if the timer does not exist       |
+| `timeEnd(label?)`            | Emits a `timeEnd` message with elapsed milliseconds and removes the timer; emits `warn` if it does not exist           |
+| `timeStamp()`                | Currently a no-op                                                                                                      |
+| `trace(...data)`             | Emits a `trace` message and appends a generated JavaScript stack trace when available                                  |
+| `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
+| `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
+| `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
+| `clear()`                    | Clears the target message array when present and emits a `clear` event                                                 |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
@@ -269,28 +269,28 @@ const {
 
 ### Options
 
-| Option | Default | Purpose |
-| --- | --- | --- |
-| `initialMessages` | `[]` | Initial structured messages |
-| `maxMessages` | `1000` | Keeps only the newest messages after the limit is exceeded |
-| `dedupeById` | `true` | Ignores a new message when its `id` already exists |
-| `resetKey` | — | Emits a clear when the value changes |
-| `events` | internal emitter | Reuse an existing `ConsoleEventEmitter` |
-| `capture` | `false` | Capture calls from a real console |
-| `source` | `"page"` | Source metadata added during capture |
-| `passThrough` | `true` | Also call the original console method while capturing |
-| `target` | global console | Alternate `Console` object to capture |
+| Option            | Default          | Purpose                                                    |
+| ----------------- | ---------------- | ---------------------------------------------------------- |
+| `initialMessages` | `[]`             | Initial structured messages                                |
+| `maxMessages`     | `1000`           | Keeps only the newest messages after the limit is exceeded |
+| `dedupeById`      | `true`           | Ignores a new message when its `id` already exists         |
+| `resetKey`        | —                | Emits a clear when the value changes                       |
+| `events`          | internal emitter | Reuse an existing `ConsoleEventEmitter`                    |
+| `capture`         | `false`          | Capture calls from a real console                          |
+| `source`          | `"page"`         | Source metadata added during capture                       |
+| `passThrough`     | `true`           | Also call the original console method while capturing      |
+| `target`          | global console   | Alternate `Console` object to capture                      |
 
 ### Returned values
 
-| Value | Purpose |
-| --- | --- |
-| `messages` | Current `ConsoleMessageData[]` |
-| `output` | Convenience `{ messages, error: "" }` object |
+| Value             | Purpose                                       |
+| ----------------- | --------------------------------------------- |
+| `messages`        | Current `ConsoleMessageData[]`                |
+| `output`          | Convenience `{ messages, error: "" }` object  |
 | `append(message)` | Emits a message into the hook's event channel |
-| `clear()` | Emits a clear event |
-| `events` | The `ConsoleEventEmitter` used by the hook |
-| `setMessages` | Direct React state setter for advanced cases |
+| `clear()`         | Emits a clear event                           |
+| `events`          | The `ConsoleEventEmitter` used by the hook    |
+| `setMessages`     | Direct React state setter for advanced cases  |
 
 ## Capture a real console
 
@@ -358,12 +358,12 @@ events.on("message", (message) => {
 
 ### Proxy options
 
-| Option | Purpose |
-| --- | --- |
-| `messages` | Array that receives emitted messages |
-| `events` | Event emitter that receives `message` / `clear` events |
-| `source` | Adds source metadata to every emitted message |
-| `now` | Overrides wall-clock timestamp generation |
+| Option     | Purpose                                                   |
+| ---------- | --------------------------------------------------------- |
+| `messages` | Array that receives emitted messages                      |
+| `events`   | Event emitter that receives `message` / `clear` events    |
+| `source`   | Adds source metadata to every emitted message             |
+| `now`      | Overrides wall-clock timestamp generation                 |
 | `timerNow` | Overrides the high-resolution clock used by timer methods |
 
 Both `messages` and `events` may be supplied, allowing the same proxy to write to both.
@@ -383,16 +383,16 @@ runtimeConsole.log("shared event stream");
 
 ### Event-emitter methods
 
-| Method | Purpose |
-| --- | --- |
-| `on("message", listener)` | Subscribe to structured messages; returns an unsubscribe function |
-| `on("clear", listener)` | Subscribe to clear events |
-| `off(type, listener)` | Remove one listener |
-| `emit("message", message)` | Publish one structured message |
-| `emit("clear")` | Publish a clear event |
-| `onEvent(listener)` | Subscribe to the discriminated `ConsoleEvent` union |
-| `emitEvent(event)` | Publish a `ConsoleEvent` union value |
-| `removeAllListeners(type?)` | Remove listeners for one event type or all event types |
+| Method                      | Purpose                                                           |
+| --------------------------- | ----------------------------------------------------------------- |
+| `on("message", listener)`   | Subscribe to structured messages; returns an unsubscribe function |
+| `on("clear", listener)`     | Subscribe to clear events                                         |
+| `off(type, listener)`       | Remove one listener                                               |
+| `emit("message", message)`  | Publish one structured message                                    |
+| `emit("clear")`             | Publish a clear event                                             |
+| `onEvent(listener)`         | Subscribe to the discriminated `ConsoleEvent` union               |
+| `emitEvent(event)`          | Publish a `ConsoleEvent` union value                              |
+| `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
 
 ## `Console` component configuration
 
@@ -400,39 +400,39 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 ### Shared panel props
 
-| Prop | Purpose |
-| --- | --- |
-| `onClear` | Callback used by the clear action |
-| `autoScroll` | Follow new output while the viewer remains near the bottom |
-| `resizable` | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
-| `showHeader` | Show/hide the panel header |
-| `showClearButton` | Show clear when `onClear` is available |
-| `actions` | Add application-defined actions to the ellipsis popover |
-| `title` / `subtitle` | Customize panel heading text |
-| `emptyMessage` | Customize the empty state |
-| `className` / `style` | Host-owned layout and styling |
-| `valueRenderers` | Override rendering for matching values |
+| Prop                  | Purpose                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `onClear`             | Callback used by the clear action                                              |
+| `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
+| `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
+| `showHeader`          | Show/hide the panel header                                                     |
+| `showClearButton`     | Show clear when `onClear` is available                                         |
+| `actions`             | Add application-defined actions to the ellipsis popover                        |
+| `title` / `subtitle`  | Customize panel heading text                                                   |
+| `emptyMessage`        | Customize the empty state                                                      |
+| `className` / `style` | Host-owned layout and styling                                                  |
+| `valueRenderers`      | Override rendering for matching values                                         |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
 ### Structured-mode props
 
-| Prop | Purpose |
-| --- | --- |
-| `messages` | Structured messages to render |
-| `output` | Alternative `RunOutput` source |
-| `error` | Appends a synthetic `error` message |
-| `filter` | Predicate that controls which messages are visible |
-| `onMessagesChange` | Observes the source message list |
-| `messageRenderers` | Override rendering for matching messages |
+| Prop               | Purpose                                            |
+| ------------------ | -------------------------------------------------- |
+| `messages`         | Structured messages to render                      |
+| `output`           | Alternative `RunOutput` source                     |
+| `error`            | Appends a synthetic `error` message                |
+| `filter`           | Predicate that controls which messages are visible |
+| `onMessagesChange` | Observes the source message list                   |
+| `messageRenderers` | Override rendering for matching messages           |
 
 ### ANSI-mode props
 
-| Prop | Purpose |
-| --- | --- |
-| `messages` | Strings or `ConsoleStdoutEntry[]` |
+| Prop                    | Purpose                                                       |
+| ----------------------- | ------------------------------------------------------------- |
+| `messages`              | Strings or `ConsoleStdoutEntry[]`                             |
 | `parseStructuredOutput` | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
-| `valueRenderers` | Customize promoted structured values |
+| `valueRenderers`        | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
 
@@ -593,14 +593,14 @@ Plain JSON cannot preserve many values that appear in real console output. The s
 
 Available helpers:
 
-| Helper | Purpose |
-| --- | --- |
-| `serializeConsoleValue()` | Convert one value to a JSON-safe representation |
-| `deserializeConsoleValue()` | Restore one serialized value |
-| `serializeConsoleMessage()` | Serialize every value in a console message |
-| `deserializeConsoleMessage()` | Restore a serialized console message |
-| `serializeConsoleEvent()` | Serialize a `message` or `clear` event |
-| `deserializeConsoleEvent()` | Restore a serialized event |
+| Helper                        | Purpose                                         |
+| ----------------------------- | ----------------------------------------------- |
+| `serializeConsoleValue()`     | Convert one value to a JSON-safe representation |
+| `deserializeConsoleValue()`   | Restore one serialized value                    |
+| `serializeConsoleMessage()`   | Serialize every value in a console message      |
+| `deserializeConsoleMessage()` | Restore a serialized console message            |
+| `serializeConsoleEvent()`     | Serialize a `message` or `clear` event          |
+| `deserializeConsoleEvent()`   | Restore a serialized event                      |
 
 `serializeConsoleValue()` also accepts `maxDepth` and `maxEntries` limits so transport payloads can be bounded.
 
@@ -608,54 +608,54 @@ Available helpers:
 
 ### Components
 
-| Export | Purpose |
-| --- | --- |
-| `Console` | Complete structured-console / ANSI panel |
-| `ConsoleMessage` | Render one structured message |
-| `ConsoleValue` | Render one JavaScript value |
-| `ConsoleTable` | Render normalized `console.table()` data |
-| `ConsoleStdout` | Lower-level ANSI process-output list |
+| Export           | Purpose                                  |
+| ---------------- | ---------------------------------------- |
+| `Console`        | Complete structured-console / ANSI panel |
+| `ConsoleMessage` | Render one structured message            |
+| `ConsoleValue`   | Render one JavaScript value              |
+| `ConsoleTable`   | Render normalized `console.table()` data |
+| `ConsoleStdout`  | Lower-level ANSI process-output list     |
 
 ### State, capture, and events
 
-| Export | Purpose |
-| --- | --- |
-| `useConsoleMessages` | React message state connected to a console event channel |
-| `capturePageConsole` | Temporarily wrap an existing `Console` object |
-| `createConsoleProxy` | Create a console-compatible producer for sandboxed code |
-| `createConsoleEventEmitter` | Typed `message` / `clear` event channel |
+| Export                      | Purpose                                                  |
+| --------------------------- | -------------------------------------------------------- |
+| `useConsoleMessages`        | React message state connected to a console event channel |
+| `capturePageConsole`        | Temporarily wrap an existing `Console` object            |
+| `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
+| `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
 
 ### Custom rendering
 
-| Export | Purpose |
-| --- | --- |
-| `getConsoleValueType` | Resolve the normalized type key used by value-renderer dispatch |
-| `ConsoleMessageRenderer` | Message renderer entry type |
-| `ConsoleMessageRendererContext` | Message renderer context type |
-| `ConsoleValueRenderer` | Value renderer entry type |
-| `ConsoleValueRendererContext` | Value renderer context type |
+| Export                          | Purpose                                                         |
+| ------------------------------- | --------------------------------------------------------------- |
+| `getConsoleValueType`           | Resolve the normalized type key used by value-renderer dispatch |
+| `ConsoleMessageRenderer`        | Message renderer entry type                                     |
+| `ConsoleMessageRendererContext` | Message renderer context type                                   |
+| `ConsoleValueRenderer`          | Value renderer entry type                                       |
+| `ConsoleValueRendererContext`   | Value renderer context type                                     |
 
 ### Transport and serialization
 
-| Export | Purpose |
-| --- | --- |
-| `listenForConsolePostMessages` | Receive validated console events from `postMessage` |
-| `listenForConsoleWebSocket` | Receive validated console events from WebSocket messages |
-| `serializeConsoleValue` / `deserializeConsoleValue` | Round-trip rich values |
-| `serializeConsoleMessage` / `deserializeConsoleMessage` | Round-trip structured messages |
-| `serializeConsoleEvent` / `deserializeConsoleEvent` | Round-trip console events |
-| `CONSOLE_TRANSPORT_TYPE` | Envelope type, currently `"CONSOLE_PANEL"` |
-| `CONSOLE_TRANSPORT_VERSION` | Envelope version, currently `1` |
-| `DEFAULT_CONSOLE_CHANNEL` | Default channel name |
-| `isConsoleEnvelope` | Runtime envelope validator |
+| Export                                                  | Purpose                                                  |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| `listenForConsolePostMessages`                          | Receive validated console events from `postMessage`      |
+| `listenForConsoleWebSocket`                             | Receive validated console events from WebSocket messages |
+| `serializeConsoleValue` / `deserializeConsoleValue`     | Round-trip rich values                                   |
+| `serializeConsoleMessage` / `deserializeConsoleMessage` | Round-trip structured messages                           |
+| `serializeConsoleEvent` / `deserializeConsoleEvent`     | Round-trip console events                                |
+| `CONSOLE_TRANSPORT_TYPE`                                | Envelope type, currently `"CONSOLE_PANEL"`               |
+| `CONSOLE_TRANSPORT_VERSION`                             | Envelope version, currently `1`                          |
+| `DEFAULT_CONSOLE_CHANNEL`                               | Default channel name                                     |
+| `isConsoleEnvelope`                                     | Runtime envelope validator                               |
 
 ### Utilities
 
-| Export | Purpose |
-| --- | --- |
-| `CONSOLE_METHODS` | Message methods understood by structured rendering/transport validation |
-| `normalizeConsoleTableData` | Normalize values for the table renderer |
-| `formatConsoleObjectForCopy` | Format inspectable values for copy actions |
+| Export                       | Purpose                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| `CONSOLE_METHODS`            | Message methods understood by structured rendering/transport validation |
+| `normalizeConsoleTableData`  | Normalize values for the table renderer                                 |
+| `formatConsoleObjectForCopy` | Format inspectable values for copy actions                              |
 
 The package also exports the corresponding component, hook, transport, event, serialization, and message TypeScript types from `packages/console/src/index.ts`.
 
