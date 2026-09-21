@@ -182,7 +182,7 @@ Current producers include:
 - `createConsoleProxy()`
 - `listenForConsolePostMessages()`
 - `listenForConsoleWebSocket()`
-- application code calling `events.emit(...)` or `events.emitEvent(...)`
+- application code calling `events.emit(...)` or `events.dispatch(...)`
 
 ### Page capture
 
@@ -200,7 +200,7 @@ Important behavior:
 
 `createConsoleProxy()` provides a console-compatible object for runtimes where application code should not write directly to the host console.
 
-It supports direct array capture and emitter-based capture.
+`createConsoleProxy()` reports `ConsoleEvent` values through its `onEvent` callback. Storage and transport remain the caller's responsibility.
 
 Keep browser-like behaviors such as groups, counts, timers, assertions, tables, and traces inside the proxy/capture layer rather than the React renderer.
 
@@ -219,7 +219,7 @@ postMessage / WebSocket / relay
   |
 isConsoleEnvelope()
   |
-ConsoleEventEmitter.emitEvent()
+ConsoleEventEmitter.dispatch()
 ```
 
 The transport protocol should remain independent of the React UI.
