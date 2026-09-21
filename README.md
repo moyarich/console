@@ -96,7 +96,7 @@ export function AppConsole() {
   showClearButton
   actions={<button onClick={() => exportLogs(messages)}>Export</button>}
   onMessagesChange={(nextMessages) => saveLogs(nextMessages)}
-/>;
+/>
 ```
 
 Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
