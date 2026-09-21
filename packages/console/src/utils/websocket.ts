@@ -1,4 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { deserializeConsoleEvent } from "./serialization";
 import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 export interface ConsoleWebSocketLike {
@@ -36,7 +37,7 @@ export function listenForConsoleWebSocket({
         return;
       }
 
-      events.emitEvent(data.event);
+      events.emitEvent(deserializeConsoleEvent(data.event));
     } catch {
       // Keep the listener active if parsing or event delivery fails.
     }

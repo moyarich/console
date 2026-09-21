@@ -4,6 +4,7 @@ import {
   CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
   isConsoleEnvelope,
+  deserializeConsoleValue,
   listenForConsoleWebSocket,
   serializeConsoleEvent,
   serializeConsoleValue,
@@ -40,11 +41,13 @@ describe("console transport", () => {
       fn() {},
     });
 
-    expect(value).toEqual({
-      big: "10n",
-      missing: "[undefined]",
-      fn: "[Function fn]",
+    expect(deserializeConsoleValue(value)).toMatchObject({
+      big: 10n,
+      missing: undefined,
     });
+    expect(
+      (deserializeConsoleValue(value) as { fn: unknown }).fn,
+    ).toEqual(expect.any(Function));
   });
 
   it("sends and receives WebSocket envelopes through an event emitter", () => {
@@ -132,8 +135,41 @@ describe("transport regression cases", () => {
     });
   });
 
+  it("preserves special values through serialization", () => {
+    const value = {
+      nan: NaN,
+      infinity: Infinity,
+      negativeInfinity: -Infinity,
+      negativeZero: -0,
+      date: new Date("2026-01-02T03:04:05.000Z"),
+      regexp: /console/gi,
+      map: new Map([["key", { ok: true }]]),
+      set: new Set([1, 2]),
+      typedArray: new Uint16Array([3, 4]),
+    };
+
+    const restored = deserializeConsoleValue(
+      serializeConsoleValue(value),
+    ) as typeof value;
+
+    expect(Number.isNaN(restored.nan)).toBe(true);
+    expect(restored.infinity).toBe(Infinity);
+    expect(restored.negativeInfinity).toBe(-Infinity);
+    expect(Object.is(restored.negativeZero, -0)).toBe(true);
+    expect(restored.date).toEqual(value.date);
+    expect(restored.regexp).toEqual(value.regexp);
+    expect(restored.map).toEqual(value.map);
+    expect(restored.set).toEqual(value.set);
+    expect(restored.typedArray).toEqual(value.typedArray);
+  });
+
   it("serializes invalid dates without throwing", () => {
-    expect(serializeConsoleValue(new Date(NaN))).toBe("Invalid Date");
+    const restored = deserializeConsoleValue(
+      serializeConsoleValue(new Date(NaN)),
+    );
+
+    expect(restored).toBeInstanceOf(Date);
+    expect(Number.isNaN((restored as Date).getTime())).toBe(true);
   });
 
   it("handles objects whose getters and string conversion throw", () => {
