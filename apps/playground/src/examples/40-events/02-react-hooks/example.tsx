@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Console,
   createConsoleEventEmitter,
+  createConsoleEventHandler,
   createConsoleProxy,
   type ConsoleMessageData,
 } from "@moyarich/console";
@@ -17,7 +18,7 @@ export default function ConsoleExample() {
   const console = useMemo(
     () =>
       createConsoleProxy({
-        onEvent: events.dispatch,
+        onEvent: createConsoleEventHandler(events),
         source: "without-console-hook",
       }),
     [events],
