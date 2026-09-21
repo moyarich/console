@@ -178,7 +178,7 @@ A producer can publish named events directly with `events.emit(...)`. Producers 
 
 Current producers include:
 
-- `capturePageConsole()`
+- `captureConsole()`
 - `createConsoleProxy()`
 - `listenForConsolePostMessages()`
 - `listenForConsoleWebSocket()`
@@ -186,7 +186,7 @@ Current producers include:
 
 ### Page capture
 
-`capturePageConsole()` wraps methods on a target console and returns a cleanup function that restores the previous methods.
+`captureConsole()` wraps methods on an existing `Console` object and returns a cleanup function that restores the previous methods. The option is named `consoleTarget` rather than `target` because `target` already represents other concepts in the codebase.
 
 Important behavior:
 
