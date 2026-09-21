@@ -1,21 +1,26 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-});
-
-exampleConsole.trace("Trace message");
-
 export default function ConsoleTraceExample() {
-  return <Console messages={messages} subtitle="console.trace example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-trace",
+  });
+
+  const runExample = () => {
+    console.trace("Trace message");
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.trace(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.trace example"
+      />
+    </div>
+  );
 }
