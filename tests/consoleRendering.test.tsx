@@ -135,9 +135,7 @@ describe("Console rendering", () => {
   });
 
   it("renders view tabs in their own toolbar", () => {
-    const html = renderToStaticMarkup(
-      <Console messages={[]} stdout={[]} />,
-    );
+    const html = renderToStaticMarkup(<Console messages={[]} stdout={[]} />);
 
     expect(html).toContain("console-panel-header-main");
     expect(html).toContain("console-view-bar");
