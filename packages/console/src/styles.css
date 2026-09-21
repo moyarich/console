@@ -178,10 +178,7 @@
     --console-panel-header-background,
     var(--_console-panel-background)
   );
-  --_console-panel-header-border: var(
-    --console-panel-header-border,
-    #e5eaf2
-  );
+  --_console-panel-header-border: var(--console-panel-header-border, #e5eaf2);
   --_console-panel-radius: var(--console-panel-radius, 16px);
   --_console-panel-shadow: var(
     --console-panel-shadow,
@@ -210,11 +207,7 @@
   );
   --_console-panel-control-hover-foreground: var(
     --console-panel-control-hover-foreground,
-    color-mix(
-      in oklab,
-      var(--_console-panel-control-foreground),
-      black 24%
-    )
+    color-mix(in oklab, var(--_console-panel-control-foreground), black 24%)
   );
   --_console-panel-control-hover-border: var(
     --console-panel-control-hover-border,
@@ -384,7 +377,10 @@
 }
 
 .console-panel .console-message {
-  --_console-message-icon-color: var(--console-message-icon-color, currentColor);
+  --_console-message-icon-color: var(
+    --console-message-icon-color,
+    currentColor
+  );
   --_console-message-icon-hover-color: var(
     --console-message-icon-hover-color,
     color-mix(in oklab, currentColor, white 14%)
@@ -855,7 +851,8 @@
 
 .console-context-menu-item:hover:not(:disabled) > svg,
 .console-context-menu-item:focus-visible > svg,
-.console-context-menu-item:hover:not(:disabled) .console-context-menu-action-icon,
+.console-context-menu-item:hover:not(:disabled)
+  .console-context-menu-action-icon,
 .console-context-menu-item:focus-visible .console-context-menu-action-icon {
   color: currentColor;
 }
