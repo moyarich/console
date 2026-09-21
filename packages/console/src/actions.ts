@@ -28,8 +28,7 @@ export type ConsoleContextMenuActionContext =
   | ConsoleMessageActionContext;
 
 export type ConsoleActionPredicate<TContext> =
-  | boolean
-  | ((context: TContext) => boolean);
+  boolean | ((context: TContext) => boolean);
 
 export type ConsoleActionVariant = "default" | "danger";
 
@@ -85,9 +84,7 @@ export function resolveConsoleActions<TContext>(
   }
 
   return actions
-    .filter((action) =>
-      evaluatePredicate(action.visible, context, true, false),
-    )
+    .filter((action) => evaluatePredicate(action.visible, context, true, false))
     .map((action) => ({
       action,
       disabled: evaluatePredicate(action.disabled, context, false, true),
