@@ -27,7 +27,9 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
+    "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
   },
   "dependencies": {
     "lucide-react": "^1.47.0"

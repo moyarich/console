@@ -1,29 +1,33 @@
 # @moyarich/console
 
-A reusable React console UI with capture and transport adapters for:
+A reusable React console UI for rendering, capturing, and transporting browser-style console output.
 
-- the current browser page
-- iframes via `postMessage`
-- server-relayed messages via WebSocket
-- sandboxed/evaluated code through a `Console` proxy
+Use it to build embedded developer consoles, playgrounds, code runners, iframe previews, diagnostic panels, and other tools that need structured `console.*` output.
 
-The project was extracted from the console implementation originally used by the `css-expand-collapse` playground.
+## Features
 
-## Repository structure
+- React console UI with expandable objects and arrays
+- `console.table()` rendering
+- groups and collapsed groups
+- page-level `console.*` capture
+- console proxy for evaluated or sandboxed code
+- event-based message fan-out
+- iframe transport through `postMessage`
+- WebSocket transport support
+- JSON-safe serialization for transported values
+- controlled message state through `useConsoleMessages()`
+- TypeScript types
 
-```text
-apps/
-  playground/          Interactive demo for page, iframe, and WebSocket sources
-packages/
-  console/             Published @moyarich/console package
-stories/               Storybook stories
-tests/                 Unit/rendering/transport tests
-.github/workflows/     CI and GitHub Packages publishing
-```
+## Requirements
 
-## Install from GitHub Packages
+- React 18 or newer
+- React DOM 18 or newer
 
-Configure the `@moyarich` scope for GitHub Packages:
+## Install
+
+`@moyarich/console` is published to GitHub Packages.
+
+Configure the `@moyarich` scope in your project:
 
 ```ini
 @moyarich:registry=https://npm.pkg.github.com
@@ -36,34 +40,91 @@ Then install:
 npm install @moyarich/console
 ```
 
-Import the component and package styles:
+Import the component and styles:
 
 ```tsx
 import { Console } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 ```
 
-## Controlled Console
+## Quick start
 
 ```tsx
 import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-export function Example() {
-  const { messages, clear } = useConsoleMessages();
+export function AppConsole() {
+  const { messages, append, clear } = useConsoleMessages();
 
-  return <Console messages={messages} onClear={clear} />;
+  return (
+    <>
+      <button
+        onClick={() =>
+          append({
+            method: "log",
+            data: ["Hello", { ready: true }],
+            depth: 0,
+          })
+        }
+      >
+        Add message
+      </button>
+
+      <Console messages={messages} onClear={clear} />
+    </>
+  );
 }
 ```
 
-`Console` also accepts the original playground-style `output={{ messages, error }}` prop.
+`Console` can also consume the playground-style `output={{ messages, error }}` shape.
+
+
+## Console controls
+
+`Console` supports smart auto-scroll, filtering, custom header actions, optional header controls, a message-change callback, and an imperative reset ref:
+
+```tsx
+import { useRef } from "react";
+import {
+  Console,
+  type ConsoleRef,
+} from "@moyarich/console";
+
+const consoleRef = useRef<ConsoleRef>(null);
+
+<Console
+  ref={consoleRef}
+  messages={messages}
+  onClear={clear}
+  filter={(message) => message.method !== "debug"}
+  autoScroll
+  showHeader
+  showClearButton
+  actions={<button onClick={() => exportLogs(messages)}>Export</button>}
+  onMessagesChange={(nextMessages) => saveLogs(nextMessages)}
+/>;
+
+consoleRef.current?.reset();
+```
+
+Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
+
+`useConsoleMessages()` deduplicates repeated messages with the same `id` by default. Set `dedupeById: false` to preserve duplicates. Use `resetKey` to clear the stream when a runtime or session identity changes:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  resetKey: sessionId,
+  dedupeById: true,
+});
+```
 
 ## Capture the current page
 
-Turn on page capture directly through `useConsoleMessages()`. The hook starts and cleans up `capturePageConsole()` internally.
+Set `capture: true` to capture calls made through the page's console.
 
 ```tsx
 import { Console, useConsoleMessages } from "@moyarich/console";
+import "@moyarich/console/styles.css";
 
 export function PageConsole() {
   const { messages, clear } = useConsoleMessages({
@@ -76,22 +137,53 @@ export function PageConsole() {
 }
 ```
 
-Page capture is off by default. Use the lower-level `capturePageConsole()` utility when you need capture outside React.
+Page capture is disabled by default.
 
-## Capture evaluated/sandboxed code
+With `passThrough: true`, calls continue to appear in the browser's native DevTools console while also being captured by `@moyarich/console`.
 
-Use `createConsoleProxy()` when you control the `console` object supplied to evaluated code:
+### Capture outside React
+
+Use `capturePageConsole()` directly when a React hook is not appropriate.
 
 ```ts
-import { createConsoleProxy } from "@moyarich/console";
+import {
+  capturePageConsole,
+  createConsoleEventEmitter,
+} from "@moyarich/console";
 
-const messages = [];
-const console = createConsoleProxy(messages);
+const events = createConsoleEventEmitter();
 
-console.log("hello", { from: "sandbox" });
+events.on("message", (message) => {
+  console.info("captured:", message);
+});
+
+const restore = capturePageConsole({
+  events,
+  source: "page",
+  passThrough: true,
+});
+
+// Later:
+restore();
 ```
 
-To publish proxy output through an event channel:
+## Capture evaluated or sandboxed code
+
+Use `createConsoleProxy()` when you control the console object supplied to evaluated code.
+
+### Capture into an array
+
+```ts
+import { createConsoleProxy, type ConsoleMessageData } from "@moyarich/console";
+
+const messages: ConsoleMessageData[] = [];
+const runtimeConsole = createConsoleProxy(messages);
+
+runtimeConsole.log("hello", { from: "sandbox" });
+runtimeConsole.warn("warning");
+```
+
+### Capture through an event emitter
 
 ```ts
 import {
@@ -100,55 +192,58 @@ import {
 } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
-const console = createConsoleProxy({ events });
+const runtimeConsole = createConsoleProxy({ events });
+
+events.on("message", (message) => {
+  // Send, store, or render the message.
+});
+
+runtimeConsole.log("hello");
 ```
 
-## Fan out console events
+## Supported console methods
 
-A `ConsoleEventEmitter` lets multiple independent consumers observe the same event stream without composing producer callbacks.
+Capture/proxy support includes:
+
+`log`, `debug`, `info`, `warn`, `error`, `assert`, `dir`, `dirxml`, `table`, `count`, `countReset`, `time`, `timeLog`, `timeEnd`, `timeStamp`, `trace`, `group`, `groupCollapsed`, `groupEnd`, and `clear`.
+
+## Event emitter
+
+`createConsoleEventEmitter()` provides a shared event channel for console producers and consumers.
 
 ```ts
-import {
-  capturePageConsole,
-  CONSOLE_TRANSPORT_TYPE,
-  CONSOLE_TRANSPORT_VERSION,
-  createConsoleEventEmitter,
-  serializeConsoleEvent,
-} from "@moyarich/console";
+import { createConsoleEventEmitter } from "@moyarich/console";
 
 const events = createConsoleEventEmitter();
 
-const stopCapture = capturePageConsole({
-  events,
+const offMessage = events.on("message", (message) => {
+  // Handle one ConsoleMessageData value.
 });
 
-const stopSocket = events.onEvent((event) => {
-  socket.send(
-    JSON.stringify({
-      type: CONSOLE_TRANSPORT_TYPE,
-      version: CONSOLE_TRANSPORT_VERSION,
-      channel: "session-42",
-      event: serializeConsoleEvent(event),
-    }),
-  );
+const offClear = events.on("clear", () => {
+  // Handle console.clear().
 });
-
-const stopAudit = events.onEvent(saveConsoleEvent);
 ```
 
-Each subscription is independent:
+The same emitter can be passed to multiple parts of your application:
 
-```ts
-stopAudit();
-stopSocket();
-stopCapture();
+```tsx
+const events = createConsoleEventEmitter();
+
+const { messages, clear } = useConsoleMessages({ events });
+
+const runtimeConsole = createConsoleProxy({ events });
+
+runtimeConsole.log("shared event stream");
 ```
 
-Application code can listen to typed events with `events.on("message", ...)` and `events.on("clear", ...)`. `onEvent()` and `emitEvent()` bridge the discriminated `ConsoleEvent` union used by transports.
+For code that works with the discriminated `ConsoleEvent` union, use `events.onEvent(...)` and `events.emitEvent(...)`.
 
 ## Iframe transport
 
-Inside the iframe, send the console envelope with the browser's native `postMessage()` API:
+Console events can cross iframe boundaries using the browser's native `postMessage()` API.
+
+### Inside the iframe
 
 ```ts
 import {
@@ -179,7 +274,7 @@ const restore = capturePageConsole({
 });
 ```
 
-In the parent, received transport events publish directly into the channel:
+### In the parent page
 
 ```ts
 import {
@@ -189,7 +284,7 @@ import {
 
 const events = createConsoleEventEmitter();
 
-const stop = listenForConsolePostMessages({
+const stopListening = listenForConsolePostMessages({
   events,
   channel: "preview",
   source: iframe.contentWindow,
@@ -197,15 +292,16 @@ const stop = listenForConsolePostMessages({
 });
 ```
 
-Use a specific `targetOrigin`/`origin` in production instead of `*`.
+Use specific origins in production rather than `*`.
 
-## Server / WebSocket transport
+## WebSocket transport
 
-Sender:
+The transport envelope is JSON-safe, so it can be sent over a WebSocket or relayed by a server without the server understanding the console payload.
+
+### Sender
 
 ```ts
 import {
-  capturePageConsole,
   CONSOLE_TRANSPORT_TYPE,
   CONSOLE_TRANSPORT_VERSION,
   createConsoleEventEmitter,
@@ -225,11 +321,9 @@ const stopSending = events.onEvent((event) => {
     }),
   );
 });
-
-const restore = capturePageConsole({ events });
 ```
 
-Receiver:
+### Receiver
 
 ```ts
 import {
@@ -239,30 +333,16 @@ import {
 
 const events = createConsoleEventEmitter();
 
-const stop = listenForConsoleWebSocket({
+const stopListening = listenForConsoleWebSocket({
   socket,
   channel: "session-42",
   events,
 });
 ```
 
-A relay server only needs to forward the incoming message string to the intended recipient(s):
+## Transport envelope
 
-```js
-wss.on("connection", (socket) => {
-  socket.on("message", (data) => {
-    for (const client of wss.clients) {
-      if (client !== socket && client.readyState === 1) {
-        client.send(data);
-      }
-    }
-  });
-});
-```
-
-## Transport protocol
-
-Messages are transported as:
+Transported events use a versioned envelope:
 
 ```ts
 {
@@ -282,26 +362,36 @@ Messages are transported as:
 }
 ```
 
-`clear` is represented as `{ type: "clear" }` in the `event` field.
+A clear operation is represented by:
+
+```ts
+{
+  type: "clear";
+}
+```
 
 Values are normalized before transport and restored on receipt. The transport preserves `undefined`, bigint, symbols, function placeholders, `NaN`, infinities, `-0`, errors, dates, regular expressions, maps, sets, ArrayBuffers, typed arrays, DOM elements, and NodeLists. Circular references are represented safely without breaking JSON serialization.
 
+## Main exports
+
+| Export                         | Purpose                                                         |
+| ------------------------------ | --------------------------------------------------------------- |
+| `Console`                      | Render console messages                                         |
+| `useConsoleMessages`           | Manage console message state and optional page capture          |
+| `capturePageConsole`           | Capture calls from a console object                             |
+| `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |
+| `createConsoleEventEmitter`    | Publish and subscribe to message/clear events                   |
+| `listenForConsolePostMessages` | Receive console transport events through `postMessage`          |
+| `listenForConsoleWebSocket`    | Receive console transport events through a WebSocket            |
+| `serializeConsoleEvent`        | Convert an event into a transport-safe representation           |
+| `deserializeConsoleEvent`      | Restore transported console values on receipt                    |
+| `CONSOLE_TRANSPORT_TYPE`       | Transport envelope type                                         |
+| `CONSOLE_TRANSPORT_VERSION`    | Transport protocol version                                      |
+
 ## Development
 
-```bash
-npm install
-npm run dev
-npm test
-npm run typecheck
-npm run lint
-npm run format
-npm run format:check
-npm run build
-npm run storybook
-```
+Repository setup, architecture, testing, CI, and publishing notes are documented in [docs/readme-dev.md](docs/readme-dev.md).
 
-## Publishing
+## License
 
-`packages/console/package.json` publishes to `https://npm.pkg.github.com` as `@moyarich/console`.
-
-The **Publish GitHub Package** workflow runs when a GitHub Release is published, or manually through `workflow_dispatch`. It uses the repository `GITHUB_TOKEN` with `packages: write`; no npmjs token is required.
+MIT
