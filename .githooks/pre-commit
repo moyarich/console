@@ -1,43 +1,12 @@
 #!/bin/sh
 set -e
 
-format_files=""
-lint_files=""
-
-while IFS= read -r file; do
-  [ -f "$file" ] || continue
-
-  case "$file" in
-    *.js|*.jsx|*.mjs|*.cjs|*.ts|*.tsx|*.json|*.css|*.md|*.html|*.yml|*.yaml)
-      format_files="$format_files
-$file"
-      ;;
-  esac
-
-  case "$file" in
-    *.js|*.jsx|*.mjs|*.cjs|*.ts|*.tsx)
-      lint_files="$lint_files
-$file"
-      ;;
-  esac
-done <<EOF
-$(git diff --cached --name-only --diff-filter=ACMR)
-EOF
-
-if [ -n "$format_files" ]; then
-  printf '%s\n' "$format_files" |
-    sed '/^$/d' |
-    while IFS= read -r file; do
-      npx --no-install prettier --write -- "$file"
-      git add -- "$file"
-    done
+if [ ! -x node_modules/.bin/lint-staged ]; then
+  echo "Pre-commit tools are not installed."
+  echo "Run: npm install"
+  echo "Then: npm run hooks:install"
+  echo "Or bypass once with: git commit --no-verify"
+  exit 1
 fi
 
-if [ -n "$lint_files" ]; then
-  printf '%s\n' "$lint_files" |
-    sed '/^$/d' |
-    while IFS= read -r file; do
-      npx --no-install eslint --fix -- "$file"
-      git add -- "$file"
-    done
-fi
+npx --no-install lint-staged
