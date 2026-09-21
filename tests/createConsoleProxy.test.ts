@@ -27,7 +27,7 @@ describe("createConsoleProxy", () => {
     let currentTime = 1000;
     const console = createConsoleProxy({
       messages,
-      now: () => currentTime,
+      timerNow: () => currentTime,
     });
 
     console.time("Timer");
