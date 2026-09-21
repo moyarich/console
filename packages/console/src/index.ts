@@ -1,8 +1,5 @@
 export { Console } from "./components/Console";
-export type {
-  ConsoleMessageFilter,
-  ConsoleProps,
-} from "./components/Console";
+export type { ConsoleMessageFilter, ConsoleProps } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export { ConsoleStdout } from "./components/ConsoleStdout";
 export type {
