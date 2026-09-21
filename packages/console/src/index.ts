@@ -29,14 +29,14 @@ export { normalizeConsoleTableData } from "./utils/consoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/consoleCopyObject";
 export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
-export { capturePageConsole } from "./utils/capturePageConsole";
+export { captureConsole } from "./utils/captureConsole";
 export { createConsoleEventEmitter } from "./utils/createConsoleEventEmitter";
 export { createConsoleEventHandler } from "./utils/createConsoleEventHandler";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
 } from "./utils/createConsoleEventEmitter";
-export type { CapturePageConsoleOptions } from "./utils/capturePageConsole";
+export type { CaptureConsoleOptions } from "./utils/captureConsole";
 export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
