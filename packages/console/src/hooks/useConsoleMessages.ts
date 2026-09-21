@@ -63,7 +63,7 @@ export function useConsoleMessages({
       clearMessage
         ? [
             {
-              method: "clear",
+              method: "info",
               data: [clearMessage],
               depth: 0,
             },
