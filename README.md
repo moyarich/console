@@ -36,7 +36,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
 | Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
-| Parse structured values from ANSI output           | `structuredOutputParsers`                      |
+| Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
 ## Install
@@ -460,12 +460,12 @@ The host application owns min/max dimensions. The library only applies the reque
 
 ### ANSI-mode props
 
-| Prop                    | Purpose                                                       |
-| ----------------------- | ------------------------------------------------------------- |
-| `messages`                | Strings or `ConsoleStdoutEntry[]`                              |
-| `parseStructuredOutput`   | Promote complete strict-JSON objects/arrays to `ConsoleValue`  |
-| `structuredOutputParsers` | Parse ANSI-stripped text into application-defined values         |
-| `valueRenderers`          | Customize promoted structured values                            |
+| Prop                      | Purpose                                                       |
+| ------------------------- | ------------------------------------------------------------- |
+| `messages`                | Strings or `ConsoleStdoutEntry[]`                             |
+| `parseStructuredOutput`   | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
+| `structuredOutputParsers` | Parse ANSI-stripped text into application-defined values      |
+| `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
 
