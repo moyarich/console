@@ -24,7 +24,6 @@ export interface DirOptions {
 }
 export type ConsoleEvent =
   { type: "message"; message: ConsoleMessageData } | { type: "clear" };
-export type ConsoleEventHandler = (event: ConsoleEvent) => void;
 export interface ConsoleTransportEnvelope {
   type: "CONSOLE_PANEL";
   version: 1;
