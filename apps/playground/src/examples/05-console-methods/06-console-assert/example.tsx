@@ -1,28 +1,16 @@
-import { Console, useConsoleMessages } from "@moyarich/console";
+import {
+  Console,
+  createConsoleProxy,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
+const messages: ConsoleMessageData[] = [];
+const exampleConsole = createConsoleProxy(messages);
+
+exampleConsole.assert(true, "This assertion is not emitted");
+exampleConsole.assert(false, "Assertion message", { expected: true });
+
 export default function ConsoleAssertExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
-    source: "console-assert",
-    passThrough: true,
-  });
-
-  const runExample = () => {
-    console.assert(false, "Assertion message");
-  };
-
-  return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <button type="button" onClick={runExample}>
-        console.assert(...)
-      </button>
-
-      <Console
-        messages={messages}
-        onClear={clear}
-        subtitle="console.assert example"
-      />
-    </div>
-  );
+  return <Console messages={messages} subtitle="console.assert example" />;
 }
