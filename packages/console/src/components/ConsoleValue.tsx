@@ -294,9 +294,7 @@ function renderDefaultValue({
   propertyKey,
   expandAllVersion,
   renderers,
-}: Required<
-  Pick<ConsoleValueProps, "expandLevel" | "ancestors">
-> &
+}: Required<Pick<ConsoleValueProps, "expandLevel" | "ancestors">> &
   Omit<ConsoleValueProps, "expandLevel" | "ancestors">): ReactNode {
   if (!isObjectLike(value)) return renderPrimitive(value);
   if (!isInspectableObject(value)) return renderPrimitive(value);
