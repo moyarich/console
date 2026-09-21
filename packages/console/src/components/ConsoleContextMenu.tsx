@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -44,10 +45,30 @@ type MenuTarget =
       messages: readonly ConsoleMessageData[];
     };
 
+const CONTEXT_MENU_THEME_PROPERTIES = [
+  "--console-color-scheme",
+  "--console-context-menu-color-scheme",
+  "--console-context-menu-background",
+  "--console-context-menu-border",
+  "--console-context-menu-foreground",
+  "--console-context-menu-muted",
+  "--console-context-menu-hover",
+  "--console-context-menu-hover-foreground",
+  "--console-context-menu-icon",
+  "--console-context-menu-danger",
+  "--console-context-menu-radius",
+  "--console-context-menu-shadow",
+] as const;
+
+type ContextMenuThemeProperty = (typeof CONTEXT_MENU_THEME_PROPERTIES)[number];
+type ContextMenuThemeStyle = CSSProperties &
+  Partial<Record<ContextMenuThemeProperty, string>>;
+
 interface MenuState {
   x: number;
   y: number;
   target: MenuTarget;
+  themeStyle: ContextMenuThemeStyle;
 }
 
 interface ConsoleActionMenuItemProps<TContext> {
@@ -77,6 +98,27 @@ function getMenuPosition(
     x: Math.min(Math.max(VIEWPORT_MARGIN, clientX), maxX),
     y: Math.min(Math.max(VIEWPORT_MARGIN, clientY), maxY),
   };
+}
+
+function getContextMenuThemeStyle(
+  element: HTMLElement | null,
+): ContextMenuThemeStyle {
+  if (!element || typeof window === "undefined") {
+    return {};
+  }
+
+  const computedStyle = window.getComputedStyle(element);
+  const themeStyle: ContextMenuThemeStyle = {};
+
+  for (const property of CONTEXT_MENU_THEME_PROPERTIES) {
+    const value = computedStyle.getPropertyValue(property).trim();
+
+    if (value) {
+      themeStyle[property] = value;
+    }
+  }
+
+  return themeStyle;
 }
 
 function getEventPoint(event: MouseEvent<HTMLElement>) {
@@ -148,7 +190,8 @@ export function ConsoleContextMenu({
   const openMenu = useCallback(
     (event: MouseEvent<HTMLElement>, target: MenuTarget) => {
       const point = getEventPoint(event);
-      setMenu({ ...point, target });
+      const themeStyle = getContextMenuThemeStyle(targetRef.current);
+      setMenu({ ...point, target, themeStyle });
     },
     [],
   );
@@ -368,7 +411,11 @@ export function ConsoleContextMenu({
             role="menu"
             aria-label="Console actions"
             tabIndex={-1}
-            style={{ left: menu.x, top: menu.y }}
+            style={{
+              left: menu.x,
+              top: menu.y,
+              ...menu.themeStyle,
+            }}
             onContextMenu={(event) => event.preventDefault()}
             onKeyDown={handleMenuKeyDown}
           >
