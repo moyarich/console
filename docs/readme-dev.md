@@ -309,7 +309,7 @@ The pre-commit hook runs only against staged files:
 - files fixed by the tools are included in the staged result
 - the commit is blocked when a task still fails
 
-The full repository validation remains CI's responsibility. Typechecking, tests, builds, Storybook, and package validation do not run in pre-commit.
+The hook is intentionally limited to fast staged-file formatting and linting. The full repository validation remains CI's responsibility. Typechecking, tests, builds, Storybook, and package validation do not run in pre-commit.
 
 If the local hook must be bypassed once:
 
