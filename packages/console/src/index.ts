@@ -12,6 +12,8 @@ export type {
   ConsoleOutputStream,
   ConsoleStdoutEntry,
   ConsoleStdoutProps,
+  ConsoleStructuredOutputParser,
+  ConsoleStructuredOutputParserContext,
 } from "./components/ConsoleStdout";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
