@@ -349,7 +349,6 @@ const { messages, clear } = useConsoleMessages({
 });
 ```
 
-
 ### Capture outside React
 
 Use `captureConsole()` when you want capture without the state hook.
