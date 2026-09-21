@@ -260,7 +260,7 @@ interface ConsoleMessageData {
 | `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
 | `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
 | `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
-| `clear()`                    | Produces a `clear` event through the proxy's `onEvent` callback                                                      |
+| `clear()`                    | Produces a `clear` event through the proxy's `onEvent` callback                                                        |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
@@ -313,15 +313,15 @@ const { messages, output, console, append, clear, events, setMessages } =
 
 ### Returned values
 
-| Value             | Purpose                                       |
-| ----------------- | --------------------------------------------- |
-| `messages`        | Current `ConsoleMessageData[]`                         |
-| `output`          | Convenience `{ messages, error: "" }` object           |
+| Value             | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `messages`        | Current `ConsoleMessageData[]`                          |
+| `output`          | Convenience `{ messages, error: "" }` object            |
 | `console`         | Stable console-compatible producer backed by hook state |
-| `append(message)` | Emits a message into the hook's event channel          |
-| `clear()`         | Emits a clear event                                    |
-| `events`          | The `ConsoleEventEmitter` used by the hook             |
-| `setMessages`     | Direct React state setter for advanced cases           |
+| `append(message)` | Emits a message into the hook's event channel           |
+| `clear()`         | Emits a clear event                                     |
+| `events`          | The `ConsoleEventEmitter` used by the hook              |
+| `setMessages`     | Direct React state setter for advanced cases            |
 
 ## Capture a real console
 
@@ -394,7 +394,7 @@ const runtimeConsole = createConsoleProxy({
 
 | Option     | Purpose                                                   |
 | ---------- | --------------------------------------------------------- |
-| `onEvent`  | Receives each produced `ConsoleEvent`                    |
+| `onEvent`  | Receives each produced `ConsoleEvent`                     |
 | `source`   | Adds source metadata to every emitted message             |
 | `now`      | Overrides wall-clock timestamp generation                 |
 | `timerNow` | Overrides the high-resolution clock used by timer methods |
@@ -423,7 +423,7 @@ runtimeConsole.log("shared event stream");
 | `off(type, listener)`       | Remove one listener                                               |
 | `emit("message", message)`  | Publish one structured message                                    |
 | `emit("clear")`             | Publish a clear event                                             |
-| `dispatch(event)`          | Route an existing `ConsoleEvent` through the named emitter API    |
+| `dispatch(event)`           | Route an existing `ConsoleEvent` through the named emitter API    |
 | `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
 
 ## `Console` component configuration
