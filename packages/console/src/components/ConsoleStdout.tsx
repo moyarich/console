@@ -8,16 +8,23 @@ export type ConsoleOutputStream = "stdout" | "stderr";
 
 /** One ANSI/process-output entry with optional identity and stream metadata. */
 export interface ConsoleStdoutEntry {
+  /** Optional stable key for the rendered entry. */
   id?: string;
+  /** Raw ANSI or plain-text chunk. */
   data: string;
+  /** Optional stdout/stderr classification. */
   stream?: ConsoleOutputStream;
 }
 
 /** Metadata supplied to structured-output parsers. */
 export interface ConsoleStructuredOutputParserContext {
+  /** Original entry before ANSI codes are stripped for parser input. */
   entry: ConsoleStdoutEntry | string;
+  /** Zero-based entry index. */
   index: number;
+  /** Stable entry id when one was supplied. */
   id?: string;
+  /** stdout/stderr metadata when one was supplied. */
   stream?: ConsoleOutputStream;
 }
 
@@ -34,10 +41,15 @@ export type ConsoleStructuredOutputParser = (
 
 /** Props for rendering ANSI-aware stdout/stderr entries. */
 export interface ConsoleStdoutProps {
+  /** Ordered process-output entries. */
   entries: readonly (ConsoleStdoutEntry | string)[];
+  /** Empty-state text. */
   emptyMessage?: string;
+  /** Whether complete JSON object/array lines should render as structured values. */
   parseStructuredOutput?: boolean;
+  /** Ordered custom structured-output parsers. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
+  /** Custom renderers used when a line becomes a structured value. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
