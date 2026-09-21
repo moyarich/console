@@ -72,7 +72,7 @@ function applyColor(
 export function parseAnsi(value: string): AnsiSegment[] {
   const segments: AnsiSegment[] = [];
   const style: Record<string, string | number> = {};
-  const pattern = /\u001b\[([0-9;]*)m/g;
+  const pattern = new RegExp(`${String.fromCharCode(27)}\\[([0-9;]*)m`, "g");
   let cursor = 0;
   let match: RegExpExecArray | null;
 
