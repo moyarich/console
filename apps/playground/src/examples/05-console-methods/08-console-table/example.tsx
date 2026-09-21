@@ -1,28 +1,18 @@
-import { Console, useConsoleMessages } from "@moyarich/console";
+import {
+  Console,
+  createConsoleProxy,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
+const messages: ConsoleMessageData[] = [];
+const exampleConsole = createConsoleProxy(messages);
+
+exampleConsole.table([
+  { name: "Ada", role: "Admin", active: true },
+  { name: "Grace", role: "Editor", active: false },
+]);
+
 export default function ConsoleTableExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
-    source: "console-table",
-    passThrough: true,
-  });
-
-  const runExample = () => {
-    console.table([{ message: "Table message" }]);
-  };
-
-  return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <button type="button" onClick={runExample}>
-        console.table(...)
-      </button>
-
-      <Console
-        messages={messages}
-        onClear={clear}
-        subtitle="console.table example"
-      />
-    </div>
-  );
+  return <Console messages={messages} subtitle="console.table example" />;
 }
