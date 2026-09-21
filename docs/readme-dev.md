@@ -117,8 +117,7 @@ It also supports the discriminated transport-facing form:
 
 ```ts
 type ConsoleEvent =
-  | { type: "message"; message: ConsoleMessageData }
-  | { type: "clear" };
+  { type: "message"; message: ConsoleMessageData } | { type: "clear" };
 ```
 
 Typical flow:
