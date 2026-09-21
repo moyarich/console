@@ -26,7 +26,10 @@ const GROUP_ORDER = [
 type ExampleGroup = (typeof GROUP_ORDER)[number];
 
 function getExampleGroup(example: ConsoleExample): ExampleGroup {
-  if (example.id === "current-page") {
+  if (
+    example.id === "current-page" ||
+    example.id === "plain-messages"
+  ) {
     return "Getting started";
   }
 
