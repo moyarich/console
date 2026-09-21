@@ -6,7 +6,13 @@ import {
 import "@moyarich/console/styles.css";
 
 const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy(messages);
+const exampleConsole = createConsoleProxy({
+  onEvent(event) {
+    if (event.type === "message") {
+      messages.push(event.message);
+    }
+  },
+});
 
 exampleConsole.group("Build");
 exampleConsole.log("Compiling application");
