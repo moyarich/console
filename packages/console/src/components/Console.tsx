@@ -12,7 +12,11 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
-import { ConsoleStdout, type ConsoleStdoutEntry } from "./ConsoleStdout";
+import {
+  ConsoleStdout,
+  type ConsoleStdoutEntry,
+  type ConsoleStructuredOutputParser,
+} from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
 import type {
   ConsoleMessageRenderer,
@@ -59,6 +63,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   mode: "ansi";
   messages?: readonly (ConsoleStdoutEntry | string)[];
   parseStructuredOutput?: boolean;
+  structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   output?: never;
   error?: never;
   onMessagesChange?: never;
@@ -332,6 +337,7 @@ function ConsoleMessageMode({
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
+  structuredOutputParsers,
   valueRenderers,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
@@ -350,6 +356,7 @@ function ConsoleAnsiMode({
       <ConsoleStdout
         entries={messages}
         parseStructuredOutput={parseStructuredOutput}
+        structuredOutputParsers={structuredOutputParsers}
         valueRenderers={valueRenderers}
       />
     </ConsoleFrame>
