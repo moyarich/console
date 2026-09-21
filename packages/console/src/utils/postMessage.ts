@@ -33,7 +33,7 @@ export function listenForConsolePostMessages({
     if (!isConsoleEnvelope(event.data)) return;
     if (event.data.channel !== channel) return;
 
-    events.emitEvent(deserializeConsoleEvent(event.data.event));
+    events.dispatch(deserializeConsoleEvent(event.data.event));
   };
 
   targetWindow.addEventListener("message", handler as EventListener);
