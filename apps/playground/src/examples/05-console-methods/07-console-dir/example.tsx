@@ -1,33 +1,38 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-});
-
-exampleConsole.dir(
-  {
-    name: "Directory message",
-    details: {
-      nested: true,
-      values: [1, 2, 3],
-    },
-  },
-  {
-    depth: 2,
-    showHidden: false,
-  },
-);
-
 export default function ConsoleDirExample() {
-  return <Console messages={messages} subtitle="console.dir example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-dir",
+  });
+
+  const runExample = () => {
+    console.dir(
+      {
+        name: "Directory message",
+        details: {
+          nested: true,
+          values: [1, 2, 3],
+        },
+      },
+      {
+        depth: 2,
+        showHidden: false,
+      },
+    );
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.dir(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.dir example"
+      />
+    </div>
+  );
 }
