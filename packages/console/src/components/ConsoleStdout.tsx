@@ -24,15 +24,14 @@ export function ConsoleStdout({
       {entries.map((entry, index) => {
         const data = typeof entry === "string" ? entry : entry.data;
         const key =
-          typeof entry === "string" ? `stdout-${index}` : entry.id ?? `stdout-${index}`;
+          typeof entry === "string"
+            ? `stdout-${index}`
+            : (entry.id ?? `stdout-${index}`);
 
         return (
           <pre className="console-stdout-line" key={key}>
             {parseAnsi(data).map((segment, segmentIndex) => (
-              <span
-                key={segmentIndex}
-                style={segment.style as CSSProperties}
-              >
+              <span key={segmentIndex} style={segment.style as CSSProperties}>
                 {segment.text}
               </span>
             ))}
