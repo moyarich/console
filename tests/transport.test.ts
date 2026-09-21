@@ -56,7 +56,12 @@ describe("console transport", () => {
     const sent: string[] = [];
     const events = createConsoleEventEmitter();
 
-    events.onEvent((value) => received.push(value));
+    events.on("message", (message) => {
+      received.push({ type: "message", message });
+    });
+    events.on("clear", () => {
+      received.push({ type: "clear" });
+    });
 
     const socket: ConsoleWebSocketLike = {
       send(data) {
