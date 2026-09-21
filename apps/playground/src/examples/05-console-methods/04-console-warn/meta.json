@@ -1,4 +1,4 @@
 {
   "label": "console.warn",
-  "description": "Capture and render a console.warn message."
+  "description": "Render a console.warn message immediately."
 }
