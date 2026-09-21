@@ -315,8 +315,8 @@ function ConsoleMessageMode({
 
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
-  subtitle = "ANSI-aware stdout output",
-  emptyMessage = "No stdout output yet.",
+  subtitle = "ANSI-aware process output",
+  emptyMessage = "No process output yet.",
   ...frameProps
 }: ConsoleAnsiModeProps) {
   return (
