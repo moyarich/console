@@ -115,7 +115,9 @@ const { messages, clear } = useConsoleMessages({
 `Console` renders one of two message shapes through the same component:
 
 - `mode="console"` (the default) accepts `ConsoleMessageData[]`
-- `mode="ansi"` accepts strings or `{ id?, data, stream? }` process-output entries and renders ANSI escape sequences with `anser`; `stream` is optional and may be `"stdout"` or `"stderr"`. Set `parseStructuredOutput` to promote complete strict-JSON entries into expandable object/array inspectors. Its actions menu includes **Copy output**
+- `mode="ansi"` accepts strings or `{ id?, data, stream? }` process-output
+  entries and renders ANSI escape sequences with `anser`; `stream` is optional
+  and may be `"stdout"` or `"stderr"`
 
 Structured console output:
 
@@ -128,7 +130,7 @@ Structured console output:
 />
 ```
 
-ANSI/stdout output:
+ANSI/process output:
 
 ```tsx
 const messages = [
@@ -138,17 +140,41 @@ const messages = [
     data: "\\u001b[31mConnection failed\\u001b[0m",
     stream: "stderr",
   },
-  "Listening on port 3000",
+  {
+    id: "3",
+    data: '{"request":{"method":"GET","status":200}}',
+  },
 ];
 
-<Console mode="ansi" messages={messages} />;
+<Console
+  mode="ansi"
+  messages={messages}
+  parseStructuredOutput
+/>
 ```
 
-`stream` is metadata about the process channel, not a console method. A `stderr` entry is not treated as `console.error()`.
+Set `parseStructuredOutput` to promote complete strict-JSON object or array
+entries into the same expandable inspector used by structured console output.
+ANSI codes may wrap the JSON because Anser's plain-text conversion is used
+before `JSON.parse()`. JavaScript-like inspection strings such as
+`{ name: 'Ada' }` remain terminal text.
 
-`ConsoleStdout` remains available as the lower-level ANSI list renderer when the surrounding Console panel UI is not needed.
+The ANSI renderer uses Anser's JSON token output rather than injecting generated
+HTML. Supported SGR styling includes standard and bright colors, 256-color and
+24-bit truecolor, bold, dim, italic, underline, reverse, hidden, and
+strikethrough. Carriage-return metadata is exposed on rendered output.
+Cursor-movement sequences are not emulated; ANSI mode is a process-output
+viewer, not a full terminal emulator.
 
-If an application wants tabs, panes, or a restart button, those controls belong to the application around `Console`.
+`stream` is metadata about the process channel, not a console method. A
+`stderr` entry is not treated as `console.error()`.
+
+The ANSI actions menu includes **Copy output**. `ConsoleStdout` remains
+available as the lower-level ANSI list renderer when the surrounding Console
+panel UI is not needed.
+
+If an application wants tabs, panes, or a restart button, those controls belong
+to the application around `Console`.
 
 ## Capture the current page
 

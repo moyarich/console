@@ -12,10 +12,7 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
-import {
-  ConsoleStdout,
-  type ConsoleStdoutEntry,
-} from "./ConsoleStdout";
+import { ConsoleStdout, type ConsoleStdoutEntry } from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
 import { writeClipboardText } from "../utils/clipboard";
 

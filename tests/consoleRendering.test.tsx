@@ -197,9 +197,7 @@ describe("Console rendering", () => {
   it("renders ANSI decorations and truecolor from Anser tokens", () => {
     const html = renderToStaticMarkup(
       <ConsoleStdout
-        entries={[
-          `${escape}[1;3;38;2;12;34;56mstyled${escape}[0m`,
-        ]}
+        entries={[`${escape}[1;3;38;2;12;34;56mstyled${escape}[0m`]}
       />,
     );
 
