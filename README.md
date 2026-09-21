@@ -7,7 +7,7 @@ A reusable React console UI with capture and transport adapters for:
 - server-relayed messages via WebSocket
 - sandboxed/evaluated code through a `Console` proxy
 
-The project was extracted from the console implementation originally used by the `css-expand-collapse` playground.
+The project was extracted from the console implementation originally used by the `console` playground.
 
 ## Repository structure
 
