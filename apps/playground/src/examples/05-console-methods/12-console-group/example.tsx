@@ -1,24 +1,29 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-});
-
-exampleConsole.group("Build");
-exampleConsole.log("Compiling application");
-exampleConsole.log("Writing output", { files: 42 });
-exampleConsole.groupEnd();
-
 export default function ConsoleGroupExample() {
-  return <Console messages={messages} subtitle="console.group example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-group",
+  });
+
+  const runExample = () => {
+    console.group("Build");
+    console.log("Compiling application");
+    console.log("Writing output", { files: 42 });
+    console.groupEnd();
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.group(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.group example"
+      />
+    </div>
+  );
 }
