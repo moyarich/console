@@ -127,7 +127,7 @@ Structured console output:
   messages={[
     { method: "log", data: ["Hello", { ready: true }], depth: 0 },
   ]}
-/>
+/>;
 ```
 
 ANSI/process output:
@@ -146,7 +146,7 @@ const messages = [
   },
 ];
 
-<Console mode="ansi" messages={messages} parseStructuredOutput />
+<Console mode="ansi" messages={messages} parseStructuredOutput />;
 ```
 
 Set `parseStructuredOutput` to promote complete strict-JSON object or array
