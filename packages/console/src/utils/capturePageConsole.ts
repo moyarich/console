@@ -1,5 +1,6 @@
 import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { createConsoleEventHandler } from "./createConsoleEventHandler";
 import { createConsoleProxy } from "./createConsoleProxy";
 
 export interface CapturePageConsoleOptions {
@@ -16,7 +17,7 @@ export function capturePageConsole({
   source = "page",
 }: CapturePageConsoleOptions): () => void {
   const proxy = createConsoleProxy({
-    onEvent: events.dispatch,
+    onEvent: createConsoleEventHandler(events),
     source,
   });
   const originals = new Map<string, (...args: unknown[]) => unknown>();
