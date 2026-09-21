@@ -31,7 +31,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Render ANSI `stdout` / `stderr`                    | `<Console mode="ansi" messages={entries} />` |
 | Keep console messages in React state               | `useConsoleMessages()`                       |
 | Capture the current page's real `console.*` calls  | `useConsoleMessages({ capture: true })`      |
-| Capture a different `Console` object               | `capturePageConsole()`                       |
+| Capture a different `Console` object               | `captureConsole()`                       |
 | Give evaluated or sandboxed code its own `console` | `createConsoleProxy()`                       |
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
@@ -237,7 +237,7 @@ interface ConsoleMessageData {
 
 ## Supported `console.*` methods
 
-`createConsoleProxy()` implements the following console methods. `capturePageConsole()` wraps the same method set when capturing a real console.
+`createConsoleProxy()` implements the following console methods. `captureConsole()` wraps the same method set when capturing a real console.
 
 | Console call                 | Message/output behavior                                                                                                |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -309,7 +309,7 @@ const { messages, output, console, append, clear, events, setMessages } =
 | `capture`         | `false`          | Capture calls from a real console                          |
 | `source`          | `"page"`         | Source metadata added during capture                       |
 | `passThrough`     | `true`           | Also call the original console method while capturing      |
-| `target`          | global console   | Alternate `Console` object to capture                      |
+| `consoleTarget`   | global console   | Existing `Console` object to capture                       |
 
 ### Returned values
 
@@ -339,15 +339,28 @@ const { messages, clear } = useConsoleMessages({
 
 With `passThrough: true`, calls are both captured and forwarded to the original console, so they still appear in browser DevTools.
 
+To capture a different existing `Console` object, provide `consoleTarget`:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  capture: true,
+  consoleTarget: iframe.contentWindow.console,
+  source: "iframe",
+});
+```
+
+A bare `target` option is intentionally not used because `target` already has other meanings in the codebase, including TypeScript compilation targets and window/event targets.
+
 ### Capture outside React
 
-Use `capturePageConsole()` when you want capture without the state hook.
+Use `captureConsole()` when you want capture without the state hook.
 
 ```ts
 const events = createConsoleEventEmitter();
 
-const restore = capturePageConsole({
+const restore = captureConsole({
   events,
+  consoleTarget: previewConsole,
   source: "preview",
   passThrough: true,
 });
@@ -653,7 +666,7 @@ Available helpers:
 | Export                      | Purpose                                                    |
 | --------------------------- | ---------------------------------------------------------- |
 | `useConsoleMessages`        | React message state connected to a console event channel   |
-| `capturePageConsole`        | Temporarily wrap an existing `Console` object              |
+| `captureConsole`        | Temporarily wrap an existing `Console` object              |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code    |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                    |
 | `createConsoleEventHandler` | Adapt a `ConsoleEvent` producer to a `ConsoleEventEmitter` |
