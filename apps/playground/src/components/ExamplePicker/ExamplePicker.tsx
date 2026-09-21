@@ -9,7 +9,6 @@ import {
 } from "react";
 import {
   CONSOLE_EXAMPLE_GROUPS,
-  DEFAULT_CONSOLE_EXAMPLE_GROUP_ID,
   type ConsoleExample,
 } from "../../examples";
 
@@ -19,16 +18,10 @@ interface ExamplePickerProps {
   onChange: (id: string) => void;
 }
 
-function getExampleGroupId(example: ConsoleExample) {
-  return example.groupId ?? DEFAULT_CONSOLE_EXAMPLE_GROUP_ID;
-}
-
 function getExampleGroupLabel(example: ConsoleExample) {
-  const groupId = getExampleGroupId(example);
-
   return (
-    CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === groupId)?.label ??
-    groupId
+    CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === example.groupId)
+      ?.label ?? example.groupId
   );
 }
 
@@ -72,7 +65,7 @@ export function ExamplePicker({
       CONSOLE_EXAMPLE_GROUPS.map((group) => ({
         group,
         examples: filteredExamples.filter(
-          (example) => getExampleGroupId(example) === group.id,
+          (example) => example.groupId === group.id,
         ),
       })).filter(({ examples: groupExamples }) => groupExamples.length > 0),
     [filteredExamples],
@@ -220,7 +213,7 @@ export function ExamplePicker({
             {selected?.label ?? "Choose an example"}
           </span>
           <span className="example-picker-trigger-meta">
-            {selected ? getExampleGroup(selected) : "Examples"}
+            {selected ? getExampleGroupLabel(selected) : "Examples"}
           </span>
         </span>
 
