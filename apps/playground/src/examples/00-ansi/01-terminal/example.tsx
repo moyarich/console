@@ -162,7 +162,8 @@ export default function TerminalExample() {
         subtitle="ANSI process output with expandable strict JSON"
         messages={messages}
         parseStructuredOutput
-        resizable
+        resizable="vertical"
+        style={{ height: 440, minHeight: 240, maxHeight: 720 }}
         onClear={() => setMessages([])}
       />
     </div>

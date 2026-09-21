@@ -17,6 +17,12 @@ import type { ConsoleMessageData, RunOutput } from "../types";
 import { writeClipboardText } from "../utils/clipboard";
 
 export type ConsoleMode = "console" | "ansi";
+export type ConsoleResizeDirection =
+  | "vertical"
+  | "horizontal"
+  | "both"
+  | "block"
+  | "inline";
 
 export type ConsoleMessageFilter = (
   message: ConsoleMessageData,
@@ -27,7 +33,7 @@ export type ConsoleMessageFilter = (
 interface ConsoleSharedProps {
   onClear?: () => void;
   autoScroll?: boolean;
-  resizable?: boolean;
+  resizable?: ConsoleResizeDirection;
   showHeader?: boolean;
   showClearButton?: boolean;
   actions?: ReactNode;
@@ -75,7 +81,7 @@ function ConsoleFrame({
   mode,
   onClear,
   autoScroll = true,
-  resizable = false,
+  resizable,
   showHeader = true,
   showClearButton = true,
   actions,
@@ -130,7 +136,7 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
-      data-resizable={resizable || undefined}
+      data-resizable={resizable}
     >
       {showHeader && (
         <div className="console-panel-header panel-header">

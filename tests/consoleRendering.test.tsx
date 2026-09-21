@@ -176,11 +176,11 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <Console
         messages={[{ method: "log", data: ["hello"], depth: 0 }]}
-        resizable
+        resizable="both"
       />,
     );
 
-    expect(html).toContain('data-resizable="true"');
+    expect(html).toContain('data-resizable="both"');
   });
 
   it("renders the ANSI empty state through Console", () => {
