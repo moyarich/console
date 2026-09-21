@@ -41,9 +41,7 @@ export function Console({
   const hasExpandableValues = messages.some(
     (message) =>
       message.method !== "table" &&
-      message.data.some(
-        (value) => typeof value === "object" && value !== null,
-      ),
+      message.data.some((value) => typeof value === "object" && value !== null),
   );
 
   const expandAllCollapsed = () => {
