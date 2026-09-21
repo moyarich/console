@@ -52,6 +52,7 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   mode: "ansi";
   messages?: readonly (ConsoleStdoutEntry | string)[];
+  parseStructuredOutput?: boolean;
   output?: never;
   error?: never;
   onMessagesChange?: never;
@@ -315,6 +316,7 @@ function ConsoleMessageMode({
 
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
+  parseStructuredOutput = false,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
@@ -329,7 +331,10 @@ function ConsoleAnsiMode({
       isEmpty={messages.length === 0}
       scrollKey={messages}
     >
-      <ConsoleStdout entries={messages} />
+      <ConsoleStdout
+        entries={messages}
+        parseStructuredOutput={parseStructuredOutput}
+      />
     </ConsoleFrame>
   );
 }

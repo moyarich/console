@@ -234,6 +234,18 @@
   border-left: 2px solid var(--console-error-border);
 }
 
+.console-panel .console-stdout-line[data-clear-line="true"] {
+  border-left: 2px solid var(--console-info);
+}
+
+.console-panel .console-stdout-structured {
+  white-space: normal;
+}
+
+.console-panel .console-stdout-structured > .console-object-shell {
+  width: 100%;
+}
+
 .console-panel .console-stdout-empty {
   display: flex;
   min-height: var(--console-min-height);

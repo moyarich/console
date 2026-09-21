@@ -69,6 +69,7 @@ function getAnsiFormattingOutput(): ConsoleStdoutEntry[] {
         `${ESC}2mDim${ESC}0m`,
         `${ESC}3mItalic${ESC}0m`,
         `${ESC}4mUnderline${ESC}0m`,
+        `${ESC}9mStrikethrough${ESC}0m`,
       ].join("  "),
     },
     {
@@ -83,18 +84,29 @@ function getAnsiFormattingOutput(): ConsoleStdoutEntry[] {
       ].join("  "),
     },
     {
-      id: "bright-colors",
+      id: "extended-colors",
       data: [
-        `${ESC}91mBright red${ESC}0m`,
-        `${ESC}92mBright green${ESC}0m`,
-        `${ESC}94mBright blue${ESC}0m`,
+        `${ESC}38;5;39m256-color${ESC}0m`,
+        `${ESC}38;2;255;105;180m24-bit truecolor${ESC}0m`,
+        `${ESC}7mReverse${ESC}0m`,
       ].join("  "),
     },
+  ];
+}
+
+function getStructuredOutput(): ConsoleStdoutEntry[] {
+  return [
+    { id: "command", data: "$ node server.js --json" },
     {
-      id: "256-color",
-      data: `${ESC}38;5;39m256-color foreground${ESC}0m  ${ESC}48;5;236mBackground color${ESC}0m`,
+      id: "json",
+      data: `${ESC}36m{"request":{"method":"GET","path":"/api/users","status":200},"timing":{"durationMs":18},"cache":{"hit":true},"users":[{"id":42,"name":"Ada"}]}${ESC}0m`,
+      stream: "stdout",
     },
-    { id: "plain", data: "Plain output remains unchanged." },
+    {
+      id: "plain-object",
+      data: "{ name: 'Not JSON', still: 'terminal text' }",
+      stream: "stdout",
+    },
   ];
 }
 
@@ -137,13 +149,21 @@ export default function TerminalExample() {
         >
           Show ANSI formatting
         </button>
+
+        <button
+          type="button"
+          onClick={() => appendOutput(getStructuredOutput())}
+        >
+          Log JSON
+        </button>
       </div>
 
       <Console
         mode="ansi"
         title="Terminal"
-        subtitle="Process output appended to one terminal session"
+        subtitle="ANSI process output with expandable strict JSON"
         messages={messages}
+        parseStructuredOutput
         onClear={() => setMessages([])}
       />
     </div>
