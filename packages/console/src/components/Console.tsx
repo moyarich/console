@@ -60,6 +60,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
 export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
 
 interface ConsoleFrameProps extends ConsoleSharedProps {
+  mode: ConsoleMode;
   hasMessages: boolean;
   isEmpty: boolean;
   scrollKey: unknown;
@@ -71,6 +72,7 @@ const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
 
 function ConsoleFrame({
+  mode,
   onClear,
   autoScroll = true,
   showHeader = true,
@@ -117,7 +119,7 @@ function ConsoleFrame({
     <article
       className={`console console-panel ${className}`.trim()}
       style={style}
-      data-console-mode={undefined}
+      data-console-mode={mode}
     >
       {showHeader && (
         <div className="console-panel-header panel-header">
@@ -264,6 +266,7 @@ function ConsoleMessageMode({
   return (
     <ConsoleFrame
       {...frameProps}
+      mode="console"
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
@@ -294,6 +297,7 @@ function ConsoleAnsiMode({
   return (
     <ConsoleFrame
       {...frameProps}
+      mode="ansi"
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
