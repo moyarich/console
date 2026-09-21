@@ -15,6 +15,13 @@ export type {
 } from "./components/ConsoleStdout";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
+export { getConsoleValueType } from "./renderers";
+export type {
+  ConsoleMessageRenderer,
+  ConsoleMessageRendererContext,
+  ConsoleValueRenderer,
+  ConsoleValueRendererContext,
+} from "./renderers";
 export { CONSOLE_METHODS } from "./consoleMethods";
 export { normalizeConsoleTableData } from "./utils/consoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/consoleCopyObject";
