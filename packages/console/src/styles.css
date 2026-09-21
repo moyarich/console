@@ -58,18 +58,21 @@
 
 .console-panel .console-actions-trigger:hover,
 .console-panel .console-actions-trigger:focus-visible,
-.console-panel .console-actions-trigger[aria-expanded="true"] {
+.console-panel
+  .console-actions-popover-shell:has(.console-actions-popover:popover-open)
+  .console-actions-trigger {
   outline: none;
   border-color: #aebbd0;
   background: #eef2f7;
   color: #26344b;
 }
 
-.console-panel .console-actions-popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
+.console-panel .console-actions-popover[popover] {
+  position: fixed;
+  inset: auto;
+  position-area: bottom span-left;
   z-index: 20;
+  margin: 6px 0 0;
   min-width: 180px;
   max-width: min(280px, calc(100vw - 32px));
   border: 1px solid #d6deeb;
@@ -709,7 +712,7 @@
     flex-direction: row;
   }
 
-  .console-panel .console-actions-popover {
-    right: 0;
+  .console-panel .console-actions-popover[popover] {
+    max-width: calc(100vw - 24px);
   }
 }
