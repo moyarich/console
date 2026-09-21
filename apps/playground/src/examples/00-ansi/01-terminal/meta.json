@@ -1,4 +1,4 @@
 {
   "label": "Terminal",
-  "description": "ANSI terminal output for dev servers, builds, stdout/stderr metadata, and terminal formatting."
+  "description": "Append dev-server, build, and ANSI-formatted process output to one persistent terminal session."
 }
