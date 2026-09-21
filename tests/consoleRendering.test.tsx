@@ -131,6 +131,7 @@ describe("Console rendering", () => {
     );
 
     expect(html).toContain("Restart server");
+    expect(html).toContain("console-toolbar");
     expect(html).not.toContain("console-restart-button");
   });
 
@@ -138,7 +139,7 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(<Console messages={[]} stdout={[]} />);
 
     expect(html).toContain("console-panel-header-main");
-    expect(html).toContain("console-view-bar");
+    expect(html).toContain("console-toolbar");
     expect(html).toContain('role="tablist"');
   });
 
