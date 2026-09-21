@@ -12,11 +12,13 @@ import {
 import { createPortal } from "react-dom";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { formatConsoleObjectForCopy } from "../utils/consoleCopyObject";
+import { writeClipboardText } from "../utils/clipboard";
 
 export interface ConsoleContextMenuProps {
   children: ReactNode;
-  disabled?: boolean;
-  onClear: () => void;
+  copyDisabled?: boolean;
+  clearDisabled?: boolean;
+  onClear?: () => void;
 }
 
 interface MenuState {
@@ -45,26 +47,10 @@ function getMenuPosition(clientX: number, clientY: number, height: number) {
   };
 }
 
-async function writeClipboardText(value: string) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value);
-    return;
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = value;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  textarea.remove();
-}
-
 export function ConsoleContextMenu({
   children,
-  disabled = false,
+  copyDisabled = false,
+  clearDisabled = false,
   onClear,
 }: ConsoleContextMenuProps) {
   const targetRef = useRef<HTMLDivElement>(null);
@@ -207,7 +193,7 @@ export function ConsoleContextMenu({
               type="button"
               className="console-context-menu-item"
               role="menuitem"
-              disabled={disabled}
+              disabled={copyDisabled}
               onClick={handleCopyConsole}
             >
               <Copy size={15} aria-hidden="true" />
@@ -220,10 +206,10 @@ export function ConsoleContextMenu({
               type="button"
               className="console-context-menu-item console-context-menu-item-danger"
               role="menuitem"
-              disabled={disabled}
+              disabled={clearDisabled}
               onClick={() => {
                 closeMenu();
-                onClear();
+                onClear?.();
               }}
             >
               <Trash2 size={15} aria-hidden="true" />

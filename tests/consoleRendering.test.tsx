@@ -155,6 +155,17 @@ describe("Console rendering", () => {
     expect(html).toContain("rgb(255, 0, 0)");
     expect(html).toContain("plain stdout");
     expect(html).toContain("ANSI-aware stdout output");
+    expect(html).toContain(">Copy output<");
+    expect(html).toContain('data-console-mode="ansi"');
+  });
+
+  it("does not add the ANSI copy action in console mode", () => {
+    const html = renderToStaticMarkup(
+      <Console messages={[{ method: "log", data: ["hello"], depth: 0 }]} />,
+    );
+
+    expect(html).not.toContain(">Copy output<");
+    expect(html).toContain('data-console-mode="console"');
   });
 
   it("renders the ANSI empty state through Console", () => {
