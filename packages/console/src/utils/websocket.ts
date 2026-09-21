@@ -1,8 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import {
-  DEFAULT_CONSOLE_CHANNEL,
-  isConsoleEnvelope,
-} from "./transport";
+import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 export interface ConsoleWebSocketLike {
   send(data: string): void;

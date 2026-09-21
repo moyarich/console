@@ -29,10 +29,7 @@ function formatDiagnostics(
     .join("\n");
 }
 
-function resolveRuntimeModule(
-  moduleId: string,
-  ts: TypeScriptModule,
-) {
+function resolveRuntimeModule(moduleId: string, ts: TypeScriptModule) {
   switch (moduleId) {
     case "react":
       return React;

@@ -63,10 +63,7 @@ export function Example() {
 Turn on page capture directly through `useConsoleMessages()`. The hook starts and cleans up `capturePageConsole()` internally.
 
 ```tsx
-import {
-  Console,
-  useConsoleMessages,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 
 export function PageConsole() {
   const { messages, clear } = useConsoleMessages({

@@ -1,16 +1,10 @@
-import {
-  Console,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, type ConsoleMessageData } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const messages: ConsoleMessageData[] = [
   {
     method: "log",
-    data: [
-      "Hello from plain messages",
-      { package: "@moyarich/console" },
-    ],
+    data: ["Hello from plain messages", { package: "@moyarich/console" }],
     depth: 0,
   },
   {
@@ -27,9 +21,6 @@ const messages: ConsoleMessageData[] = [
 
 export default function PlainMessagesExample() {
   return (
-    <Console
-      messages={messages}
-      subtitle="Plain ConsoleMessageData objects"
-    />
+    <Console messages={messages} subtitle="Plain ConsoleMessageData objects" />
   );
 }

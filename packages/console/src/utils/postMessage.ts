@@ -1,8 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import {
-  DEFAULT_CONSOLE_CHANNEL,
-  isConsoleEnvelope,
-} from "./transport";
+import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 export interface ListenForConsolePostMessagesOptions {
   events: ConsoleEventEmitter;
@@ -38,14 +35,8 @@ export function listenForConsolePostMessages({
     events.emitEvent(event.data.event);
   };
 
-  targetWindow.addEventListener(
-    "message",
-    handler as EventListener,
-  );
+  targetWindow.addEventListener("message", handler as EventListener);
 
   return () =>
-    targetWindow.removeEventListener(
-      "message",
-      handler as EventListener,
-    );
+    targetWindow.removeEventListener("message", handler as EventListener);
 }

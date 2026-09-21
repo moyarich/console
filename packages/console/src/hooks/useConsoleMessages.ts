@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
@@ -43,9 +37,7 @@ export function useConsoleMessages({
       setMessages((current) => {
         const next = [...current, message];
 
-        return next.length > maxMessages
-          ? next.slice(-maxMessages)
-          : next;
+        return next.length > maxMessages ? next.slice(-maxMessages) : next;
       });
     },
     [maxMessages],
