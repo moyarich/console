@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createConsoleEventEmitter,
-  type ConsoleEvent,
   type ConsoleMessageData,
 } from "@moyarich/console";
 
@@ -89,17 +88,19 @@ describe("createConsoleEventEmitter", () => {
     expect(clearListener).not.toHaveBeenCalled();
   });
 
-  it("bridges ConsoleEvent values through onEvent and emitEvent", () => {
+  it("dispatches ConsoleEvent values through the named emitter API", () => {
     const events = createConsoleEventEmitter();
-    const received: ConsoleEvent[] = [];
-    const off = events.onEvent((event) => received.push(event));
+    const messageListener = vi.fn();
+    const clearListener = vi.fn();
 
-    events.emitEvent({ type: "message", message });
-    events.emitEvent({ type: "clear" });
+    events.on("message", messageListener);
+    events.on("clear", clearListener);
 
-    expect(received).toEqual([{ type: "message", message }, { type: "clear" }]);
+    events.dispatch({ type: "message", message });
+    events.dispatch({ type: "clear" });
 
-    off();
+    expect(messageListener).toHaveBeenCalledWith(message);
+    expect(clearListener).toHaveBeenCalledWith();
   });
 
   it("uses a listener snapshot while emitting", () => {
