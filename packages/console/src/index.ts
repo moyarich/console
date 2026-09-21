@@ -1,3 +1,11 @@
+/**
+ * Public entry point for @moyarich/console.
+ *
+ * Exports the React renderers, structured/ANSI message types, capture and
+ * transport utilities, serialization helpers, event primitives, and extension
+ * points used by embedded developer tools and browser runtimes.
+ */
+
 export { Console } from "./components/Console";
 export type {
   ConsoleAnsiModeProps,
