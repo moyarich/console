@@ -1,4 +1,0 @@
-{
-  "label": "Terminal · compile error",
-  "description": "Run the TypeScript compiler against invalid source and render its real ANSI-formatted diagnostics."
-}
