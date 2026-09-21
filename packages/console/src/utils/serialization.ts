@@ -1,7 +1,10 @@
 import type { ConsoleEvent, ConsoleMessageData } from "../types";
 
+/** Limits applied while serializing rich console values for transport. */
 export interface SerializeConsoleValueOptions {
+  /** Maximum nested object depth before serialization stops descending. */
   maxDepth?: number;
+  /** Maximum entries retained from a single collection/object level. */
   maxEntries?: number;
 }
 
@@ -49,6 +52,10 @@ function isNodeListLike(value: object): value is object & ArrayLike<unknown> {
   );
 }
 
+/**
+ * Converts rich JavaScript values into JSON-safe tagged representations while
+ * enforcing depth/entry limits and circular-reference protection.
+ */
 function normalizeValue(
   value: unknown,
   seen: WeakSet<object>,
@@ -265,6 +272,13 @@ function isTaggedConsoleValue(value: unknown): value is TaggedConsoleValue {
   );
 }
 
+/**
+ * Converts a console value into a JSON-safe representation for transport.
+ *
+ * Built-in support includes undefined, bigint, symbols, functions, special
+ * numbers, errors, dates, regexes, maps, sets, buffers, typed arrays, DOM
+ * elements, and NodeList-like collections.
+ */
 export function serializeConsoleValue(
   value: unknown,
   { maxDepth = 8, maxEntries = 100 }: SerializeConsoleValueOptions = {},
@@ -272,6 +286,12 @@ export function serializeConsoleValue(
   return normalizeValue(value, new WeakSet<object>(), 0, maxDepth, maxEntries);
 }
 
+/**
+ * Rehydrates values produced by {@link serializeConsoleValue}.
+ *
+ * DOM elements are recreated only when `document` is available; otherwise
+ * their serialized HTML representation is preserved.
+ */
 export function deserializeConsoleValue(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(deserializeConsoleValue);
@@ -432,6 +452,7 @@ export function deserializeConsoleValue(value: unknown): unknown {
   }
 }
 
+/** Serializes every data argument in a structured console message. */
 export function serializeConsoleMessage(
   message: ConsoleMessageData,
 ): ConsoleMessageData {
@@ -441,6 +462,7 @@ export function serializeConsoleMessage(
   };
 }
 
+/** Deserializes every data argument in a structured console message. */
 export function deserializeConsoleMessage(
   message: ConsoleMessageData,
 ): ConsoleMessageData {
@@ -450,12 +472,14 @@ export function deserializeConsoleMessage(
   };
 }
 
+/** Serializes message payloads in a console event; clear events pass through. */
 export function serializeConsoleEvent(event: ConsoleEvent): ConsoleEvent {
   return event.type === "message"
     ? { type: "message", message: serializeConsoleMessage(event.message) }
     : event;
 }
 
+/** Deserializes message payloads in a console event; clear events pass through. */
 export function deserializeConsoleEvent(event: ConsoleEvent): ConsoleEvent {
   return event.type === "message"
     ? {
