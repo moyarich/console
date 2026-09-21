@@ -9,7 +9,7 @@ import "@moyarich/console/styles.css";
 
 const MAX_MESSAGES = 1000;
 
-export default function ConsoleWithoutConsoleHookExample() {
+export default function ConsoleExample() {
   const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
 
   const [events] = useState(createConsoleEventEmitter);
