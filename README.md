@@ -16,7 +16,7 @@ Use it to build embedded developer consoles, playgrounds, code runners, iframe p
 - WebSocket transport support
 - JSON-safe serialization for transported values
 - controlled message state through `useConsoleMessages()`
-- standalone ANSI-aware stdout renderer powered by `anser`
+- `Console` modes for structured console messages and ANSI-aware stdout powered by `anser`
 - header actions in a native ellipsis popover
 - smart auto-scroll, filtering, reset, and message deduplication
 - rich transport value restoration
@@ -110,22 +110,38 @@ const { messages, clear } = useConsoleMessages({
 });
 ```
 
-## Stdout and ANSI output
+## Console modes
 
-`ConsoleStdout` is a separate ANSI-aware renderer. It is not a second mode of `Console`, so applications can compose it however they need without introducing server/client concepts into the console component.
+`Console` renders one of two message shapes through the same component:
+
+- `mode="console"` (the default) accepts `ConsoleMessageData[]`
+- `mode="ansi"` accepts strings or `{ id?, data }` stdout entries and renders ANSI escape sequences with `anser`
+
+Structured console output:
 
 ```tsx
-import { ConsoleStdout } from "@moyarich/console";
-
-const stdout = [
-  { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
-  { id: "2", data: "Listening on port 3000" },
-];
-
-<ConsoleStdout entries={stdout} />;
+<Console
+  mode="console"
+  messages={[
+    { method: "log", data: ["Hello", { ready: true }], depth: 0 },
+  ]}
+/>
 ```
 
-If an application wants tabs, panes, or a restart button, those controls belong to the application around `Console` and `ConsoleStdout`.
+ANSI/stdout output:
+
+```tsx
+const messages = [
+  { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
+  "Listening on port 3000",
+];
+
+<Console mode="ansi" messages={messages} />;
+```
+
+`ConsoleStdout` remains available as the lower-level ANSI list renderer when the surrounding Console panel UI is not needed.
+
+If an application wants tabs, panes, or a restart button, those controls belong to the application around `Console`.
 
 ## Capture the current page
 
@@ -385,8 +401,8 @@ Values are normalized before transport and restored on receipt. The transport pr
 
 | Export                         | Purpose                                                         |
 | ------------------------------ | --------------------------------------------------------------- |
-| `Console`                      | Render browser-style console messages                           |
-| `ConsoleStdout`                | Render ANSI-aware stdout entries                                |
+| `Console`                      | Render structured console messages or ANSI stdout by mode       |
+| `ConsoleStdout`                | Lower-level ANSI-aware stdout list renderer                     |
 | `useConsoleMessages`           | Manage console message state and optional page capture          |
 | `capturePageConsole`           | Capture calls from a console object                             |
 | `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |

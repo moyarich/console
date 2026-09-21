@@ -1,9 +1,9 @@
-import { ConsoleStdout } from "@moyarich/console";
+import { Console } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const ESC = "\u001b[";
 
-const entries = [
+const messages = [
   `${ESC}1mBold output${ESC}0m`,
   `${ESC}32mSuccess: build completed${ESC}0m`,
   `${ESC}33mWarning: bundle size increased${ESC}0m`,
@@ -13,9 +13,5 @@ const entries = [
 ];
 
 export default function AnsiStdoutExample() {
-  return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <ConsoleStdout entries={entries} />
-    </div>
-  );
+  return <Console mode="ansi" messages={messages} />;
 }
