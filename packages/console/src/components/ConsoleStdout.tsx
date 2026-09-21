@@ -1,6 +1,7 @@
 import Anser from "anser";
 import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
+import type { ConsoleValueRenderer } from "../renderers";
 
 export type ConsoleOutputStream = "stdout" | "stderr";
 
@@ -14,6 +15,7 @@ export interface ConsoleStdoutProps {
   entries: readonly (ConsoleStdoutEntry | string)[];
   emptyMessage?: string;
   parseStructuredOutput?: boolean;
+  valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
@@ -100,6 +102,7 @@ export function ConsoleStdout({
   entries,
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
+  valueRenderers,
 }: ConsoleStdoutProps) {
   if (!entries.length) {
     return <div className="console-stdout-empty">{emptyMessage}</div>;
@@ -129,7 +132,10 @@ export function ConsoleStdout({
               data-clear-line={clearLine || undefined}
               key={key}
             >
-              <ConsoleValue value={structuredValue} />
+              <ConsoleValue
+                value={structuredValue}
+                renderers={valueRenderers}
+              />
             </div>
           );
         }

@@ -38,7 +38,22 @@ CI currently runs on Node 24.
 
 ## Install
 
-From the repository root:
+Here’s a cleaner version with the token name corrected and the steps made clearer:
+
+### Install from GitHub Packages
+
+Configure the `@moyarich` scope in a project-level `.npmrc` file:
+
+```ini
+registry=https://registry.npmjs.org/
+
+@moyarich:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+Set `GITHUB_TOKEN` in your environment to a GitHub token with permission to read packages.
+
+Then install dependencies from the repository root:
 
 ```bash
 npm install
@@ -92,6 +107,21 @@ packages/console/src/components/ConsoleTable.tsx
 ```
 
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
+
+### Custom renderer dispatch
+
+Custom message and value rendering is implemented as ordered dispatch tables in `packages/console/src/renderers.ts`.
+
+- message entries can dispatch by `method`, `match`, or both
+- value entries can dispatch by normalized `type`, `match`, or both
+- entries are evaluated in array order
+- returning `undefined` continues dispatch and eventually falls back to the built-in renderer
+- `renderDefault()` lets a custom renderer decorate the built-in result without reimplementing it
+- synchronous matcher/renderer errors are contained so extension code does not prevent console rendering
+
+Keep renderer dispatch data-oriented. Avoid growing method/type handling into large conditionals or switches when a lookup/dispatch table is clearer.
+
+Value renderers must continue to propagate through nested `ConsoleValue` instances, `console.table()` cells, and structured ANSI values.
 
 ### Message state
 

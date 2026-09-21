@@ -2,10 +2,12 @@ import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
 import { normalizeConsoleTableData } from "../utils/consoleTableData";
+import type { ConsoleValueRenderer } from "../renderers";
 
 export interface ConsoleTableProps {
   data: unknown;
   columns?: string[];
+  valueRenderers?: readonly ConsoleValueRenderer[];
 }
 interface TableRow {
   index: string;
@@ -43,7 +45,11 @@ function collectColumns(rows: TableRow[], requested?: string[]): string[] {
     }
   return columns;
 }
-export function ConsoleTable({ data, columns }: ConsoleTableProps) {
+export function ConsoleTable({
+  data,
+  columns,
+  valueRenderers,
+}: ConsoleTableProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const rows = toRows(data);
   const tableColumns = collectColumns(rows, columns);
@@ -90,7 +96,10 @@ export function ConsoleTable({ data, columns }: ConsoleTableProps) {
                 {tableColumns.map((column) => (
                   <td key={column}>
                     {Object.prototype.hasOwnProperty.call(row.value, column) ? (
-                      <ConsoleValue value={row.value[column]} />
+                      <ConsoleValue
+                        value={row.value[column]}
+                        renderers={valueRenderers}
+                      />
                     ) : (
                       <span className="console-undefined">undefined</span>
                     )}
