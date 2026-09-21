@@ -645,12 +645,12 @@ Available helpers:
 
 ### State, capture, and events
 
-| Export                      | Purpose                                                    |
-| --------------------------- | ---------------------------------------------------------- |
-| `useConsoleMessages`        | React message state connected to a console event channel   |
-| `captureConsole`            | Temporarily wrap an existing `Console` object              |
-| `createConsoleProxy`        | Create a console-compatible producer for sandboxed code    |
-| `createConsoleEventEmitter` | Typed `message` / `clear` event channel                    |
+| Export                      | Purpose                                                  |
+| --------------------------- | -------------------------------------------------------- |
+| `useConsoleMessages`        | React message state connected to a console event channel |
+| `captureConsole`            | Temporarily wrap an existing `Console` object            |
+| `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
+| `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
 
 ### Structured-output parsing
 
