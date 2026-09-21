@@ -121,7 +121,15 @@ export default function ThemingExample() {
   const theme = themes[themeName];
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(0, 1fr)",
+        minWidth: 0,
+        maxWidth: "100%",
+        gap: 12,
+      }}
+    >
       <div className="button-row">
         <button
           type="button"
@@ -140,7 +148,7 @@ export default function ThemingExample() {
         </button>
       </div>
 
-      <div style={theme}>
+      <div style={{ ...theme, minWidth: 0, maxWidth: "100%" }}>
         <Console
           messages={messages}
           title="Themeable console"
@@ -148,7 +156,7 @@ export default function ThemingExample() {
         />
       </div>
 
-      <small>
+      <small style={{ minWidth: 0, overflowWrap: "anywhere" }}>
         Hover icons and right-click the console after switching themes. Hover
         colors are derived with color-mix() unless you override the matching
         public hover variable.
