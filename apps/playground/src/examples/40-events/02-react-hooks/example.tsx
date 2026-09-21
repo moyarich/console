@@ -17,7 +17,7 @@ export default function ConsoleExample() {
   const console = useMemo(
     () =>
       createConsoleProxy({
-        events,
+        onEvent: events.dispatch,
         source: "without-console-hook",
       }),
     [events],
