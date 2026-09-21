@@ -1,21 +1,26 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-});
-
-exampleConsole.info("Info message", { version: "1.0.0" });
-
 export default function ConsoleInfoExample() {
-  return <Console messages={messages} subtitle="console.info example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-info",
+  });
+
+  const runExample = () => {
+    console.info("Info message", { version: "1.0.0" });
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.info(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.info example"
+      />
+    </div>
+  );
 }
