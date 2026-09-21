@@ -1,6 +1,7 @@
 import { SquareTerminal, Trash2 } from "lucide-react";
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -90,7 +91,9 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
   );
   const hasMessages = messages.length > 0;
   const isEmpty = visibleMessages.length === 0;
-  const clear = onClear ?? (() => undefined);
+  const clear = useCallback(() => {
+    onClear?.();
+  }, [onClear]);
   const [expandedMessages, setExpandedMessages] = useState<
     Map<ConsoleMessageData, number>
   >(() => new Map());
