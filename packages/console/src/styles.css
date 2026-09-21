@@ -198,6 +198,25 @@
   opacity: 0.9;
 }
 
+.console-panel .console-message-icon-button {
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    opacity 120ms ease;
+}
+
+.console-panel .console-message-icon-button:hover,
+.console-panel .console-message-icon-button:focus-visible {
+  outline: none;
+  background: var(--console-object-border);
+  opacity: 1;
+}
+
 .console-panel .console-values {
   display: flex;
   min-width: 0;

@@ -1,5 +1,5 @@
 import { SquareTerminal, Trash2 } from "lucide-react";
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import type { ConsoleMessageData, RunOutput } from "../types";
@@ -34,6 +34,27 @@ export function Console({
     : sourceMessages;
   const isEmpty = messages.length === 0;
   const clear = onClear ?? (() => undefined);
+  const [expandedMessages, setExpandedMessages] = useState<
+    Map<ConsoleMessageData, number>
+  >(() => new Map());
+
+  const hasExpandableValues = messages.some(
+    (message) =>
+      message.method !== "table" &&
+      message.data.some(
+        (value) => typeof value === "object" && value !== null,
+      ),
+  );
+
+  const expandAllCollapsed = () => {
+    setExpandedMessages((current) => {
+      const version =
+        Math.max(0, ...Array.from(current.values())) + 1;
+
+      return new Map(messages.map((message) => [message, version]));
+    });
+  };
+
   return (
     <article
       className={`console console-panel ${className}`.trim()}
@@ -81,6 +102,10 @@ export function Console({
                   `${message.method}-${message.timestamp ?? "na"}-${index}`
                 }
                 message={message}
+                expandAllVersion={expandedMessages.get(message)}
+                onExpandAll={
+                  hasExpandableValues ? expandAllCollapsed : undefined
+                }
               />
             ))
           )}
