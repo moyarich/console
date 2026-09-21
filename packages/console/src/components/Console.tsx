@@ -1,4 +1,4 @@
-import { MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -17,6 +17,7 @@ import {
   type ConsoleStdoutEntry,
 } from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
+import { writeClipboardText } from "../utils/clipboard";
 
 export type ConsoleMode = "console" | "ansi";
 
@@ -95,6 +96,14 @@ function ConsoleFrame({
     onClear?.();
   }, [onClear]);
 
+  const copyOutput = useCallback(() => {
+    const value = surfaceRef.current?.innerText.trim() ?? "";
+
+    if (value) {
+      void writeClipboardText(value);
+    }
+  }, []);
+
   useEffect(() => {
     const surface = surfaceRef.current;
 
@@ -113,7 +122,8 @@ function ConsoleFrame({
     shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
   };
 
-  const showActions = actions || (showClearButton && onClear);
+  const showCopyButton = mode === "ansi";
+  const showActions = actions || showCopyButton || (showClearButton && onClear);
 
   return (
     <article
@@ -168,6 +178,17 @@ function ConsoleFrame({
                   <div className="console-actions result-actions">
                     {actions}
 
+                    {showCopyButton && (
+                      <button
+                        type="button"
+                        className="console-copy-output-button"
+                        disabled={!hasMessages}
+                        onClick={copyOutput}
+                      >
+                        <Copy size={14} aria-hidden="true" /> Copy output
+                      </button>
+                    )}
+
                     {showClearButton && onClear && (
                       <button
                         type="button"
@@ -186,7 +207,11 @@ function ConsoleFrame({
         </div>
       )}
 
-      <ConsoleContextMenu disabled={!hasMessages || !onClear} onClear={clear}>
+      <ConsoleContextMenu
+        copyDisabled={!hasMessages}
+        clearDisabled={!hasMessages || !onClear}
+        onClear={onClear ? clear : undefined}
+      >
         <div
           ref={surfaceRef}
           className="console-surface"
