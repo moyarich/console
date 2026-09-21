@@ -164,7 +164,9 @@ function ConsoleActionMenuItem<TContext>({
         }}
       >
         {action.icon && (
-          <span className="console-context-menu-action-icon">{action.icon}</span>
+          <span className="console-context-menu-action-icon">
+            {action.icon}
+          </span>
         )}
         <span>{action.label}</span>
       </button>
@@ -266,8 +268,7 @@ export function ConsoleContextMenu({
   }, [hasMessages, menu, mode]);
 
   const resolvedContextActions = useMemo(
-    () =>
-      actionContext ? resolveConsoleActions(actions, actionContext) : [],
+    () => (actionContext ? resolveConsoleActions(actions, actionContext) : []),
     [actionContext, actions],
   );
 
@@ -306,12 +307,7 @@ export function ConsoleContextMenu({
       }
 
       const rect = menuElement.getBoundingClientRect();
-      const position = getMenuPosition(
-        menu.x,
-        menu.y,
-        rect.width,
-        rect.height,
-      );
+      const position = getMenuPosition(menu.x, menu.y, rect.width, rect.height);
       menuElement.style.left = `${position.x}px`;
       menuElement.style.top = `${position.y}px`;
       const firstAction = menuElement.querySelector<HTMLButtonElement>(
@@ -439,7 +435,10 @@ export function ConsoleContextMenu({
               ))}
 
             {hasCustomActions && (
-              <div className="console-context-menu-separator" role="separator" />
+              <div
+                className="console-context-menu-separator"
+                role="separator"
+              />
             )}
 
             {menu.target.kind === "object" && (
