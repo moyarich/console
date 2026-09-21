@@ -10,6 +10,18 @@
   box-shadow: 0 10px 28px rgb(45 60 85 / 0.05);
 }
 
+.console-panel[data-resizable="true"] {
+  min-height: 220px;
+  max-height: 85vh;
+  resize: vertical;
+}
+
+.console-panel[data-resizable="true"] .console-surface,
+.console-panel[data-resizable="true"] .console-empty,
+.console-panel[data-resizable="true"] .console-stdout-empty {
+  min-height: 0;
+}
+
 .console-panel .console-panel-header {
   display: flex;
   flex-direction: column;
