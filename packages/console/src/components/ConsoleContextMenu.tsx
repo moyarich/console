@@ -446,7 +446,11 @@ export function ConsoleContextMenu({
                 type="button"
                 className="console-context-menu-item"
                 role="menuitem"
-                onClick={() => copyObject(menu.target.value)}
+                onClick={() => {
+                  if (menu.target.kind === "object") {
+                    copyObject(menu.target.value);
+                  }
+                }}
               >
                 <Braces size={15} aria-hidden="true" />
                 <span>Copy object</span>
