@@ -7,10 +7,7 @@ import {
   type KeyboardEvent,
   type SyntheticEvent,
 } from "react";
-import {
-  CONSOLE_EXAMPLE_GROUPS,
-  type ConsoleExample,
-} from "../../examples";
+import { CONSOLE_EXAMPLE_GROUPS, type ConsoleExample } from "../../examples";
 
 interface ExamplePickerProps {
   examples: readonly ConsoleExample[];

@@ -4,11 +4,7 @@ import {
   isDirectConsoleMethod,
 } from "../consoleMethods";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import type {
-  ConsoleMessageData,
-  ConsoleMethod,
-  DirOptions,
-} from "../types";
+import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
 
 export interface CreateConsoleProxyOptions {
   messages?: ConsoleMessageData[];
@@ -19,8 +15,7 @@ export interface CreateConsoleProxyOptions {
 }
 
 const defaultTimerNow = () =>
-  typeof performance !== "undefined" &&
-  typeof performance.now === "function"
+  typeof performance !== "undefined" && typeof performance.now === "function"
     ? performance.now()
     : Date.now();
 
@@ -95,10 +90,7 @@ export function createConsoleProxy(
 
     assert(condition?: boolean, ...data: unknown[]) {
       if (!condition) {
-        emitMessage(
-          "assert",
-          data.length ? data : ["Assertion failed"],
-        );
+        emitMessage("assert", data.length ? data : ["Assertion failed"]);
       }
     },
 
@@ -163,9 +155,7 @@ export function createConsoleProxy(
         return;
       }
 
-      emitMessage("timeEnd", [
-        `${label}: ${duration.toFixed(2)} ms`,
-      ]);
+      emitMessage("timeEnd", [`${label}: ${duration.toFixed(2)} ms`]);
 
       timers.delete(label);
     },
@@ -178,10 +168,7 @@ export function createConsoleProxy(
         return;
       }
 
-      emitMessage("log", [
-        `${label}: ${duration.toFixed(2)} ms`,
-        ...data,
-      ]);
+      emitMessage("log", [`${label}: ${duration.toFixed(2)} ms`, ...data]);
     },
 
     timeStamp() {},

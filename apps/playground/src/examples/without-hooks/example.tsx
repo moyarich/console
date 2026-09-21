@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Console,
   createConsoleEventEmitter,
@@ -32,9 +28,7 @@ export default function ConsoleWithoutConsoleHookExample() {
       setMessages((current) => {
         const next = [...current, message];
 
-        return next.length > MAX_MESSAGES
-          ? next.slice(-MAX_MESSAGES)
-          : next;
+        return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
       });
     });
 
@@ -68,10 +62,7 @@ export default function ConsoleWithoutConsoleHookExample() {
         </button>
       </div>
 
-      <Console
-        messages={messages}
-        onClear={console.clear}
-      />
+      <Console messages={messages} onClear={console.clear} />
     </div>
   );
 }

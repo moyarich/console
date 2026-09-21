@@ -16,10 +16,7 @@ export default function ConsoleEventExample() {
       type: "message",
       message: {
         method: "log",
-        data: [
-          "Hello from ConsoleEvent",
-          { transportReady: true },
-        ],
+        data: ["Hello from ConsoleEvent", { transportReady: true }],
         depth: 0,
         timestamp: Date.now(),
         source: "console-event-example",

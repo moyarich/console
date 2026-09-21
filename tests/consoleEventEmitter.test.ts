@@ -97,10 +97,7 @@ describe("createConsoleEventEmitter", () => {
     events.emitEvent({ type: "message", message });
     events.emitEvent({ type: "clear" });
 
-    expect(received).toEqual([
-      { type: "message", message },
-      { type: "clear" },
-    ]);
+    expect(received).toEqual([{ type: "message", message }, { type: "clear" }]);
 
     off();
   });
@@ -120,12 +117,6 @@ describe("createConsoleEventEmitter", () => {
     expect(calls).toEqual(["first", "second"]);
 
     events.emit("message", message);
-    expect(calls).toEqual([
-      "first",
-      "second",
-      "first",
-      "second",
-      "late",
-    ]);
+    expect(calls).toEqual(["first", "second", "first", "second", "late"]);
   });
 });

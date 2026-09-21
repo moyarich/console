@@ -6,8 +6,9 @@ import type {
 
 export type ConsoleEventName = "message" | "clear";
 
-type ConsoleEventArgs<T extends ConsoleEventName> =
-  T extends "message" ? [message: ConsoleMessageData] : [];
+type ConsoleEventArgs<T extends ConsoleEventName> = T extends "message"
+  ? [message: ConsoleMessageData]
+  : [];
 
 type ConsoleEventListener<T extends ConsoleEventName> = (
   ...args: ConsoleEventArgs<T>
@@ -24,10 +25,7 @@ export interface ConsoleEventEmitter {
     listener: ConsoleEventListener<T>,
   ): void;
 
-  emit<T extends ConsoleEventName>(
-    type: T,
-    ...args: ConsoleEventArgs<T>
-  ): void;
+  emit<T extends ConsoleEventName>(type: T, ...args: ConsoleEventArgs<T>): void;
 
   onEvent(listener: ConsoleEventSink): () => void;
   emitEvent(event: ConsoleEvent): void;
@@ -61,9 +59,7 @@ export function createConsoleEventEmitter(): ConsoleEventEmitter {
   };
 
   const off: ConsoleEventEmitter["off"] = (type, listener) => {
-    listeners
-      .get(type)
-      ?.delete(listener as (...args: unknown[]) => void);
+    listeners.get(type)?.delete(listener as (...args: unknown[]) => void);
   };
 
   const emit: ConsoleEventEmitter["emit"] = (type, ...args) => {
