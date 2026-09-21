@@ -4,6 +4,7 @@ import { ConsoleValue } from "./ConsoleValue";
 import { normalizeConsoleTableData } from "../utils/consoleTableData";
 import type { ConsoleValueRenderer } from "../renderers";
 
+/** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {
   data: unknown;
   columns?: string[];
@@ -19,6 +20,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isObjectLike(value: unknown): value is object {
   return typeof value === "object" && value !== null;
 }
+/** Normalizes supported table inputs into indexed row records. */
 function toRows(data: unknown): TableRow[] {
   const normalized = normalizeConsoleTableData(data);
   if (Array.isArray(normalized))
@@ -33,6 +35,7 @@ function toRows(data: unknown): TableRow[] {
     }));
   return [{ index: "0", value: { Value: normalized } }];
 }
+/** Preserves requested columns or derives first-seen columns from all rows. */
 function collectColumns(rows: TableRow[], requested?: string[]): string[] {
   if (requested?.length) return requested;
   const seen = new Set<string>();
@@ -45,6 +48,10 @@ function collectColumns(rows: TableRow[], requested?: string[]): string[] {
     }
   return columns;
 }
+/**
+ * Renders `console.table()` data with horizontal scrolling, value renderers,
+ * and copy/context-menu support for object-like input.
+ */
 export function ConsoleTable({
   data,
   columns,
