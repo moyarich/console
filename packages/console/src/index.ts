@@ -1,5 +1,5 @@
 export { Console } from "./components/Console";
-export type { ConsoleProps } from "./components/Console";
+export type { ConsoleMessageFilter, ConsoleProps, ConsoleRef } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
@@ -19,8 +19,11 @@ export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
   serializeConsoleValue,
+  deserializeConsoleValue,
   serializeConsoleMessage,
+  deserializeConsoleMessage,
   serializeConsoleEvent,
+  deserializeConsoleEvent,
 } from "./utils/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
 export {
