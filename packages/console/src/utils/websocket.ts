@@ -1,9 +1,5 @@
-import {
-  createConsoleEnvelope,
-  DEFAULT_CONSOLE_CHANNEL,
-  isConsoleEnvelope,
-} from "./transport";
-import type { ConsoleEventSink } from "../types";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 export interface ConsoleWebSocketLike {
   send(data: string): void;
@@ -16,35 +12,37 @@ export interface ConsoleWebSocketLike {
     listener: (event: MessageEvent) => void,
   ): void;
 }
-export interface CreateConsoleWebSocketSenderOptions {
-  socket: Pick<ConsoleWebSocketLike, "send">;
-  channel?: string;
-}
-export function createConsoleWebSocketSender({
-  socket,
-  channel = DEFAULT_CONSOLE_CHANNEL,
-}: CreateConsoleWebSocketSenderOptions): ConsoleEventSink {
-  return (event) =>
-    socket.send(JSON.stringify(createConsoleEnvelope(event, channel)));
-}
+
 export interface ListenForConsoleWebSocketOptions {
   socket: ConsoleWebSocketLike;
-  onEvent: ConsoleEventSink;
+  events: ConsoleEventEmitter;
   channel?: string;
 }
+
 export function listenForConsoleWebSocket({
   socket,
-  onEvent,
+  events,
   channel = DEFAULT_CONSOLE_CHANNEL,
 }: ListenForConsoleWebSocketOptions): () => void {
   const handler = (event: MessageEvent) => {
-    if (typeof event.data !== "string") return;
+    if (typeof event.data !== "string") {
+      return;
+    }
+
     try {
       const data = JSON.parse(event.data) as unknown;
-      if (!isConsoleEnvelope(data) || data.channel !== channel) return;
-      onEvent(data.event);
-    } catch {}
+
+      if (!isConsoleEnvelope(data) || data.channel !== channel) {
+        return;
+      }
+
+      events.emitEvent(data.event);
+    } catch {
+      // Keep the listener active if parsing or event delivery fails.
+    }
   };
+
   socket.addEventListener("message", handler);
+
   return () => socket.removeEventListener("message", handler);
 }

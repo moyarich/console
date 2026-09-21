@@ -5,4 +5,5 @@ export interface ConsoleContextMenuApi {
   openForValue: (event: MouseEvent<HTMLElement>, value: object) => void;
 }
 
-export const ConsoleContextMenuContext = createContext<ConsoleContextMenuApi | null>(null);
+export const ConsoleContextMenuContext =
+  createContext<ConsoleContextMenuApi | null>(null);

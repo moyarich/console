@@ -1,21 +1,12 @@
-import { useEffect } from "react";
-import {
-  Console,
-  capturePageConsole,
-  useConsoleMessages,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleTableExample() {
-  const { messages, clear, onEvent } = useConsoleMessages();
-
-  useEffect(() => {
-    return capturePageConsole({
-      onEvent,
-      source: "console-table",
-      passThrough: true,
-    });
-  }, [onEvent]);
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    source: "console-table",
+    passThrough: true,
+  });
 
   const runExample = () => {
     console.table([{ message: "Table message" }]);

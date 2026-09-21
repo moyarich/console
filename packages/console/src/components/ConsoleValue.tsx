@@ -1,5 +1,5 @@
 import { ChevronRight, Copy } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 
 export interface ConsoleValueProps {
@@ -7,6 +7,7 @@ export interface ConsoleValueProps {
   expandLevel?: number;
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
+  expandAllVersion?: number;
 }
 
 interface ConsoleObjectValueProps {
@@ -14,6 +15,7 @@ interface ConsoleObjectValueProps {
   expandLevel: number;
   ancestors: ReadonlySet<object>;
   propertyKey?: string;
+  expandAllVersion?: number;
 }
 
 function isObjectLike(value: unknown): value is object {
@@ -32,7 +34,8 @@ function isInspectableObject(value: unknown): value is object {
 function typeClass(value: unknown): string {
   if (value === null) return "console-null";
   if (typeof value === "string") return "console-string";
-  if (typeof value === "number" || typeof value === "bigint") return "console-number";
+  if (typeof value === "number" || typeof value === "bigint")
+    return "console-number";
   if (typeof value === "boolean") return "console-boolean";
   if (typeof value === "undefined") return "console-undefined";
   if (typeof value === "symbol") return "console-symbol";
@@ -40,19 +43,28 @@ function typeClass(value: unknown): string {
 }
 
 function renderPrimitive(value: unknown): ReactNode {
-  if (value instanceof Error) return <pre className="console-stack">{value.stack || value.message}</pre>;
-  if (typeof value === "function") return <span className="console-function">ƒ {value.name || "anonymous"}()</span>;
-  if (typeof value === "string") return <span className="console-string">{JSON.stringify(value)}</span>;
-  if (typeof value === "symbol") return <span className="console-symbol">{String(value)}</span>;
+  if (value instanceof Error)
+    return <pre className="console-stack">{value.stack || value.message}</pre>;
+  if (typeof value === "function")
+    return (
+      <span className="console-function">ƒ {value.name || "anonymous"}()</span>
+    );
+  if (typeof value === "string")
+    return <span className="console-string">{JSON.stringify(value)}</span>;
+  if (typeof value === "symbol")
+    return <span className="console-symbol">{String(value)}</span>;
   if (value === null) return <span className="console-null">null</span>;
-  if (typeof value === "undefined") return <span className="console-undefined">undefined</span>;
+  if (typeof value === "undefined")
+    return <span className="console-undefined">undefined</span>;
   return <span className={typeClass(value)}>{String(value)}</span>;
 }
 
 function objectLabel(value: object): string {
   if (Array.isArray(value)) return `Array(${value.length})`;
   const constructorName = value.constructor?.name;
-  return constructorName && constructorName !== "Object" ? constructorName : "Object";
+  return constructorName && constructorName !== "Object"
+    ? constructorName
+    : "Object";
 }
 
 function preview(value: object): string {
@@ -68,7 +80,8 @@ function preview(value: object): string {
   const entries = Object.entries(value).slice(0, 3);
   const parts = entries.map(([key, item]) => {
     if (typeof item === "string") return `${key}: ${JSON.stringify(item)}`;
-    if (isObjectLike(item)) return `${key}: ${Array.isArray(item) ? "Array" : "Object"}`;
+    if (isObjectLike(item))
+      return `${key}: ${Array.isArray(item) ? "Array" : "Object"}`;
     return `${key}: ${String(item)}`;
   });
   return `{ ${parts.join(", ")}${Object.keys(value).length > 3 ? ", …" : ""} }`;
@@ -79,9 +92,18 @@ function ConsoleObjectValue({
   expandLevel,
   ancestors,
   propertyKey,
+  expandAllVersion,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
-  const [isOpen, setIsOpen] = useState(expandLevel > 0);
+  const [isOpen, setIsOpen] = useState(
+    expandLevel > 0 || expandAllVersion !== undefined,
+  );
+
+  useEffect(() => {
+    if (expandAllVersion !== undefined) {
+      setIsOpen(true);
+    }
+  }, [expandAllVersion]);
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
@@ -100,10 +122,17 @@ function ConsoleObjectValue({
         onToggle={(event) => setIsOpen(event.currentTarget.open)}
       >
         <summary data-console-object-key={propertyKey}>
-          <ChevronRight className="console-object-chevron" size={13} aria-hidden="true" />
+          <ChevronRight
+            className="console-object-chevron"
+            size={13}
+            aria-hidden="true"
+          />
           {propertyKey && (
             <>
-              <span className="console-property-key console-object-property-key" title={propertyKey}>
+              <span
+                className="console-property-key console-object-property-key"
+                title={propertyKey}
+              >
                 {propertyKey}
               </span>
               <span className="console-property-separator">:</span>
@@ -116,7 +145,9 @@ function ConsoleObjectValue({
         <button
           type="button"
           className="console-object-copy-button"
-          aria-label={propertyKey ? `Copy ${propertyKey} object` : "Copy object"}
+          aria-label={
+            propertyKey ? `Copy ${propertyKey} object` : "Copy object"
+          }
           title={propertyKey ? `Copy ${propertyKey} object` : "Copy object"}
           onClick={(event) => {
             event.stopPropagation();
@@ -142,26 +173,36 @@ function ConsoleObjectValue({
                       propertyKey={key}
                       expandLevel={Math.max(0, expandLevel - 1)}
                       ancestors={nextAncestors}
+                      expandAllVersion={expandAllVersion}
                     />
                   );
                 }
 
                 return (
-                  <div className="console-property" data-console-property-key={key} key={key}>
-                    <span className="console-property-key" title={key}>{key}</span>
+                  <div
+                    className="console-property"
+                    data-console-property-key={key}
+                    key={key}
+                  >
+                    <span className="console-property-key" title={key}>
+                      {key}
+                    </span>
                     <span className="console-property-separator">:</span>
                     <div className="console-property-value">
                       <ConsoleValue
                         value={child}
                         expandLevel={Math.max(0, expandLevel - 1)}
                         ancestors={nextAncestors}
+                        expandAllVersion={expandAllVersion}
                       />
                     </div>
                   </div>
                 );
               })
             ) : (
-              <div className="console-object-empty">No enumerable properties</div>
+              <div className="console-object-empty">
+                No enumerable properties
+              </div>
             )}
           </div>
         )}
@@ -175,10 +216,12 @@ export function ConsoleValue({
   expandLevel = 0,
   ancestors = new Set<object>(),
   propertyKey,
+  expandAllVersion,
 }: ConsoleValueProps) {
   if (!isObjectLike(value)) return renderPrimitive(value);
   if (!isInspectableObject(value)) return renderPrimitive(value);
-  if (ancestors.has(value)) return <span className="console-circular">[Circular]</span>;
+  if (ancestors.has(value))
+    return <span className="console-circular">[Circular]</span>;
 
   return (
     <ConsoleObjectValue
@@ -186,6 +229,7 @@ export function ConsoleValue({
       expandLevel={expandLevel}
       ancestors={ancestors}
       propertyKey={propertyKey}
+      expandAllVersion={expandAllVersion}
     />
   );
 }

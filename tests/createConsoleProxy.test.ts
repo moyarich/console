@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { createConsoleProxy, type ConsoleEvent, type ConsoleMessageData } from "@moyarich/console";
+import {
+  createConsoleEventEmitter,
+  createConsoleProxy,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 
 describe("createConsoleProxy", () => {
   it("captures messages and group depth", () => {
     const messages: ConsoleMessageData[] = [];
-    const proxy = createConsoleProxy(messages);
-    proxy.log("root");
-    proxy.group("group");
-    proxy.warn("nested");
-    proxy.groupEnd();
+    const console = createConsoleProxy(messages);
+
+    console.log("root");
+    console.group("group");
+    console.warn("nested");
+    console.groupEnd();
 
     expect(messages.map(({ method, depth }) => ({ method, depth }))).toEqual([
       { method: "log", depth: 0 },
@@ -17,12 +22,37 @@ describe("createConsoleProxy", () => {
     ]);
   });
 
-  it("emits clear as an event", () => {
-    const events: ConsoleEvent[] = [];
-    const proxy = createConsoleProxy({ onEvent: (event) => events.push(event) });
-    proxy.log("one");
-    proxy.clear();
-    expect(events[0]?.type).toBe("message");
-    expect(events[1]).toEqual({ type: "clear" });
+  it("tracks console.time and console.timeEnd", () => {
+    const messages: ConsoleMessageData[] = [];
+    let currentTime = 1000;
+    const console = createConsoleProxy({
+      messages,
+      timerNow: () => currentTime,
+    });
+
+    console.time("Timer");
+    currentTime = 1250;
+    console.timeEnd("Timer");
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toMatchObject({
+      method: "timeEnd",
+      data: ["Timer: 250.00 ms"],
+    });
+  });
+
+  it("emits clear through a ConsoleEventEmitter", () => {
+    const events = createConsoleEventEmitter();
+    const received: string[] = [];
+
+    events.on("message", () => received.push("message"));
+    events.on("clear", () => received.push("clear"));
+
+    const console = createConsoleProxy({ events });
+
+    console.log("one");
+    console.clear();
+
+    expect(received).toEqual(["message", "clear"]);
   });
 });

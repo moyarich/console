@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
-  createConsoleEnvelope,
-  createConsolePostMessageSender,
-  createConsoleWebSocketSender,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
+  createConsoleEventEmitter,
   isConsoleEnvelope,
   listenForConsoleWebSocket,
+  serializeConsoleEvent,
   serializeConsoleValue,
   type ConsoleEvent,
   type ConsoleWebSocketLike,
@@ -13,54 +14,91 @@ import {
 describe("console transport", () => {
   const event: ConsoleEvent = {
     type: "message",
-    message: { method: "log", data: ["hello", { ok: true }], depth: 0 },
+    message: {
+      method: "log",
+      data: ["hello", { ok: true }],
+      depth: 0,
+    },
   };
 
-  it("creates versioned envelopes", () => {
-    const envelope = createConsoleEnvelope(event, "test");
+  it("validates a versioned transport envelope", () => {
+    const envelope = {
+      type: CONSOLE_TRANSPORT_TYPE,
+      version: CONSOLE_TRANSPORT_VERSION,
+      channel: "test",
+      event: serializeConsoleEvent(event),
+    };
+
     expect(isConsoleEnvelope(envelope)).toBe(true);
     expect(envelope.channel).toBe("test");
   });
 
   it("serializes values that JSON cannot represent directly", () => {
-    const value = serializeConsoleValue({ big: 10n, missing: undefined, fn() {} });
-    expect(value).toEqual({ big: "10n", missing: "[undefined]", fn: "[Function fn]" });
-  });
-
-  it("sends postMessage envelopes", () => {
-    const sent: unknown[] = [];
-    const send = createConsolePostMessageSender({
-      targetWindow: { postMessage: (message) => sent.push(message) },
-      channel: "iframe",
+    const value = serializeConsoleValue({
+      big: 10n,
+      missing: undefined,
+      fn() {},
     });
-    send(event);
-    expect(sent).toHaveLength(1);
-    expect(isConsoleEnvelope(sent[0])).toBe(true);
+
+    expect(value).toEqual({
+      big: "10n",
+      missing: "[undefined]",
+      fn: "[Function fn]",
+    });
   });
 
-  it("sends and receives WebSocket envelopes", () => {
+  it("sends and receives WebSocket envelopes through an event emitter", () => {
     const listeners = new Set<(event: MessageEvent) => void>();
     const received: ConsoleEvent[] = [];
     const sent: string[] = [];
+    const events = createConsoleEventEmitter();
+
+    events.onEvent((value) => received.push(value));
+
     const socket: ConsoleWebSocketLike = {
-      send(data) { sent.push(data); },
-      addEventListener(_type, listener) { listeners.add(listener); },
-      removeEventListener(_type, listener) { listeners.delete(listener); },
+      send(data) {
+        sent.push(data);
+      },
+      addEventListener(_type, listener) {
+        listeners.add(listener);
+      },
+      removeEventListener(_type, listener) {
+        listeners.delete(listener);
+      },
     };
 
-    const stop = listenForConsoleWebSocket({ socket, channel: "server", onEvent: (value) => received.push(value) });
-    createConsoleWebSocketSender({ socket, channel: "server" })(event);
-    for (const listener of listeners) listener({ data: sent[0] } as MessageEvent);
+    const stop = listenForConsoleWebSocket({
+      socket,
+      channel: "server",
+      events,
+    });
+
+    socket.send(
+      JSON.stringify({
+        type: CONSOLE_TRANSPORT_TYPE,
+        version: CONSOLE_TRANSPORT_VERSION,
+        channel: "server",
+        event: serializeConsoleEvent(event),
+      }),
+    );
+
+    for (const listener of listeners) {
+      listener({ data: sent[0] } as MessageEvent);
+    }
 
     expect(received[0]?.type).toBe("message");
+
     stop();
+
     expect(listeners.size).toBe(0);
   });
 });
 
 describe("transport regression cases", () => {
   it.each([
-    undefined, null, {},
+    undefined,
+    null,
+    {},
     { method: "log", data: "hello", depth: 0 },
     { method: "unknown", data: [], depth: 0 },
     { method: "log", data: [], depth: -1 },
@@ -68,18 +106,29 @@ describe("transport regression cases", () => {
     { method: "table", data: [], depth: 0, columns: "name" },
     { method: "log", data: [], depth: 0, source: {} },
   ])("rejects malformed messages: %j", (message) => {
-    expect(isConsoleEnvelope({
-      type: "CONSOLE_PANEL", version: 1, channel: "default",
-      event: { type: "message", message },
-    })).toBe(false);
+    expect(
+      isConsoleEnvelope({
+        type: "CONSOLE_PANEL",
+        version: 1,
+        channel: "default",
+        event: { type: "message", message },
+      }),
+    ).toBe(false);
   });
 
   it("preserves repeated references while stopping actual cycles", () => {
     const shared = { ok: true };
-    const cyclic: Record<string, unknown> = { first: shared, second: shared };
+    const cyclic: Record<string, unknown> = {
+      first: shared,
+      second: shared,
+    };
+
     cyclic.self = cyclic;
+
     expect(serializeConsoleValue(cyclic)).toEqual({
-      first: { ok: true }, second: { ok: true }, self: "[Circular]",
+      first: { ok: true },
+      second: { ok: true },
+      self: "[Circular]",
     });
   });
 
@@ -89,7 +138,14 @@ describe("transport regression cases", () => {
 
   it("handles objects whose getters and string conversion throw", () => {
     const value = Object.create(null);
-    Object.defineProperty(value, "broken", { enumerable: true, get() { throw new Error("broken"); } });
+
+    Object.defineProperty(value, "broken", {
+      enumerable: true,
+      get() {
+        throw new Error("broken");
+      },
+    });
+
     expect(serializeConsoleValue(value)).toBe("[Unserializable]");
   });
 });

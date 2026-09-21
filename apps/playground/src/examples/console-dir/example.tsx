@@ -1,24 +1,27 @@
-import { useEffect } from "react";
-import {
-  Console,
-  capturePageConsole,
-  useConsoleMessages,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export default function ConsoleDirExample() {
-  const { messages, clear, onEvent } = useConsoleMessages();
-
-  useEffect(() => {
-    return capturePageConsole({
-      onEvent,
-      source: "console-dir",
-      passThrough: true,
-    });
-  }, [onEvent]);
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    source: "console-dir",
+    passThrough: true,
+  });
 
   const runExample = () => {
-    console.dir("Directory message");
+    const object = {
+      name: "Directory message",
+      details: {
+        nested: true,
+      },
+    };
+
+    const options = {
+      depth: 2,
+      showHidden: false,
+    };
+
+    console.dir(object, options);
   };
 
   return (

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Console,
-  createConsoleWebSocketSender,
+  CONSOLE_TRANSPORT_TYPE,
+  CONSOLE_TRANSPORT_VERSION,
   listenForConsoleWebSocket,
+  serializeConsoleEvent,
   useConsoleMessages,
   type ConsoleEvent,
 } from "@moyarich/console";
@@ -14,7 +16,7 @@ const CHANNEL = "console-demo";
 type SocketStatus = "connecting" | "connected" | "disconnected" | "error";
 
 export default function WebSocketConsole() {
-  const { messages, clear, onEvent } = useConsoleMessages();
+  const { messages, clear, events } = useConsoleMessages();
   const socketRef = useRef<WebSocket | null>(null);
   const [status, setStatus] = useState<SocketStatus>("connecting");
 
@@ -25,7 +27,7 @@ export default function WebSocketConsole() {
     const stopListening = listenForConsoleWebSocket({
       socket,
       channel: CHANNEL,
-      onEvent,
+      events,
     });
 
     const handleOpen = () => setStatus("connected");
@@ -43,16 +45,11 @@ export default function WebSocketConsole() {
       stopListening();
       socket.close();
     };
-  }, [onEvent]);
+  }, [events]);
 
   const sendDemo = () => {
     const socket = socketRef.current;
     if (!socket || socket.readyState !== WebSocket.OPEN) return;
-
-    const send = createConsoleWebSocketSender({
-      socket,
-      channel: CHANNEL,
-    });
 
     const event: ConsoleEvent = {
       type: "message",
@@ -65,7 +62,14 @@ export default function WebSocketConsole() {
       },
     };
 
-    send(event);
+    socket.send(
+      JSON.stringify({
+        type: CONSOLE_TRANSPORT_TYPE,
+        version: CONSOLE_TRANSPORT_VERSION,
+        channel: CHANNEL,
+        event: serializeConsoleEvent(event),
+      }),
+    );
   };
 
   return (

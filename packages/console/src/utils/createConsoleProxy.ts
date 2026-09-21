@@ -3,60 +3,68 @@ import {
   getConsoleMessageMethod,
   isDirectConsoleMethod,
 } from "../consoleMethods";
-import type {
-  ConsoleEvent,
-  ConsoleEventSink,
-  ConsoleMessageData,
-  ConsoleMethod,
-  DirOptions,
-} from "../types";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
 
 export interface CreateConsoleProxyOptions {
   messages?: ConsoleMessageData[];
-  onEvent?: ConsoleEventSink;
+  events?: ConsoleEventEmitter;
   source?: string;
   now?: () => number;
+  timerNow?: () => number;
 }
-function normalizeOptions(
-  target: ConsoleMessageData[] | CreateConsoleProxyOptions,
-): CreateConsoleProxyOptions {
-  return Array.isArray(target) ? { messages: target } : target;
-}
+
+const defaultTimerNow = () =>
+  typeof performance !== "undefined" && typeof performance.now === "function"
+    ? performance.now()
+    : Date.now();
 
 export function createConsoleProxy(
   target: ConsoleMessageData[] | CreateConsoleProxyOptions = {},
 ): Console {
   const {
     messages,
-    onEvent,
+    events,
     source,
     now = () => Date.now(),
-  } = normalizeOptions(target);
+    timerNow = defaultTimerNow,
+  } = Array.isArray(target) ? { messages: target } : target;
+
   const counts = new Map<string, number>();
   const timers = new Map<string, number>();
   let depth = 0;
-  const emitEvent = (event: ConsoleEvent) => {
-    if (event.type === "clear") {
-      if (messages) messages.length = 0;
-      onEvent?.(event);
-      return;
-    }
-    messages?.push(event.message);
-    onEvent?.(event);
-  };
-  const emit = (
+
+  const emitMessage = (
     method: ConsoleMethod,
     data: unknown[],
     extra: Partial<ConsoleMessageData> = {},
-  ) =>
-    emitEvent({
-      type: "message",
-      message: { method, data, depth, timestamp: now(), source, ...extra },
-    });
+  ) => {
+    const message: ConsoleMessageData = {
+      method,
+      data,
+      depth,
+      timestamp: now(),
+      source,
+      ...extra,
+    };
+
+    messages?.push(message);
+    events?.emit("message", message);
+  };
+
+  const clearMessages = () => {
+    if (messages) {
+      messages.length = 0;
+    }
+
+    events?.emit("clear");
+  };
+
   const getElapsedTime = (label: string) => {
     const startedAt = timers.get(label);
-    return startedAt === undefined ? null : performance.now() - startedAt;
+    return startedAt === undefined ? null : timerNow() - startedAt;
   };
+
   const getDirExpandLevel = (requestedDepth?: number | null) =>
     requestedDepth === null
       ? 100
@@ -69,82 +77,120 @@ export function createConsoleProxy(
       name,
       (...data: unknown[]) => {
         const method = getConsoleMessageMethod(name);
-        if (method) emit(method, data);
+
+        if (method) {
+          emitMessage(method, data);
+        }
       },
     ]),
   );
 
   const consoleMethods = {
     ...directMessageMethods,
+
     assert(condition?: boolean, ...data: unknown[]) {
-      if (!condition) emit("assert", data.length ? data : ["Assertion failed"]);
+      if (!condition) {
+        emitMessage("assert", data.length ? data : ["Assertion failed"]);
+      }
     },
-    clear() {
-      emitEvent({ type: "clear" });
-    },
+
+    clear: clearMessages,
+
     count(label = "default") {
       const count = (counts.get(label) ?? 0) + 1;
       counts.set(label, count);
-      emit("count", [`${label}: ${count}`]);
+      emitMessage("count", [`${label}: ${count}`]);
     },
+
     countReset(label = "default") {
       counts.set(label, 0);
     },
+
     dir(value: unknown, options?: DirOptions) {
-      emit("dir", [value], {
+      emitMessage("dir", [value], {
         expandLevel: getDirExpandLevel(options?.depth),
         showNonenumerable: options?.showHidden === true,
       });
     },
+
     dirxml(...data: unknown[]) {
-      emit("dir", data, { expandLevel: 1 });
+      emitMessage("dir", data, { expandLevel: 1 });
     },
+
     group(...data: unknown[]) {
-      if (data.length) emit("group", data);
+      if (data.length) {
+        emitMessage("group", data);
+      }
+
       depth += 1;
     },
+
     groupCollapsed(...data: unknown[]) {
-      if (data.length) emit("groupCollapsed", data);
+      if (data.length) {
+        emitMessage("groupCollapsed", data);
+      }
+
       depth += 1;
     },
+
     groupEnd() {
       depth = Math.max(0, depth - 1);
     },
+
     table(data: unknown, columns?: string[]) {
-      emit("table", [data], { columns: columns?.length ? columns : undefined });
+      emitMessage("table", [data], {
+        columns: columns?.length ? columns : undefined,
+      });
     },
+
     time(label = "default") {
-      timers.set(label, performance.now());
+      timers.set(label, timerNow());
     },
+
     timeEnd(label = "default") {
       const duration = getElapsedTime(label);
+
       if (duration === null) {
-        emit("warn", [`Timer ${label} does not exist`]);
+        emitMessage("warn", [`Timer ${label} does not exist`]);
         return;
       }
-      emit("timeEnd", [`${label}: ${duration.toFixed(2)} ms`]);
+
+      emitMessage("timeEnd", [`${label}: ${duration.toFixed(2)} ms`]);
+
       timers.delete(label);
     },
+
     timeLog(label = "default", ...data: unknown[]) {
       const duration = getElapsedTime(label);
+
       if (duration === null) {
-        emit("warn", [`Timer ${label} does not exist`]);
+        emitMessage("warn", [`Timer ${label} does not exist`]);
         return;
       }
-      emit("log", [`${label}: ${duration.toFixed(2)} ms`, ...data]);
+
+      emitMessage("log", [`${label}: ${duration.toFixed(2)} ms`, ...data]);
     },
+
     timeStamp() {},
+
     trace(...data: unknown[]) {
       const stack = new Error().stack?.split("\n").slice(2).join("\n");
-      emit("trace", stack ? [...data, stack] : data);
+      emitMessage("trace", stack ? [...data, stack] : data);
     },
   };
+
   return new Proxy(consoleMethods, {
     get(targetObject, property, receiver) {
-      if (Reflect.has(targetObject, property))
+      if (Reflect.has(targetObject, property)) {
         return Reflect.get(targetObject, property, receiver);
-      if (typeof property !== "string") return undefined;
-      return (...data: unknown[]) => emit("log", [`${property}:`, ...data]);
+      }
+
+      if (typeof property !== "string") {
+        return undefined;
+      }
+
+      return (...data: unknown[]) =>
+        emitMessage("log", [`${property}:`, ...data]);
     },
   }) as Console;
 }
