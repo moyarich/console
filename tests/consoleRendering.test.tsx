@@ -135,7 +135,8 @@ describe("Console rendering", () => {
     expect(html).toContain("popoverTarget=");
     expect(html).toContain('popover="auto"');
     expect(html).toContain(">Export<");
-    expect(html).toContain(">Clear<");
+    expect(html).toContain("console-clear-button");
+    expect(html).toContain("Clear");
     expect(html).not.toContain("console-toolbar");
     expect(html).not.toContain('role="tablist"');
   });
