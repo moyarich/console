@@ -37,7 +37,7 @@ export function listenForConsoleWebSocket({
         return;
       }
 
-      events.emitEvent(deserializeConsoleEvent(data.event));
+      events.dispatch(deserializeConsoleEvent(data.event));
     } catch {
       // Keep the listener active if parsing or event delivery fails.
     }
