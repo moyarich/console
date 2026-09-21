@@ -38,7 +38,8 @@
   align-items: center;
 }
 
-.console-panel .console-clear-button {
+.console-panel .console-clear-button,
+.console-panel .console-restart-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -54,12 +55,14 @@
   cursor: pointer;
 }
 
-.console-panel .console-clear-button:hover:not(:disabled) {
+.console-panel .console-clear-button:hover:not(:disabled),
+.console-panel .console-restart-button:hover:not(:disabled) {
   border-color: #aebbd0;
   background: #f8fafc;
 }
 
-.console-panel .console-clear-button:disabled {
+.console-panel .console-clear-button:disabled,
+.console-panel .console-restart-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -120,9 +123,43 @@
   min-width: 0;
 }
 
+.console-panel .console-heading-area {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .console-panel .console-heading {
   display: flex;
   gap: 9px;
+}
+
+.console-panel .console-view-tabs {
+  display: inline-flex;
+  width: fit-content;
+  gap: 4px;
+  border-radius: 8px;
+  padding: 3px;
+  background: #f2f5f9;
+}
+
+.console-panel .console-view-tab {
+  border: 0;
+  border-radius: 6px;
+  padding: 5px 9px;
+  background: transparent;
+  color: #6b778c;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.console-panel .console-view-tab[aria-selected="true"] {
+  background: #fff;
+  color: #26344b;
+  box-shadow: 0 1px 3px rgb(45 60 85 / 0.12);
 }
 
 .console-panel .console-heading-icon {
@@ -142,6 +179,32 @@
   font-family: var(--console-font-family);
   font-size: var(--console-font-size);
   line-height: var(--console-line-height);
+}
+
+.console-panel .console-stdout-list {
+  min-width: 0;
+}
+
+.console-panel .console-stdout-line {
+  min-height: 1.55em;
+  margin: 0;
+  border-bottom: 1px solid var(--console-border);
+  padding: 7px 12px;
+  color: var(--console-foreground);
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.console-panel .console-stdout-empty {
+  display: flex;
+  min-height: var(--console-min-height);
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  color: var(--console-empty-foreground);
+  font-size: 0.86rem;
+  text-align: center;
 }
 
 .console-panel .console-message {

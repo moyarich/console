@@ -1,6 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Console, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  ConsoleStdout,
+  parseAnsi,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 
 function renderConsole(messages: ConsoleMessageData[], error = "") {
   return renderToStaticMarkup(
@@ -114,6 +119,40 @@ describe("Console rendering", () => {
 
     expect(html).toContain("Custom action");
     expect(html).not.toContain("> Clear<");
+  });
+
+  it("renders stdout tabs and ANSI output", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[]}
+        stdout={["\\u001b[32mready\\u001b[0m"]}
+        defaultView="stdout"
+        consoleTabLabel="Client"
+        stdoutTabLabel="Server"
+      />,
+    );
+
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Client");
+    expect(html).toContain("Server");
+    expect(html).toContain("ready");
+    expect(html).toContain("color:#0dbc79");
+  });
+
+  it("renders ConsoleStdout independently", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout entries={["one", "two"]} />,
+    );
+
+    expect(html).toContain("one");
+    expect(html).toContain("two");
+  });
+
+  it("parses extended ANSI colors", () => {
+    expect(parseAnsi("\\u001b[38;5;196mred\\u001b[0m")[0]).toMatchObject({
+      text: "red",
+      style: { color: "rgb(255 0 0)" },
+    });
   });
 
   it("appends runtime errors", () => {

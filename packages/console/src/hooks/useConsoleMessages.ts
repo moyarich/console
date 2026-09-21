@@ -11,6 +11,7 @@ export interface UseConsoleMessagesOptions {
   maxMessages?: number;
   dedupeById?: boolean;
   resetKey?: unknown;
+  clearMessage?: string;
   events?: ConsoleEventEmitter;
   capture?: boolean;
   source?: string;
@@ -23,6 +24,7 @@ export function useConsoleMessages({
   maxMessages = 1000,
   dedupeById = true,
   resetKey,
+  clearMessage,
   events: providedEvents,
   capture = false,
   source = "page",
@@ -57,8 +59,18 @@ export function useConsoleMessages({
   );
 
   const handleClear = useCallback(() => {
-    setMessages([]);
-  }, []);
+    setMessages(
+      clearMessage
+        ? [
+            {
+              method: "clear",
+              data: [clearMessage],
+              depth: 0,
+            },
+          ]
+        : [],
+    );
+  }, [clearMessage]);
 
   useEffect(() => {
     const offMessage = events.on("message", handleMessage);

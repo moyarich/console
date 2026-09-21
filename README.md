@@ -16,6 +16,10 @@ Use it to build embedded developer consoles, playgrounds, code runners, iframe p
 - WebSocket transport support
 - JSON-safe serialization for transported values
 - controlled message state through `useConsoleMessages()`
+- optional stdout view with ANSI terminal rendering
+- optional console/stdout tabs and restart action
+- smart auto-scroll, filtering, reset, and message deduplication
+- rich transport value restoration
 - TypeScript types
 
 ## Requirements
@@ -115,6 +119,42 @@ Auto-scroll follows new output while the viewer is near the bottom, but does not
 const { messages, clear } = useConsoleMessages({
   resetKey: sessionId,
   dedupeById: true,
+});
+```
+
+
+## Stdout and ANSI output
+
+Pass a `stdout` collection to add a second output view. ANSI SGR color/style sequences are rendered automatically.
+
+```tsx
+const stdout = [
+  { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
+  { id: "2", data: "Listening on port 3000" },
+];
+
+<Console
+  messages={messages}
+  stdout={stdout}
+  consoleTabLabel="Client"
+  stdoutTabLabel="Server"
+  onClear={clear}
+  onClearStdout={() => setStdout([])}
+  onRestart={restartServer}
+/>;
+```
+
+When `stdout` is provided, the console shows two tabs. The labels are configurable and the views can also be controlled with `view`, `defaultView`, and `onViewChange`.
+
+The restart action is shown in the stdout view when `onRestart` is provided. Restarting also resets both output collections through their clear callbacks.
+
+### Clear marker
+
+To retain a browser-style clear marker instead of leaving message state empty:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  clearMessage: "Console was cleared",
 });
 ```
 
@@ -376,7 +416,9 @@ Values are normalized before transport and restored on receipt. The transport pr
 
 | Export                         | Purpose                                                         |
 | ------------------------------ | --------------------------------------------------------------- |
-| `Console`                      | Render console messages                                         |
+| `Console`                      | Render console messages and optional stdout                     |
+| `ConsoleStdout`                | Render ANSI-aware stdout entries                                |
+| `parseAnsi`                    | Parse ANSI SGR text into styled segments                        |
 | `useConsoleMessages`           | Manage console message state and optional page capture          |
 | `capturePageConsole`           | Capture calls from a console object                             |
 | `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |
