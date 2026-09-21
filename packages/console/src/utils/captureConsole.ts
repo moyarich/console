@@ -2,6 +2,7 @@ import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 import { createConsoleProxy } from "./createConsoleProxy";
 
+/** Options for temporarily intercepting an existing Console object. */
 export interface CaptureConsoleOptions {
   events: ConsoleEventEmitter;
   consoleTarget?: Console;
@@ -9,6 +10,14 @@ export interface CaptureConsoleOptions {
   source?: string;
 }
 
+/**
+ * Replaces supported methods on a Console object with capture-aware wrappers.
+ *
+ * Calls are emitted through `events`; when `passThrough` is true the original
+ * console implementation is invoked after capture.
+ *
+ * @returns A cleanup function that restores every method that was replaced.
+ */
 export function captureConsole({
   events,
   consoleTarget = globalThis.console,
