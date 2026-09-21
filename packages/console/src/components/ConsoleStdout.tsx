@@ -3,14 +3,17 @@ import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 
+/** Process stream associated with an ANSI output entry. */
 export type ConsoleOutputStream = "stdout" | "stderr";
 
+/** One ANSI/process-output entry with optional identity and stream metadata. */
 export interface ConsoleStdoutEntry {
   id?: string;
   data: string;
   stream?: ConsoleOutputStream;
 }
 
+/** Metadata supplied to structured-output parsers. */
 export interface ConsoleStructuredOutputParserContext {
   entry: ConsoleStdoutEntry | string;
   index: number;
@@ -18,11 +21,18 @@ export interface ConsoleStructuredOutputParserContext {
   stream?: ConsoleOutputStream;
 }
 
+/**
+ * Parses a plain-text ANSI line into a structured value.
+ *
+ * Return `undefined` to leave the line as ANSI text or allow another parser
+ * to handle it.
+ */
 export type ConsoleStructuredOutputParser = (
   text: string,
   context: ConsoleStructuredOutputParserContext,
 ) => unknown | undefined;
 
+/** Props for rendering ANSI-aware stdout/stderr entries. */
 export interface ConsoleStdoutProps {
   entries: readonly (ConsoleStdoutEntry | string)[];
   emptyMessage?: string;
@@ -33,6 +43,7 @@ export interface ConsoleStdoutProps {
 
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
 
+/** Converts an Anser token into React inline styles. */
 function getAnsiTokenStyle(token: AnserToken): CSSProperties {
   const decorations = token.decorations ?? [];
   const textDecoration: string[] = [];
@@ -81,6 +92,7 @@ function getAnsiTokenStyle(token: AnserToken): CSSProperties {
   return style;
 }
 
+/** Parses only complete JSON object/array text, never scalar JSON values. */
 function parseStrictJsonOutput(text: string): object | undefined {
   const trimmedText = text.trim();
 
@@ -100,6 +112,7 @@ function parseStrictJsonOutput(text: string): object | undefined {
   }
 }
 
+/** Runs custom structured parsers before the optional strict JSON parser. */
 function parseStructuredOutput(
   data: string,
   entry: ConsoleStdoutEntry | string,
@@ -142,6 +155,10 @@ function AnsiText({ data }: { data: string }) {
   );
 }
 
+/**
+ * Renders ANSI-aware process output and optionally promotes matching lines to
+ * structured values rendered by {@link ConsoleValue}.
+ */
 export function ConsoleStdout({
   entries,
   emptyMessage = "No stdout output yet.",
