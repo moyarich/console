@@ -1,4 +1,4 @@
 {
   "label": "console.group",
-  "description": "Capture and render a console.group heading."
+  "description": "Render a console.group heading with nested messages."
 }
