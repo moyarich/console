@@ -6,8 +6,11 @@ import type { ConsoleValueRenderer } from "../renderers";
 
 /** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {
+  /** Original table input. */
   data: unknown;
+  /** Optional explicit column order/filter. */
   columns?: string[];
+  /** Custom renderers used for individual table cells. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 interface TableRow {
