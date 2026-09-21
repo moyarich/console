@@ -24,6 +24,7 @@ import type { ConsoleMessageData, ConsoleMode } from "../types";
 import { formatConsoleObjectForCopy } from "../utils/consoleCopyObject";
 import { writeClipboardText } from "../utils/clipboard";
 
+/** Props for the console's built-in right-click action surface. */
 export interface ConsoleContextMenuProps {
   children: ReactNode;
   mode: ConsoleMode;
@@ -79,6 +80,9 @@ interface ConsoleActionMenuItemProps<TContext> {
 
 const VIEWPORT_MARGIN = 8;
 
+/**
+ * Clamps a context-menu position so the measured menu remains in the viewport.
+ */
 function getMenuPosition(
   clientX: number,
   clientY: number,
@@ -100,6 +104,12 @@ function getMenuPosition(
   };
 }
 
+/**
+ * Reads public context-menu theme variables from the console target.
+ *
+ * The returned inline style preserves wrapper-scoped themes after the menu is
+ * portaled to `document.body`.
+ */
 function getContextMenuThemeStyle(
   element: HTMLElement | null,
 ): ContextMenuThemeStyle {
@@ -121,6 +131,10 @@ function getContextMenuThemeStyle(
   return themeStyle;
 }
 
+/**
+ * Returns pointer coordinates, falling back to the target bounds for keyboard-
+ * initiated context-menu events whose client coordinates are zero.
+ */
 function getEventPoint(event: MouseEvent<HTMLElement>) {
   if (event.clientX !== 0 || event.clientY !== 0) {
     return { x: event.clientX, y: event.clientY };
@@ -174,6 +188,10 @@ function ConsoleActionMenuItem<TContext>({
   );
 }
 
+/**
+ * Provides object/message context-menu APIs to descendants and renders the
+ * accessible menu portal with built-in and host-defined actions.
+ */
 export function ConsoleContextMenu({
   children,
   mode,
