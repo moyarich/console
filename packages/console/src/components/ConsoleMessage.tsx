@@ -42,6 +42,7 @@ const MESSAGE_ICONS: MessageIconMap = {
   groupCollapsed: ChevronDown,
 };
 
+/** Props for rendering one structured console message. */
 export interface ConsoleMessageProps {
   message: ConsoleMessageData;
   index?: number;
@@ -128,6 +129,10 @@ function DefaultConsoleMessage({
   );
 }
 
+/**
+ * Renders a structured console message using built-in behavior or the first
+ * matching custom message renderer.
+ */
 export function ConsoleMessage({
   message,
   index = 0,
