@@ -1,4 +1,5 @@
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { createConsoleEventHandler } from "./createConsoleEventHandler";
 import { deserializeConsoleEvent } from "./serialization";
 import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
@@ -25,6 +26,8 @@ export function listenForConsoleWebSocket({
   events,
   channel = DEFAULT_CONSOLE_CHANNEL,
 }: ListenForConsoleWebSocketOptions): () => void {
+  const handleConsoleEvent = createConsoleEventHandler(events);
+
   const handler = (event: MessageEvent) => {
     if (typeof event.data !== "string") {
       return;
@@ -37,7 +40,7 @@ export function listenForConsoleWebSocket({
         return;
       }
 
-      events.dispatch(deserializeConsoleEvent(data.event));
+      handleConsoleEvent(deserializeConsoleEvent(data.event));
     } catch {
       // Keep the listener active if parsing or event delivery fails.
     }
