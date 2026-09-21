@@ -37,7 +37,9 @@ export function listenForConsoleWebSocket({
       }
 
       events.emitEvent(data.event);
-    } catch {}
+    } catch {
+      // Keep the listener active if parsing or event delivery fails.
+    }
   };
 
   socket.addEventListener("message", handler);

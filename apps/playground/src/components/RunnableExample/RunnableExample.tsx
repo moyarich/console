@@ -1,9 +1,5 @@
 import { Component, useEffect, useRef, useState } from "react";
-import type {
-  ComponentType,
-  ErrorInfo,
-  ReactNode,
-} from "react";
+import type { ComponentType, ErrorInfo, ReactNode } from "react";
 import type { ConsoleExample } from "../../examples";
 import { MonacoEditor } from "../MonacoEditor";
 import { compileExampleSource } from "./compileExampleSource";
@@ -183,9 +179,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
             </div>
           )}
 
-          <RuntimeErrorBoundary
-            key={`${example.id}-${runVersion}`}
-          >
+          <RuntimeErrorBoundary key={`${example.id}-${runVersion}`}>
             <RuntimeComponent />
           </RuntimeErrorBoundary>
         </div>

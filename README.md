@@ -293,6 +293,9 @@ npm install
 npm run dev
 npm test
 npm run typecheck
+npm run lint
+npm run format
+npm run format:check
 npm run build
 npm run storybook
 ```
