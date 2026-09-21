@@ -24,6 +24,15 @@ describe("console theme CSS", () => {
     expect(styles).toContain("--_console-context-menu-background: var(");
   });
 
+
+  it("keeps console content shrinkable inside narrow containers", () => {
+    expect(styles).toContain(".console-panel {\n  display: flex;\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;");
+    expect(styles).toContain(".console-panel .console-surface {\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;");
+    expect(styles).toContain(".console-panel .console-values > * {\n  min-width: 0;\n  max-width: 100%;");
+    expect(styles).toContain(".console-panel .console-property-value {\n  min-width: 0;\n  max-width: 100%;");
+    expect(styles).not.toContain(".console-property-value {\n  min-width: 12ch;");
+  });
+
   it("supports separate native color schemes for console surfaces", () => {
     expect(styles).toContain(
       "color-scheme: var(--_console-panel-color-scheme);",
