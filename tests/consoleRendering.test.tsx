@@ -14,6 +14,7 @@ function renderConsole(messages: ConsoleMessageData[], error = "") {
 }
 
 describe("Console rendering", () => {
+  const escape = String.fromCharCode(27);
   it("renders primitive values", () => {
     const html = renderConsole([
       { method: "log", data: ["text", 2, true, null, undefined], depth: 0 },
@@ -125,7 +126,7 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <Console
         messages={[]}
-        stdout={["\\u001b[32mready\\u001b[0m"]}
+        stdout={[`${escape}[32mready${escape}[0m`]}
         defaultView="stdout"
         consoleTabLabel="Client"
         stdoutTabLabel="Server"
@@ -149,14 +150,18 @@ describe("Console rendering", () => {
   });
 
   it("parses extended ANSI colors", () => {
-    expect(parseAnsi("\\u001b[38;5;196mred\\u001b[0m")[0]).toMatchObject({
+    expect(
+      parseAnsi(`${escape}[38;5;196mred${escape}[0m`)[0],
+    ).toMatchObject({
       text: "red",
       style: { color: "rgb(255 0 0)" },
     });
   });
 
   it("resets ANSI styles", () => {
-    const segments = parseAnsi("\\u001b[31mred\\u001b[0mplain");
+    const segments = parseAnsi(
+      `${escape}[31mred${escape}[0mplain`,
+    );
 
     expect(segments[0]).toMatchObject({
       text: "red",

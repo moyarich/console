@@ -7,6 +7,8 @@ import {
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
+const escape = String.fromCharCode(27);
+
 export default function ConsoleEnhancementsExample() {
   const consoleRef = useRef<ConsoleRef>(null);
   const [showDebug, setShowDebug] = useState(false);
@@ -14,7 +16,7 @@ export default function ConsoleEnhancementsExample() {
   const [stdout, setStdout] = useState<ConsoleStdoutEntry[]>([
     {
       id: "boot",
-      data: "\u001b[32mServer ready\u001b[0m on port \u001b[36m3000\u001b[0m",
+      data: `${escape}[32mServer ready${escape}[0m on port ${escape}[36m3000${escape}[0m`,
     },
   ]);
   const { messages, append, clear } = useConsoleMessages({
@@ -42,7 +44,7 @@ export default function ConsoleEnhancementsExample() {
     setStdout([
       {
         id: `restart-${Date.now()}`,
-        data: "\u001b[33mServer restarted\u001b[0m",
+        data: `${escape}[33mServer restarted${escape}[0m`,
       },
     ]);
   };
@@ -61,7 +63,7 @@ export default function ConsoleEnhancementsExample() {
               ...current,
               {
                 id: String(Date.now()),
-                data: "\u001b[35mstdout:\u001b[0m request completed",
+                data: `${escape}[35mstdout:${escape}[0m request completed`,
               },
             ])
           }
