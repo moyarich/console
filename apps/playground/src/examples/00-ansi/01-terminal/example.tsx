@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { Console, type ConsoleStdoutEntry } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const ESC = "\u001b[";
-
-type TerminalScenario = "dev-server" | "build" | "ansi-formatting";
 
 function getDevServerOutput(): ConsoleStdoutEntry[] {
   return [
@@ -63,6 +61,7 @@ function getBuildOutput(): ConsoleStdoutEntry[] {
 
 function getAnsiFormattingOutput(): ConsoleStdoutEntry[] {
   return [
+    { id: "command", data: "$ ansi-demo" },
     {
       id: "styles",
       data: [
@@ -95,61 +94,57 @@ function getAnsiFormattingOutput(): ConsoleStdoutEntry[] {
       id: "256-color",
       data: `${ESC}38;5;39m256-color foreground${ESC}0m  ${ESC}48;5;236mBackground color${ESC}0m`,
     },
-    {
-      id: "plain",
-      data: "Plain output remains unchanged.",
-    },
+    { id: "plain", data: "Plain output remains unchanged." },
   ];
 }
 
-function getScenarioOutput(scenario: TerminalScenario): ConsoleStdoutEntry[] {
-  switch (scenario) {
-    case "build":
-      return getBuildOutput();
-    case "ansi-formatting":
-      return getAnsiFormattingOutput();
-    case "dev-server":
-    default:
-      return getDevServerOutput();
-  }
-}
-
-const scenarioLabels: Record<TerminalScenario, string> = {
-  "dev-server": "Dev server",
-  build: "Build",
-  "ansi-formatting": "ANSI formatting",
-};
-
 export default function TerminalExample() {
-  const [scenario, setScenario] = useState<TerminalScenario>("dev-server");
-  const messages = useMemo(() => getScenarioOutput(scenario), [scenario]);
+  const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
+  const runIdRef = useRef(0);
+
+  const appendOutput = (entries: ConsoleStdoutEntry[]) => {
+    const runId = ++runIdRef.current;
+
+    setMessages((current) => [
+      ...current,
+      ...(current.length
+        ? [{ id: `${runId}-separator`, data: "" }]
+        : []),
+      ...entries.map((entry, index) => ({
+        ...entry,
+        id: `${runId}-${entry.id ?? index}`,
+      })),
+    ]);
+  };
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <div className="button-row">
-        {(Object.keys(scenarioLabels) as TerminalScenario[]).map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={scenario === value}
-            onClick={() => setScenario(value)}
-          >
-            {scenarioLabels[value]}
-          </button>
-        ))}
+        <button
+          type="button"
+          onClick={() => appendOutput(getDevServerOutput())}
+        >
+          Run dev server
+        </button>
+
+        <button type="button" onClick={() => appendOutput(getBuildOutput())}>
+          Run build
+        </button>
+
+        <button
+          type="button"
+          onClick={() => appendOutput(getAnsiFormattingOutput())}
+        >
+          Show ANSI formatting
+        </button>
       </div>
 
       <Console
         mode="ansi"
         title="Terminal"
-        subtitle={
-          scenario === "dev-server"
-            ? "Dev server process output"
-            : scenario === "build"
-              ? "Build output with optional stream metadata"
-              : "ANSI styles and colors"
-        }
+        subtitle="Process output appended to one terminal session"
         messages={messages}
+        onClear={() => setMessages([])}
       />
     </div>
   );
