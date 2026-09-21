@@ -18,11 +18,7 @@
 }
 
 .console-panel .console-panel-header-main {
-  display: flex;
   min-width: 0;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
   padding: 14px 16px;
 }
 
@@ -42,9 +38,13 @@
 
 .console-panel .console-actions {
   display: flex;
-  flex: 0 0 auto;
+  min-width: 0;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  margin-left: auto;
 }
 
 .console-panel .console-actions > button {
@@ -141,14 +141,17 @@
 
 .console-panel .console-heading-copy {
   min-width: 0;
+  flex: 1;
 }
 
-.console-panel .console-view-bar {
+.console-panel .console-toolbar {
   display: flex;
-  min-height: 40px;
+  min-width: 0;
+  min-height: 44px;
   align-items: center;
+  gap: 12px;
   border-top: 1px solid #edf1f6;
-  padding: 0 16px;
+  padding: 6px 16px;
   background: #f8fafc;
 }
 
@@ -652,12 +655,14 @@
     --console-min-height: var(--console-mobile-min-height);
   }
 
-  .console-panel .console-panel-header-main {
+  .console-panel .console-toolbar {
     align-items: stretch;
     flex-direction: column;
   }
 
   .console-panel .console-actions {
-    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
   }
 }

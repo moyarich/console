@@ -213,51 +213,53 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
                 <p>{subtitle}</p>
               </div>
             </div>
-
-            {showActions && (
-              <div className="console-actions result-actions">
-                {actions}
-
-                {showClearButton && canClearActive && (
-                  <button
-                    type="button"
-                    className="console-clear-button"
-                    disabled={!hasActiveOutput}
-                    onClick={clearActive}
-                  >
-                    <Trash2 size={14} aria-hidden="true" /> Clear
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
-          {shouldShowViewTabs && (
-            <div className="console-view-bar">
-              <div
-                className="console-view-tabs"
-                role="tablist"
-                aria-label="Console output view"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={view === "console"}
-                  className="console-view-tab"
-                  onClick={() => changeView("console")}
+          {(shouldShowViewTabs || showActions) && (
+            <div className="console-toolbar">
+              {shouldShowViewTabs && (
+                <div
+                  className="console-view-tabs"
+                  role="tablist"
+                  aria-label="Console output view"
                 >
-                  {consoleTabLabel}
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={view === "stdout"}
-                  className="console-view-tab"
-                  onClick={() => changeView("stdout")}
-                >
-                  {stdoutTabLabel}
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={view === "console"}
+                    className="console-view-tab"
+                    onClick={() => changeView("console")}
+                  >
+                    {consoleTabLabel}
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={view === "stdout"}
+                    className="console-view-tab"
+                    onClick={() => changeView("stdout")}
+                  >
+                    {stdoutTabLabel}
+                  </button>
+                </div>
+              )}
+
+              {showActions && (
+                <div className="console-actions result-actions">
+                  {actions}
+
+                  {showClearButton && canClearActive && (
+                    <button
+                      type="button"
+                      className="console-clear-button"
+                      disabled={!hasActiveOutput}
+                      onClick={clearActive}
+                    >
+                      <Trash2 size={14} aria-hidden="true" /> Clear
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
