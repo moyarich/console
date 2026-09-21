@@ -32,16 +32,22 @@ import type {
 } from "../actions";
 import { writeClipboardText } from "../utils/clipboard";
 
+/** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
+/** CSS resize direction supported by the console shell. */
 export type ConsoleResizeDirection =
   "vertical" | "horizontal" | "both" | "block" | "inline";
 
+/**
+ * Predicate used to decide whether a structured message should be visible.
+ */
 export type ConsoleMessageFilter = (
   message: ConsoleMessageData,
   index: number,
   messages: readonly ConsoleMessageData[],
 ) => boolean;
 
+/** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
   onClear?: () => void;
   autoScroll?: boolean;
@@ -58,6 +64,7 @@ interface ConsoleSharedProps {
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
+/** Props for browser-style structured console rendering. */
 export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   mode?: "console";
   output?: RunOutput;
@@ -69,6 +76,7 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   messageActions?: readonly ConsoleMessageAction[];
 }
 
+/** Props for terminal-style ANSI/process-output rendering. */
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   mode: "ansi";
   messages?: readonly (ConsoleStdoutEntry | string)[];
@@ -81,6 +89,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   messageRenderers?: never;
 }
 
+/** Discriminated prop union for the top-level {@link Console} component. */
 export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
 
 interface ConsoleFrameProps extends ConsoleSharedProps {
@@ -96,6 +105,10 @@ const EMPTY_MESSAGES: ConsoleMessageData[] = [];
 const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
 
+/**
+ * Shared frame that renders panel chrome, actions, context-menu support, and
+ * the scrollable output surface for both console modes.
+ */
 function ConsoleFrame({
   mode,
   onClear,
@@ -269,6 +282,7 @@ function ConsoleFrame({
   );
 }
 
+/** Renders structured console messages and custom message/value renderers. */
 function ConsoleMessageMode({
   output,
   messages: messagesProp,
@@ -353,6 +367,7 @@ function ConsoleMessageMode({
   );
 }
 
+/** Renders ANSI-aware process output with optional structured parsing. */
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
@@ -382,6 +397,12 @@ function ConsoleAnsiMode({
   );
 }
 
+/**
+ * Renders either structured browser-console output or ANSI process output.
+ *
+ * Set `mode="ansi"` for terminal-style entries; omit `mode` (or use
+ * `"console"`) for structured {@link ConsoleMessageData} messages.
+ */
 export function Console(props: ConsoleProps) {
   if (props.mode === "ansi") {
     return <ConsoleAnsiMode {...props} />;
