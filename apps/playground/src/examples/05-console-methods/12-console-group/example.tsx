@@ -1,29 +1,18 @@
-import { Console, useConsoleMessages } from "@moyarich/console";
+import {
+  Console,
+  createConsoleProxy,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
+const messages: ConsoleMessageData[] = [];
+const exampleConsole = createConsoleProxy(messages);
+
+exampleConsole.group("Build");
+exampleConsole.log("Compiling application");
+exampleConsole.log("Writing output", { files: 42 });
+exampleConsole.groupEnd();
+
 export default function ConsoleGroupExample() {
-  const { messages, clear } = useConsoleMessages({
-    capture: true,
-    source: "console-group",
-    passThrough: true,
-  });
-
-  const runExample = () => {
-    console.group("Group message");
-    console.groupEnd();
-  };
-
-  return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <button type="button" onClick={runExample}>
-        console.group(...)
-      </button>
-
-      <Console
-        messages={messages}
-        onClear={clear}
-        subtitle="console.group example"
-      />
-    </div>
-  );
+  return <Console messages={messages} subtitle="console.group example" />;
 }
