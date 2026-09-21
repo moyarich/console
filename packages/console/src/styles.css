@@ -1,4 +1,15 @@
 /* Standalone shell */
+.console-panel,
+.console-panel *,
+.console-panel *::before,
+.console-panel *::after,
+.console-context-menu,
+.console-context-menu *,
+.console-context-menu *::before,
+.console-context-menu *::after {
+  box-sizing: border-box;
+}
+
 .console-panel {
   display: flex;
   width: 100%;
