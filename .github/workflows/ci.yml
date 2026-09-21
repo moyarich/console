@@ -23,10 +23,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Check formatting
-        run: |
-          npx prettier packages/console/src/components/Console.tsx > /tmp/Console.tsx
-          diff -u packages/console/src/components/Console.tsx /tmp/Console.tsx || true
-          npm run format:check
+        run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test

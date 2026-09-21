@@ -18,11 +18,7 @@ import { writeClipboardText } from "../utils/clipboard";
 
 export type ConsoleMode = "console" | "ansi";
 export type ConsoleResizeDirection =
-  | "vertical"
-  | "horizontal"
-  | "both"
-  | "block"
-  | "inline";
+  "vertical" | "horizontal" | "both" | "block" | "inline";
 
 export type ConsoleMessageFilter = (
   message: ConsoleMessageData,
