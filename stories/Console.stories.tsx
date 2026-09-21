@@ -138,7 +138,10 @@ export const CustomRenderers: Story = {
     messages: [
       {
         method: "info",
-        data: ["Deployment", { kind: "status", label: "API", state: "healthy" }],
+        data: [
+          "Deployment",
+          { kind: "status", label: "API", state: "healthy" },
+        ],
         depth: 0,
       },
       {
