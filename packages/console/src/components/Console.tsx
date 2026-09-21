@@ -48,8 +48,7 @@ export function Console({
 
   const expandAllCollapsed = () => {
     setExpandedMessages((current) => {
-      const version =
-        Math.max(0, ...Array.from(current.values())) + 1;
+      const version = Math.max(0, ...Array.from(current.values())) + 1;
 
       return new Map(messages.map((message) => [message, version]));
     });
