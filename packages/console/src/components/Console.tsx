@@ -1,4 +1,4 @@
-import { SquareTerminal, Trash2 } from "lucide-react";
+import { MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   forwardRef,
   useCallback,
@@ -89,7 +89,10 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
   ref,
 ) {
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const actionsButtonRef = useRef<HTMLButtonElement>(null);
   const shouldAutoScrollRef = useRef(true);
+  const [actionsOpen, setActionsOpen] = useState(false);
   const [internalView, setInternalView] = useState<ConsoleView>(defaultView);
   const hasStdoutView = stdoutProp !== undefined;
   const view =
@@ -147,6 +150,35 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
   useEffect(() => {
     onMessagesChange?.(sourceMessages);
   }, [onMessagesChange, sourceMessages]);
+
+  useEffect(() => {
+    if (!actionsOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof Node)) return;
+      if (actionsRef.current?.contains(target)) return;
+      if (actionsButtonRef.current?.contains(target)) return;
+
+      setActionsOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+
+      setActionsOpen(false);
+      actionsButtonRef.current?.focus();
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [actionsOpen]);
 
   useEffect(() => {
     const surface = surfaceRef.current;
@@ -245,18 +277,52 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
               )}
 
               {showActions && (
-                <div className="console-actions result-actions">
-                  {actions}
+                <div className="console-actions-popover-shell">
+                  <button
+                    ref={actionsButtonRef}
+                    type="button"
+                    className="console-actions-trigger"
+                    aria-label="Console actions"
+                    aria-expanded={actionsOpen}
+                    aria-controls="console-actions-popover"
+                    title="Console actions"
+                    onClick={() => setActionsOpen((open) => !open)}
+                  >
+                    <MoreHorizontal size={18} aria-hidden="true" />
+                  </button>
 
-                  {showClearButton && canClearActive && (
-                    <button
-                      type="button"
-                      className="console-clear-button"
-                      disabled={!hasActiveOutput}
-                      onClick={clearActive}
+                  {actionsOpen && (
+                    <div
+                      ref={actionsRef}
+                      id="console-actions-popover"
+                      className="console-actions-popover"
+                      aria-label="Console actions"
+                      onClickCapture={(event) => {
+                        const target = event.target;
+
+                        if (
+                          target instanceof Element &&
+                          target.closest("button, a, [role='menuitem']")
+                        ) {
+                          setActionsOpen(false);
+                        }
+                      }}
                     >
-                      <Trash2 size={14} aria-hidden="true" /> Clear
-                    </button>
+                      <div className="console-actions result-actions">
+                        {actions}
+
+                        {showClearButton && canClearActive && (
+                          <button
+                            type="button"
+                            className="console-clear-button"
+                            disabled={!hasActiveOutput}
+                            onClick={clearActive}
+                          >
+                            <Trash2 size={14} aria-hidden="true" /> Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   )}
                 </div>
               )}

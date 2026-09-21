@@ -130,9 +130,26 @@ describe("Console rendering", () => {
       />,
     );
 
-    expect(html).toContain("Restart server");
+    expect(html).not.toContain("Restart server");
     expect(html).toContain("console-toolbar");
+    expect(html).toContain('aria-label="Console actions"');
+    expect(html).toContain('aria-expanded="false"');
     expect(html).not.toContain("console-restart-button");
+  });
+
+  it("renders toolbar actions behind an ellipsis trigger", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[{ method: "log", data: ["hello"], depth: 0 }]}
+        onClear={() => undefined}
+        actions={<button type="button">Export</button>}
+      />,
+    );
+
+    expect(html).toContain("console-actions-trigger");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain(">Export<");
+    expect(html).not.toContain(">Clear<");
   });
 
   it("renders view tabs in their own toolbar", () => {
