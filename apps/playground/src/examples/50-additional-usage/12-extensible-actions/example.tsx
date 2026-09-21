@@ -31,9 +31,8 @@ const INITIAL_MESSAGES: ConsoleMessageData[] = [
 ];
 
 export default function ExtensibleActionsExample() {
-  const [messages, setMessages] = useState<ConsoleMessageData[]>(
-    INITIAL_MESSAGES,
-  );
+  const [messages, setMessages] =
+    useState<ConsoleMessageData[]>(INITIAL_MESSAGES);
   const [bookmarks, setBookmarks] = useState<Set<string>>(() => new Set());
   const [lastAction, setLastAction] = useState(
     "Right-click the console, an object, or a message to try the actions.",
