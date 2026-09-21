@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createConsoleEventEmitter,
+  createConsoleEventHandler,
   createConsoleProxy,
   type ConsoleEvent,
 } from "@moyarich/console";
@@ -51,7 +52,7 @@ describe("createConsoleProxy", () => {
     });
   });
 
-  it("can dispatch proxy events through a ConsoleEventEmitter", () => {
+  it("can route proxy events through a ConsoleEventEmitter", () => {
     const events = createConsoleEventEmitter();
     const received: string[] = [];
 
@@ -59,7 +60,7 @@ describe("createConsoleProxy", () => {
     events.on("clear", () => received.push("clear"));
 
     const console = createConsoleProxy({
-      onEvent: events.dispatch,
+      onEvent: createConsoleEventHandler(events),
     });
 
     console.log("one");
