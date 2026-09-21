@@ -245,7 +245,7 @@ apps/playground/src/examples/
   01-getting-started/
     01-current-page/
       example.tsx
-      source.tsx
+      index.tsx
       meta.json
     02-console-enhancements/
       ...
@@ -277,7 +277,7 @@ When adding or reordering an example:
 
 1. place it under the appropriate numbered group directory
 2. use an `NN-example-name` directory prefix for its order
-3. include `example.tsx`, `source.tsx`, and `meta.json`
+3. include `example.tsx`, `index.tsx`, and `meta.json`
 4. change numeric prefixes to reorder groups or examples
 5. keep example code representative of the public package API
 6. avoid depending on private implementation details
