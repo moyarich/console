@@ -65,10 +65,8 @@ export function AppConsole() {
 
 `Console` supports two modes:
 
-| Mode      | Input                                 | Use for                                                   |
-| --------- | ------------------------------------- | --------------------------------------------------------- |
-| `console` | `ConsoleMessageData[]` or `RunOutput` | Browser-style console messages and rich JavaScript values |
-| `ansi`    | strings or `ConsoleStdoutEntry[]`     | stdout/stderr and ANSI-formatted process output           |
+- `mode="console"` (default) accepts `ConsoleMessageData[]` or `RunOutput` for browser-style messages and rich JavaScript values.
+- `mode="ansi"` accepts strings or `ConsoleStdoutEntry[]` for stdout/stderr and ANSI-formatted process output.
 
 ### Structured console output
 
@@ -129,20 +127,13 @@ The panel keeps runtime-specific controls outside the library. Tabs, restart but
 
 Common props include:
 
-| Prop                    | Purpose                                                                         |
-| ----------------------- | ------------------------------------------------------------------------------- |
-| `autoScroll`            | Follow new output while the viewer remains near the bottom                      |
-| `resizable`             | Enable CSS resizing with `vertical`, `horizontal`, `both`, `block`, or `inline` |
-| `showHeader`            | Show or hide the panel header                                                   |
-| `showClearButton`       | Include clear in the actions menu when `onClear` is provided                   |
-| `actions`               | Add application-defined header actions                                         |
-| `title` / `subtitle`  | Customize panel heading text                                                    |
-| `emptyMessage`          | Customize the empty state                                                       |
-| `filter`                | Filter structured messages before rendering                                    |
-| `onMessagesChange`      | Observe the filtered structured message list                                   |
-| `messageRenderers`      | Extend structured message rendering                                            |
-| `valueRenderers`        | Extend value rendering in structured and ANSI modes                            |
-| `parseStructuredOutput` | Promote strict JSON in ANSI mode                                                |
+- `autoScroll` follows new output while the viewer remains near the bottom.
+- `resizable` enables CSS resizing with `vertical`, `horizontal`, `both`, `block`, or `inline`.
+- `showHeader`, `showClearButton`, `title`, `subtitle`, and `emptyMessage` control panel chrome and labels.
+- `actions` adds application-defined header actions.
+- `filter` and `onMessagesChange` customize the structured message list.
+- `messageRenderers` and `valueRenderers` extend rendering.
+- `parseStructuredOutput` promotes strict JSON in ANSI mode.
 
 Header actions are placed in the native ellipsis popover. ANSI mode also adds a **Copy output** action.
 
