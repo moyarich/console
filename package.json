@@ -19,7 +19,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --write . && git diff -- README.md docs/readme-dev.md packages/console/src/components/Console.tsx && git diff --exit-code"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
