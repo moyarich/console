@@ -80,7 +80,7 @@
   border-radius: 8px;
   padding: 0;
   background: #fff;
-  color: #42526b;
+  color: var(--console-panel-action-icon);
   cursor: pointer;
 }
 
@@ -90,9 +90,13 @@
   .console-actions-popover-shell:has(.console-actions-popover:popover-open)
   .console-actions-trigger {
   outline: none;
-  border-color: #aebbd0;
-  background: #eef2f7;
-  color: #26344b;
+  border-color: color-mix(
+    in oklab,
+    #d6deeb,
+    var(--console-panel-action-icon) 24%
+  );
+  background: var(--console-panel-action-hover-background);
+  color: var(--console-panel-action-hover-icon);
 }
 
 .console-panel .console-actions-popover[popover] {
@@ -129,7 +133,7 @@
   border-radius: 6px;
   padding: 7px 9px;
   background: transparent;
-  color: #42526b;
+  color: var(--console-panel-action-icon);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
@@ -145,8 +149,8 @@
 .console-panel .console-actions > a:hover,
 .console-panel .console-actions > a:focus-visible {
   outline: none;
-  background: #f2f5f9;
-  color: #26344b;
+  background: var(--console-panel-action-hover-background);
+  color: var(--console-panel-action-hover-icon);
 }
 
 .console-panel .console-actions > button:disabled {
@@ -192,6 +196,30 @@
 
   --console-empty-foreground: #8e9aab;
   --console-header-icon: #5266c9;
+
+  --console-icon-color: color-mix(
+    in oklab,
+    var(--console-foreground),
+    var(--console-background) 35%
+  );
+  --console-icon-hover-color: var(--console-foreground);
+  --console-icon-hover-background: color-mix(
+    in oklab,
+    var(--console-background),
+    var(--console-foreground) 14%
+  );
+
+  --console-panel-action-icon: #42526b;
+  --console-panel-action-hover-icon: color-mix(
+    in oklab,
+    var(--console-panel-action-icon),
+    black 24%
+  );
+  --console-panel-action-hover-background: color-mix(
+    in oklab,
+    white,
+    var(--console-panel-action-icon) 8%
+  );
 
   --console-property-key: color-mix(in oklab, var(--console-null), black 10%);
   --console-object-property-key: color-mix(
@@ -284,6 +312,17 @@
 }
 
 .console-panel .console-message {
+  --console-message-icon-color: currentColor;
+  --console-message-icon-hover-color: color-mix(
+    in oklab,
+    currentColor,
+    white 14%
+  );
+  --console-message-icon-hover-background: color-mix(
+    in oklab,
+    var(--console-background),
+    currentColor 16%
+  );
   display: flex;
   min-width: 0;
   align-items: flex-start;
@@ -333,8 +372,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 2px;
-  color: currentColor;
-  opacity: 0.9;
+  color: var(--console-message-icon-color);
 }
 
 .console-panel button.console-message-icon-button {
@@ -347,20 +385,19 @@
   justify-content: center;
   margin-top: 2px;
   border-radius: 4px;
-  color: currentColor;
+  color: var(--console-message-icon-color);
   cursor: pointer;
-  opacity: 0.9;
   box-sizing: border-box;
   transition:
     background 120ms ease,
-    opacity 120ms ease;
+    color 120ms ease;
 }
 
 .console-panel .console-message-icon-button:hover,
 .console-panel .console-message-icon-button:focus-visible {
   outline: none;
-  background: var(--console-object-border);
-  opacity: 1;
+  background: var(--console-message-icon-hover-background);
+  color: var(--console-message-icon-hover-color);
 }
 
 .console-panel .console-values {
@@ -463,7 +500,7 @@
   border-radius: 5px;
   padding: 0;
   background: transparent;
-  color: var(--console-subtle);
+  color: var(--console-icon-color);
   cursor: pointer;
   opacity: 0;
   transition:
@@ -481,8 +518,8 @@
 .console-panel .console-object-copy-button:hover,
 .console-panel .console-object-copy-button:focus-visible {
   outline: none;
-  background: var(--console-object-border);
-  color: var(--console-foreground);
+  background: var(--console-icon-hover-background);
+  color: var(--console-icon-hover-color);
   opacity: 1;
 }
 .console-panel .console-object-properties {
@@ -574,7 +611,7 @@
   border-radius: 5px;
   padding: 4px 7px;
   background: transparent;
-  color: var(--console-muted);
+  color: var(--console-icon-color);
   font: inherit;
   font-size: 11px;
   cursor: pointer;
@@ -585,8 +622,8 @@
 .console-panel .console-table-copy-button:hover,
 .console-panel .console-table-copy-button:focus-visible {
   outline: none;
-  background: var(--console-object-border);
-  color: var(--console-foreground);
+  background: var(--console-icon-hover-background);
+  color: var(--console-icon-hover-color);
 }
 .console-panel .console-table-scroll {
   width: 100%;
@@ -660,7 +697,21 @@
   --console-context-menu-border: #454545;
   --console-context-menu-foreground: #e6e6e6;
   --console-context-menu-muted: #9d9d9d;
-  --console-context-menu-hover: #37373d;
+  --console-context-menu-hover: color-mix(
+    in oklab,
+    var(--console-context-menu-background),
+    var(--console-context-menu-foreground) 10%
+  );
+  --console-context-menu-hover-foreground: color-mix(
+    in oklab,
+    var(--console-context-menu-foreground),
+    white 10%
+  );
+  --console-context-menu-icon: color-mix(
+    in oklab,
+    var(--console-context-menu-foreground),
+    var(--console-context-menu-background) 20%
+  );
   --console-context-menu-danger: #ff9b9b;
   position: fixed;
   z-index: 1000;
@@ -699,12 +750,25 @@
 .console-context-menu-item:focus-visible {
   outline: none;
   background: var(--console-context-menu-hover);
+  color: var(--console-context-menu-hover-foreground);
 }
 .console-context-menu-item:disabled {
   color: var(--console-context-menu-muted);
   cursor: default;
   opacity: 0.55;
 }
+.console-context-menu-item > svg,
+.console-context-menu-action-icon {
+  color: var(--console-context-menu-icon);
+}
+
+.console-context-menu-item:hover:not(:disabled) > svg,
+.console-context-menu-item:focus-visible > svg,
+.console-context-menu-item:hover:not(:disabled) .console-context-menu-action-icon,
+.console-context-menu-item:focus-visible .console-context-menu-action-icon {
+  color: currentColor;
+}
+
 .console-context-menu-action-icon {
   display: inline-flex;
   width: 15px;
@@ -716,9 +780,28 @@
 .console-context-menu-action-icon > svg {
   width: 15px;
   height: 15px;
+  color: inherit;
+  stroke: currentColor;
+}
+
+.console-panel .console-message-icon > svg,
+.console-panel .console-message-icon-button > svg,
+.console-panel .console-object-copy-button > svg,
+.console-panel .console-table-copy-button > svg,
+.console-panel .console-actions-trigger > svg,
+.console-panel .console-actions > button > svg,
+.console-panel .console-actions > a > svg {
+  color: inherit;
+  stroke: currentColor;
 }
 .console-context-menu-item-danger:not(:disabled) {
   color: var(--console-context-menu-danger);
+}
+
+.console-context-menu-item-danger:not(:disabled) > svg,
+.console-context-menu-item-danger:not(:disabled)
+  .console-context-menu-action-icon {
+  color: currentColor;
 }
 .console-context-menu-separator {
   height: 1px;
