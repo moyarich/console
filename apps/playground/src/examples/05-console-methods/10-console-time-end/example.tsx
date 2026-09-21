@@ -1,26 +1,27 @@
-import {
-  Console,
-  createConsoleProxy,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const messages: ConsoleMessageData[] = [];
-let elapsedMs = 0;
-
-const exampleConsole = createConsoleProxy({
-  onEvent(event) {
-    if (event.type === "message") {
-      messages.push(event.message);
-    }
-  },
-  timerNow: () => elapsedMs,
-});
-
-exampleConsole.time("compile");
-elapsedMs = 500;
-exampleConsole.timeEnd("compile");
-
 export default function ConsoleTimeEndExample() {
-  return <Console messages={messages} subtitle="console.timeEnd example" />;
+  const { messages, console, clear } = useConsoleMessages({
+    source: "console-time-end",
+  });
+
+  const runExample = () => {
+    console.time("compile");
+    console.timeEnd("compile");
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={runExample}>
+        console.timeEnd(...)
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="console.timeEnd example"
+      />
+    </div>
+  );
 }
