@@ -12,12 +12,18 @@
 
 .console-panel .console-panel-header {
   display: flex;
-  min-height: 72px;
-  align-items: center;
+  flex-direction: column;
+  border-bottom: 1px solid #e5eaf2;
+  background: #fff;
+}
+
+.console-panel .console-panel-header-main {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid #e5eaf2;
-  padding: 13px 16px;
+  padding: 14px 16px;
 }
 
 .console-panel .console-panel-header h2 {
@@ -31,40 +37,43 @@
   margin: 0;
   color: #7b8799;
   font-size: 0.75rem;
+  line-height: 1.35;
 }
 
 .console-panel .console-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
+  gap: 8px;
 }
 
-.console-panel .console-clear-button,
-.console-panel .console-restart-button {
+.console-panel .console-actions > button {
   display: inline-flex;
+  min-height: 34px;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   border: 1px solid #d6deeb;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 7px 10px;
   background: #fff;
   color: #42526b;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.console-panel .console-clear-button:hover:not(:disabled),
-.console-panel .console-restart-button:hover:not(:disabled) {
+.console-panel .console-actions > button:hover:not(:disabled) {
   border-color: #aebbd0;
   background: #f8fafc;
 }
 
-.console-panel .console-clear-button:disabled,
-.console-panel .console-restart-button:disabled {
+.console-panel .console-actions > button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 /* ==========================================================================
@@ -123,16 +132,24 @@
   min-width: 0;
 }
 
-.console-panel .console-heading-area {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .console-panel .console-heading {
   display: flex;
+  min-width: 0;
+  align-items: flex-start;
   gap: 9px;
+}
+
+.console-panel .console-heading-copy {
+  min-width: 0;
+}
+
+.console-panel .console-view-bar {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  border-top: 1px solid #edf1f6;
+  padding: 0 16px;
+  background: #f8fafc;
 }
 
 .console-panel .console-view-tabs {
@@ -141,7 +158,7 @@
   gap: 4px;
   border-radius: 8px;
   padding: 3px;
-  background: #f2f5f9;
+  background: #eef2f7;
 }
 
 .console-panel .console-view-tab {
@@ -633,5 +650,14 @@
 @media (max-width: 700px) {
   .console-panel {
     --console-min-height: var(--console-mobile-min-height);
+  }
+
+  .console-panel .console-panel-header-main {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .console-panel .console-actions {
+    flex-wrap: wrap;
   }
 }

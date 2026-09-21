@@ -122,6 +122,16 @@ describe("Console rendering", () => {
     expect(html).not.toContain("> Clear<");
   });
 
+  it("renders view tabs in their own toolbar", () => {
+    const html = renderToStaticMarkup(
+      <Console messages={[]} stdout={[]} />,
+    );
+
+    expect(html).toContain("console-panel-header-main");
+    expect(html).toContain("console-view-bar");
+    expect(html).toContain('role="tablist"');
+  });
+
   it("renders stdout tabs and ANSI output", () => {
     const html = renderToStaticMarkup(
       <Console
