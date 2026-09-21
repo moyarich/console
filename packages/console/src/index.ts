@@ -66,6 +66,6 @@ export type {
   RunOutput,
   DirOptions,
   ConsoleEvent,
-  ConsoleEventSink,
+  ConsoleEventHandler,
   ConsoleTransportEnvelope,
 } from "./types";
