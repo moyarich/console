@@ -21,9 +21,7 @@ describe("console theme CSS", () => {
     expect(styles).toContain(
       "--_console-panel-background: var(--console-panel-background, #fff);",
     );
-    expect(styles).toContain(
-      "--_console-context-menu-background: var(",
-    );
+    expect(styles).toContain("--_console-context-menu-background: var(");
   });
 
   it("supports separate native color schemes for console surfaces", () => {
