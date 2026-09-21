@@ -101,7 +101,7 @@ export function AppConsole() {
 
 Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
 
-`useConsoleMessages()` deduplicates repeated messages with the same `id` by default. Set `dedupeById: false` to preserve duplicates. Use `resetKey` to clear the stream when a runtime or session identity changes:
+`useConsoleMessages()` deduplicates repeated messages with the same `id` by default. Set `dedupeById: false` to preserve duplicates. Use `resetKey` to clear the stream when a runtime or session identity changes. Calling `clear()` or receiving a `clear` event empties the message list without adding a marker message:
 
 ```tsx
 const { messages, clear } = useConsoleMessages({
@@ -126,16 +126,6 @@ const stdout = [
 ```
 
 If an application wants tabs, panes, or a restart button, those controls belong to the application around `Console` and `ConsoleStdout`.
-
-### Clear marker
-
-To retain a browser-style clear marker instead of leaving message state empty:
-
-```tsx
-const { messages, clear } = useConsoleMessages({
-  clearMessage: "Console was cleared",
-});
-```
 
 ## Capture the current page
 

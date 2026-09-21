@@ -7,7 +7,6 @@ export default function ConsoleEnhancementsExample() {
   const [session, setSession] = useState(1);
   const { messages, append, clear } = useConsoleMessages({
     resetKey: session,
-    clearMessage: "Console was cleared",
   });
 
   const addMessages = () => {
