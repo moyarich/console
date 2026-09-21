@@ -408,7 +408,7 @@ const events = createConsoleEventEmitter();
 
 const { messages } = useConsoleMessages({ events });
 const runtimeConsole = createConsoleProxy({
-  onEvent: events.dispatch,
+  onEvent: createConsoleEventHandler(events),
 });
 
 runtimeConsole.log("shared event stream");
