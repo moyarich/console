@@ -155,6 +155,21 @@ describe("Console rendering", () => {
     });
   });
 
+  it("resets ANSI styles", () => {
+    const segments = parseAnsi(
+      "\\u001b[31mred\\u001b[0mplain",
+    );
+
+    expect(segments[0]).toMatchObject({
+      text: "red",
+      style: { color: "#cd3131" },
+    });
+    expect(segments[1]).toEqual({
+      text: "plain",
+      style: {},
+    });
+  });
+
   it("appends runtime errors", () => {
     const html = renderConsole(
       [{ method: "log", data: ["before"], depth: 0 }],
