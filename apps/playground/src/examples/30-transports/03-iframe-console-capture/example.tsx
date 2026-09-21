@@ -1,9 +1,5 @@
-import { useEffect, useRef } from "react";
-import {
-  Console,
-  capturePageConsole,
-  useConsoleMessages,
-} from "@moyarich/console";
+import { useRef, useState } from "react";
+import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const IFRAME_SOURCE = `
@@ -117,32 +113,20 @@ const IFRAME_SOURCE = `
 
 export default function IframeConsoleCaptureExample() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const stopCaptureRef = useRef<(() => void) | null>(null);
-  const { messages, clear, events } = useConsoleMessages();
+  const [iframeConsole, setIframeConsole] = useState<Console>();
 
-  useEffect(() => {
-    return () => {
-      stopCaptureRef.current?.();
-    };
-  }, []);
+  const { messages, clear } = useConsoleMessages({
+    capture: Boolean(iframeConsole),
+    consoleTarget: iframeConsole,
+    source: "iframe",
+    passThrough: true,
+  });
 
   const handleIframeLoad = () => {
-    stopCaptureRef.current?.();
-
     const iframeWindow = iframeRef.current?.contentWindow as
       (Window & typeof globalThis) | null | undefined;
-    const iframeConsole = iframeWindow?.console;
 
-    if (!iframeConsole) {
-      return;
-    }
-
-    stopCaptureRef.current = capturePageConsole({
-      events,
-      target: iframeConsole,
-      source: "iframe",
-      passThrough: true,
-    });
+    setIframeConsole(iframeWindow?.console);
   };
 
   return (
