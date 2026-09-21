@@ -293,20 +293,31 @@ Prefer regression tests when fixing a bug.
 
 ## Formatting and linting
 
-A tracked pre-commit hook runs Prettier and ESLint against staged files. `npm install` configures Git to use `.githooks` automatically through the root `prepare` script.
+The repository includes a tracked pre-commit hook backed by `lint-staged`. Hook installation is explicit so `npm install` does not silently change a contributor's Git configuration.
 
-The hook:
-
-- runs Prettier on supported staged source, config, style, and documentation files
-- runs ESLint with `--fix` on staged JavaScript and TypeScript files
-- re-stages files changed by either tool
-- blocks the commit when ESLint still reports an error
-
-To configure the hook manually when needed:
+After installing dependencies, enable the tracked hooks once:
 
 ```bash
-git config core.hooksPath .githooks
+npm run hooks:install
 ```
+
+The pre-commit hook runs only against staged files:
+
+- Prettier formats supported staged source, config, style, and documentation files
+- ESLint runs with `--fix` on staged JavaScript and TypeScript files
+- `lint-staged` protects partially staged files while tasks modify the working tree
+- files fixed by the tools are included in the staged result
+- the commit is blocked when a task still fails
+
+The full repository validation remains CI's responsibility. Typechecking, tests, builds, Storybook, and package validation do not run in pre-commit.
+
+If the local hook must be bypassed once:
+
+```bash
+git commit --no-verify
+```
+
+CI still enforces the repository checks before merge.
 
 Before committing documentation or code changes:
 

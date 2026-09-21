@@ -20,7 +20,7 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
@@ -48,5 +48,14 @@
     "typescript-eslint": "^8.70.0",
     "vite": "^7.1.5",
     "vitest": "^4.1.11"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,css,md,html,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
