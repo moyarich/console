@@ -1,15 +1,24 @@
-import type { ConsoleEventHandler } from "../types";
+import type { ConsoleEvent } from "../types";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 
-export function createConsoleEventHandler(
-  events: ConsoleEventEmitter,
-): ConsoleEventHandler {
-  return (event) => {
-    if (event.type === "message") {
-      events.emit("message", event.message);
-      return;
-    }
+type ConsoleEventHandlers = {
+  [K in ConsoleEvent["type"]]: (
+    event: Extract<ConsoleEvent, { type: K }>,
+  ) => void;
+};
 
-    events.emit("clear");
+export function createConsoleEventHandler(events: ConsoleEventEmitter) {
+  const handlers: ConsoleEventHandlers = {
+    message: (event) => {
+      events.emit("message", event.message);
+    },
+    clear: () => {
+      events.emit("clear");
+    },
+  };
+
+  return (event: ConsoleEvent) => {
+    const handler = handlers[event.type] as (event: ConsoleEvent) => void;
+    handler(event);
   };
 }
