@@ -253,18 +253,12 @@ The messages contain the calculated group depth and timer output, so the rendere
 `useConsoleMessages()` is the easiest way to connect event producers to React state.
 
 ```tsx
-const {
-  messages,
-  output,
-  append,
-  clear,
-  events,
-  setMessages,
-} = useConsoleMessages({
-  maxMessages: 1000,
-  dedupeById: true,
-  resetKey: sessionId,
-});
+const { messages, output, append, clear, events, setMessages } =
+  useConsoleMessages({
+    maxMessages: 1000,
+    dedupeById: true,
+    resetKey: sessionId,
+  });
 ```
 
 ### Options
