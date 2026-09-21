@@ -1,33 +1,10 @@
 import { useMemo, useState } from "react";
-import * as ts from "typescript";
 import { Console, type ConsoleStdoutEntry } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const ESC = "\u001b[";
-const FILE_NAME = "index.ts";
 
-const TYPESCRIPT_SOURCE = `
-interface User {
-  name: string;
-  score: number;
-}
-
-const user: User = {
-  name: "Ada",
-  score: 42,
-};
-
-const message: string = ;
-console.log(message, user);
-`;
-
-type TerminalScenario = "dev-server" | "build" | "compile-error";
-
-const diagnosticHost: ts.FormatDiagnosticsHost = {
-  getCanonicalFileName: (fileName) => fileName,
-  getCurrentDirectory: () => "/workspace",
-  getNewLine: () => "\n",
-};
+type TerminalScenario = "dev-server" | "build" | "ansi-formatting";
 
 function getDevServerOutput(): ConsoleStdoutEntry[] {
   return [
@@ -84,33 +61,44 @@ function getBuildOutput(): ConsoleStdoutEntry[] {
   ];
 }
 
-function getCompileErrorOutput(): ConsoleStdoutEntry[] {
-  const result = ts.transpileModule(TYPESCRIPT_SOURCE, {
-    fileName: FILE_NAME,
-    reportDiagnostics: true,
-    compilerOptions: {
-      target: ts.ScriptTarget.ES2020,
-      module: ts.ModuleKind.ESNext,
-      strict: true,
-    },
-  });
-
-  const diagnostics = result.diagnostics ?? [];
-
+function getAnsiFormattingOutput(): ConsoleStdoutEntry[] {
   return [
-    { id: "command", data: "$ npx tsc index.ts" },
-    ...(diagnostics.length
-      ? [
-          {
-            id: "diagnostics",
-            data: ts.formatDiagnosticsWithColorAndContext(
-              diagnostics,
-              diagnosticHost,
-            ),
-            stream: "stderr" as const,
-          },
-        ]
-      : [{ id: "success", data: "TypeScript compiled successfully." }]),
+    {
+      id: "styles",
+      data: [
+        `${ESC}1mBold${ESC}0m`,
+        `${ESC}2mDim${ESC}0m`,
+        `${ESC}3mItalic${ESC}0m`,
+        `${ESC}4mUnderline${ESC}0m`,
+      ].join("  "),
+    },
+    {
+      id: "standard-colors",
+      data: [
+        `${ESC}31mRed${ESC}0m`,
+        `${ESC}32mGreen${ESC}0m`,
+        `${ESC}33mYellow${ESC}0m`,
+        `${ESC}34mBlue${ESC}0m`,
+        `${ESC}35mMagenta${ESC}0m`,
+        `${ESC}36mCyan${ESC}0m`,
+      ].join("  "),
+    },
+    {
+      id: "bright-colors",
+      data: [
+        `${ESC}91mBright red${ESC}0m`,
+        `${ESC}92mBright green${ESC}0m`,
+        `${ESC}94mBright blue${ESC}0m`,
+      ].join("  "),
+    },
+    {
+      id: "256-color",
+      data: `${ESC}38;5;39m256-color foreground${ESC}0m  ${ESC}48;5;236mBackground color${ESC}0m`,
+    },
+    {
+      id: "plain",
+      data: "Plain output remains unchanged.",
+    },
   ];
 }
 
@@ -118,8 +106,8 @@ function getScenarioOutput(scenario: TerminalScenario): ConsoleStdoutEntry[] {
   switch (scenario) {
     case "build":
       return getBuildOutput();
-    case "compile-error":
-      return getCompileErrorOutput();
+    case "ansi-formatting":
+      return getAnsiFormattingOutput();
     case "dev-server":
     default:
       return getDevServerOutput();
@@ -129,7 +117,7 @@ function getScenarioOutput(scenario: TerminalScenario): ConsoleStdoutEntry[] {
 const scenarioLabels: Record<TerminalScenario, string> = {
   "dev-server": "Dev server",
   build: "Build",
-  "compile-error": "Compile error",
+  "ansi-formatting": "ANSI formatting",
 };
 
 export default function TerminalExample() {
@@ -151,13 +139,6 @@ export default function TerminalExample() {
         ))}
       </div>
 
-      {scenario === "compile-error" && (
-        <section className="controls-card">
-          <h2>TypeScript source</h2>
-          <pre className="transport-output">{TYPESCRIPT_SOURCE}</pre>
-        </section>
-      )}
-
       <Console
         mode="ansi"
         title="Terminal"
@@ -166,7 +147,7 @@ export default function TerminalExample() {
             ? "Dev server process output"
             : scenario === "build"
               ? "Build output with optional stream metadata"
-              : "TypeScript compiler diagnostics"
+              : "ANSI styles and colors"
         }
         messages={messages}
       />
