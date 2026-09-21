@@ -444,14 +444,14 @@ The host application owns min/max dimensions. The library only applies the reque
 
 ### Structured-mode props
 
-| Prop               | Purpose                                            |
-| ------------------ | -------------------------------------------------- |
-| `messages`         | Structured messages to render                      |
-| `output`           | Alternative `RunOutput` source                     |
-| `error`            | Appends a synthetic `error` message                |
-| `filter`           | Predicate that controls which messages are visible |
-| `onMessagesChange` | Observes the source message list                   |
-| `messageRenderers` | Override rendering for matching messages           |
+| Prop               | Purpose                                               |
+| ------------------ | ----------------------------------------------------- |
+| `messages`         | Structured messages to render                         |
+| `output`           | Alternative `RunOutput` source                        |
+| `error`            | Appends a synthetic `error` message                   |
+| `filter`           | Predicate that controls which messages are visible    |
+| `onMessagesChange` | Observes the source message list                      |
+| `messageRenderers` | Override rendering for matching messages              |
 | `messageActions`   | Add actions that receive the selected message context |
 
 ### ANSI-mode props
@@ -484,11 +484,11 @@ as scrollbars and native controls. The three public inputs are separate because
 the default panel chrome is light while the output surface and context menu are
 dark:
 
-| Variable | Default | Applies to |
-| --- | --- | --- |
-| `--console-panel-color-scheme` | `light` | Panel chrome and header actions |
-| `--console-color-scheme` | `dark` | Structured/ANSI output surface |
-| `--console-context-menu-color-scheme` | falls back to `--console-color-scheme` | Right-click menu |
+| Variable                              | Default                                | Applies to                      |
+| ------------------------------------- | -------------------------------------- | ------------------------------- |
+| `--console-panel-color-scheme`        | `light`                                | Panel chrome and header actions |
+| `--console-color-scheme`              | `dark`                                 | Structured/ANSI output surface  |
+| `--console-context-menu-color-scheme` | falls back to `--console-color-scheme` | Right-click menu                |
 
 `color-scheme` tells the browser how to render native UI; it does not
 automatically recolor the library's custom surfaces. Set the corresponding
@@ -496,16 +496,16 @@ color variables when creating a light or dark theme.
 
 ### Common theme variables
 
-| Area | Variables |
-| --- | --- |
-| Panel chrome | `--console-panel-background`, `--console-panel-foreground`, `--console-panel-muted`, `--console-panel-border`, `--console-panel-header-background`, `--console-panel-header-border` |
-| Panel controls | `--console-panel-control-background`, `--console-panel-control-border`, `--console-panel-control-foreground`, `--console-panel-control-hover-background`, `--console-panel-control-hover-foreground`, `--console-panel-control-hover-border` |
-| Output surface | `--console-background`, `--console-foreground`, `--console-border`, `--console-muted`, `--console-subtle` |
-| Message states | `--console-info`, `--console-debug`, `--console-warning-background`, `--console-warning-foreground`, `--console-error-background`, `--console-error-foreground` |
-| Values | `--console-string`, `--console-number`, `--console-null`, `--console-symbol`, `--console-circular`, `--console-property-key`, `--console-object-property-key` |
-| Icons | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background` |
-| Context menu | `--console-context-menu-background`, `--console-context-menu-foreground`, `--console-context-menu-border`, `--console-context-menu-hover`, `--console-context-menu-hover-foreground`, `--console-context-menu-icon`, `--console-context-menu-danger`, `--console-context-menu-radius`, `--console-context-menu-shadow` |
-| Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height` |
+| Area              | Variables                                                                                                                                                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Panel chrome      | `--console-panel-background`, `--console-panel-foreground`, `--console-panel-muted`, `--console-panel-border`, `--console-panel-header-background`, `--console-panel-header-border`                                                                                                                                    |
+| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border`, `--console-panel-control-foreground`, `--console-panel-control-hover-background`, `--console-panel-control-hover-foreground`, `--console-panel-control-hover-border`                                                                           |
+| Output surface    | `--console-background`, `--console-foreground`, `--console-border`, `--console-muted`, `--console-subtle`                                                                                                                                                                                                              |
+| Message states    | `--console-info`, `--console-debug`, `--console-warning-background`, `--console-warning-foreground`, `--console-error-background`, `--console-error-foreground`                                                                                                                                                        |
+| Values            | `--console-string`, `--console-number`, `--console-null`, `--console-symbol`, `--console-circular`, `--console-property-key`, `--console-object-property-key`                                                                                                                                                          |
+| Icons             | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background`                                                                                                               |
+| Context menu      | `--console-context-menu-background`, `--console-context-menu-foreground`, `--console-context-menu-border`, `--console-context-menu-hover`, `--console-context-menu-hover-foreground`, `--console-context-menu-icon`, `--console-context-menu-danger`, `--console-context-menu-radius`, `--console-context-menu-shadow` |
+| Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height`                                                                                                                                                                                         |
 
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
 explicit public hover variable completely replaces the derived value, so themes
@@ -591,7 +591,11 @@ const messageActions: ConsoleMessageAction[] = [
   },
 ];
 
-export function RuntimeConsole({ messages }: { messages: ConsoleMessageData[] }) {
+export function RuntimeConsole({
+  messages,
+}: {
+  messages: ConsoleMessageData[];
+}) {
   return (
     <Console
       messages={messages}
