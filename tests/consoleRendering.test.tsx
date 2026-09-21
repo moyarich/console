@@ -156,9 +156,7 @@ describe("Console rendering", () => {
   });
 
   it("resets ANSI styles", () => {
-    const segments = parseAnsi(
-      "\\u001b[31mred\\u001b[0mplain",
-    );
+    const segments = parseAnsi("\\u001b[31mred\\u001b[0mplain");
 
     expect(segments[0]).toMatchObject({
       text: "red",
