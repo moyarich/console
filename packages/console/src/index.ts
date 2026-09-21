@@ -31,7 +31,6 @@ export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
 export { captureConsole } from "./utils/captureConsole";
 export { createConsoleEventEmitter } from "./utils/createConsoleEventEmitter";
-export { createConsoleEventHandler } from "./utils/createConsoleEventHandler";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
@@ -67,6 +66,5 @@ export type {
   RunOutput,
   DirOptions,
   ConsoleEvent,
-  ConsoleEventHandler,
   ConsoleTransportEnvelope,
 } from "./types";
