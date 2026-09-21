@@ -9,11 +9,17 @@ import {
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
+  /** Value to render. */
   value: unknown;
+  /** Initial recursive object-expansion depth. */
   expandLevel?: number;
+  /** Ancestor objects used internally for circular-reference detection. */
   ancestors?: ReadonlySet<object>;
+  /** Property name associated with a nested value. */
   propertyKey?: string;
+  /** Changing this token forces expandable descendants open. */
   expandAllVersion?: number;
+  /** Ordered custom value renderers. */
   renderers?: readonly ConsoleValueRenderer[];
 }
 
