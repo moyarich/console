@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+if [ ! -x node_modules/.bin/lint-staged ]; then
+  echo "Pre-commit tools are not installed."
+  echo "Run: npm install"
+  echo "Then: npm run hooks:install"
+  echo "Or bypass once with: git commit --no-verify"
+  exit 1
+fi
+
+npx --no-install lint-staged

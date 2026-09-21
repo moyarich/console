@@ -1,22 +1,45 @@
 # @moyarich/console
 
-A reusable React console UI for rendering, capturing, and transporting browser-style console output.
+A React console and ANSI process-output UI for embedded developer tools, browser runtimes, and code execution experiences.
 
-Use it to build embedded developer consoles, playgrounds, code runners, iframe previews, diagnostic panels, and other tools that need structured `console.*` output.
+Render structured browser-style `console.*` messages and terminal-style ANSI output through one component. Capture output from the current page or sandboxed code, inspect rich JavaScript values, and move console events across iframe or WebSocket boundaries.
+
+## Use cases
+
+- embedded developer consoles and debugging panels
+- code playgrounds, code runners, and sandboxes
+- browser and iframe preview logs
+- remote runtime stdout/stderr viewers
+- diagnostic, support, and log-inspection tools
 
 ## Features
 
-- React console UI with expandable objects and arrays
-- `console.table()` rendering
-- groups and collapsed groups
+### Rendering and inspection
+
+- structured `console.*` rendering with expandable objects, arrays, maps, and sets
+- `console.table()`, groups, collapsed groups, traces, timers, counts, and assertions
+- ANSI-aware process output powered by `anser`
+- standard/bright ANSI colors, 256-color, truecolor, and text decorations
+- optional strict-JSON promotion into the structured object inspector
+- smart auto-scroll, filtering, reset, message deduplication, and resizable layouts
+- native ellipsis action popover and copy-output support
+
+### Capture and transport
+
 - page-level `console.*` capture
 - console proxy for evaluated or sandboxed code
+- controlled message state through `useConsoleMessages()`
 - event-based message fan-out
 - iframe transport through `postMessage`
 - WebSocket transport support
-- JSON-safe serialization for transported values
-- controlled message state through `useConsoleMessages()`
-- TypeScript types
+- JSON-safe serialization and restoration for rich JavaScript values
+
+### Package
+
+- React 18+ peer support
+- TypeScript declarations
+- ESM and CommonJS builds
+- separately exported package styles
 
 ## Requirements
 
@@ -77,6 +100,98 @@ export function AppConsole() {
 ```
 
 `Console` can also consume the playground-style `output={{ messages, error }}` shape.
+
+## Console controls
+
+`Console` supports smart auto-scroll, filtering, custom actions, optional header controls, and a message-change callback. Header actions are placed behind a native ellipsis popover so they do not compete with the title or subtitle:
+
+```tsx
+<Console
+  messages={messages}
+  onClear={clear}
+  filter={(message) => message.method !== "debug"}
+  resizable="vertical"
+  style={{ minHeight: 240, maxHeight: 720 }}
+  autoScroll
+  showHeader
+  showClearButton
+  actions={<button onClick={() => exportLogs(messages)}>Export</button>}
+  onMessagesChange={(nextMessages) => saveLogs(nextMessages)}
+/>
+```
+
+Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
+
+Set `resizable` to a resize direction: `"vertical"`, `"horizontal"`, `"both"`, `"block"`, or `"inline"`. The library does not impose resize-specific min/max dimensions; the host layout owns those through `style`, `className`, or its surrounding layout. The inner output surface flexes with the resized panel, so both structured and ANSI modes remain scrollable.
+
+`useConsoleMessages()` deduplicates repeated messages with the same `id` by default. Set `dedupeById: false` to preserve duplicates. Use `resetKey` to clear the stream when a runtime or session identity changes. Calling `clear()` or receiving a `clear` event empties the message list without adding a marker message:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  resetKey: sessionId,
+  dedupeById: true,
+});
+```
+
+## Console modes
+
+`Console` renders one of two message shapes through the same component:
+
+- `mode="console"` (the default) accepts `ConsoleMessageData[]`
+- `mode="ansi"` accepts strings or `{ id?, data, stream? }` process-output
+  entries and renders ANSI escape sequences with `anser`; `stream` is optional
+  and may be `"stdout"` or `"stderr"`
+
+Structured console output:
+
+```tsx
+<Console
+  mode="console"
+  messages={[{ method: "log", data: ["Hello", { ready: true }], depth: 0 }]}
+/>
+```
+
+ANSI/process output:
+
+```tsx
+const messages = [
+  { id: "1", data: "\\u001b[32mServer ready\\u001b[0m" },
+  {
+    id: "2",
+    data: "\\u001b[31mConnection failed\\u001b[0m",
+    stream: "stderr",
+  },
+  {
+    id: "3",
+    data: '{"request":{"method":"GET","status":200}}',
+  },
+];
+
+<Console mode="ansi" messages={messages} parseStructuredOutput />;
+```
+
+Set `parseStructuredOutput` to promote complete strict-JSON object or array
+entries into the same expandable inspector used by structured console output.
+ANSI codes may wrap the JSON because Anser's plain-text conversion is used
+before `JSON.parse()`. JavaScript-like inspection strings such as
+`{ name: 'Ada' }` remain terminal text.
+
+The ANSI renderer uses Anser's JSON token output rather than injecting generated
+HTML. Supported SGR styling includes standard and bright colors, 256-color and
+24-bit truecolor, bold, dim, italic, underline, reverse, hidden, and
+strikethrough. Carriage-return metadata is exposed on rendered output.
+Cursor-movement sequences are not emulated; ANSI mode is a process-output
+viewer, not a full terminal emulator.
+
+`stream` is metadata about the process channel, not a console method. A
+`stderr` entry is not treated as `console.error()`.
+
+The ANSI actions menu includes **Copy output**. `ConsoleStdout` remains
+available as the lower-level ANSI list renderer when the surrounding Console
+panel UI is not needed.
+
+If an application wants tabs, panes, or a restart button, those controls belong
+to the application around `Console`.
 
 ## Capture the current page
 
@@ -330,13 +445,14 @@ A clear operation is represented by:
 }
 ```
 
-Values are normalized before transport so values such as `BigInt`, functions, symbols, `undefined`, errors, dates, regular expressions, and circular references do not break JSON serialization.
+Values are normalized before transport and restored on receipt. The transport preserves `undefined`, bigint, symbols, function placeholders, `NaN`, infinities, `-0`, errors, dates, regular expressions, maps, sets, ArrayBuffers, typed arrays, DOM elements, and NodeLists. Circular references are represented safely without breaking JSON serialization.
 
 ## Main exports
 
 | Export                         | Purpose                                                         |
 | ------------------------------ | --------------------------------------------------------------- |
-| `Console`                      | Render console messages                                         |
+| `Console`                      | Render structured console messages or ANSI stdout by mode       |
+| `ConsoleStdout`                | Lower-level ANSI-aware stdout list renderer                     |
 | `useConsoleMessages`           | Manage console message state and optional page capture          |
 | `capturePageConsole`           | Capture calls from a console object                             |
 | `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |
@@ -344,6 +460,7 @@ Values are normalized before transport so values such as `BigInt`, functions, sy
 | `listenForConsolePostMessages` | Receive console transport events through `postMessage`          |
 | `listenForConsoleWebSocket`    | Receive console transport events through a WebSocket            |
 | `serializeConsoleEvent`        | Convert an event into a transport-safe representation           |
+| `deserializeConsoleEvent`      | Restore transported console values on receipt                   |
 | `CONSOLE_TRANSPORT_TYPE`       | Transport envelope type                                         |
 | `CONSOLE_TRANSPORT_VERSION`    | Transport protocol version                                      |
 

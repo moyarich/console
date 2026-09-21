@@ -19,7 +19,8 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
@@ -39,6 +40,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.12.0",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.8",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -47,5 +49,31 @@
     "typescript-eslint": "^8.70.0",
     "vite": "^7.1.5",
     "vitest": "^4.1.11"
-  }
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,css,md,html,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "description": "Workspace for @moyarich/console, a React console and ANSI process-output UI for embedded developer tools.",
+  "keywords": [
+    "react",
+    "console",
+    "console-ui",
+    "developer-tools",
+    "devtools",
+    "ansi",
+    "stdout",
+    "stderr",
+    "log-viewer",
+    "code-playground",
+    "code-runner",
+    "iframe",
+    "websocket",
+    "typescript"
+  ]
 }

@@ -74,18 +74,24 @@ The package is intentionally split into a few responsibilities.
 
 ### Rendering
 
-The React components render normalized `ConsoleMessageData` values.
+`Console` has two rendering modes:
+
+- `mode="console"` renders normalized `ConsoleMessageData` values
+- `mode="ansi"` renders process-output entries with ANSI styling through `anser`
+
+`ConsoleStdout` is the lower-level ANSI list renderer used when the surrounding console panel UI is not needed. ANSI mode is a process-output viewer, not a terminal emulator; application-specific shells, tabs, restart controls, and runtime orchestration belong outside the package.
 
 Key files include:
 
 ```text
 packages/console/src/components/Console.tsx
+packages/console/src/components/ConsoleStdout.tsx
 packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
 ```
 
-Rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket.
+Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
 
 ### Message state
 
@@ -202,16 +208,17 @@ Serialization protects transport boundaries from values JSON cannot represent sa
 
 Regression coverage should include:
 
-- `BigInt`
-- `undefined`
-- functions
-- symbols
-- errors
-- dates
-- regular expressions
+- `BigInt` and `undefined`
+- functions and symbols
+- `NaN`, infinities, and negative zero
+- errors, dates, and regular expressions
+- maps and sets
+- ArrayBuffers, DataViews, and typed arrays
+- DOM elements and NodeLists
 - circular references
 - repeated non-circular references
 - objects with throwing getters/string conversion
+- serialize/deserialize round trips across postMessage and WebSocket listeners
 
 ## Console methods
 
@@ -238,21 +245,56 @@ The playground is the primary interactive development surface.
 npm run dev
 ```
 
-Examples live under:
+Examples use numbered directories as the source of truth for grouping and order:
 
 ```text
 apps/playground/src/examples/
+  00-ansi/
+    01-terminal/
+      example.tsx
+      index.tsx
+      meta.json
+    02-typescript-compile-error/
+      ...
+  05-console-methods/
+    01-console-log/
+      ...
+    13-console-group-collapsed/
+      ...
+  30-transports/
+    01-iframe/
+      ...
+  40-events/
+    01-console-event/
+      ...
+  50-additional-usage/
+    07-plain-messages/
+      ...
 ```
 
-Each example should focus on one public usage pattern or console behavior.
+The numeric prefix on a group directory controls group order. The numeric prefix on an example directory controls order within that group. The suffix after the prefix becomes the runtime `groupId` or example `id`. Group display labels are derived from the group ID with `change-case` `sentenceCase()`.
 
-When adding an example:
+`meta.json` contains display metadata only:
 
-1. add its example files
-2. give it the correct example group metadata
-3. register it in the examples index
-4. keep example code representative of the public package API
-5. avoid depending on private implementation details
+```json
+{
+  "label": "console.log",
+  "description": "Capture and render a standard console.log message."
+}
+```
+
+The examples index auto-discovers `NN-group/NN-example` directories, so examples do not need manual registration and ordering must not be duplicated in metadata.
+
+When adding or reordering an example:
+
+1. place it under the appropriate numbered group directory
+2. use an `NN-example-name` directory prefix for its order
+3. include `example.tsx`, `index.tsx`, and `meta.json`
+4. change numeric prefixes to reorder groups or examples
+5. keep example code representative of the public package API
+6. avoid depending on private implementation details
+
+Renaming only a numeric prefix changes order without changing the example `id`. Changing the suffix changes the derived `id`, so suffixes should remain stable unless an ID change is intentional.
 
 ## Storybook
 
@@ -292,6 +334,32 @@ Useful test areas include:
 Prefer regression tests when fixing a bug.
 
 ## Formatting and linting
+
+The repository includes a tracked pre-commit hook backed by `lint-staged`. Hook installation is explicit so `npm install` does not silently change a contributor's Git configuration.
+
+After installing dependencies, enable the tracked hooks once:
+
+```bash
+npm run hooks:install
+```
+
+The pre-commit hook runs only against staged files:
+
+- Prettier formats supported staged source, config, style, and documentation files
+- ESLint runs with `--fix` on staged JavaScript and TypeScript files
+- `lint-staged` protects partially staged files while tasks modify the working tree
+- files fixed by the tools are included in the staged result
+- the commit is blocked when a task still fails
+
+The hook is intentionally limited to fast staged-file formatting and linting. The full repository validation remains CI's responsibility. Typechecking, tests, builds, Storybook, and package validation do not run in pre-commit.
+
+If the local hook must be bypassed once:
+
+```bash
+git commit --no-verify
+```
+
+CI still enforces the repository checks before merge.
 
 Before committing documentation or code changes:
 
@@ -344,6 +412,19 @@ import "@moyarich/console/styles.css";
 ```
 
 React and React DOM are peer dependencies and currently require version 18 or newer.
+
+## Package metadata
+
+Keep the public metadata in `packages/console/package.json` aligned with the actual library surface.
+
+When capabilities change, review:
+
+- `description` for a concise statement of the package's current purpose
+- `keywords` for relevant discovery terms without claiming unsupported behavior
+- `repository`, `bugs`, and `homepage` links
+- the root README, which is copied into the package during `npm pack` / `npm publish`
+
+The package should describe ANSI support as process-output rendering rather than as a full terminal emulator.
 
 ## Publishing
 

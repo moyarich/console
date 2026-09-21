@@ -1,28 +1,25 @@
+import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
 
-export const CONSOLE_EXAMPLE_GROUPS = [
-  { id: "getting-started", label: "Getting started" },
-  { id: "events", label: "Events" },
-  { id: "console-methods", label: "Console methods" },
-  { id: "transports", label: "Transports" },
-] as const;
+export type ConsoleExampleGroupId = string;
 
-export type ConsoleExampleGroupId =
-  (typeof CONSOLE_EXAMPLE_GROUPS)[number]["id"];
-
-export const DEFAULT_CONSOLE_EXAMPLE_GROUP_ID: ConsoleExampleGroupId =
-  "console-methods";
+export interface ConsoleExampleGroup {
+  id: ConsoleExampleGroupId;
+  label: string;
+  order: number;
+  directory: string;
+}
 
 export interface ConsoleExampleMeta {
-  id: string;
   label: string;
   description: string;
-  order: number;
-  groupId?: ConsoleExampleGroupId;
 }
 
 export interface ConsoleExample extends ConsoleExampleMeta {
+  id: string;
   groupId: ConsoleExampleGroupId;
+  groupOrder: number;
+  order: number;
   exampleSource: string;
   Component: ComponentType;
 }
@@ -31,51 +28,133 @@ interface ConsoleExampleModule {
   default: ComponentType;
 }
 
-const playgroundModules = import.meta.glob("./*/source.tsx", {
+interface OrderedDirectory {
+  directory: string;
+  id: string;
+  order: number;
+}
+
+const ORDERED_DIRECTORY_PATTERN = /^(\d+)-(.+)$/;
+
+function parseOrderedDirectory(
+  directory: string,
+  kind: "group" | "example",
+): OrderedDirectory {
+  const match = ORDERED_DIRECTORY_PATTERN.exec(directory);
+
+  if (!match) {
+    throw new Error(
+      `Invalid ${kind} directory "${directory}". Expected NN-name.`,
+    );
+  }
+
+  return {
+    directory,
+    order: Number(match[1]),
+    id: match[2]!,
+  };
+}
+
+function parseExamplePath(path: string) {
+  const parts = path.replace(/^\.\//, "").split("/");
+
+  if (parts.length !== 3) {
+    throw new Error(
+      `Invalid example path "${path}". Expected ./NN-group/NN-example/meta.json.`,
+    );
+  }
+
+  const [groupDirectory, exampleDirectory] = parts;
+
+  return {
+    group: parseOrderedDirectory(groupDirectory!, "group"),
+    example: parseOrderedDirectory(exampleDirectory!, "example"),
+  };
+}
+
+const playgroundModules = import.meta.glob("./*/*/index.tsx", {
   eager: true,
 }) as Record<string, ConsoleExampleModule>;
 
-const exampleSourceModules = import.meta.glob("./*/example.tsx", {
+const exampleSourceModules = import.meta.glob("./*/*/example.tsx", {
   query: "?raw",
   import: "default",
   eager: true,
 }) as Record<string, string>;
 
-const metadataModules = import.meta.glob("./*/meta.json", {
+const metadataModules = import.meta.glob("./*/*/meta.json", {
   import: "default",
   eager: true,
 }) as Record<string, ConsoleExampleMeta>;
 
-export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = Object.entries(
-  metadataModules,
-)
-  .map(([path, metadata]) => {
-    const id = path.split("/").at(-2)!;
-    const playgroundPath = "./" + id + "/source.tsx";
-    const examplePath = "./" + id + "/example.tsx";
+const discoveredExamples = Object.entries(metadataModules).map(
+  ([path, metadata]) => ({
+    path,
+    metadata,
+    ...parseExamplePath(path),
+  }),
+);
+
+const groupsById = new Map<ConsoleExampleGroupId, ConsoleExampleGroup>();
+
+for (const { group } of discoveredExamples) {
+  const existing = groupsById.get(group.id);
+
+  if (existing && existing.order !== group.order) {
+    throw new Error(
+      `Example group "${group.id}" uses multiple numeric prefixes.`,
+    );
+  }
+
+  groupsById.set(group.id, {
+    id: group.id,
+    label: sentenceCase(group.id),
+    order: group.order,
+    directory: group.directory,
+  });
+}
+
+export const CONSOLE_EXAMPLE_GROUPS: readonly ConsoleExampleGroup[] =
+  Array.from(groupsById.values()).sort(
+    (left, right) =>
+      left.order - right.order || left.id.localeCompare(right.id),
+  );
+
+export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
+  .map(({ metadata, group, example }) => {
+    const playgroundPath = `./${group.directory}/${example.directory}/index.tsx`;
+    const examplePath = `./${group.directory}/${example.directory}/example.tsx`;
     const playgroundModule = playgroundModules[playgroundPath];
     const exampleSource = exampleSourceModules[examplePath];
 
     if (!playgroundModule) {
-      throw new Error("Missing source.tsx playground harness: " + id);
+      throw new Error(
+        `Missing index.tsx playground harness: ${group.directory}/${example.directory}`,
+      );
     }
 
     if (!exampleSource) {
-      throw new Error("Missing example.tsx consumer example: " + id);
-    }
-
-    if (metadata.id !== id) {
-      throw new Error("Console example metadata id mismatch: " + id);
+      throw new Error(
+        `Missing example.tsx consumer example: ${group.directory}/${example.directory}`,
+      );
     }
 
     return {
       ...metadata,
-      groupId: metadata.groupId ?? DEFAULT_CONSOLE_EXAMPLE_GROUP_ID,
+      id: example.id,
+      groupId: group.id,
+      groupOrder: group.order,
+      order: example.order,
       exampleSource,
       Component: playgroundModule.default,
     };
   })
-  .sort((a, b) => a.order - b.order);
+  .sort(
+    (left, right) =>
+      left.groupOrder - right.groupOrder ||
+      left.order - right.order ||
+      left.id.localeCompare(right.id),
+  );
 
 export const DEFAULT_CONSOLE_EXAMPLE =
   CONSOLE_EXAMPLES.find((example) => example.id === "current-page") ??

@@ -64,11 +64,6 @@ export function App() {
               <p>{example.description}</p>
               <code>{example.id}</code>
             </div>
-
-            <div className="sidebar-note">
-              Edit the source, click Run, and copy the same example into a React
-              app when you are ready.
-            </div>
           </aside>
 
           <RunnableExample example={example} />
