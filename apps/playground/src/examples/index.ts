@@ -22,6 +22,7 @@ export interface ConsoleExampleMeta {
 }
 
 export interface ConsoleExample extends ConsoleExampleMeta {
+  groupId: ConsoleExampleGroupId;
   exampleSource: string;
   Component: ComponentType;
 }
@@ -69,6 +70,7 @@ export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = Object.entries(
 
     return {
       ...metadata,
+      groupId: metadata.groupId ?? DEFAULT_CONSOLE_EXAMPLE_GROUP_ID,
       exampleSource,
       Component: playgroundModule.default,
     };
