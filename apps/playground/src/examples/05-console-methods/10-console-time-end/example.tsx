@@ -9,7 +9,11 @@ const messages: ConsoleMessageData[] = [];
 let elapsedMs = 0;
 
 const exampleConsole = createConsoleProxy({
-  messages,
+  onEvent(event) {
+    if (event.type === "message") {
+      messages.push(event.message);
+    }
+  },
   timerNow: () => elapsedMs,
 });
 
