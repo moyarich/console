@@ -1,0 +1,7 @@
+{
+  "id": "ansi-stdout",
+  "label": "ANSI stdout",
+  "description": "Render ANSI-styled stdout with bold, standard colors, 256-color output, and reset sequences.",
+  "order": 5,
+  "groupId": "getting-started"
+}
