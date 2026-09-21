@@ -4,9 +4,13 @@ import { createConsoleProxy } from "./createConsoleProxy";
 
 /** Options for temporarily intercepting an existing Console object. */
 export interface CaptureConsoleOptions {
+  /** Event bus that receives captured message and clear events. */
   events: ConsoleEventEmitter;
+  /** Console object to patch. Defaults to `globalThis.console`. */
   consoleTarget?: Console;
+  /** Whether captured calls should also invoke the original method. @default true */
   passThrough?: boolean;
+  /** Source metadata attached to emitted messages. @default "page" */
   source?: string;
 }
 
