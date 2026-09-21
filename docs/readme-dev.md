@@ -52,21 +52,21 @@ npm install --include=optional
 
 ## Common commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Run the playground |
-| `npm test` | Run the Vitest suite once |
-| `npm run test:watch` | Run Vitest in watch mode |
-| `npm run typecheck` | Typecheck workspaces and tests |
-| `npm run lint` | Run ESLint with zero warnings allowed |
-| `npm run lint:fix` | Run ESLint with automatic fixes |
-| `npm run format` | Format the repository with Prettier |
-| `npm run format:check` | Verify Prettier formatting |
-| `npm run build` | Build the package and playground |
-| `npm run build:package` | Build only `@moyarich/console` |
-| `npm run build:playground` | Build only the playground |
-| `npm run storybook` | Run Storybook on port 6006 |
-| `npm run build-storybook` | Build static Storybook output |
+| Command                    | Purpose                               |
+| -------------------------- | ------------------------------------- |
+| `npm run dev`              | Run the playground                    |
+| `npm test`                 | Run the Vitest suite once             |
+| `npm run test:watch`       | Run Vitest in watch mode              |
+| `npm run typecheck`        | Typecheck workspaces and tests        |
+| `npm run lint`             | Run ESLint with zero warnings allowed |
+| `npm run lint:fix`         | Run ESLint with automatic fixes       |
+| `npm run format`           | Format the repository with Prettier   |
+| `npm run format:check`     | Verify Prettier formatting            |
+| `npm run build`            | Build the package and playground      |
+| `npm run build:package`    | Build only `@moyarich/console`        |
+| `npm run build:playground` | Build only the playground             |
+| `npm run storybook`        | Run Storybook on port 6006            |
+| `npm run build-storybook`  | Build static Storybook output         |
 
 ## Package architecture
 
