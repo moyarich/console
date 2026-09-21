@@ -3,15 +3,11 @@ import {
   getConsoleMessageMethod,
   isDirectConsoleMethod,
 } from "../consoleMethods";
-import type {
-  ConsoleEventHandler,
-  ConsoleMessageData,
-  ConsoleMethod,
-  DirOptions,
-} from "../types";
+import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
+import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 
 export interface CreateConsoleProxyOptions {
-  onEvent?: ConsoleEventHandler;
+  events?: ConsoleEventEmitter;
   source?: string;
   now?: () => number;
   timerNow?: () => number;
@@ -23,7 +19,7 @@ const defaultTimerNow = () =>
     : Date.now();
 
 export function createConsoleProxy({
-  onEvent,
+  events,
   source,
   now = () => Date.now(),
   timerNow = defaultTimerNow,
@@ -46,11 +42,11 @@ export function createConsoleProxy({
       ...extra,
     };
 
-    onEvent?.({ type: "message", message });
+    events?.emit("message", message);
   };
 
   const clearMessages = () => {
-    onEvent?.({ type: "clear" });
+    events?.emit("clear");
   };
 
   const getElapsedTime = (label: string) => {
