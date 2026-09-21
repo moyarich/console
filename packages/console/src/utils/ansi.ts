@@ -58,11 +58,12 @@ function applyColor(
 
   if (
     mode === 2 &&
-    [codes[index + 2], codes[index + 3], codes[index + 4]].every(
-      (value) => Number.isInteger(value),
+    [codes[index + 2], codes[index + 3], codes[index + 4]].every((value) =>
+      Number.isInteger(value),
     )
   ) {
-    style[property] = `rgb(${codes[index + 2]} ${codes[index + 3]} ${codes[index + 4]})`;
+    style[property] =
+      `rgb(${codes[index + 2]} ${codes[index + 3]} ${codes[index + 4]})`;
     return index + 4;
   }
 

@@ -1,8 +1,4 @@
-import {
-  RotateCcw,
-  SquareTerminal,
-  Trash2,
-} from "lucide-react";
+import { RotateCcw, SquareTerminal, Trash2 } from "lucide-react";
 import {
   forwardRef,
   useCallback,
@@ -17,10 +13,7 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
-import {
-  ConsoleStdout,
-  type ConsoleStdoutEntry,
-} from "./ConsoleStdout";
+import { ConsoleStdout, type ConsoleStdoutEntry } from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
 export type ConsoleMessageFilter = (
@@ -208,14 +201,11 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     });
   };
 
-  const shouldShowViewTabs =
-    hasStdoutView && (showViewTabs ?? true);
+  const shouldShowViewTabs = hasStdoutView && (showViewTabs ?? true);
   const showRestart =
     showRestartButton && Boolean(onRestart) && view === "stdout";
   const showActions =
-    actions ||
-    showRestart ||
-    (showClearButton && canClearActive);
+    actions || showRestart || (showClearButton && canClearActive);
 
   return (
     <article
@@ -306,10 +296,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
           onScroll={handleScroll}
         >
           {view === "stdout" ? (
-            <ConsoleStdout
-              entries={stdout}
-              emptyMessage={stdoutEmptyMessage}
-            />
+            <ConsoleStdout entries={stdout} emptyMessage={stdoutEmptyMessage} />
           ) : isEmpty ? (
             <div className="console-empty">
               <SquareTerminal

@@ -82,17 +82,13 @@ export function AppConsole() {
 
 `Console` can also consume the playground-style `output={{ messages, error }}` shape.
 
-
 ## Console controls
 
 `Console` supports smart auto-scroll, filtering, custom header actions, optional header controls, a message-change callback, and an imperative reset ref:
 
 ```tsx
 import { useRef } from "react";
-import {
-  Console,
-  type ConsoleRef,
-} from "@moyarich/console";
+import { Console, type ConsoleRef } from "@moyarich/console";
 
 const consoleRef = useRef<ConsoleRef>(null);
 
@@ -121,7 +117,6 @@ const { messages, clear } = useConsoleMessages({
   dedupeById: true,
 });
 ```
-
 
 ## Stdout and ANSI output
 
@@ -426,7 +421,7 @@ Values are normalized before transport and restored on receipt. The transport pr
 | `listenForConsolePostMessages` | Receive console transport events through `postMessage`          |
 | `listenForConsoleWebSocket`    | Receive console transport events through a WebSocket            |
 | `serializeConsoleEvent`        | Convert an event into a transport-safe representation           |
-| `deserializeConsoleEvent`      | Restore transported console values on receipt                    |
+| `deserializeConsoleEvent`      | Restore transported console values on receipt                   |
 | `CONSOLE_TRANSPORT_TYPE`       | Transport envelope type                                         |
 | `CONSOLE_TRANSPORT_VERSION`    | Transport protocol version                                      |
 
