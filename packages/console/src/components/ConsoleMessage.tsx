@@ -14,48 +14,48 @@ import {
 } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleValue } from "./ConsoleValue";
+import {
+  dispatchMessageRenderer,
+  type ConsoleMessageRenderer,
+  type ConsoleValueRenderer,
+} from "../renderers";
 import type { ConsoleMessageData } from "../types";
+
+const MESSAGE_ICONS: Partial<
+  Record<ConsoleMessageData["method"], LucideIcon>
+> = {
+  debug: Bug,
+  info: Info,
+  warn: TriangleAlert,
+  assert: TriangleAlert,
+  error: CircleX,
+  dir: Braces,
+  table: Table2,
+  count: Hash,
+  timeEnd: Timer,
+  trace: ListTree,
+  group: ChevronDown,
+  groupCollapsed: ChevronDown,
+};
 
 export interface ConsoleMessageProps {
   message: ConsoleMessageData;
+  index?: number;
+  messages?: readonly ConsoleMessageData[];
   expandAllVersion?: number;
   onExpandAll?: () => void;
+  renderers?: readonly ConsoleMessageRenderer[];
+  valueRenderers?: readonly ConsoleValueRenderer[];
 }
-function getMessageIcon(method: ConsoleMessageData["method"]): LucideIcon {
-  switch (method) {
-    case "debug":
-      return Bug;
-    case "info":
-      return Info;
-    case "warn":
-    case "assert":
-      return TriangleAlert;
-    case "error":
-      return CircleX;
-    case "dir":
-      return Braces;
-    case "table":
-      return Table2;
-    case "count":
-      return Hash;
-    case "timeEnd":
-      return Timer;
-    case "trace":
-      return ListTree;
-    case "group":
-    case "groupCollapsed":
-      return ChevronDown;
-    default:
-      return Terminal;
-  }
-}
-export function ConsoleMessage({
+
+function DefaultConsoleMessage({
   message,
   expandAllVersion,
   onExpandAll,
+  valueRenderers,
 }: ConsoleMessageProps) {
   const style = { paddingLeft: 14 + message.depth * 16 };
-  const MessageIcon = getMessageIcon(message.method);
+  const MessageIcon = MESSAGE_ICONS[message.method] ?? Terminal;
   const icon = onExpandAll ? (
     <button
       type="button"
@@ -71,7 +71,8 @@ export function ConsoleMessage({
       <MessageIcon size={14} strokeWidth={1.8} />
     </span>
   );
-  if (message.method === "table")
+
+  if (message.method === "table") {
     return (
       <div
         className="console-message console-message-table"
@@ -79,10 +80,16 @@ export function ConsoleMessage({
         style={style}
       >
         {icon}
-        <ConsoleTable data={message.data[0]} columns={message.columns} />
+        <ConsoleTable
+          data={message.data[0]}
+          columns={message.columns}
+          valueRenderers={valueRenderers}
+        />
       </div>
     );
-  if (message.method === "dir" && message.data.length === 1)
+  }
+
+  if (message.method === "dir" && message.data.length === 1) {
     return (
       <div
         className="console-message"
@@ -94,21 +101,55 @@ export function ConsoleMessage({
           value={message.data[0]}
           expandLevel={message.expandLevel ?? 1}
           expandAllVersion={expandAllVersion}
+          renderers={valueRenderers}
         />
       </div>
     );
+  }
+
   return (
     <div className="console-message" data-method={message.method} style={style}>
       {icon}
       <div className="console-values">
-        {message.data.map((value, index) => (
+        {message.data.map((value, valueIndex) => (
           <ConsoleValue
-            key={index}
+            key={valueIndex}
             value={value}
             expandAllVersion={expandAllVersion}
+            renderers={valueRenderers}
           />
         ))}
       </div>
     </div>
   );
+}
+
+export function ConsoleMessage({
+  message,
+  index = 0,
+  messages,
+  expandAllVersion,
+  onExpandAll,
+  renderers,
+  valueRenderers,
+}: ConsoleMessageProps) {
+  const sourceMessages = messages ?? [message];
+  const renderDefault = () => (
+    <DefaultConsoleMessage
+      message={message}
+      index={index}
+      messages={sourceMessages}
+      expandAllVersion={expandAllVersion}
+      onExpandAll={onExpandAll}
+      valueRenderers={valueRenderers}
+    />
+  );
+
+  const custom = dispatchMessageRenderer(renderers, message, {
+    index,
+    messages: sourceMessages,
+    renderDefault,
+  });
+
+  return custom === undefined ? renderDefault() : custom;
 }
