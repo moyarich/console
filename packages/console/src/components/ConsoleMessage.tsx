@@ -44,12 +44,19 @@ const MESSAGE_ICONS: MessageIconMap = {
 
 /** Props for rendering one structured console message. */
 export interface ConsoleMessageProps {
+  /** Message to render. */
   message: ConsoleMessageData;
+  /** Zero-based position in the visible message list. */
   index?: number;
+  /** Visible message list used by custom renderers and message actions. */
   messages?: readonly ConsoleMessageData[];
+  /** Token used to force expandable values in this message open. */
   expandAllVersion?: number;
+  /** Optional handler exposed through the message icon to expand all values. */
   onExpandAll?: () => void;
+  /** Ordered custom renderers for the complete message. */
   renderers?: readonly ConsoleMessageRenderer[];
+  /** Ordered custom renderers for values inside the message. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
