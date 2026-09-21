@@ -1,26 +1,45 @@
 # @moyarich/console
 
-A reusable React console UI for rendering, capturing, and transporting browser-style console output.
+A React console and ANSI process-output UI for embedded developer tools, browser runtimes, and code execution experiences.
 
-Use it to build embedded developer consoles, playgrounds, code runners, iframe previews, diagnostic panels, and other tools that need structured `console.*` output.
+Render structured browser-style `console.*` messages and terminal-style ANSI output through one component. Capture output from the current page or sandboxed code, inspect rich JavaScript values, and move console events across iframe or WebSocket boundaries.
+
+## Use cases
+
+- embedded developer consoles and debugging panels
+- code playgrounds, code runners, and sandboxes
+- browser and iframe preview logs
+- remote runtime stdout/stderr viewers
+- diagnostic, support, and log-inspection tools
 
 ## Features
 
-- React console UI with expandable objects and arrays
-- `console.table()` rendering
-- groups and collapsed groups
+### Rendering and inspection
+
+- structured `console.*` rendering with expandable objects, arrays, maps, and sets
+- `console.table()`, groups, collapsed groups, traces, timers, counts, and assertions
+- ANSI-aware process output powered by `anser`
+- standard/bright ANSI colors, 256-color, truecolor, and text decorations
+- optional strict-JSON promotion into the structured object inspector
+- smart auto-scroll, filtering, reset, message deduplication, and resizable layouts
+- native ellipsis action popover and copy-output support
+
+### Capture and transport
+
 - page-level `console.*` capture
 - console proxy for evaluated or sandboxed code
+- controlled message state through `useConsoleMessages()`
 - event-based message fan-out
 - iframe transport through `postMessage`
 - WebSocket transport support
-- JSON-safe serialization for transported values
-- controlled message state through `useConsoleMessages()`
-- `Console` modes for structured console messages and ANSI-aware stdout powered by `anser`
-- header actions in a native ellipsis popover
-- smart auto-scroll, filtering, reset, and message deduplication
-- rich transport value restoration
-- TypeScript types
+- JSON-safe serialization and restoration for rich JavaScript values
+
+### Package
+
+- React 18+ peer support
+- TypeScript declarations
+- ESM and CommonJS builds
+- separately exported package styles
 
 ## Requirements
 
