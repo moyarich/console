@@ -36,6 +36,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
 | Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
+| Parse structured values from ANSI output           | `structuredOutputParsers`                      |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
 ## Install
@@ -147,9 +148,9 @@ ANSI rendering uses `anser` and supports standard and bright colors, 256-color, 
 
 ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
 
-### Promote strict JSON from ANSI output
+### Parse structured values from ANSI output
 
-If a process prints complete JSON objects or arrays, `parseStructuredOutput` can render them through the normal expandable value inspector:
+If a process prints complete JSON objects or arrays, `parseStructuredOutput` keeps the built-in strict-JSON behavior and renders matching values through the normal expandable inspector:
 
 ```tsx
 <Console
@@ -159,7 +160,53 @@ If a process prints complete JSON objects or arrays, `parseStructuredOutput` can
 />
 ```
 
-ANSI codes may surround the JSON because the renderer extracts plain text before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text because they are not valid JSON.
+For NDJSON records, compiler diagnostics, test-runner events, or application-specific lines, pass one or more `structuredOutputParsers`:
+
+```tsx
+import type { ConsoleStructuredOutputParser } from "@moyarich/console";
+
+const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
+  const match = text.match(/^ERROR\s+(TS\d+):\s+(.+)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    kind: "diagnostic",
+    code: match[1],
+    message: match[2],
+    stream: context.stream,
+  };
+};
+
+<Console
+  mode="ansi"
+  messages={[
+    {
+      id: "diagnostic-1",
+      data: "\u001b[31mERROR TS2322: invalid value\u001b[0m",
+      stream: "stderr",
+    },
+  ]}
+  structuredOutputParsers={[diagnosticParser]}
+/>;
+```
+
+Parsers run in order and receive ANSI-stripped text plus the original entry context:
+
+```ts
+interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: "stdout" | "stderr";
+}
+```
+
+Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to the original ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+
+ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
 
 Use `ConsoleStdout` directly if you only need the lower-level ANSI list without the surrounding panel.
 
@@ -415,9 +462,10 @@ The host application owns min/max dimensions. The library only applies the reque
 
 | Prop                    | Purpose                                                       |
 | ----------------------- | ------------------------------------------------------------- |
-| `messages`              | Strings or `ConsoleStdoutEntry[]`                             |
-| `parseStructuredOutput` | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
-| `valueRenderers`        | Customize promoted structured values                          |
+| `messages`                | Strings or `ConsoleStdoutEntry[]`                              |
+| `parseStructuredOutput`   | Promote complete strict-JSON objects/arrays to `ConsoleValue`  |
+| `structuredOutputParsers` | Parse ANSI-stripped text into application-defined values         |
+| `valueRenderers`          | Customize promoted structured values                            |
 
 ANSI mode also adds **Copy output** to the actions menu.
 
@@ -609,6 +657,13 @@ Available helpers:
 | `capturePageConsole`        | Temporarily wrap an existing `Console` object            |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
+
+### Structured-output parsing
+
+| Export                                 | Purpose                                                   |
+| -------------------------------------- | --------------------------------------------------------- |
+| `ConsoleStructuredOutputParser`        | Parse one ANSI-stripped output entry into a value         |
+| `ConsoleStructuredOutputParserContext` | Original entry metadata passed to structured-output hooks |
 
 ### Custom rendering
 
