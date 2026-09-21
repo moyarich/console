@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Console,
   createConsoleEventEmitter,
+  createConsoleEventHandler,
   useConsoleMessages,
   type ConsoleEvent,
 } from "@moyarich/console";
@@ -10,6 +11,7 @@ import "@moyarich/console/styles.css";
 export default function ConsoleEventExample() {
   const [events] = useState(createConsoleEventEmitter);
   const { messages } = useConsoleMessages({ events });
+  const handleConsoleEvent = createConsoleEventHandler(events);
 
   const emitMessageEvent = () => {
     const event: ConsoleEvent = {
@@ -23,7 +25,7 @@ export default function ConsoleEventExample() {
       },
     };
 
-    events.dispatch(event);
+    handleConsoleEvent(event);
   };
 
   const emitClearEvent = () => {
@@ -31,18 +33,18 @@ export default function ConsoleEventExample() {
       type: "clear",
     };
 
-    events.dispatch(event);
+    handleConsoleEvent(event);
   };
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         <button type="button" onClick={emitMessageEvent}>
-          Dispatch message event
+          Handle message event
         </button>
 
         <button type="button" onClick={emitClearEvent}>
-          Dispatch clear event
+          Handle clear event
         </button>
       </div>
 
