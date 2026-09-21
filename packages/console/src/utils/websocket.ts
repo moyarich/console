@@ -5,6 +5,7 @@ import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
 /** Minimal WebSocket-compatible surface required by the console listener. */
 export interface ConsoleWebSocketLike {
+  /** Sends text data; included for compatibility with standard WebSocket objects. */
   send(data: string): void;
   addEventListener(
     type: "message",
@@ -18,8 +19,11 @@ export interface ConsoleWebSocketLike {
 
 /** Options for receiving serialized console envelopes from a WebSocket. */
 export interface ListenForConsoleWebSocketOptions {
+  /** WebSocket-like source that emits string message events. */
   socket: ConsoleWebSocketLike;
+  /** Event bus that receives validated console events. */
   events: ConsoleEventEmitter;
+  /** Transport channel to accept. @default "default" */
   channel?: string;
 }
 
