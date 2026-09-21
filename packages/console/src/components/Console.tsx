@@ -27,6 +27,7 @@ export type ConsoleMessageFilter = (
 interface ConsoleSharedProps {
   onClear?: () => void;
   autoScroll?: boolean;
+  resizable?: boolean;
   showHeader?: boolean;
   showClearButton?: boolean;
   actions?: ReactNode;
@@ -74,6 +75,7 @@ function ConsoleFrame({
   mode,
   onClear,
   autoScroll = true,
+  resizable = false,
   showHeader = true,
   showClearButton = true,
   actions,
@@ -128,6 +130,7 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      data-resizable={resizable || undefined}
     >
       {showHeader && (
         <div className="console-panel-header panel-header">
