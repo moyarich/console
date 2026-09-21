@@ -133,6 +133,66 @@ const { messages, clear } = useConsoleMessages({
 });
 ```
 
+## Custom renderers
+
+Structured console output can be extended with ordered message and value renderer tables. This lets an application render domain-specific messages or values without forking the built-in console components.
+
+`messageRenderers` may dispatch directly by console `method` and/or use a `match` predicate. `valueRenderers` may dispatch by `type` and/or predicate. Value types use `typeof` for primitives, `"null"` for null, `"array"` for arrays, and constructor names such as `"Object"`, `"Map"`, or a custom class name for objects.
+
+```tsx
+import {
+  Console,
+  type ConsoleMessageRenderer,
+  type ConsoleValueRenderer,
+} from "@moyarich/console";
+
+const messageRenderers: ConsoleMessageRenderer[] = [
+  {
+    method: "info",
+    match: (message) => message.source === "build",
+    render: (_message, { renderDefault }) => (
+      <div className="build-message">{renderDefault()}</div>
+    ),
+  },
+];
+
+const valueRenderers: ConsoleValueRenderer[] = [
+  {
+    type: "Object",
+    match: (value) =>
+      typeof value === "object" &&
+      value !== null &&
+      "kind" in value &&
+      value.kind === "metric",
+    render: (value) => {
+      const metric = value as {
+        kind: "metric";
+        label: string;
+        value: number;
+      };
+
+      return (
+        <strong>
+          {metric.label}: {metric.value}
+        </strong>
+      );
+    },
+  },
+];
+
+<Console
+  messages={messages}
+  messageRenderers={messageRenderers}
+  valueRenderers={valueRenderers}
+/>;
+```
+
+Renderer entries are checked in order. Returning `undefined` opts out and continues to the next renderer, eventually falling back to the built-in renderer. Each renderer context also exposes `renderDefault()`, which is useful when a custom renderer only wants to wrap or decorate the standard output.
+
+Synchronous errors thrown by renderer match/render callbacks are contained and fall back to later/default renderers. Errors thrown later inside a custom React component should be handled by the application's normal React error-boundary strategy.
+
+Value renderers are propagated through nested object inspectors, `console.table()` cells, and strict-JSON values promoted from ANSI output.
+
 ## Console modes
 
 `Console` renders one of two message shapes through the same component:
