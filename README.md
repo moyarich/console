@@ -284,7 +284,7 @@ Messages are transported as:
 
 `clear` is represented as `{ type: "clear" }` in the `event` field.
 
-Values are normalized before transport so BigInt, functions, symbols, `undefined`, errors, dates, regular expressions, and circular references do not break JSON serialization.
+Values are normalized before transport and restored on receipt. The transport preserves `undefined`, bigint, symbols, function placeholders, `NaN`, infinities, `-0`, errors, dates, regular expressions, maps, sets, ArrayBuffers, typed arrays, DOM elements, and NodeLists. Circular references are represented safely without breaking JSON serialization.
 
 ## Development
 
