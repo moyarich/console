@@ -1,4 +1,4 @@
-import { RotateCcw, SquareTerminal, Trash2 } from "lucide-react";
+import { SquareTerminal, Trash2 } from "lucide-react";
 import {
   forwardRef,
   useCallback,
@@ -41,8 +41,6 @@ export interface ConsoleProps {
   error?: string;
   onClear?: () => void;
   onClearStdout?: () => void;
-  onRestart?: () => void;
-  showRestartButton?: boolean;
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
   filter?: ConsoleMessageFilter;
   autoScroll?: boolean;
@@ -75,8 +73,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     error: errorProp,
     onClear,
     onClearStdout,
-    onRestart,
-    showRestartButton = true,
     onMessagesChange,
     filter,
     autoScroll = true,
@@ -181,11 +177,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
     onViewChange?.(nextView);
   };
 
-  const restart = () => {
-    onRestart?.();
-    shouldAutoScrollRef.current = true;
-  };
-
   const hasExpandableValues = visibleMessages.some(
     (message) =>
       message.method !== "table" &&
@@ -201,10 +192,7 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
   };
 
   const shouldShowViewTabs = hasStdoutView && (showViewTabs ?? true);
-  const showRestart =
-    showRestartButton && Boolean(onRestart) && view === "stdout";
-  const showActions =
-    actions || showRestart || (showClearButton && canClearActive);
+  const showActions = actions || (showClearButton && canClearActive);
 
   return (
     <article
@@ -229,16 +217,6 @@ export const Console = forwardRef<ConsoleRef, ConsoleProps>(function Console(
             {showActions && (
               <div className="console-actions result-actions">
                 {actions}
-
-                {showRestart && (
-                  <button
-                    type="button"
-                    className="console-restart-button"
-                    onClick={restart}
-                  >
-                    <RotateCcw size={14} aria-hidden="true" /> Restart
-                  </button>
-                )}
 
                 {showClearButton && canClearActive && (
                   <button

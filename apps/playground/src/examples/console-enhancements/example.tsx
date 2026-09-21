@@ -68,6 +68,10 @@ export default function ConsoleEnhancementsExample() {
         >
           Add stdout
         </button>
+
+        <button type="button" onClick={restartServer}>
+          Restart server
+        </button>
       </div>
 
       <Console
@@ -77,7 +81,6 @@ export default function ConsoleEnhancementsExample() {
         stdoutTabLabel="Server"
         onClear={clear}
         onClearStdout={() => setStdout([])}
-        onRestart={restartServer}
         filter={(message) => showDebug || message.method !== "debug"}
         actions={
           <button

@@ -17,7 +17,7 @@ Use it to build embedded developer consoles, playgrounds, code runners, iframe p
 - JSON-safe serialization for transported values
 - controlled message state through `useConsoleMessages()`
 - optional stdout view with ANSI terminal rendering
-- optional console/stdout tabs and restart action
+- optional console/stdout tabs and custom actions
 - smart auto-scroll, filtering, reset, and message deduplication
 - rich transport value restoration
 - TypeScript types
@@ -128,6 +128,8 @@ const stdout = [
   { id: "2", data: "Listening on port 3000" },
 ];
 
+<button onClick={restartServer}>Restart server</button>
+
 <Console
   messages={messages}
   stdout={stdout}
@@ -135,13 +137,12 @@ const stdout = [
   stdoutTabLabel="Server"
   onClear={clear}
   onClearStdout={() => setStdout([])}
-  onRestart={restartServer}
 />;
 ```
 
 When `stdout` is provided, the console shows two tabs. The labels are configurable and the views can also be controlled with `view`, `defaultView`, and `onViewChange`.
 
-The restart action is shown in the stdout view when `onRestart` is provided. Restart delegates runtime behavior to `onRestart` and does not clear either output collection automatically. `Clear` only clears the active view through its corresponding clear callback.
+`Clear` is a console concern and clears only the active view through its corresponding clear callback. Runtime-specific controls such as restart belong outside the console or can be supplied through the generic `actions` slot.
 
 ### Clear marker
 
