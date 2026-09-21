@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console } from "@moyarich/console";
+import {
+  Console,
+  type ConsoleMessageModeProps,
+} from "@moyarich/console";
 
 const nestedEnterprise = {
   enterpriseName: "TechNova Global",
@@ -39,7 +42,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Console>;
+} satisfies Meta<ConsoleMessageModeProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
