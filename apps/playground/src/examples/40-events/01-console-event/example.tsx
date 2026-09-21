@@ -23,7 +23,7 @@ export default function ConsoleEventExample() {
       },
     };
 
-    events.emitEvent(event);
+    events.dispatch(event);
   };
 
   const emitClearEvent = () => {
@@ -31,18 +31,18 @@ export default function ConsoleEventExample() {
       type: "clear",
     };
 
-    events.emitEvent(event);
+    events.dispatch(event);
   };
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         <button type="button" onClick={emitMessageEvent}>
-          Emit message event
+          Dispatch message event
         </button>
 
         <button type="button" onClick={emitClearEvent}>
-          Emit clear event
+          Dispatch clear event
         </button>
       </div>
 
