@@ -1,6 +1,11 @@
 import { ChevronRight, Copy } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
+import {
+  dispatchValueRenderer,
+  getConsoleValueType,
+  type ConsoleValueRenderer,
+} from "../renderers";
 
 export interface ConsoleValueProps {
   value: unknown;
@@ -8,6 +13,7 @@ export interface ConsoleValueProps {
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
   expandAllVersion?: number;
+  renderers?: readonly ConsoleValueRenderer[];
 }
 
 interface ConsoleObjectValueProps {
@@ -16,6 +22,7 @@ interface ConsoleObjectValueProps {
   ancestors: ReadonlySet<object>;
   propertyKey?: string;
   expandAllVersion?: number;
+  renderers?: readonly ConsoleValueRenderer[];
 }
 
 function isObjectLike(value: unknown): value is object {
@@ -159,6 +166,7 @@ function ConsoleObjectValue({
   ancestors,
   propertyKey,
   expandAllVersion,
+  renderers,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const [isOpen, setIsOpen] = useState(
@@ -240,6 +248,7 @@ function ConsoleObjectValue({
                       expandLevel={Math.max(0, expandLevel - 1)}
                       ancestors={nextAncestors}
                       expandAllVersion={expandAllVersion}
+                      renderers={renderers}
                     />
                   );
                 }
@@ -260,6 +269,7 @@ function ConsoleObjectValue({
                         expandLevel={Math.max(0, expandLevel - 1)}
                         ancestors={nextAncestors}
                         expandAllVersion={expandAllVersion}
+                        renderers={renderers}
                       />
                     </div>
                   </div>
@@ -277,13 +287,17 @@ function ConsoleObjectValue({
   );
 }
 
-export function ConsoleValue({
+function renderDefaultValue({
   value,
-  expandLevel = 0,
-  ancestors = new Set<object>(),
+  expandLevel,
+  ancestors,
   propertyKey,
   expandAllVersion,
-}: ConsoleValueProps) {
+  renderers,
+}: Required<
+  Pick<ConsoleValueProps, "expandLevel" | "ancestors">
+> &
+  Omit<ConsoleValueProps, "expandLevel" | "ancestors">): ReactNode {
   if (!isObjectLike(value)) return renderPrimitive(value);
   if (!isInspectableObject(value)) return renderPrimitive(value);
   if (ancestors.has(value))
@@ -296,6 +310,35 @@ export function ConsoleValue({
       ancestors={ancestors}
       propertyKey={propertyKey}
       expandAllVersion={expandAllVersion}
+      renderers={renderers}
     />
   );
+}
+
+export function ConsoleValue({
+  value,
+  expandLevel = 0,
+  ancestors = new Set<object>(),
+  propertyKey,
+  expandAllVersion,
+  renderers,
+}: ConsoleValueProps) {
+  const renderDefault = () =>
+    renderDefaultValue({
+      value,
+      expandLevel,
+      ancestors,
+      propertyKey,
+      expandAllVersion,
+      renderers,
+    });
+
+  const custom = dispatchValueRenderer(renderers, value, {
+    propertyKey,
+    depth: ancestors.size,
+    type: getConsoleValueType(value),
+    renderDefault,
+  });
+
+  return custom === undefined ? renderDefault() : custom;
 }
