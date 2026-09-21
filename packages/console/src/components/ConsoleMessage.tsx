@@ -21,9 +21,9 @@ import {
 } from "../renderers";
 import type { ConsoleMessageData } from "../types";
 
-type MessageIconMap = Partial<
-  Record<ConsoleMessageData["method"], LucideIcon>
->;
+type MessageIconMap = {
+  [Method in ConsoleMessageData["method"]]?: LucideIcon;
+};
 
 const MESSAGE_ICONS: MessageIconMap = {
   debug: Bug,
