@@ -15,7 +15,10 @@ export function capturePageConsole({
   passThrough = true,
   source = "page",
 }: CapturePageConsoleOptions): () => void {
-  const proxy = createConsoleProxy({ events, source });
+  const proxy = createConsoleProxy({
+    onEvent: events.dispatch,
+    source,
+  });
   const originals = new Map<string, (...args: unknown[]) => unknown>();
 
   for (const method of CAPTURED_CONSOLE_METHODS) {
