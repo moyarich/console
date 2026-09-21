@@ -18,6 +18,8 @@ import type { ConsoleMessageData } from "../types";
 
 export interface ConsoleMessageProps {
   message: ConsoleMessageData;
+  expandAllVersion?: number;
+  onExpandAll?: () => void;
 }
 function getMessageIcon(method: ConsoleMessageData["method"]): LucideIcon {
   switch (method) {
@@ -47,10 +49,24 @@ function getMessageIcon(method: ConsoleMessageData["method"]): LucideIcon {
       return Terminal;
   }
 }
-export function ConsoleMessage({ message }: ConsoleMessageProps) {
+export function ConsoleMessage({
+  message,
+  expandAllVersion,
+  onExpandAll,
+}: ConsoleMessageProps) {
   const style = { paddingLeft: 14 + message.depth * 16 };
   const MessageIcon = getMessageIcon(message.method);
-  const icon = (
+  const icon = onExpandAll ? (
+    <button
+      type="button"
+      className="console-message-icon console-message-icon-button"
+      aria-label="Expand all collapsed console values"
+      title="Expand all collapsed console values"
+      onClick={onExpandAll}
+    >
+      <MessageIcon size={14} strokeWidth={1.8} aria-hidden="true" />
+    </button>
+  ) : (
     <span className="console-message-icon" aria-hidden="true">
       <MessageIcon size={14} strokeWidth={1.8} />
     </span>
@@ -77,6 +93,7 @@ export function ConsoleMessage({ message }: ConsoleMessageProps) {
         <ConsoleValue
           value={message.data[0]}
           expandLevel={message.expandLevel ?? 1}
+          expandAllVersion={expandAllVersion}
         />
       </div>
     );
@@ -85,7 +102,11 @@ export function ConsoleMessage({ message }: ConsoleMessageProps) {
       {icon}
       <div className="console-values">
         {message.data.map((value, index) => (
-          <ConsoleValue key={index} value={value} />
+          <ConsoleValue
+            key={index}
+            value={value}
+            expandAllVersion={expandAllVersion}
+          />
         ))}
       </div>
     </div>

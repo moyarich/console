@@ -1,5 +1,5 @@
 import { ChevronRight, Copy } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 
 export interface ConsoleValueProps {
@@ -7,6 +7,7 @@ export interface ConsoleValueProps {
   expandLevel?: number;
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
+  expandAllVersion?: number;
 }
 
 interface ConsoleObjectValueProps {
@@ -14,6 +15,7 @@ interface ConsoleObjectValueProps {
   expandLevel: number;
   ancestors: ReadonlySet<object>;
   propertyKey?: string;
+  expandAllVersion?: number;
 }
 
 function isObjectLike(value: unknown): value is object {
@@ -90,9 +92,18 @@ function ConsoleObjectValue({
   expandLevel,
   ancestors,
   propertyKey,
+  expandAllVersion,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
-  const [isOpen, setIsOpen] = useState(expandLevel > 0);
+  const [isOpen, setIsOpen] = useState(
+    expandLevel > 0 || expandAllVersion !== undefined,
+  );
+
+  useEffect(() => {
+    if (expandAllVersion !== undefined) {
+      setIsOpen(true);
+    }
+  }, [expandAllVersion]);
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
@@ -162,6 +173,7 @@ function ConsoleObjectValue({
                       propertyKey={key}
                       expandLevel={Math.max(0, expandLevel - 1)}
                       ancestors={nextAncestors}
+                      expandAllVersion={expandAllVersion}
                     />
                   );
                 }
@@ -181,6 +193,7 @@ function ConsoleObjectValue({
                         value={child}
                         expandLevel={Math.max(0, expandLevel - 1)}
                         ancestors={nextAncestors}
+                        expandAllVersion={expandAllVersion}
                       />
                     </div>
                   </div>
@@ -203,6 +216,7 @@ export function ConsoleValue({
   expandLevel = 0,
   ancestors = new Set<object>(),
   propertyKey,
+  expandAllVersion,
 }: ConsoleValueProps) {
   if (!isObjectLike(value)) return renderPrimitive(value);
   if (!isInspectableObject(value)) return renderPrimitive(value);
@@ -215,6 +229,7 @@ export function ConsoleValue({
       expandLevel={expandLevel}
       ancestors={ancestors}
       propertyKey={propertyKey}
+      expandAllVersion={expandAllVersion}
     />
   );
 }
