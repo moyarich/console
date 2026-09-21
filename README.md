@@ -269,7 +269,7 @@ If sandboxed code calls an unknown console method on the proxy, the proxy does n
 ```ts
 const events = createConsoleEventEmitter();
 const runtimeConsole = createConsoleProxy({
-  onEvent: events.dispatch,
+  onEvent: createConsoleEventHandler(events),
 });
 
 runtimeConsole.group("build");
@@ -366,7 +366,7 @@ The returned function restores the original console methods.
 const events = createConsoleEventEmitter();
 
 const runtimeConsole = createConsoleProxy({
-  onEvent: events.dispatch,
+  onEvent: createConsoleEventHandler(events),
   source: "sandbox",
 });
 
@@ -423,7 +423,6 @@ runtimeConsole.log("shared event stream");
 | `off(type, listener)`       | Remove one listener                                               |
 | `emit("message", message)`  | Publish one structured message                                    |
 | `emit("clear")`             | Publish a clear event                                             |
-| `dispatch(event)`           | Route an existing `ConsoleEvent` through the named emitter API    |
 | `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
 
 ## `Console` component configuration
@@ -657,6 +656,7 @@ Available helpers:
 | `capturePageConsole`        | Temporarily wrap an existing `Console` object            |
 | `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
 | `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
+| `createConsoleEventHandler` | Adapt a `ConsoleEvent` producer to a `ConsoleEventEmitter` |
 
 ### Structured-output parsing
 
