@@ -1,0 +1,4 @@
+{
+  "label": "Terminal",
+  "description": "ANSI terminal output for dev servers, builds, and real TypeScript compiler diagnostics."
+}
