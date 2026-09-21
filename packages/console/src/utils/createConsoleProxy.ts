@@ -6,6 +6,7 @@ import {
 import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 
+/** Configuration for {@link createConsoleProxy}. */
 export interface CreateConsoleProxyOptions {
   events?: ConsoleEventEmitter;
   source?: string;
@@ -18,6 +19,14 @@ const defaultTimerNow = () =>
     ? performance.now()
     : Date.now();
 
+/**
+ * Creates a Console-compatible proxy that emits structured console events.
+ *
+ * Stateful methods such as groups, counters, timers, `dir`, and `table` are
+ * normalized into {@link ConsoleMessageData}. Unknown method names degrade to
+ * log messages so sandboxed runtimes can call non-standard console methods
+ * without throwing.
+ */
 export function createConsoleProxy({
   events,
   source,
