@@ -1,3 +1,4 @@
+import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
 
 export type ConsoleExampleGroupId = string;
@@ -71,11 +72,6 @@ function parseExamplePath(path: string) {
   };
 }
 
-function labelFromId(id: string) {
-  const label = id.replace(/-/g, " ");
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
-
 const playgroundModules = import.meta.glob("./*/*/source.tsx", {
   eager: true,
 }) as Record<string, ConsoleExampleModule>;
@@ -112,7 +108,7 @@ for (const { group } of discoveredExamples) {
 
   groupsById.set(group.id, {
     id: group.id,
-    label: labelFromId(group.id),
+    label: sentenceCase(group.id),
     order: group.order,
     directory: group.directory,
   });
