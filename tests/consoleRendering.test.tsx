@@ -194,6 +194,59 @@ describe("Console rendering", () => {
     expect(html).toContain("rgb(255, 0, 0)");
   });
 
+  it("renders ANSI decorations and truecolor from Anser tokens", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout
+        entries={[
+          `${escape}[1;3;38;2;12;34;56mstyled${escape}[0m`,
+        ]}
+      />,
+    );
+
+    expect(html).toContain("styled");
+    expect(html).toContain("font-weight:bold");
+    expect(html).toContain("font-style:italic");
+    expect(html).toContain("rgb(12, 34, 56)");
+  });
+
+  it("marks carriage-return output using Anser clearLine metadata", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout entries={["loading 10%\rloading 20%"]} />,
+    );
+
+    expect(html).toContain('data-clear-line="true"');
+  });
+
+  it("promotes strict JSON ANSI output to expandable objects", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        parseStructuredOutput
+        messages={[
+          `${escape}[36m{"user":{"id":42,"name":"Ada"},"roles":["admin"]}${escape}[0m`,
+        ]}
+      />,
+    );
+
+    expect(html).toContain("Object");
+    expect(html).toContain("user");
+    expect(html).toContain("roles");
+    expect(html).toContain('aria-label="Copy object"');
+  });
+
+  it("leaves JavaScript-like terminal objects as text", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        parseStructuredOutput
+        messages={["{ name: 'Ada', score: 42 }"]}
+      />,
+    );
+
+    expect(html).toContain("{ name: &#x27;Ada&#x27;, score: 42 }");
+    expect(html).not.toContain('aria-label="Copy object"');
+  });
+
   it("escapes stdout HTML before ANSI conversion", () => {
     const html = renderToStaticMarkup(
       <ConsoleStdout entries={["<script>alert('x')</script>"]} />,
