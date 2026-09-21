@@ -91,7 +91,8 @@ export function AppConsole() {
   messages={messages}
   onClear={clear}
   filter={(message) => message.method !== "debug"}
-  resizable
+  resizable="vertical"
+  style={{ minHeight: 240, maxHeight: 720 }}
   autoScroll
   showHeader
   showClearButton
@@ -102,7 +103,7 @@ export function AppConsole() {
 
 Auto-scroll follows new output while the viewer is near the bottom, but does not pull them away from older messages they are inspecting.
 
-Set `resizable` to let the user drag the bottom edge of the console vertically. The inner output surface flexes with the resized panel, so both structured and ANSI modes remain scrollable.
+Set `resizable` to a resize direction: `"vertical"`, `"horizontal"`, `"both"`, `"block"`, or `"inline"`. The library does not impose resize-specific min/max dimensions; the host layout owns those through `style`, `className`, or its surrounding layout. The inner output surface flexes with the resized panel, so both structured and ANSI modes remain scrollable.
 
 `useConsoleMessages()` deduplicates repeated messages with the same `id` by default. Set `dedupeById: false` to preserve duplicates. Use `resetKey` to clear the stream when a runtime or session identity changes. Calling `clear()` or receiving a `clear` event empties the message list without adding a marker message:
 
