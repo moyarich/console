@@ -33,7 +33,11 @@ const meta = {
     onClear: () => undefined,
   },
   decorators: [
-    (Story) => <div style={{ maxWidth: 960, margin: "0 auto" }}><Story /></div>,
+    (Story) => (
+      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+        <Story />
+      </div>
+    ),
   ],
 } satisfies Meta<typeof Console>;
 
@@ -51,7 +55,11 @@ export const CommonMessages: Story = {
       { method: "info", data: ["Informational message"], depth: 0 },
       { method: "warn", data: ["Warning message"], depth: 0 },
       { method: "error", data: ["Error message"], depth: 0 },
-      { method: "log", data: [{ package: "@moyarich/console", ready: true }], depth: 0 },
+      {
+        method: "log",
+        data: [{ package: "@moyarich/console", ready: true }],
+        depth: 0,
+      },
     ],
   },
 };
@@ -67,10 +75,12 @@ export const Table: Story = {
     messages: [
       {
         method: "table",
-        data: [[
-          { name: "margin", value: "10px" },
-          { name: "padding", value: "8px" },
-        ]],
+        data: [
+          [
+            { name: "margin", value: "10px" },
+            { name: "padding", value: "8px" },
+          ],
+        ],
         depth: 0,
       },
     ],

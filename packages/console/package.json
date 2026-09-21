@@ -4,7 +4,9 @@
   "description": "React console UI with capture and transport adapters for pages, iframes, and WebSockets.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": ["./src/styles.css"],
+  "sideEffects": [
+    "./src/styles.css"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,14 +18,26 @@
     },
     "./styles.css": "./src/styles.css"
   },
-  "files": ["dist", "src/styles.css"],
-  "publishConfig": {"registry": "https://npm.pkg.github.com"},
+  "files": [
+    "dist",
+    "src/styles.css"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
+    "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
   },
-  "dependencies": {"lucide-react": "^1.47.0"},
-  "peerDependencies": {"react": ">=18", "react-dom": ">=18"},
+  "dependencies": {
+    "lucide-react": "^1.47.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
   "devDependencies": {
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
@@ -32,8 +46,22 @@
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },
-  "repository": {"type": "git", "url": "git+https://github.com/moyarich/console.git", "directory": "packages/console"},
-  "bugs": {"url": "https://github.com/moyarich/console/issues"},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyarich/console.git",
+    "directory": "packages/console"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
   "homepage": "https://github.com/moyarich/console#readme",
-  "keywords": ["console", "react", "developer-tools", "iframe", "postmessage", "websocket", "logging"]
+  "keywords": [
+    "console",
+    "react",
+    "developer-tools",
+    "iframe",
+    "postmessage",
+    "websocket",
+    "logging"
+  ]
 }

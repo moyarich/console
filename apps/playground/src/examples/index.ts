@@ -1,13 +1,28 @@
 import type { ComponentType } from "react";
 
+export const CONSOLE_EXAMPLE_GROUPS = [
+  { id: "getting-started", label: "Getting started" },
+  { id: "events", label: "Events" },
+  { id: "console-methods", label: "Console methods" },
+  { id: "transports", label: "Transports" },
+] as const;
+
+export type ConsoleExampleGroupId =
+  (typeof CONSOLE_EXAMPLE_GROUPS)[number]["id"];
+
+export const DEFAULT_CONSOLE_EXAMPLE_GROUP_ID: ConsoleExampleGroupId =
+  "console-methods";
+
 export interface ConsoleExampleMeta {
   id: string;
   label: string;
   description: string;
   order: number;
+  groupId?: ConsoleExampleGroupId;
 }
 
 export interface ConsoleExample extends ConsoleExampleMeta {
+  groupId: ConsoleExampleGroupId;
   exampleSource: string;
   Component: ComponentType;
 }
@@ -55,6 +70,7 @@ export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = Object.entries(
 
     return {
       ...metadata,
+      groupId: metadata.groupId ?? DEFAULT_CONSOLE_EXAMPLE_GROUP_ID,
       exampleSource,
       Component: playgroundModule.default,
     };

@@ -5,7 +5,9 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
-      "@moyarich/console": fileURLToPath(new URL("./packages/console/src/index.ts", import.meta.url)),
+      "@moyarich/console": fileURLToPath(
+        new URL("./packages/console/src/index.ts", import.meta.url),
+      ),
     },
   },
   test: {

@@ -1,40 +1,34 @@
 import { isConsoleMethod } from "../consoleMethods";
-import type { ConsoleEvent, ConsoleTransportEnvelope } from "../types";
-import { serializeConsoleEvent } from "./serialization";
+import type { ConsoleTransportEnvelope } from "../types";
 
 export const CONSOLE_TRANSPORT_TYPE = "CONSOLE_PANEL" as const;
 export const CONSOLE_TRANSPORT_VERSION = 1 as const;
 export const DEFAULT_CONSOLE_CHANNEL = "default";
 
-export function createConsoleEnvelope(
-  event: ConsoleEvent,
-  channel = DEFAULT_CONSOLE_CHANNEL,
-): ConsoleTransportEnvelope {
-  return {
-    type: CONSOLE_TRANSPORT_TYPE,
-    version: CONSOLE_TRANSPORT_VERSION,
-    channel,
-    event: serializeConsoleEvent(event),
-  };
-}
-
 export function isConsoleEnvelope(
   value: unknown,
 ): value is ConsoleTransportEnvelope {
   if (!value || typeof value !== "object") return false;
+
   const envelope = value as Partial<ConsoleTransportEnvelope>;
+
   if (
     envelope.type !== CONSOLE_TRANSPORT_TYPE ||
     envelope.version !== CONSOLE_TRANSPORT_VERSION ||
     typeof envelope.channel !== "string" ||
     !envelope.event ||
     typeof envelope.event !== "object"
-  )
+  ) {
     return false;
+  }
+
   if (envelope.event.type === "clear") return true;
   if (envelope.event.type !== "message") return false;
+
   const message = envelope.event.message;
+
   if (!message || typeof message !== "object") return false;
+
   return (
     isConsoleMethod(message.method) &&
     Array.isArray(message.data) &&
