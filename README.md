@@ -323,9 +323,9 @@ const { messages, output, console, append, clear, events, setMessages } =
 | `events`          | The `ConsoleEventEmitter` used by the hook              |
 | `setMessages`     | Direct React state setter for advanced cases            |
 
-## Capture a real console
+## Capture an existing console
 
-### Capture from React
+### Capture the global console from React
 
 ```tsx
 const { messages, clear } = useConsoleMessages({
@@ -349,7 +349,6 @@ const { messages, clear } = useConsoleMessages({
 });
 ```
 
-A bare `target` option is intentionally not used because `target` already has other meanings in the codebase, including TypeScript compilation targets and window/event targets.
 
 ### Capture outside React
 
