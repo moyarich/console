@@ -93,8 +93,7 @@ function objectLabel(value: object): string {
   if (Array.isArray(value)) return `Array(${value.length})`;
   if (isMapLike(value)) return `Map(${value.size})`;
   if (isSetLike(value)) return `Set(${value.size})`;
-  if (value instanceof ArrayBuffer)
-    return `ArrayBuffer(${value.byteLength})`;
+  if (value instanceof ArrayBuffer) return `ArrayBuffer(${value.byteLength})`;
   if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
     const length = (value as unknown as { length?: number }).length;
     return `${value.constructor.name}(${length ?? value.byteLength})`;

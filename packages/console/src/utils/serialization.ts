@@ -42,9 +42,7 @@ function isElementLike(
   return candidate.nodeType === 1 && typeof candidate.outerHTML === "string";
 }
 
-function isNodeListLike(
-  value: object,
-): value is object & ArrayLike<unknown> {
+function isNodeListLike(value: object): value is object & ArrayLike<unknown> {
   return (
     value.constructor?.name === "NodeList" &&
     typeof (value as { length?: unknown }).length === "number"
@@ -86,10 +84,8 @@ function normalizeValue(
   if (typeof value === "number") {
     if (Number.isNaN(value)) return { [SERIALIZED_TYPE]: "nan" };
     if (value === Infinity) return { [SERIALIZED_TYPE]: "infinity" };
-    if (value === -Infinity)
-      return { [SERIALIZED_TYPE]: "negative-infinity" };
-    if (Object.is(value, -0))
-      return { [SERIALIZED_TYPE]: "negative-zero" };
+    if (value === -Infinity) return { [SERIALIZED_TYPE]: "negative-infinity" };
+    if (Object.is(value, -0)) return { [SERIALIZED_TYPE]: "negative-zero" };
   }
 
   if (value === null || typeof value !== "object") {
@@ -307,17 +303,14 @@ export function deserializeConsoleValue(value: unknown): unknown {
 
     case "symbol":
       return Symbol(
-        typeof value.description === "string"
-          ? value.description
-          : undefined,
+        typeof value.description === "string" ? value.description : undefined,
       );
 
     case "function": {
       const placeholder = () => undefined;
       Object.defineProperty(placeholder, "name", {
         configurable: true,
-        value:
-          typeof value.name === "string" ? value.name : "anonymous",
+        value: typeof value.name === "string" ? value.name : "anonymous",
       });
       return placeholder;
     }
@@ -346,9 +339,7 @@ export function deserializeConsoleValue(value: unknown): unknown {
     }
 
     case "date":
-      return new Date(
-        typeof value.value === "string" ? value.value : NaN,
-      );
+      return new Date(typeof value.value === "string" ? value.value : NaN);
 
     case "regexp":
       return new RegExp(
@@ -401,14 +392,13 @@ export function deserializeConsoleValue(value: unknown): unknown {
     }
 
     case "typed-array": {
-      const values = (
-        Array.isArray(value.values) ? value.values : []
-      ).map(deserializeConsoleValue);
-      const constructorName =
-        typeof value.name === "string" ? value.name : "";
-      const constructor = (
-        globalThis as unknown as Record<string, unknown>
-      )[constructorName];
+      const values = (Array.isArray(value.values) ? value.values : []).map(
+        deserializeConsoleValue,
+      );
+      const constructorName = typeof value.name === "string" ? value.name : "";
+      const constructor = (globalThis as unknown as Record<string, unknown>)[
+        constructorName
+      ];
 
       if (typeof constructor === "function") {
         try {

@@ -45,9 +45,9 @@ describe("console transport", () => {
       big: 10n,
       missing: undefined,
     });
-    expect(
-      (deserializeConsoleValue(value) as { fn: unknown }).fn,
-    ).toEqual(expect.any(Function));
+    expect((deserializeConsoleValue(value) as { fn: unknown }).fn).toEqual(
+      expect.any(Function),
+    );
   });
 
   it("sends and receives WebSocket envelopes through an event emitter", () => {

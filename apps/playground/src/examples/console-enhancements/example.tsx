@@ -57,10 +57,7 @@ export default function ConsoleEnhancementsExample() {
             >
               {showDebug ? "Hide debug" : "Show debug"}
             </button>
-            <button
-              type="button"
-              onClick={() => consoleRef.current?.reset()}
-            >
+            <button type="button" onClick={() => consoleRef.current?.reset()}>
               Reset
             </button>
           </>
