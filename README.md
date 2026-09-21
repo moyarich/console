@@ -65,19 +65,11 @@ import { Console, useConsoleMessages } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 export function AppConsole() {
-  const { messages, append, clear } = useConsoleMessages();
+  const { messages, console, clear } = useConsoleMessages();
 
   return (
     <>
-      <button
-        onClick={() =>
-          append({
-            method: "log",
-            data: ["Hello", { ready: true }],
-            depth: 0,
-          })
-        }
-      >
+      <button onClick={() => console.log("Hello", { ready: true })}>
         Add message
       </button>
 
@@ -90,9 +82,12 @@ export function AppConsole() {
 The important separation is:
 
 - `useConsoleMessages()` owns message state.
-- `append()` produces a structured console message.
+- the returned `console` is a console-compatible producer for callbacks and runtime code.
+- `append()` remains available when you already have a `ConsoleMessageData`.
 - `<Console />` renders the messages.
 - `onClear={clear}` connects the panel's clear action back to state.
+
+Do not call the returned `console` during React render. Use it from event handlers, runtime callbacks, or effects whose lifecycle you control.
 
 If your runtime already returns `{ messages, error }`, structured mode also accepts `output={runOutput}`.
 
@@ -265,14 +260,17 @@ interface ConsoleMessageData {
 | `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
 | `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
 | `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
-| `clear()`                    | Clears the target message array when present and emits a `clear` event                                                 |
+| `clear()`                    | Produces a `clear` event through the proxy's `onEvent` callback                                                      |
 
 If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
 
 ### Example: timers and groups
 
 ```ts
-const runtimeConsole = createConsoleProxy({ events });
+const events = createConsoleEventEmitter();
+const runtimeConsole = createConsoleProxy({
+  onEvent: events.dispatch,
+});
 
 runtimeConsole.group("build");
 runtimeConsole.time("compile");
@@ -291,7 +289,7 @@ The messages contain the calculated group depth and timer output, so the rendere
 `useConsoleMessages()` is the easiest way to connect event producers to React state.
 
 ```tsx
-const { messages, output, append, clear, events, setMessages } =
+const { messages, output, console, append, clear, events, setMessages } =
   useConsoleMessages({
     maxMessages: 1000,
     dedupeById: true,
@@ -317,12 +315,13 @@ const { messages, output, append, clear, events, setMessages } =
 
 | Value             | Purpose                                       |
 | ----------------- | --------------------------------------------- |
-| `messages`        | Current `ConsoleMessageData[]`                |
-| `output`          | Convenience `{ messages, error: "" }` object  |
-| `append(message)` | Emits a message into the hook's event channel |
-| `clear()`         | Emits a clear event                           |
-| `events`          | The `ConsoleEventEmitter` used by the hook    |
-| `setMessages`     | Direct React state setter for advanced cases  |
+| `messages`        | Current `ConsoleMessageData[]`                         |
+| `output`          | Convenience `{ messages, error: "" }` object           |
+| `console`         | Stable console-compatible producer backed by hook state |
+| `append(message)` | Emits a message into the hook's event channel          |
+| `clear()`         | Emits a clear event                                    |
+| `events`          | The `ConsoleEventEmitter` used by the hook             |
+| `setMessages`     | Direct React state setter for advanced cases           |
 
 ## Capture a real console
 
@@ -361,30 +360,33 @@ The returned function restores the original console methods.
 
 ## Give sandboxed code a console
 
-`createConsoleProxy()` returns a console-compatible object without patching the page's real console.
-
-Write directly to an array:
-
-```ts
-const messages: ConsoleMessageData[] = [];
-const runtimeConsole = createConsoleProxy(messages);
-
-runtimeConsole.log("hello", { from: "sandbox" });
-runtimeConsole.warn("warning");
-```
-
-Or publish to an event channel:
+`createConsoleProxy()` returns a console-compatible object without patching the page's real console. It reports each produced `ConsoleEvent` through `onEvent`; storage and transport stay outside the proxy.
 
 ```ts
 const events = createConsoleEventEmitter();
 
 const runtimeConsole = createConsoleProxy({
-  events,
+  onEvent: events.dispatch,
   source: "sandbox",
 });
 
 events.on("message", (message) => {
   // store, render, or transport the message
+});
+
+runtimeConsole.log("hello", { from: "sandbox" });
+runtimeConsole.warn("warning");
+```
+
+You can also handle the event directly when no emitter is needed:
+
+```ts
+const runtimeConsole = createConsoleProxy({
+  onEvent(event) {
+    if (event.type === "message") {
+      saveMessage(event.message);
+    }
+  },
 });
 ```
 
@@ -392,13 +394,10 @@ events.on("message", (message) => {
 
 | Option     | Purpose                                                   |
 | ---------- | --------------------------------------------------------- |
-| `messages` | Array that receives emitted messages                      |
-| `events`   | Event emitter that receives `message` / `clear` events    |
+| `onEvent`  | Receives each produced `ConsoleEvent`                    |
 | `source`   | Adds source metadata to every emitted message             |
 | `now`      | Overrides wall-clock timestamp generation                 |
 | `timerNow` | Overrides the high-resolution clock used by timer methods |
-
-Both `messages` and `events` may be supplied, allowing the same proxy to write to both.
 
 ## Event channel
 
@@ -408,7 +407,9 @@ Both `messages` and `events` may be supplied, allowing the same proxy to write t
 const events = createConsoleEventEmitter();
 
 const { messages } = useConsoleMessages({ events });
-const runtimeConsole = createConsoleProxy({ events });
+const runtimeConsole = createConsoleProxy({
+  onEvent: events.dispatch,
+});
 
 runtimeConsole.log("shared event stream");
 ```
@@ -422,8 +423,7 @@ runtimeConsole.log("shared event stream");
 | `off(type, listener)`       | Remove one listener                                               |
 | `emit("message", message)`  | Publish one structured message                                    |
 | `emit("clear")`             | Publish a clear event                                             |
-| `onEvent(listener)`         | Subscribe to the discriminated `ConsoleEvent` union               |
-| `emitEvent(event)`          | Publish a `ConsoleEvent` union value                              |
+| `dispatch(event)`          | Route an existing `ConsoleEvent` through the named emitter API    |
 | `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
 
 ## `Console` component configuration
