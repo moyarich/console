@@ -132,7 +132,7 @@ describe("Console rendering", () => {
     );
 
     expect(html).toContain("console-actions-trigger");
-    expect(html).toContain("popovertarget=");
+    expect(html).toContain("popoverTarget=");
     expect(html).toContain('popover="auto"');
     expect(html).toContain(">Export<");
     expect(html).toContain(">Clear<");
@@ -157,7 +157,8 @@ describe("Console rendering", () => {
     expect(html).toContain("plain stdout");
     expect(html).toContain("ANSI-aware process output");
     expect(html).toContain('data-stream="stderr"');
-    expect(html).toContain(">Copy output<");
+    expect(html).toContain("console-copy-output-button");
+    expect(html).toContain("Copy output");
     expect(html).toContain('data-console-mode="ansi"');
   });
 
