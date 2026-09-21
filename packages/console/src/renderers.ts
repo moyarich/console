@@ -1,12 +1,19 @@
 import type { ReactNode } from "react";
 import type { ConsoleMethod, ConsoleMessageData } from "./types";
 
+/** Context provided to custom structured-message renderers. */
 export interface ConsoleMessageRendererContext {
   index: number;
   messages: readonly ConsoleMessageData[];
   renderDefault: () => ReactNode;
 }
 
+/**
+ * Custom renderer for structured console messages.
+ *
+ * Returning `undefined` allows the next renderer, or the built-in renderer,
+ * to handle the message.
+ */
 export interface ConsoleMessageRenderer {
   method?: ConsoleMethod;
   match?: (
@@ -19,6 +26,7 @@ export interface ConsoleMessageRenderer {
   ) => ReactNode | undefined;
 }
 
+/** Context provided to custom value renderers. */
 export interface ConsoleValueRendererContext {
   propertyKey?: string;
   depth: number;
@@ -26,6 +34,11 @@ export interface ConsoleValueRendererContext {
   renderDefault: () => ReactNode;
 }
 
+/**
+ * Custom renderer for individual console values.
+ *
+ * Returning `undefined` delegates to the next matching renderer.
+ */
 export interface ConsoleValueRenderer {
   type?: string;
   match?: (value: unknown, context: ConsoleValueRendererContext) => boolean;
@@ -35,6 +48,9 @@ export interface ConsoleValueRenderer {
   ) => ReactNode | undefined;
 }
 
+/**
+ * Returns the type discriminator used by {@link ConsoleValueRenderer.type}.
+ */
 export function getConsoleValueType(value: unknown): string {
   if (value === null) return "null";
   if (Array.isArray(value)) return "array";
@@ -46,6 +62,11 @@ export function getConsoleValueType(value: unknown): string {
   return value.constructor?.name || "object";
 }
 
+/**
+ * Runs message renderers in declaration order and returns the first defined result.
+ *
+ * Renderer errors are isolated so third-party renderers cannot break the console.
+ */
 export function dispatchMessageRenderer(
   renderers: readonly ConsoleMessageRenderer[] | undefined,
   message: ConsoleMessageData,
@@ -68,6 +89,11 @@ export function dispatchMessageRenderer(
   return undefined;
 }
 
+/**
+ * Runs value renderers in declaration order and returns the first defined result.
+ *
+ * Renderer errors are isolated so third-party renderers cannot break the console.
+ */
 export function dispatchValueRenderer(
   renderers: readonly ConsoleValueRenderer[] | undefined,
   value: unknown,
