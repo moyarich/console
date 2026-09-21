@@ -522,10 +522,10 @@ Values are normalized before transport and restored on receipt. The transport pr
 | `listenForConsoleWebSocket`    | Receive console transport events through a WebSocket            |
 | `serializeConsoleEvent`        | Convert an event into a transport-safe representation           |
 | `deserializeConsoleEvent`      | Restore transported console values on receipt                   |
+| `getConsoleValueType`          | Resolve the dispatch type used by custom value renderers         |
 | `CONSOLE_TRANSPORT_TYPE`       | Transport envelope type                                         |
 | `CONSOLE_TRANSPORT_VERSION`    | Transport protocol version                                      |
 
-`getConsoleValueType()` is also exported for consumers that need to resolve the same normalized type key used by custom value-renderer dispatch.
 
 ## Development
 
