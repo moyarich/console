@@ -1,23 +1,36 @@
-import { useEffect } from "react";
 import {
   Console,
-  capturePageConsole,
   useConsoleMessages,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const LogsContainer = () => {
-  const { messages, clear, events } = useConsoleMessages();
+  const { messages, clear } = useConsoleMessages({
+    capture: true,
+    target: window.console,
+    source: "console-feed-equivalent",
+    passThrough: true,
+  });
 
-  useEffect(() => {
-    return capturePageConsole({
-      events,
-      target: window.console,
-      passThrough: true,
+  const writeMessage = () => {
+    console.log("Hello from console-feed equivalent", {
+      package: "@moyarich/console",
     });
-  }, [events]);
+  };
 
-  return <Console messages={messages} onClear={clear} />;
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <button type="button" onClick={writeMessage}>
+        Write message to console
+      </button>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="Captured from window.console"
+      />
+    </div>
+  );
 };
 
 export { LogsContainer };
