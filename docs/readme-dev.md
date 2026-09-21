@@ -2,7 +2,7 @@
 
 This document is for contributors and maintainers working on the `moyarich/console` repository.
 
-Package usage belongs in the root [README.md](../README.md).
+Package usage belongs in the root [README.md](../README.md). **The root `./README.md` is the single source of truth for the published package README. Do not maintain a separate `packages/console/README.md`.**
 
 ## Repository structure
 
@@ -362,7 +362,7 @@ Before publishing:
 2. run the full CI-equivalent validation set
 3. inspect the package contents with `npm pack --workspace @moyarich/console --dry-run`
 4. make sure new public APIs are exported from `packages/console/src/index.ts`
-5. update the user-facing README for externally visible behavior
+5. update the root `./README.md` for externally visible behavior; it is the published package README source of truth
 
 ## Pull request checklist
 
