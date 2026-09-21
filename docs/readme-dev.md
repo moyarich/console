@@ -260,7 +260,7 @@ apps/playground/src/examples/
       ...
 ```
 
-The numeric prefix on a group directory controls group order. The numeric prefix on an example directory controls order within that group. The suffix after the prefix becomes the runtime `groupId` or example `id`.
+The numeric prefix on a group directory controls group order. The numeric prefix on an example directory controls order within that group. The suffix after the prefix becomes the runtime `groupId` or example `id`. Group display labels are derived from the group ID with `change-case` `sentenceCase()`.
 
 `meta.json` contains display metadata only:
 
