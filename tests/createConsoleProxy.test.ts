@@ -2,20 +2,30 @@ import { describe, expect, it } from "vitest";
 import {
   createConsoleEventEmitter,
   createConsoleProxy,
-  type ConsoleMessageData,
+  type ConsoleEvent,
 } from "@moyarich/console";
 
+function getMessages(events: ConsoleEvent[]) {
+  return events.flatMap((event) =>
+    event.type === "message" ? [event.message] : [],
+  );
+}
+
 describe("createConsoleProxy", () => {
-  it("captures messages and group depth", () => {
-    const messages: ConsoleMessageData[] = [];
-    const console = createConsoleProxy(messages);
+  it("emits messages and group depth through onEvent", () => {
+    const received: ConsoleEvent[] = [];
+    const console = createConsoleProxy({
+      onEvent: (event) => received.push(event),
+    });
 
     console.log("root");
     console.group("group");
     console.warn("nested");
     console.groupEnd();
 
-    expect(messages.map(({ method, depth }) => ({ method, depth }))).toEqual([
+    expect(
+      getMessages(received).map(({ method, depth }) => ({ method, depth })),
+    ).toEqual([
       { method: "log", depth: 0 },
       { method: "group", depth: 0 },
       { method: "warn", depth: 1 },
@@ -23,10 +33,10 @@ describe("createConsoleProxy", () => {
   });
 
   it("tracks console.time and console.timeEnd", () => {
-    const messages: ConsoleMessageData[] = [];
+    const received: ConsoleEvent[] = [];
     let currentTime = 1000;
     const console = createConsoleProxy({
-      messages,
+      onEvent: (event) => received.push(event),
       timerNow: () => currentTime,
     });
 
@@ -34,21 +44,23 @@ describe("createConsoleProxy", () => {
     currentTime = 1250;
     console.timeEnd("Timer");
 
-    expect(messages).toHaveLength(1);
-    expect(messages[0]).toMatchObject({
+    expect(getMessages(received)).toHaveLength(1);
+    expect(getMessages(received)[0]).toMatchObject({
       method: "timeEnd",
       data: ["Timer: 250.00 ms"],
     });
   });
 
-  it("emits clear through a ConsoleEventEmitter", () => {
+  it("can dispatch proxy events through a ConsoleEventEmitter", () => {
     const events = createConsoleEventEmitter();
     const received: string[] = [];
 
     events.on("message", () => received.push("message"));
     events.on("clear", () => received.push("clear"));
 
-    const console = createConsoleProxy({ events });
+    const console = createConsoleProxy({
+      onEvent: events.dispatch,
+    });
 
     console.log("one");
     console.clear();
