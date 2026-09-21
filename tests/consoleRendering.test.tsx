@@ -303,10 +303,7 @@ describe("Console rendering", () => {
       <Console
         mode="ansi"
         messages={["zero"]}
-        structuredOutputParsers={[
-          () => undefined,
-          () => 0,
-        ]}
+        structuredOutputParsers={[() => undefined, () => 0]}
       />,
     );
 
