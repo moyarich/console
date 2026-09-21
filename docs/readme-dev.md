@@ -140,7 +140,7 @@ The emitter is deliberately separate from React state so non-React producers and
 
 ### Event flow
 
-The central event channel is `createConsoleEventEmitter()`. `createConsoleEventHandler(events)` adapts the transport-facing `ConsoleEvent` union into the emitter's named events.
+The central event channel is `createConsoleEventEmitter()`. Producers publish named `message` and `clear` events directly into that channel. The discriminated `ConsoleEvent` union remains the serialized transport/data shape rather than a second public event API.
 
 It handles two logical events:
 
@@ -172,7 +172,7 @@ ConsoleEventEmitter
   +--> audit/debug subscriber
 ```
 
-A producer can publish named events directly with `events.emit(...)`. Producers that already produce the discriminated `ConsoleEvent` union should use `createConsoleEventHandler(events)` as the adapter instead of adding transport-specific methods to the emitter.
+A producer publishes named events with `events.emit(...)`. Transport receivers deserialize `ConsoleEvent` values and route them into those same named emitter events internally; do not add `dispatch`, `emitEvent`, or other parallel event APIs to `ConsoleEventEmitter`.
 
 ### Producers
 
@@ -200,7 +200,7 @@ Important behavior:
 
 `createConsoleProxy()` provides a console-compatible object for runtimes where application code should not write directly to the host console.
 
-`createConsoleProxy()` reports `ConsoleEvent` values through its `onEvent` callback. Storage and transport remain the caller's responsibility.
+`createConsoleProxy()` publishes directly into a provided `ConsoleEventEmitter`. Storage, React state, and transport remain separate consumers of that channel.
 
 Keep browser-like behaviors such as groups, counts, timers, assertions, tables, and traces inside the proxy/capture layer rather than the React renderer.
 
@@ -219,7 +219,7 @@ postMessage / WebSocket / relay
   |
 isConsoleEnvelope()
   |
-createConsoleEventHandler(events) -> ConsoleEventEmitter.emit()
+deserializeConsoleEvent() -> ConsoleEventEmitter.emit()
 ```
 
 The transport protocol should remain independent of the React UI.
