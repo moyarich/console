@@ -21,9 +21,7 @@ import {
 } from "../renderers";
 import type { ConsoleMessageData } from "../types";
 
-const MESSAGE_ICONS: Partial<
-  Record<ConsoleMessageData["method"], LucideIcon>
-> = {
+const MESSAGE_ICONS: Partial<Record<ConsoleMessageData["method"], LucideIcon>> = {
   debug: Bug,
   info: Info,
   warn: TriangleAlert,
