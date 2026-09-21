@@ -601,7 +601,9 @@ a {
 }
 
 .preview-stage {
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
   min-height: 560px;
   height: 100%;
   padding: 20px;
@@ -612,6 +614,8 @@ a {
 
 .preview-stage > * {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .preview-stage button:not([class^="console-"]):not([class*=" console-"]) {
