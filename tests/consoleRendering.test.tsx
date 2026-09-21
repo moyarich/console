@@ -14,6 +14,7 @@ function renderConsole(messages: ConsoleMessageData[], error = "") {
 
 describe("Console rendering", () => {
   const escape = String.fromCharCode(27);
+
   it("renders primitive values", () => {
     const html = renderConsole([
       { method: "log", data: ["text", 2, true, null, undefined], depth: 0 },
@@ -137,6 +138,29 @@ describe("Console rendering", () => {
     expect(html).toContain(">Clear<");
     expect(html).not.toContain("console-toolbar");
     expect(html).not.toContain('role="tablist"');
+  });
+
+  it("renders ANSI messages through Console mode", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[
+          `${escape}[38;5;196mred${escape}[0m`,
+          { id: "plain", data: "plain stdout" },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("red");
+    expect(html).toContain("rgb(255, 0, 0)");
+    expect(html).toContain("plain stdout");
+    expect(html).toContain("ANSI-aware stdout output");
+  });
+
+  it("renders the ANSI empty state through Console", () => {
+    const html = renderToStaticMarkup(<Console mode="ansi" messages={[]} />);
+
+    expect(html).toContain("No stdout output yet.");
   });
 
   it("renders ConsoleStdout independently", () => {

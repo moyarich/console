@@ -12,7 +12,13 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
+import {
+  ConsoleStdout,
+  type ConsoleStdoutEntry,
+} from "./ConsoleStdout";
 import type { ConsoleMessageData, RunOutput } from "../types";
+
+export type ConsoleMode = "console" | "ansi";
 
 export type ConsoleMessageFilter = (
   message: ConsoleMessageData,
@@ -20,13 +26,8 @@ export type ConsoleMessageFilter = (
   messages: readonly ConsoleMessageData[],
 ) => boolean;
 
-export interface ConsoleProps {
-  output?: RunOutput;
-  messages?: ConsoleMessageData[];
-  error?: string;
+interface ConsoleSharedProps {
   onClear?: () => void;
-  onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
-  filter?: ConsoleMessageFilter;
   autoScroll?: boolean;
   showHeader?: boolean;
   showClearButton?: boolean;
@@ -38,60 +39,59 @@ export interface ConsoleProps {
   style?: CSSProperties;
 }
 
+export interface ConsoleMessageModeProps extends ConsoleSharedProps {
+  mode?: "console";
+  output?: RunOutput;
+  messages?: ConsoleMessageData[];
+  error?: string;
+  onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
+  filter?: ConsoleMessageFilter;
+}
+
+export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
+  mode: "ansi";
+  messages?: readonly (ConsoleStdoutEntry | string)[];
+  output?: never;
+  error?: never;
+  onMessagesChange?: never;
+  filter?: never;
+}
+
+export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
+
+interface ConsoleFrameProps extends ConsoleSharedProps {
+  hasMessages: boolean;
+  isEmpty: boolean;
+  scrollKey: unknown;
+  children: ReactNode;
+}
+
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
+const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
 
-export function Console({
-  output,
-  messages: messagesProp,
-  error: errorProp,
+function ConsoleFrame({
   onClear,
-  onMessagesChange,
-  filter,
   autoScroll = true,
   showHeader = true,
   showClearButton = true,
   actions,
   title = "Console",
-  subtitle = "Runtime output from console.*()",
-  emptyMessage = "No console output yet.",
+  subtitle,
+  emptyMessage,
   className = "",
   style,
-}: ConsoleProps) {
+  hasMessages,
+  isEmpty,
+  scrollKey,
+  children,
+}: ConsoleFrameProps) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
   const actionsPopoverId = useId();
-  const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
-  const runtimeError = errorProp ?? output?.error ?? "";
-  const messages = useMemo<ConsoleMessageData[]>(
-    () =>
-      runtimeError
-        ? [
-            ...sourceMessages,
-            { method: "error", data: [runtimeError], depth: 0 },
-          ]
-        : sourceMessages,
-    [runtimeError, sourceMessages],
-  );
-  const visibleMessages = useMemo(
-    () =>
-      filter
-        ? messages.filter((message, index) => filter(message, index, messages))
-        : messages,
-    [filter, messages],
-  );
-  const hasMessages = messages.length > 0;
-  const isEmpty = visibleMessages.length === 0;
   const clear = useCallback(() => {
     onClear?.();
   }, [onClear]);
-  const [expandedMessages, setExpandedMessages] = useState<
-    Map<ConsoleMessageData, number>
-  >(() => new Map());
-
-  useEffect(() => {
-    onMessagesChange?.(sourceMessages);
-  }, [onMessagesChange, sourceMessages]);
 
   useEffect(() => {
     const surface = surfaceRef.current;
@@ -101,7 +101,7 @@ export function Console({
     }
 
     surface.scrollTop = surface.scrollHeight;
-  }, [autoScroll, visibleMessages]);
+  }, [autoScroll, scrollKey]);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const surface = event.currentTarget;
@@ -111,26 +111,13 @@ export function Console({
     shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
   };
 
-  const hasExpandableValues = visibleMessages.some(
-    (message) =>
-      message.method !== "table" &&
-      message.data.some((value) => typeof value === "object" && value !== null),
-  );
-
-  const expandAllCollapsed = () => {
-    setExpandedMessages((current) => {
-      const version = Math.max(0, ...Array.from(current.values())) + 1;
-
-      return new Map(visibleMessages.map((message) => [message, version]));
-    });
-  };
-
   const showActions = actions || (showClearButton && onClear);
 
   return (
     <article
       className={`console console-panel ${className}`.trim()}
       style={style}
+      data-console-mode={undefined}
     >
       {showHeader && (
         <div className="console-panel-header panel-header">
@@ -143,7 +130,7 @@ export function Console({
               />
               <div className="console-heading-copy">
                 <h2>{title}</h2>
-                <p>{subtitle}</p>
+                {subtitle && <p>{subtitle}</p>}
               </div>
             </div>
 
@@ -215,22 +202,113 @@ export function Console({
               <span>{emptyMessage}</span>
             </div>
           ) : (
-            visibleMessages.map((message, index) => (
-              <ConsoleMessage
-                key={
-                  message.id ??
-                  `${message.method}-${message.timestamp ?? "na"}-${index}`
-                }
-                message={message}
-                expandAllVersion={expandedMessages.get(message)}
-                onExpandAll={
-                  hasExpandableValues ? expandAllCollapsed : undefined
-                }
-              />
-            ))
+            children
           )}
         </div>
       </ConsoleContextMenu>
     </article>
   );
+}
+
+function ConsoleMessageMode({
+  output,
+  messages: messagesProp,
+  error: errorProp,
+  onMessagesChange,
+  filter,
+  subtitle = "Runtime output from console.*()",
+  emptyMessage = "No console output yet.",
+  ...frameProps
+}: ConsoleMessageModeProps) {
+  const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
+  const runtimeError = errorProp ?? output?.error ?? "";
+  const messages = useMemo<ConsoleMessageData[]>(
+    () =>
+      runtimeError
+        ? [
+            ...sourceMessages,
+            { method: "error", data: [runtimeError], depth: 0 },
+          ]
+        : sourceMessages,
+    [runtimeError, sourceMessages],
+  );
+  const visibleMessages = useMemo(
+    () =>
+      filter
+        ? messages.filter((message, index) => filter(message, index, messages))
+        : messages,
+    [filter, messages],
+  );
+  const [expandedMessages, setExpandedMessages] = useState<
+    Map<ConsoleMessageData, number>
+  >(() => new Map());
+
+  useEffect(() => {
+    onMessagesChange?.(sourceMessages);
+  }, [onMessagesChange, sourceMessages]);
+
+  const hasExpandableValues = visibleMessages.some(
+    (message) =>
+      message.method !== "table" &&
+      message.data.some((value) => typeof value === "object" && value !== null),
+  );
+
+  const expandAllCollapsed = () => {
+    setExpandedMessages((current) => {
+      const version = Math.max(0, ...Array.from(current.values())) + 1;
+
+      return new Map(visibleMessages.map((message) => [message, version]));
+    });
+  };
+
+  return (
+    <ConsoleFrame
+      {...frameProps}
+      subtitle={subtitle}
+      emptyMessage={emptyMessage}
+      hasMessages={messages.length > 0}
+      isEmpty={visibleMessages.length === 0}
+      scrollKey={visibleMessages}
+    >
+      {visibleMessages.map((message, index) => (
+        <ConsoleMessage
+          key={
+            message.id ??
+            `${message.method}-${message.timestamp ?? "na"}-${index}`
+          }
+          message={message}
+          expandAllVersion={expandedMessages.get(message)}
+          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+        />
+      ))}
+    </ConsoleFrame>
+  );
+}
+
+function ConsoleAnsiMode({
+  messages = EMPTY_ANSI_MESSAGES,
+  subtitle = "ANSI-aware stdout output",
+  emptyMessage = "No stdout output yet.",
+  ...frameProps
+}: ConsoleAnsiModeProps) {
+  return (
+    <ConsoleFrame
+      {...frameProps}
+      subtitle={subtitle}
+      emptyMessage={emptyMessage}
+      hasMessages={messages.length > 0}
+      isEmpty={messages.length === 0}
+      scrollKey={messages}
+    >
+      <ConsoleStdout entries={messages} />
+    </ConsoleFrame>
+  );
+}
+
+export function Console(props: ConsoleProps) {
+  if (props.mode === "ansi") {
+    return <ConsoleAnsiMode {...props} />;
+  }
+
+  return <ConsoleMessageMode {...props} />;
 }
