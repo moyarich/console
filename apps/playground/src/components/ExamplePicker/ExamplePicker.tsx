@@ -7,7 +7,11 @@ import {
   type KeyboardEvent,
   type SyntheticEvent,
 } from "react";
-import type { ConsoleExample } from "../../examples";
+import {
+  CONSOLE_EXAMPLE_GROUPS,
+  DEFAULT_CONSOLE_EXAMPLE_GROUP_ID,
+  type ConsoleExample,
+} from "../../examples";
 
 interface ExamplePickerProps {
   examples: readonly ConsoleExample[];
@@ -15,32 +19,17 @@ interface ExamplePickerProps {
   onChange: (id: string) => void;
 }
 
-const GROUP_ORDER = [
-  "Getting started",
-  "Events",
-  "Console methods",
-  "Transports",
-] as const;
+function getExampleGroupId(example: ConsoleExample) {
+  return example.groupId ?? DEFAULT_CONSOLE_EXAMPLE_GROUP_ID;
+}
 
-type ExampleGroup = (typeof GROUP_ORDER)[number];
+function getExampleGroupLabel(example: ConsoleExample) {
+  const groupId = getExampleGroupId(example);
 
-function getExampleGroup(example: ConsoleExample): ExampleGroup {
-  if (
-    example.id === "current-page" ||
-    example.id === "plain-messages"
-  ) {
-    return "Getting started";
-  }
-
-  if (example.id === "console-event" || example.id === "without-hooks") {
-    return "Events";
-  }
-
-  if (example.id === "iframe" || example.id === "websocket") {
-    return "Transports";
-  }
-
-  return "Console methods";
+  return (
+    CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === groupId)?.label ??
+    groupId
+  );
 }
 
 export function ExamplePicker({
@@ -70,7 +59,7 @@ export function ExamplePicker({
         example.label,
         example.description,
         example.id,
-        getExampleGroup(example),
+        getExampleGroupLabel(example),
       ]
         .join(" ")
         .toLowerCase()
@@ -80,10 +69,10 @@ export function ExamplePicker({
 
   const groupedExamples = useMemo(
     () =>
-      GROUP_ORDER.map((group) => ({
+      CONSOLE_EXAMPLE_GROUPS.map((group) => ({
         group,
         examples: filteredExamples.filter(
-          (example) => getExampleGroup(example) === group,
+          (example) => getExampleGroupId(example) === group.id,
         ),
       })).filter(({ examples: groupExamples }) => groupExamples.length > 0),
     [filteredExamples],
@@ -273,9 +262,9 @@ export function ExamplePicker({
           aria-label="Console examples"
         >
           {groupedExamples.map(({ group, examples: groupExamples }) => (
-            <div className="example-picker-group" key={group}>
+            <div className="example-picker-group" key={group.id}>
               <div className="example-picker-group-heading">
-                <span>{group}</span>
+                <span>{group.label}</span>
                 <span>{groupExamples.length}</span>
               </div>
 

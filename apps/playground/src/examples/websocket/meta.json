@@ -2,5 +2,6 @@
   "id": "websocket",
   "label": "WebSocket",
   "description": "Keep one WebSocket connection mounted while sending and receiving console transport envelopes.",
-  "order": 17
+  "order": 17,
+  "groupId": "transports"
 }
