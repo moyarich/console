@@ -337,18 +337,18 @@ Values are normalized before transport so values such as `BigInt`, functions, sy
 
 ## Main exports
 
-| Export | Purpose |
-| --- | --- |
-| `Console` | Render console messages |
-| `useConsoleMessages` | Manage console message state and optional page capture |
-| `capturePageConsole` | Capture calls from a console object |
-| `createConsoleProxy` | Create a console-compatible object for evaluated/sandboxed code |
-| `createConsoleEventEmitter` | Publish and subscribe to message/clear events |
-| `listenForConsolePostMessages` | Receive console transport events through `postMessage` |
-| `listenForConsoleWebSocket` | Receive console transport events through a WebSocket |
-| `serializeConsoleEvent` | Convert an event into a transport-safe representation |
-| `CONSOLE_TRANSPORT_TYPE` | Transport envelope type |
-| `CONSOLE_TRANSPORT_VERSION` | Transport protocol version |
+| Export                         | Purpose                                                         |
+| ------------------------------ | --------------------------------------------------------------- |
+| `Console`                      | Render console messages                                         |
+| `useConsoleMessages`           | Manage console message state and optional page capture          |
+| `capturePageConsole`           | Capture calls from a console object                             |
+| `createConsoleProxy`           | Create a console-compatible object for evaluated/sandboxed code |
+| `createConsoleEventEmitter`    | Publish and subscribe to message/clear events                   |
+| `listenForConsolePostMessages` | Receive console transport events through `postMessage`          |
+| `listenForConsoleWebSocket`    | Receive console transport events through a WebSocket            |
+| `serializeConsoleEvent`        | Convert an event into a transport-safe representation           |
+| `CONSOLE_TRANSPORT_TYPE`       | Transport envelope type                                         |
+| `CONSOLE_TRANSPORT_VERSION`    | Transport protocol version                                      |
 
 ## Development
 
