@@ -49,38 +49,63 @@ export type ConsoleMessageFilter = (
 
 /** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
+  /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
+  /** Keep the output pinned to the bottom while the user remains near it. @default true */
   autoScroll?: boolean;
+  /** Enables native CSS resizing in the requested direction. */
   resizable?: ConsoleResizeDirection;
+  /** Whether to render the panel header. @default true */
   showHeader?: boolean;
+  /** Whether to include the built-in clear command when `onClear` is provided. @default true */
   showClearButton?: boolean;
+  /** Additional React content rendered in the header actions popover. */
   actions?: ReactNode;
+  /** Host-defined actions available from the right-click context menu. */
   contextMenuActions?: readonly ConsoleContextMenuAction[];
+  /** Header title. @default "Console" */
   title?: string;
+  /** Optional header subtitle. Mode-specific defaults are used when omitted. */
   subtitle?: string;
+  /** Message shown when the selected mode has no visible output. */
   emptyMessage?: string;
+  /** Additional class names applied to the root console element. */
   className?: string;
+  /** Inline styles applied to the root console element, including public theme variables. */
   style?: CSSProperties;
+  /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
 /** Props for browser-style structured console rendering. */
 export interface ConsoleMessageModeProps extends ConsoleSharedProps {
+  /** Selects structured console mode. This is the default mode. */
   mode?: "console";
+  /** Run result used as an alternative source of messages and runtime error text. */
   output?: RunOutput;
+  /** Structured messages to render. Takes precedence over `output.messages`. */
   messages?: ConsoleMessageData[];
+  /** Optional runtime error appended as a synthetic error message. */
   error?: string;
+  /** Observes the unfiltered source message collection. */
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
+  /** Controls which structured messages are visible. */
   filter?: ConsoleMessageFilter;
+  /** Ordered custom renderers for complete structured messages. */
   messageRenderers?: readonly ConsoleMessageRenderer[];
+  /** Host-defined actions shown for a selected structured message. */
   messageActions?: readonly ConsoleMessageAction[];
 }
 
 /** Props for terminal-style ANSI/process-output rendering. */
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
+  /** Selects ANSI/process-output mode. */
   mode: "ansi";
+  /** ANSI-aware stdout/stderr entries or raw strings to render. */
   messages?: readonly (ConsoleStdoutEntry | string)[];
+  /** Parse complete JSON object/array lines into structured value inspectors. */
   parseStructuredOutput?: boolean;
+  /** Ordered custom parsers that can promote text lines into structured values. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   output?: never;
   error?: never;
