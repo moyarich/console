@@ -115,6 +115,26 @@ Keep component modules focused on React rendering, state, refs, effects, and eve
 - `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
 - the root `utils/` directory is reserved for cross-cutting helpers such as transport, serialization, clipboard, capture, and WebSocket utilities
 
+Prefer one reusable utility function per module, even when the package currently has only one internal caller. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
+
+Utility barrels are published as secondary entry points:
+
+```ts
+import {
+  normalizeConsoleValue,
+  objectEntries,
+  collectColumns,
+} from "@moyarich/console/utils/console";
+
+import {
+  getAnsiTokenRanges,
+  stripAnsiText,
+  parseStrictJsonOutput,
+} from "@moyarich/console/utils/terminal";
+```
+
+These secondary entry points are intentionally separate from the main reported API: they keep the root import concise while making reusable implementation modules available to advanced consumers.
+
 Do not add parsing, normalization, formatting, geometry, or value-inspection helpers directly to component files when they can be expressed independently of JSX.
 
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
