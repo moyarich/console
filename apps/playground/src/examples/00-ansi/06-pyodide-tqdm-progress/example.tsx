@@ -4,7 +4,7 @@ import "@moyarich/console/styles.css";
 
 const PYODIDE_VERSION = "314.0.7";
 const PYODIDE_INDEX_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
-const PYODIDE_MODULE_URL = `${PYODIDE_INDEX_URL}pyodide.mjs`;
+const PYODIDE_SCRIPT_URL = `${PYODIDE_INDEX_URL}pyodide.js`;
 
 interface PyodideGlobals {
   set(name: string, value: unknown): void;
@@ -16,18 +16,71 @@ interface PyodideRuntime {
   runPythonAsync(code: string): Promise<unknown>;
 }
 
-interface PyodideModule {
-  loadPyodide(options: { indexURL: string }): Promise<PyodideRuntime>;
-}
+type LoadPyodide = (options: {
+  indexURL: string;
+}) => Promise<PyodideRuntime>;
+
+type PyodideGlobalScope = typeof globalThis & {
+  loadPyodide?: LoadPyodide;
+};
 
 let runtimePromise: Promise<PyodideRuntime> | undefined;
+let scriptPromise: Promise<void> | undefined;
+
+async function loadPyodideScript(): Promise<void> {
+  const scope = globalThis as PyodideGlobalScope;
+
+  if (scope.loadPyodide) {
+    return;
+  }
+
+  scriptPromise ??= new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[data-console-pyodide="true"]',
+    );
+
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error("Unable to load the Pyodide browser script.")),
+        { once: true },
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = PYODIDE_SCRIPT_URL;
+    script.async = true;
+    script.dataset.consolePyodide = "true";
+    script.addEventListener("load", () => resolve(), { once: true });
+    script.addEventListener(
+      "error",
+      () => reject(new Error("Unable to load the Pyodide browser script.")),
+      { once: true },
+    );
+    document.head.append(script);
+  });
+
+  await scriptPromise;
+
+  if (!scope.loadPyodide) {
+    throw new Error("Pyodide loaded without exposing globalThis.loadPyodide.");
+  }
+}
 
 async function getPyodideRuntime(): Promise<PyodideRuntime> {
   runtimePromise ??= (async () => {
-    const pyodideModule = (await import(
-      /* @vite-ignore */ PYODIDE_MODULE_URL
-    )) as PyodideModule;
-    const runtime = await pyodideModule.loadPyodide({
+    await loadPyodideScript();
+
+    const scope = globalThis as PyodideGlobalScope;
+    const loadPyodide = scope.loadPyodide;
+
+    if (!loadPyodide) {
+      throw new Error("Pyodide loader is unavailable.");
+    }
+
+    const runtime = await loadPyodide({
       indexURL: PYODIDE_INDEX_URL,
     });
 
@@ -155,11 +208,10 @@ export default function PyodideTqdmProgressExample() {
       </div>
 
       <p style={{ margin: 0 }}>
-        The real tqdm formatter writes to a custom Python file-like stream.
-        Every exact write, including its carriage return, is forwarded straight
-        to JavaScript and appended as process output. This bypasses Pyodide
-        stdout/stderr buffering so the console receives the same redraw control
-        that tqdm intended.
+        Pyodide is loaded through its browser script so this example also works
+        in the playground&apos;s editable-source runner. The real tqdm formatter
+        writes to a custom Python file-like stream, and every exact write,
+        including its carriage return, is forwarded directly into the console.
       </p>
 
       <Console
