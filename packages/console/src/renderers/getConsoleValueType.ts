@@ -1,7 +1,5 @@
-import type { ConsoleValueRenderer } from "./types";
-
 /**
- * Returns the type discriminator used by {@link ConsoleValueRenderer.type}.
+ * Returns the type discriminator used by custom value renderer `type` matching.
  */
 export function getConsoleValueType(value: unknown): string {
   if (value === null) return "null";
