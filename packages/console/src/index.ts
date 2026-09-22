@@ -13,7 +13,6 @@ export type {
   ConsoleMessageModeProps,
   ConsoleMode,
   ConsoleProps,
-  RunOutput,
 } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export type {
@@ -107,4 +106,9 @@ export type {
   ConsoleWebSocketLike,
   ListenForConsoleWebSocketOptions,
 } from "./utils/transport/websocket";
-export type { ConsoleMethod, ConsoleMessageData, ConsoleEvent } from "./types";
+export type {
+  ConsoleMethod,
+  ConsoleMessageData,
+  RunOutput,
+  ConsoleEvent,
+} from "./types";
