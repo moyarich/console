@@ -243,7 +243,7 @@ function EditorShell() {
         justifyContent: "center",
         flex: "0 0 auto",
         background: "transparent",
-        color: "var(--console-resize-separator-foreground, #8b949e)",
+        color: "var(--console-resize-separator-grip-color, #8b949e)",
         cursor: horizontalDock ? "col-resize" : "row-resize",
         outline: "none",
         touchAction: "none",
@@ -256,10 +256,10 @@ function EditorShell() {
           width: horizontalDock ? 1 : "100%",
           height: horizontalDock ? "100%" : 1,
           background: splitterActive
-            ? "var(--console-resize-separator-active, #58a6ff)"
+            ? "var(--console-resize-separator-active-grip-color, #58a6ff)"
             : splitterHovered
-              ? "var(--console-resize-separator-hover, #6e7681)"
-              : "var(--console-resize-separator-line, #30363d)",
+              ? "var(--console-resize-separator-hover-line-background-color, #6e7681)"
+              : "var(--console-resize-separator-line-background-color, #30363d)",
           pointerEvents: "none",
           transition: "background 120ms ease",
         }}
@@ -274,20 +274,20 @@ function EditorShell() {
           justifyContent: "center",
           border:
             splitterHovered || splitterActive
-              ? "1px solid var(--console-resize-separator-border, #3d444d)"
+              ? "var(--console-resize-separator-grip-border, 1px solid #3d444d)"
               : "1px solid transparent",
-          borderRadius: "var(--console-resize-separator-grip-radius, 999px)",
+          borderRadius: "var(--console-resize-separator-grip-border-radius, 999px)",
           background:
             splitterHovered || splitterActive
-              ? "var(--console-resize-separator-grip-background, #21262d)"
+              ? "var(--console-resize-separator-grip-background-color, #21262d)"
               : "transparent",
           boxShadow:
             splitterHovered || splitterActive
-              ? "var(--console-resize-separator-grip-shadow, 0 2px 8px rgb(0 0 0 / 0.28))"
+              ? "var(--console-resize-separator-grip-box-shadow, 0 2px 8px rgb(0 0 0 / 0.28))"
               : "none",
           color: splitterActive
-            ? "var(--console-resize-separator-active, #58a6ff)"
-            : "var(--console-resize-separator-foreground, #8b949e)",
+            ? "var(--console-resize-separator-active-grip-color, #58a6ff)"
+            : "var(--console-resize-separator-grip-color, #8b949e)",
           opacity: splitterHovered || splitterActive ? 1 : 0.55,
           pointerEvents: "none",
           transition:
@@ -408,14 +408,14 @@ function EditorShell() {
           borderRadius: 10,
           background: "#0d1117",
           boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
-          "--console-resize-separator-line": "#30363d",
-          "--console-resize-separator-hover": "#6e7681",
-          "--console-resize-separator-active": "#58a6ff",
-          "--console-resize-separator-foreground": "#8b949e",
-          "--console-resize-separator-border": "#3d444d",
-          "--console-resize-separator-grip-background": "#21262d",
-          "--console-resize-separator-grip-radius": "999px",
-          "--console-resize-separator-grip-shadow":
+          "--console-resize-separator-line-background-color": "#30363d",
+          "--console-resize-separator-hover-line-background-color": "#6e7681",
+          "--console-resize-separator-active-line-background-color": "#58a6ff",
+          "--console-resize-separator-grip-color": "#8b949e",
+          "--console-resize-separator-grip-border": "1px solid #3d444d",
+          "--console-resize-separator-grip-background-color": "#21262d",
+          "--console-resize-separator-grip-border-radius": "999px",
+          "--console-resize-separator-grip-box-shadow":
             "0 2px 8px rgb(0 0 0 / 0.28)",
         } as CSSProperties
       }
