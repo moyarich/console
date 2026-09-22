@@ -305,14 +305,17 @@ export function ConsoleValue({
       linkContext,
     });
 
-  const type =
-    value === null
-      ? "null"
-      : Array.isArray(value)
-        ? "array"
-        : typeof value !== "object"
-          ? typeof value
-          : value.constructor?.name || "object";
+  let type: string;
+
+  if (value === null) {
+    type = "null";
+  } else if (Array.isArray(value)) {
+    type = "array";
+  } else if (typeof value !== "object") {
+    type = typeof value;
+  } else {
+    type = value.constructor?.name || "object";
+  }
   const rendererContext = {
     propertyKey,
     depth: ancestors.size,
