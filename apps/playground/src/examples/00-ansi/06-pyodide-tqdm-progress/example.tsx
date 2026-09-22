@@ -7,15 +7,17 @@ const PYODIDE_INDEX_URL =
   `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYODIDE_MODULE_URL = `${PYODIDE_INDEX_URL}pyodide.mjs`;
 
-type BatchedStreamHandler = {
-  batched: (output: string) => void;
-};
+interface PyodideWriter {
+  isatty: boolean;
+  getTerminalSize(): { columns: number; rows: number };
+  write(buffer: Uint8Array): number;
+}
 
 interface PyodideRuntime {
   loadPackage(name: string): Promise<void>;
   runPythonAsync(code: string): Promise<unknown>;
-  setStdout(handler: BatchedStreamHandler): void;
-  setStderr(handler: BatchedStreamHandler): void;
+  setStdout(handler: PyodideWriter): void;
+  setStderr(handler: PyodideWriter): void;
 }
 
 interface PyodideModule {
@@ -46,13 +48,14 @@ from tqdm import tqdm
 
 async def run_tqdm_demo():
     for _ in tqdm(
-        range(24),
-        desc="tqdm in Pyodide",
-        unit="step",
+        range(100),
+        desc="Downloading",
+        unit="item",
         mininterval=0,
         miniters=1,
+        dynamic_ncols=True,
     ):
-        await asyncio.sleep(0.06)
+        await asyncio.sleep(0.04)
 
     print("Python task complete")
 
@@ -86,18 +89,29 @@ export default function PyodideTqdmProgressExample() {
       ]);
     };
 
+    const createWriter = (
+      stream: ConsoleStdoutEntry["stream"],
+    ): PyodideWriter => {
+      const decoder = new TextDecoder();
+
+      return {
+        isatty: true,
+        getTerminalSize: () => ({ columns: 88, rows: 24 }),
+        write: (buffer) => {
+          append(decoder.decode(buffer, { stream: true }), stream);
+          return buffer.length;
+        },
+      };
+    };
+
     setMessages([]);
     setStatus("loading");
 
     try {
       const runtime = await getPyodideRuntime();
 
-      runtime.setStdout({
-        batched: (output) => append(output, "stdout"),
-      });
-      runtime.setStderr({
-        batched: (output) => append(output, "stderr"),
-      });
+      runtime.setStdout(createWriter("stdout"));
+      runtime.setStderr(createWriter("stderr"));
 
       setStatus("running");
       await runtime.runPythonAsync(PYTHON_SOURCE);
@@ -120,8 +134,8 @@ export default function PyodideTqdmProgressExample() {
           {status === "loading"
             ? "Loading Pyodide + tqdm..."
             : status === "running"
-              ? "Running tqdm..."
-              : "Run real tqdm progress"}
+              ? "Streaming tqdm..."
+              : "Run live tqdm progress"}
         </button>
 
         <button
@@ -134,15 +148,16 @@ export default function PyodideTqdmProgressExample() {
       </div>
 
       <p style={{ margin: 0 }}>
-        This loads Pyodide as an ES module in the browser, imports its bundled
-        tqdm package, and sends the library&apos;s real stdout/stderr writes
-        directly to the console. Network access is required for the first load.
+        Pyodide exposes stdout/stderr as TTY-like byte writers here. Each real
+        tqdm write is decoded and appended immediately, so carriage-return
+        updates redraw one logical console line while the Python loop runs.
+        Network access is required for the first Pyodide load.
       </p>
 
       <Console
         mode="ansi"
         title="Pyodide + tqdm"
-        subtitle="Real Python tqdm carriage-return progress rendered in the browser"
+        subtitle="Live Python tqdm progress streamed through real stderr writes"
         messages={messages}
         resizable="vertical"
         style={{ height: 420, minHeight: 240, maxHeight: 720 }}
