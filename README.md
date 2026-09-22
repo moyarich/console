@@ -36,6 +36,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
 | Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
+| Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
@@ -143,6 +144,57 @@ ANSI rendering uses `anser` and supports standard and bright colors, 256-color, 
 
 ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
 
+### Process output with ordered processors
+
+Use `processors` when process output needs runtime-specific normalization or enrichment before rendering. A processor receives immutable output state plus ANSI-stripped text and returns only the fields it wants to change:
+
+```tsx
+import type { ConsoleProcessOutputProcessor } from "@moyarich/console";
+
+const processors: ConsoleProcessOutputProcessor[] = [
+  {
+    id: "normalize-prefix",
+    process: (output, context) => ({
+      data: context.text.startsWith("[worker] ")
+        ? output.data.replace("[worker] ", "")
+        : output.data,
+      metadata: { runtime: "worker" },
+    }),
+  },
+  {
+    id: "promote-task-event",
+    process: (output, context) => {
+      if (!context.text.startsWith("TASK ")) {
+        return undefined;
+      }
+
+      return {
+        structuredValue: {
+          kind: "task",
+          message: context.text.slice(5),
+          runtime: output.metadata.runtime,
+        },
+      };
+    },
+  },
+];
+
+<Console mode="ansi" messages={entries} processors={processors} />;
+```
+
+Processors run in array order. Each processor sees the successful output and metadata produced by earlier processors. If one throws, its changes are discarded and later processors continue from the last successful state, so a plugin failure cannot suppress the remaining output.
+
+A processor may:
+
+- replace `data` while preserving ANSI rendering for the resulting text
+- set `structuredValue` to promote a line into the normal value inspector
+- merge host/plugin data into `metadata`
+- observe current ANSI-stripped text through `context.text` without changing output
+
+The metadata bag is deliberately extensible. Link, decoration, progress, and richer runtime metadata can be carried by processors without introducing terminal cursor/buffer abstractions; dedicated contracts can be reused as those APIs are added.
+
+For non-React pipelines, `processConsoleOutputEntry(entry, index, processors)` applies the same ordered processor chain directly.
+
 ### Parse structured values from ANSI output
 
 If a process prints complete JSON objects or arrays, `parseStructuredOutput` keeps the built-in strict-JSON behavior and renders matching values through the normal expandable inspector:
@@ -196,10 +248,11 @@ interface ConsoleStructuredOutputParserContext {
   index: number;
   id?: string;
   stream?: "stdout" | "stderr";
+  metadata?: ConsoleProcessOutputMetadata;
 }
 ```
 
-Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to the original ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+Processors run before structured parsers, so parsers receive transformed text and accumulated processor metadata. Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
 
 ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
 
