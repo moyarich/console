@@ -3,8 +3,7 @@ import { Console, type ConsoleStdoutEntry } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
 const PYODIDE_VERSION = "314.0.7";
-const PYODIDE_INDEX_URL =
-  `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+const PYODIDE_INDEX_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYODIDE_MODULE_URL = `${PYODIDE_INDEX_URL}pyodide.mjs`;
 
 interface PyodideWriter {
