@@ -535,7 +535,8 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
 | `showHeader`          | Show/hide the panel header                                                     |
 | `showClearButton`     | Show clear when `onClear` is available                                         |
-| `actions`             | Add application-defined actions to the ellipsis popover                        |
+| `actions`             | Add arbitrary React content to the ellipsis popover                            |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                           |
 | `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
 | `title` / `subtitle`  | Customize panel heading text                                                   |
 | `emptyMessage`        | Customize the empty state                                                      |
@@ -656,12 +657,20 @@ variables from the console target into the portaled menu. That preserves
 wrapper-scoped themes and allows two consoles with different themes on the same
 page. Global `:root` or `body` variables also work.
 
-## Extensible context and message actions
+## Extensible panel, context, and message actions
 
 Use descriptor-based actions when the host application needs commands in the
-console context menu or on individual structured messages. This is separate
-from the `actions` prop, which continues to accept arbitrary React content for
-the header ellipsis popover.
+header ellipsis menu, the console context menu, or on individual structured
+messages.
+
+The three typed action surfaces are:
+
+- `panelActions` — panel-level commands in the header ellipsis menu
+- `contextMenuActions` — right-click commands for console/object/message targets
+- `messageActions` — commands specific to structured messages
+
+The existing `actions` prop remains available as an escape hatch for arbitrary
+React content in the header ellipsis popover.
 
 ```tsx
 import {
@@ -669,7 +678,17 @@ import {
   type ConsoleContextMenuAction,
   type ConsoleMessageAction,
   type ConsoleMessageData,
+  type ConsolePanelAction,
 } from "@moyarich/console";
+
+const panelActions: ConsolePanelAction[] = [
+  {
+    id: "export-output",
+    label: "Export output",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: ({ mode }) => exportOutput(mode),
+  },
+];
 
 const contextMenuActions: ConsoleContextMenuAction[] = [
   {
@@ -703,6 +722,7 @@ export function RuntimeConsole({
   return (
     <Console
       messages={messages}
+      panelActions={panelActions}
       contextMenuActions={contextMenuActions}
       messageActions={messageActions}
     />
@@ -712,7 +732,12 @@ export function RuntimeConsole({
 
 Each action supports `id`, `label`, `onSelect`, optional `icon`,
 `ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and
-`disabled` can be booleans or predicates evaluated when the menu opens.
+`disabled` can be booleans or predicates evaluated against the current
+action context.
+
+`panelActions` receive the console surface context with `mode` and
+`hasMessages`. They render before the built-in ANSI Copy output and Clear
+commands.
 
 `contextMenuActions` receive a discriminated context with
 `kind: "console" | "object" | "message"`. Object contexts include `value`;
@@ -864,6 +889,7 @@ The host exposes four generic concepts:
 - `outputRenderer`
 - `messageRenderer`
 - `valueRenderer`
+- `panelAction`
 - `contextMenuAction`
 - `messageAction`
 
