@@ -1,12 +1,4 @@
 import Editor from "@monaco-editor/react";
-import {
-  GripHorizontal,
-  GripVertical,
-  PanelBottom,
-  PanelLeft,
-  PanelRight,
-  PanelTop,
-} from "lucide-react";
 import { useRef, useState, type PointerEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
@@ -18,14 +10,13 @@ import {
 type DockPosition = "top" | "right" | "bottom" | "left";
 
 const DOCK_OPTIONS = [
-  { position: "top", label: "Top", icon: PanelTop },
-  { position: "right", label: "Right", icon: PanelRight },
-  { position: "bottom", label: "Bottom", icon: PanelBottom },
-  { position: "left", label: "Left", icon: PanelLeft },
+  { position: "top", label: "Top" },
+  { position: "right", label: "Right" },
+  { position: "bottom", label: "Bottom" },
+  { position: "left", label: "Left" },
 ] as const satisfies readonly {
   position: DockPosition;
   label: string;
-  icon: typeof PanelTop;
 }[];
 
 const initialMessages: ConsoleMessageData[] = [
@@ -85,6 +76,69 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), Math.max(min, max));
 }
 
+function GripIcon({ horizontal }: { horizontal: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden="true"
+    >
+      {horizontal ? (
+        <>
+          <circle cx="5" cy="3" r="1" fill="currentColor" />
+          <circle cx="9" cy="3" r="1" fill="currentColor" />
+          <circle cx="5" cy="7" r="1" fill="currentColor" />
+          <circle cx="9" cy="7" r="1" fill="currentColor" />
+          <circle cx="5" cy="11" r="1" fill="currentColor" />
+          <circle cx="9" cy="11" r="1" fill="currentColor" />
+        </>
+      ) : (
+        <>
+          <circle cx="3" cy="5" r="1" fill="currentColor" />
+          <circle cx="7" cy="5" r="1" fill="currentColor" />
+          <circle cx="11" cy="5" r="1" fill="currentColor" />
+          <circle cx="3" cy="9" r="1" fill="currentColor" />
+          <circle cx="7" cy="9" r="1" fill="currentColor" />
+          <circle cx="11" cy="9" r="1" fill="currentColor" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function DockIcon({ position }: { position: DockPosition }) {
+  const panel =
+    position === "top"
+      ? { x: 2, y: 2, width: 12, height: 4 }
+      : position === "bottom"
+        ? { x: 2, y: 10, width: 12, height: 4 }
+        : position === "left"
+          ? { x: 2, y: 2, width: 4, height: 12 }
+          : { x: 10, y: 2, width: 4, height: 12 };
+
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        x="1.5"
+        y="1.5"
+        width="13"
+        height="13"
+        rx="1.5"
+        stroke="currentColor"
+      />
+      <rect {...panel} fill="currentColor" opacity="0.75" />
+    </svg>
+  );
+}
+
 function EditorShell() {
   const workspaceRef = useRef<HTMLDivElement>(null);
   const [dock, setDock] = useState<DockPosition>("bottom");
@@ -118,8 +172,7 @@ function EditorShell() {
       const delta = horizontalDock
         ? pointerEvent.clientX - startX
         : pointerEvent.clientY - startY;
-      const direction =
-        dock === "left" || dock === "top" ? 1 : -1;
+      const direction = dock === "left" || dock === "top" ? 1 : -1;
       const nextSize = clamp(
         startSize + delta * direction,
         MIN_CONSOLE_SIZE,
@@ -239,11 +292,7 @@ function EditorShell() {
           pointerEvents: "none",
         }}
       >
-        {horizontalDock ? (
-          <GripVertical size={14} aria-hidden="true" />
-        ) : (
-          <GripHorizontal size={14} aria-hidden="true" />
-        )}
+        <GripIcon horizontal={horizontalDock} />
       </span>
     </div>
   );
@@ -387,7 +436,7 @@ function EditorShell() {
           Dock:
         </span>
 
-        {DOCK_OPTIONS.map(({ position, label, icon: Icon }) => (
+        {DOCK_OPTIONS.map(({ position, label }) => (
           <button
             key={position}
             type="button"
@@ -405,7 +454,7 @@ function EditorShell() {
               whiteSpace: "nowrap",
             }}
           >
-            <Icon size={14} aria-hidden="true" />
+            <DockIcon position={position} />
             {label}
           </button>
         ))}
