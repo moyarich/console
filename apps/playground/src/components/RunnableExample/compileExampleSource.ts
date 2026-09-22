@@ -168,7 +168,7 @@ function createEsmSpecifierTransformer(ts: TypeScriptModule) {
       if (
         ts.isCallExpression(node) &&
         node.expression.kind === ts.SyntaxKind.ImportKeyword &&
-        node.arguments.length === 1
+        node.arguments.length >= 1
       ) {
         const argument = node.arguments[0];
 
@@ -181,6 +181,7 @@ function createEsmSpecifierTransformer(ts: TypeScriptModule) {
               ts.factory.createStringLiteral(
                 resolveEsmSpecifier(argument.text, ts),
               ),
+              ...node.arguments.slice(1),
             ],
           );
         }
@@ -241,7 +242,8 @@ export async function compileExampleSource(
       allowSyntheticDefaultImports: true,
     },
     transformers: {
-      before: [createEsmSpecifierTransformer(ts)],
+      // Rewrite emitted imports too, including TypeScript’s automatic JSX runtime.
+      after: [createEsmSpecifierTransformer(ts)],
     },
   });
 
