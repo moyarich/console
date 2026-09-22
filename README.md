@@ -152,7 +152,7 @@ This keeps spinner/progress output from build tools, package managers, test runn
 
 Normalization happens before process-output processors and structured-output parsers, so extensions receive the text that is actually visible instead of stale intermediate progress frames. Ordinary adjacent entries still remain separate rows unless a carriage return, newline boundary, or clear-line control explicitly connects them. Arbitrary cursor positioning and terminal screen/buffer emulation remain intentionally out of scope.
 
-The playground also includes a real-world browser example using Pyodide + `tqdm`. Pyodide is loaded through its supported browser script (`pyodide.js` / `globalThis.loadPyodide`) so the example works both in the normal Vite build and in the playground's editable-source runner, which intentionally restricts module imports. The real `tqdm` formatter writes to a custom Python stream whose exact carriage-return payloads are forwarded into ANSI mode.
+The playground also includes a real-world browser example using Pyodide + `tqdm`. The editable-source runner executes compiled examples as real browser ESM: built-in bare imports such as React and `@moyarich/console` are bridged to ESM module URLs, while absolute browser ESM URLs remain native imports. The example therefore imports Pyodide from `pyodide.mjs` directly and forwards the real `tqdm` formatter's exact carriage-return payloads into ANSI mode.
 
 ### Process output with ordered processors
 
