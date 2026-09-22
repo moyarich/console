@@ -6,7 +6,6 @@ import {
   createConsoleViewportAddon,
   type ConsoleAddon,
   type ConsoleAddonManager,
-  type ConsoleDisposable,
   type ConsoleExtensionRegistry,
 } from "../addons";
 import type { ConsoleMode } from "../types";
@@ -44,10 +43,7 @@ function validateAddons(
   }
 }
 
-function createManager(
-  mode: ConsoleMode,
-  viewport: ConsoleViewportService,
-): ConsoleAddonManager {
+function createManager(mode: ConsoleMode): ConsoleAddonManager {
   const manager = createConsoleAddonManager({
     capabilities:
       mode === "ansi"
@@ -112,19 +108,8 @@ export function useConsoleAddons(
 
   validateAddons(allAddons, coreAddonIds);
 
-  const manager = useMemo(
-    () => createManager(mode, viewport),
-    [mode, viewport],
-  );
-  const loadedRef = useRef(
-    new Map<
-      string,
-      {
-        addon: ConsoleAddon;
-        registration: ConsoleDisposable;
-      }
-    >(),
-  );
+  const manager = useMemo(() => createManager(mode), [mode]);
+  const loadedRef = useRef(new Map<string, ConsoleAddon>());
   const [, setRevision] = useState(0);
 
   useEffect(() => {
@@ -142,9 +127,9 @@ export function useConsoleAddons(
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
 
     for (const [id, current] of currentEntries) {
-      if (nextById.get(id) === current.addon) continue;
+      if (nextById.get(id) === current) continue;
 
-      current.registration.dispose();
+      manager.unload(id);
       loadedRef.current.delete(id);
     }
 
@@ -152,22 +137,20 @@ export function useConsoleAddons(
       const id = addon.id.trim();
       const current = loadedRef.current.get(id);
 
-      if (current?.addon === addon) continue;
+      if (current === addon) continue;
 
-      loadedRef.current.set(id, {
-        addon,
-        registration: manager.load(addon),
-      });
+      manager.load(addon);
+      loadedRef.current.set(id, addon);
     }
   }, [activeAddons, manager]);
 
   useEffect(
     () => () => {
-      const loaded = Array.from(loadedRef.current.values()).reverse();
+      const loadedIds = Array.from(loadedRef.current.keys()).reverse();
       loadedRef.current.clear();
 
-      for (const current of loaded) {
-        current.registration.dispose();
+      for (const id of loadedIds) {
+        manager.unload(id);
       }
     },
     [manager],
