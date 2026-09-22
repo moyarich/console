@@ -69,14 +69,14 @@ export { CONSOLE_METHODS } from "./consoleMethods";
 export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
 export { createConsoleProxy } from "./utils/console/runtime/createConsoleProxy";
-export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
+export type { CreateConsoleProxyOptions } from "./utils/console/runtime/createConsoleProxy";
 export { captureConsole } from "./utils/console/runtime/captureConsole";
 export { createConsoleEventEmitter } from "./utils/events/createConsoleEventEmitter";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
-} from "./utils/createConsoleEventEmitter";
-export type { CaptureConsoleOptions } from "./utils/captureConsole";
+} from "./utils/events/createConsoleEventEmitter";
+export type { CaptureConsoleOptions } from "./utils/console/runtime/captureConsole";
 export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
@@ -87,7 +87,7 @@ export {
   serializeConsoleEvent,
   deserializeConsoleEvent,
 } from "./utils/transport/serialization";
-export type { SerializeConsoleValueOptions } from "./utils/serialization";
+export type { SerializeConsoleValueOptions } from "./utils/transport/serialization";
 export {
   CONSOLE_TRANSPORT_TYPE,
   CONSOLE_TRANSPORT_VERSION,
@@ -95,12 +95,12 @@ export {
   isConsoleEnvelope,
 } from "./utils/transport/envelope";
 export { listenForConsolePostMessages } from "./utils/transport/postMessage";
-export type { ListenForConsolePostMessagesOptions } from "./utils/postMessage";
+export type { ListenForConsolePostMessagesOptions } from "./utils/transport/postMessage";
 export { listenForConsoleWebSocket } from "./utils/transport/websocket";
 export type {
   ConsoleWebSocketLike,
   ListenForConsoleWebSocketOptions,
-} from "./utils/websocket";
+} from "./utils/transport/websocket";
 export type {
   ConsoleMethod,
   ConsoleMessageData,
