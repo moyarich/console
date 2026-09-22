@@ -22,6 +22,7 @@ import type { ConsoleValueRenderer } from "./ConsoleValue";
 import type {
   ConsoleMessageData,
   ConsoleMode as ConsoleModeType,
+  RunOutput,
 } from "../types";
 import type {
   ConsoleContextMenuAction,
@@ -29,12 +30,6 @@ import type {
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links/types";
-
-/** Standard run result shape accepted by structured console mode. */
-export interface RunOutput {
-  messages: ConsoleMessageData[];
-  error?: string;
-}
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
