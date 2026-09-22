@@ -105,7 +105,17 @@ packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
 packages/console/src/links.tsx
+packages/console/src/utils/console/
+packages/console/src/utils/terminal/
 ```
+
+Keep component modules focused on React rendering, state, refs, effects, and event wiring. Component-independent helpers belong in domain utility directories:
+
+- `utils/console/` for structured-console behavior such as context-menu geometry/theme extraction, object/value inspection helpers, table normalization, and console copy formatting
+- `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
+- the root `utils/` directory is reserved for cross-cutting helpers such as transport, serialization, clipboard, capture, and WebSocket utilities
+
+Do not add parsing, normalization, formatting, geometry, or value-inspection helpers directly to component files when they can be expressed independently of JSX.
 
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
 
