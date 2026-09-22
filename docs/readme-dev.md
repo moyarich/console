@@ -121,6 +121,8 @@ Prefer one meaningful reusable abstraction per utility module. Do not create sep
 
 Avoid pass-through entry shims whose only purpose is to re-export another module, such as a flat file containing only `export * from "./utils/console"`. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as `utils/console/index.ts`, `utils/console/table/index.ts`, and `utils/terminal/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
 
+Avoid aliased function wrappers that merely rename an existing implementation, for example `function stripAnsiText(data) { return Anser.ansiToText(data); }`. Call or import the underlying implementation directly unless the wrapper adds package-specific validation, normalization, compatibility behavior, error containment, or another meaningful contract.
+
 Utility barrels are published as secondary entry points:
 
 ```ts
@@ -132,7 +134,6 @@ import {
 
 import {
   getAnsiTokenRanges,
-  stripAnsiText,
   parseStrictJsonOutput,
 } from "@moyarich/console/utils/terminal";
 ```
