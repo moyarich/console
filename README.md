@@ -575,46 +575,159 @@ ANSI mode also adds **Copy output** to the actions menu.
 The package styles expose `--console-*` custom properties as **theme inputs**.
 The library does not assign those public properties internally. Instead, it
 resolves them through private `--_console-*` implementation tokens with
-fallback values. This means a theme can be defined on `:root`, a wrapper
+fallback values. A theme can therefore be defined on `:root`, a wrapper
 around one console, the `.console-panel` itself, or through the component's
-`style` prop without fighting a same-element default declaration.
+`style` prop.
 
 Do not depend on or override `--_console-*` properties. They are internal and
-may change. Override only the public `--console-*` variables.
+may change.
+
+### Theme-token naming contract
+
+Public theme token names identify the CSS property they control:
+
+- `*-color` → `color` or an explicitly named color property such as `border-color`
+- `*-background-color` → `background-color`
+- `*-border` → complete `border` shorthand, such as `1px solid #d0d5dd`
+- `*-border-left` / `*-border-bottom` → complete directional border shorthand
+- `*-border-color` → `border-color` only
+- `*-border-radius` → `border-radius`
+- `*-box-shadow` → `box-shadow`
+- `*-outline` → complete `outline` shorthand
+- typography and sizing tokens use the exact CSS property name
+
+For example, `--console-panel-border` accepts a complete border shorthand,
+while `--console-warning-border-color` changes only the warning message's
+`border-color`.
 
 ### Native `color-scheme` support
 
-The console uses the CSS `color-scheme` property for browser-rendered UI such
-as scrollbars and native controls. The three public inputs are separate because
-the default panel chrome is light while the output surface and context menu are
-dark:
+| Token | CSS property | Applies to |
+| --- | --- | --- |
+| `--console-panel-color-scheme` | `color-scheme` | Panel chrome and header actions |
+| `--console-color-scheme` | `color-scheme` | Structured/ANSI output surface |
+| `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu |
 
-| Variable                              | Default                                | Applies to                      |
-| ------------------------------------- | -------------------------------------- | ------------------------------- |
-| `--console-panel-color-scheme`        | `light`                                | Panel chrome and header actions |
-| `--console-color-scheme`              | `dark`                                 | Structured/ANSI output surface  |
-| `--console-context-menu-color-scheme` | falls back to `--console-color-scheme` | Right-click menu                |
+The default panel scheme is light while the output surface and context menu are
+dark. `color-scheme` affects browser-rendered UI such as native scrollbars and
+controls; it does not recolor the custom console surfaces.
 
-`color-scheme` tells the browser how to render native UI; it does not
-automatically recolor the library's custom surfaces. Set the corresponding
-color variables when creating a light or dark theme.
+### Panel chrome
 
-### Common theme variables
+| Token | CSS property |
+| --- | --- |
+| `--console-panel-background-color` | `background-color` |
+| `--console-panel-color` | `color` |
+| `--console-panel-muted-color` | `color` |
+| `--console-panel-border` | `border` shorthand |
+| `--console-panel-border-radius` | `border-radius` |
+| `--console-panel-box-shadow` | `box-shadow` |
+| `--console-panel-header-background-color` | `background-color` |
+| `--console-panel-header-border-bottom` | `border-bottom` shorthand |
+| `--console-panel-popover-box-shadow` | `box-shadow` |
 
-| Area              | Variables                                                                                                                                                                                                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Panel chrome      | `--console-panel-background`, `--console-panel-color`, `--console-panel-muted-color`, `--console-panel-border-color`, `--console-panel-header-background`, `--console-panel-header-border-color`                                                                                                                                    |
-| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border-color`, `--console-panel-control-color`, `--console-panel-control-hover-background`, `--console-panel-control-hover-color`, `--console-panel-control-hover-border-color`                                                                           |
-| Output surface    | `--console-background`, `--console-color`, `--console-border-color`, `--console-muted-color`, `--console-subtle-color`                                                                                                                                                                                                              |
-| Message states    | `--console-info-color`, `--console-debug-color`, `--console-warning-background`, `--console-warning-color`, `--console-error-background`, `--console-error-color`                                                                                                                                                        |
-| Values            | `--console-string-color`, `--console-number-color`, `--console-null-color`, `--console-symbol-color`, `--console-circular-color`, `--console-property-key-color`, `--console-object-property-key-color`                                                                                                                                                          |
-| Icons             | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background`                                                                                                               |
-| Context menu      | `--console-context-menu-background`, `--console-context-menu-color`, `--console-context-menu-border-color`, `--console-context-menu-hover-background`, `--console-context-menu-hover-background-foreground`, `--console-context-menu-icon-color`, `--console-context-menu-danger-color`, `--console-context-menu-border-radius`, `--console-context-menu-box-shadow` |
-| Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height`                                                                                                                                                                                         |
+### Panel controls and actions
+
+| Token | CSS property |
+| --- | --- |
+| `--console-panel-control-background-color` | `background-color` |
+| `--console-panel-control-border` | `border` shorthand |
+| `--console-panel-control-color` | `color` |
+| `--console-panel-control-hover-background-color` | `background-color` |
+| `--console-panel-control-hover-color` | `color` |
+| `--console-panel-control-hover-border-color` | `border-color` |
+| `--console-panel-action-separator-background-color` | `background-color` |
+
+### Output surface and process rows
+
+| Token | CSS property |
+| --- | --- |
+| `--console-background-color` | `background-color` |
+| `--console-color` | `color` |
+| `--console-entry-border-bottom` | `border-bottom` shorthand |
+| `--console-stderr-border-left` | `border-left` shorthand |
+| `--console-clear-line-border-left` | `border-left` shorthand |
+| `--console-link-color` | `color` |
+| `--console-message-action-focus-outline` | `outline` shorthand |
+| `--console-empty-color` | `color` |
+| `--console-muted-color` | `color` |
+| `--console-subtle-color` | `color` |
+| `--console-group-marker-color` | `color` |
+| `--console-header-icon-color` | `color` |
+
+### Message states
+
+| Token | CSS property |
+| --- | --- |
+| `--console-info-color` | `color` |
+| `--console-debug-color` | `color` |
+| `--console-warning-border-color` | `border-color` |
+| `--console-warning-background-color` | `background-color` |
+| `--console-warning-color` | `color` |
+| `--console-error-border-color` | `border-color` |
+| `--console-error-background-color` | `background-color` |
+| `--console-error-color` | `color` |
+
+### Values and object inspector
+
+| Token | CSS property |
+| --- | --- |
+| `--console-string-color` | `color` |
+| `--console-number-color` | `color` |
+| `--console-null-color` | `color` |
+| `--console-symbol-color` | `color` |
+| `--console-circular-color` | `color` |
+| `--console-property-key-color` | `color` |
+| `--console-object-property-key-color` | `color` |
+| `--console-object-border-left` | `border-left` shorthand |
+
+### Icons
+
+| Token | CSS property |
+| --- | --- |
+| `--console-icon-color` | `color` |
+| `--console-icon-hover-color` | `color` |
+| `--console-icon-hover-background-color` | `background-color` |
+| `--console-message-icon-color` | `color` |
+| `--console-message-icon-hover-color` | `color` |
+| `--console-message-icon-hover-background-color` | `background-color` |
+
+### Tables
+
+| Token | CSS property |
+| --- | --- |
+| `--console-table-border` | `border` shorthand |
+| `--console-table-header-background-color` | `background-color` |
+| `--console-table-even-background-color` | `background-color` |
+
+### Context menu
+
+| Token | CSS property |
+| --- | --- |
+| `--console-context-menu-background-color` | `background-color` |
+| `--console-context-menu-border` | `border` shorthand |
+| `--console-context-menu-color` | `color` |
+| `--console-context-menu-muted-color` | `color` |
+| `--console-context-menu-hover-background-color` | `background-color` |
+| `--console-context-menu-hover-color` | `color` |
+| `--console-context-menu-icon-color` | `color` |
+| `--console-context-menu-danger-color` | `color` |
+| `--console-context-menu-border-radius` | `border-radius` |
+| `--console-context-menu-box-shadow` | `box-shadow` |
+| `--console-context-menu-separator-background-color` | `background-color` |
+
+### Typography and sizing
+
+| Token | CSS property |
+| --- | --- |
+| `--console-font-family` | `font-family` |
+| `--console-font-size` | `font-size` |
+| `--console-line-height` | `line-height` |
+| `--console-min-height` | `min-height` |
+| `--console-mobile-min-height` | `min-height` below the package mobile breakpoint |
 
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
-explicit public hover variable completely replaces the derived value, so themes
-do not create circular custom-property dependencies.
+explicit public hover token replaces that derived value.
 
 ### Example: light output theme
 
@@ -624,13 +737,14 @@ do not create circular custom-property dependencies.
   --console-color-scheme: light;
   --console-context-menu-color-scheme: light;
 
-  --console-panel-background: #ffffff;
+  --console-panel-background-color: #ffffff;
   --console-panel-color: #172033;
-  --console-panel-border-color: #d8dee8;
+  --console-panel-border: 1px solid #d8dee8;
+  --console-panel-header-border-bottom: 1px solid #e2e8f0;
 
-  --console-background: #f8fafc;
+  --console-background-color: #f8fafc;
   --console-color: #172033;
-  --console-border-color: #e2e8f0;
+  --console-entry-border-bottom: 1px solid #e2e8f0;
   --console-muted-color: #667085;
   --console-subtle-color: #98a2b3;
 
@@ -639,9 +753,10 @@ do not create circular custom-property dependencies.
   --console-null-color: #7a5af8;
   --console-symbol-color: #027a48;
 
-  --console-context-menu-background: #ffffff;
+  --console-context-menu-background-color: #ffffff;
   --console-context-menu-color: #172033;
-  --console-context-menu-border-color: #d8dee8;
+  --console-context-menu-border: 1px solid #d8dee8;
+  --console-context-menu-separator-background-color: #d8dee8;
 }
 ```
 
@@ -652,10 +767,10 @@ do not create circular custom-property dependencies.
 ```
 
 The context menu is rendered through a portal to `document.body`. When it
-opens, the component copies explicitly resolved public context-menu theme
-variables from the console target into the portaled menu. That preserves
-wrapper-scoped themes and allows two consoles with different themes on the same
-page. Global `:root` or `body` variables also work.
+opens, the component copies the public context-menu theme inputs from the
+console target into the portaled menu. That preserves wrapper-scoped themes and
+allows two consoles with different themes on the same page. Global `:root` or
+`body` variables also work.
 
 ## Extensible panel, context, and message actions
 
