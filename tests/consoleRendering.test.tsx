@@ -769,9 +769,7 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <Console
         mode="ansi"
-        messages={[
-          `Visit ${escape}[36mhttps://example${escape}[0m.com/docs`,
-        ]}
+        messages={[`Visit ${escape}[36mhttps://example${escape}[0m.com/docs`]}
       />,
     );
 
