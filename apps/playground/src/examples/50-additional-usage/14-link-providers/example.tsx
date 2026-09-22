@@ -62,7 +62,9 @@ export default function LinkProvidersExample() {
 
       <div>
         Custom provider action:
-        <strong>{lastOpened ? ` ${lastOpened}` : " click a source location"}</strong>
+        <strong>
+          {lastOpened ? ` ${lastOpened}` : " click a source location"}
+        </strong>
       </div>
     </div>
   );
