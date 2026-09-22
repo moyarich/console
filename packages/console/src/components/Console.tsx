@@ -48,8 +48,8 @@ import {
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
   createConsoleViewportController,
+  type ConsoleScrollOptions,
   type ConsoleViewportController,
-  type ConsoleViewportService,
 } from "../viewport";
 
 /** Rendering mode selected by the top-level console component. */
@@ -59,7 +59,14 @@ export type ConsoleResizeDirection =
   "vertical" | "horizontal" | "both" | "block" | "inline";
 
 /** Supported imperative surface exposed through the top-level Console ref. */
-export interface ConsoleHandle extends ConsoleViewportService {}
+export interface ConsoleHandle {
+  scrollToTop(): void;
+  scrollToBottom(): void;
+  scrollToMessage(id: string, options?: ConsoleScrollOptions): boolean;
+  isAtBottom(): boolean;
+  isAtTop(): boolean;
+  focus(): void;
+}
 
 /**
  * Predicate used to decide whether a structured message should be visible.
@@ -220,7 +227,7 @@ function ConsoleFrame({
     if (value) {
       void writeClipboardText(value);
     }
-  }, []);
+  }, [surfaceRef]);
 
   useEffect(() => {
     if (!autoScroll) return;
