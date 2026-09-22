@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "clear" as const;
-const description = "Clear the seeded output through console.clear. Restore it to try again.";
+const description =
+  "Clear the seeded output through console.clear. Restore it to try again.";
 const expected = "No console output yet.";
 
 function runExample(console: globalThis.Console) {
