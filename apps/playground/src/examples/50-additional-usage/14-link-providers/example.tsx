@@ -3,6 +3,7 @@ import {
   Console,
   type ConsoleLinkProvider,
   type ConsoleMessageData,
+  type ConsoleStdoutEntry,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
@@ -19,6 +20,19 @@ const messages: ConsoleMessageData[] = [
     method: "error",
     data: ["Build failed at src/app.tsx:18:5"],
     depth: 0,
+  },
+];
+
+const ansiMessages: ConsoleStdoutEntry[] = [
+  {
+    id: "docs",
+    stream: "stdout",
+    data: "Docs: https://example.com/cli\n",
+  },
+  {
+    id: "source-error",
+    stream: "stderr",
+    data: "Error: src/cli/run.ts:91:12\n",
   },
 ];
 
@@ -52,10 +66,7 @@ export default function LinkProvidersExample() {
 
       <Console
         mode="ansi"
-        messages={[
-          "Docs: https://example.com/cli",
-          "Error: src/cli/run.ts:91:12",
-        ]}
+        messages={ansiMessages}
         linkProviders={[sourceProvider]}
         subtitle="The same providers also work in ANSI output"
       />
