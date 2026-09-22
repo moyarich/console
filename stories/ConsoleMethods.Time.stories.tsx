@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "time" as const;
-const description = "Start a timer without emitting a message, then use timeEnd to display its duration.";
+const description =
+  "Start a timer without emitting a message, then use timeEnd to display its duration.";
 const expected = "load:";
 
 function runExample(console: globalThis.Console) {
