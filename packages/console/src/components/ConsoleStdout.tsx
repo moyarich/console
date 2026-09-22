@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 import {
+  normalizeConsoleProcessOutputEntries,
   processConsoleOutputEntry,
   type ConsoleOutputStream,
   type ConsoleProcessOutputMetadata,
@@ -19,7 +20,7 @@ export type {
 
 /** Metadata supplied to structured-output parsers. */
 export interface ConsoleStructuredOutputParserContext {
-  /** Original entry before ANSI codes are stripped for parser input. */
+  /** Logical process-output entry after core CR/newline normalization. */
   entry: ConsoleStdoutEntry | string;
   /** Zero-based entry index. */
   index: number;
@@ -59,6 +60,9 @@ export interface ConsoleStdoutProps {
 }
 
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
+
+const ANSI_ESCAPE = String.fromCharCode(27);
+const ANSI_CLEAR_LINE_PATTERN = new RegExp(`${ANSI_ESCAPE}\\[[012]?K`);
 
 /** Converts an Anser token into React inline styles. */
 function getAnsiTokenStyle(token: AnserToken): CSSProperties {
@@ -191,13 +195,15 @@ export function ConsoleStdout({
   structuredOutputParsers,
   valueRenderers,
 }: ConsoleStdoutProps) {
-  if (!entries.length) {
+  const normalizedEntries = normalizeConsoleProcessOutputEntries(entries);
+
+  if (!normalizedEntries.length) {
     return <div className="console-stdout-empty">{emptyMessage}</div>;
   }
 
   return (
     <div className="console-stdout-list">
-      {entries.map((entry, index) => {
+      {normalizedEntries.map((entry, index) => {
         const processedOutput = processConsoleOutputEntry(
           entry,
           index,
@@ -222,9 +228,9 @@ export function ConsoleStdout({
                   processedOutput.metadata,
                 )
               : undefined;
-        const clearLine = Anser.ansiToJson(data).some(
-          (token) => token.clearLine,
-        );
+        const clearLine =
+          ANSI_CLEAR_LINE_PATTERN.test(data) ||
+          Anser.ansiToJson(data).some((token) => token.clearLine);
 
         if (structuredValue !== undefined) {
           return (
