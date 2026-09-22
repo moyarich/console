@@ -3,11 +3,7 @@ import {
   getConsoleMessageMethod,
   isDirectConsoleMethod,
 } from "./consoleMethods";
-import type {
-  ConsoleMessageData,
-  ConsoleMethod,
-  DirOptions,
-} from "../types";
+import type { ConsoleMessageData, ConsoleMethod, DirOptions } from "../types";
 import type { ConsoleEventEmitter } from "../utils/events/createConsoleEventEmitter";
 
 /** Configuration for {@link createConsoleProxy}. */
