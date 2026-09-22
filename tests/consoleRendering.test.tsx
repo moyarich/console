@@ -270,8 +270,8 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <ConsoleStdout
         entries={[
-          { id: "p10", data: "loading 10%\\r", stream: "stdout" },
-          { id: "p20", data: "loading 20%\\r", stream: "stdout" },
+          { id: "p10", data: "loading 10%\r", stream: "stdout" },
+          { id: "p20", data: "loading 20%\r", stream: "stdout" },
           { id: "p100", data: "loading 100%", stream: "stdout" },
         ]}
       />,
@@ -288,10 +288,10 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <ConsoleStdout
         entries={[
-          "prepare\\n",
-          "building 10%\\r",
-          "building 60%\\r",
-          "building 100%\\ncomplete\\n",
+          "prepare\n",
+          "building 10%\r",
+          "building 60%\r",
+          "building 100%\ncomplete\n",
         ]}
       />,
     );
@@ -305,7 +305,7 @@ describe("Console rendering", () => {
 
   it("treats chunked CRLF as a normal completed newline", () => {
     const html = renderToStaticMarkup(
-      <ConsoleStdout entries={["first\\r", "\\nsecond"]} />,
+      <ConsoleStdout entries={["first\r", "\nsecond"]} />,
     );
 
     expect(html).toContain("first");
@@ -323,7 +323,7 @@ describe("Console rendering", () => {
           },
           {
             id: "new-progress",
-            data: `${escape}[2K\\rnew progress`,
+            data: `${escape}[2K\rnew progress`,
             stream: "stderr",
           },
         ]}
