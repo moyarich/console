@@ -28,7 +28,7 @@ function TerminalSurface({
         const text = typeof entry === "string" ? entry : entry.data;
 
         return (
-          <div key={typeof entry === "string" ? index : entry.id ?? index}>
+          <div key={typeof entry === "string" ? index : (entry.id ?? index)}>
             {text}
           </div>
         );
