@@ -21,7 +21,7 @@ import {
 } from "../actions";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import type { ConsoleMessageData, ConsoleMode } from "../types";
-import { formatConsoleObjectForCopy } from "../utils/consoleCopyObject";
+import { formatConsoleObjectForCopy } from "../utils/console/copyObject";
 import { writeClipboardText } from "../utils/clipboard";
 import {
   getContextMenuThemeStyle,
