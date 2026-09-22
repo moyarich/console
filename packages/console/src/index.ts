@@ -43,6 +43,19 @@ export type {
   ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
 } from "./processOutput";
+export {
+  ConsoleLinkedText,
+  detectWebLinks,
+  isSafeConsoleLinkTarget,
+  resolveConsoleLinks,
+} from "./links";
+export type {
+  ConsoleLink,
+  ConsoleLinkActionContext,
+  ConsoleLinkProvider,
+  ConsoleLinkProviderContext,
+  ConsoleLinkedTextProps,
+} from "./links";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
 export { getConsoleValueType } from "./renderers";
