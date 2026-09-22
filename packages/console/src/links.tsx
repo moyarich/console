@@ -82,7 +82,7 @@ function isSafeWebUrl(value: string): boolean {
 /** Returns whether a provider target is safe to place in an href attribute. */
 export function isSafeConsoleLinkTarget(target: string): boolean {
   if (
-    target.startsWith("/") ||
+    (target.startsWith("/") && !target.startsWith("//")) ||
     target.startsWith("./") ||
     target.startsWith("../") ||
     target.startsWith("#")
@@ -154,7 +154,7 @@ function normalizeLink(
 
   return {
     ...link,
-    ...(target ? { target } : {}),
+    target,
     ...(providerId ? { providerId } : {}),
   };
 }
