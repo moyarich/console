@@ -11,14 +11,14 @@ const messages: ConsoleMessageData[] = [
   {
     method: "info",
     data: [
-      "Documentation: https://example.com/docs",
-      { source: "src/runtime/worker.ts:42:8" },
+      "Repository: https://github.com/moyarich/console",
+      { source: "packages/console/src/components/Console.tsx:1" },
     ],
     depth: 0,
   },
   {
     method: "error",
-    data: ["Build failed at src/app.tsx:18:5"],
+    data: ["Build failed at packages/console/src/links.tsx:1"],
     depth: 0,
   },
 ];
@@ -27,17 +27,20 @@ const ansiMessages: ConsoleStdoutEntry[] = [
   {
     id: "docs",
     stream: "stdout",
-    data: "Docs: https://example.com/cli\n",
+    data: "Repository: https://github.com/moyarich/console\n",
   },
   {
     id: "source-error",
     stream: "stderr",
-    data: "Error: src/cli/run.ts:91:12\n",
+    data: "Error: packages/console/src/components/ConsoleStdout.tsx:1\n",
   },
 ];
 
 export default function LinkProvidersExample() {
-  const [lastOpened, setLastOpened] = useState("");
+  const [lastOpened, setLastOpened] = useState({
+    console: "",
+    ansi: "",
+  });
 
   const sourceProvider: ConsoleLinkProvider = {
     id: "source-location",
@@ -50,32 +53,51 @@ export default function LinkProvidersExample() {
         text: match[0],
         start: match.index,
         end: match.index + match[0].length,
-        title: "Open source location",
-        action: ({ link }) => setLastOpened(link.text),
+        title: "Run host source-location action",
+        action: ({ link, mode }) =>
+          setLastOpened((current) => ({
+            ...current,
+            [mode]: link.text,
+          })),
       }));
     },
   };
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <Console
-        messages={messages}
-        linkProviders={[sourceProvider]}
-        subtitle="HTTP/HTTPS links plus a custom source-location provider"
-      />
+      <div style={{ display: "grid", gap: 8 }}>
+        <Console
+          messages={messages}
+          linkProviders={[sourceProvider]}
+          subtitle="Automatic web links plus a custom source-location action"
+        />
 
-      <Console
-        mode="ansi"
-        messages={ansiMessages}
-        linkProviders={[sourceProvider]}
-        subtitle="The same providers also work in ANSI output"
-      />
+        <div data-console-link-provider-result>
+          Structured provider action:
+          <strong>
+            {lastOpened.console
+              ? ` ${lastOpened.console}`
+              : " click a source location above"}
+          </strong>
+        </div>
+      </div>
 
-      <div>
-        Custom provider action:
-        <strong data-link-provider-result>
-          {lastOpened ? ` ${lastOpened}` : " click a source location"}
-        </strong>
+      <div style={{ display: "grid", gap: 8 }}>
+        <Console
+          mode="ansi"
+          messages={ansiMessages}
+          linkProviders={[sourceProvider]}
+          subtitle="ANSI output uses the same web-link detection and provider"
+        />
+
+        <div data-ansi-link-provider-result>
+          ANSI provider action:
+          <strong>
+            {lastOpened.ansi
+              ? ` ${lastOpened.ansi}`
+              : " click the source location above"}
+          </strong>
+        </div>
       </div>
     </div>
   );
