@@ -15,12 +15,8 @@ import {
 } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
-import { ConsoleValue } from "./ConsoleValue";
-import type {
-  ConsoleMessageData,
-  ConsoleMessageRenderer,
-  ConsoleValueRenderer,
-} from "../types";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
+import type { ConsoleMessageData, ConsoleMethod } from "../types";
 import type { ConsoleLinkProvider } from "../links/types";
 
 type MessageIconMap = {
@@ -41,6 +37,31 @@ const MESSAGE_ICONS: MessageIconMap = {
   group: ChevronDown,
   groupCollapsed: ChevronDown,
 };
+
+/** Context provided to custom structured-message renderers. */
+export interface ConsoleMessageRendererContext {
+  index: number;
+  messages: readonly ConsoleMessageData[];
+  renderDefault: () => ReactNode;
+}
+
+/**
+ * Custom renderer for structured console messages.
+ *
+ * Returning `undefined` allows the next renderer, or the built-in renderer,
+ * to handle the message.
+ */
+export interface ConsoleMessageRenderer {
+  method?: ConsoleMethod;
+  match?: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext,
+  ) => boolean;
+  render: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext,
+  ) => ReactNode | undefined;
+}
 
 /** Props for rendering one structured console message. */
 export interface ConsoleMessageProps {
