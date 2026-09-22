@@ -28,13 +28,34 @@ describe("console theme CSS", () => {
       "--_console-background-color: var(--console-background-color, #1e1e1e);",
     );
     expect(styles).toMatch(
-      /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid #dde4ef\s*\);/,
+      /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
     );
     expect(styles).toMatch(
-      /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid #e5eaf2\s*\);/,
+      /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
     );
     expect(styles).toMatch(
       /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid #454545\s*\);/,
+    );
+  });
+
+  it("keeps header chrome aligned with light and dark panel schemes", () => {
+    expect(styles).toMatch(
+      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, light\)\s*\);/,
+    );
+    expect(styles).toContain(
+      "light-dark(#fff, #161b22)",
+    );
+    expect(styles).toContain(
+      "light-dark(#202c40, #e6edf3)",
+    );
+    expect(styles).toContain(
+      "light-dark(#7b8799, #8b949e)",
+    );
+    expect(styles).toContain(
+      "light-dark(#42526b, #c9d1d9)",
+    );
+    expect(styles).toContain(
+      "light-dark(#5266c9, #79c0ff)",
     );
   });
 
