@@ -226,7 +226,11 @@ export function normalizeConsoleProcessOutputEntries(
           continue;
         }
 
-        current = createOutputLine(source, "\r");
+        const clearLinePrefix =
+          current && ANSI_CLEAR_LINE_PATTERN.test(current.data)
+            ? current.data
+            : "";
+        current = createOutputLine(source, clearLinePrefix);
         pendingCarriageReturn = false;
       }
 
