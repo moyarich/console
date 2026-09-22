@@ -11,10 +11,7 @@ import {
   type UIEvent,
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
-import {
-  ConsoleMessage,
-  type ConsoleMessageRenderer,
-} from "./ConsoleMessage";
+import { ConsoleMessage, type ConsoleMessageRenderer } from "./ConsoleMessage";
 import {
   ConsoleStdout,
   type ConsoleProcessOutputProcessor,
