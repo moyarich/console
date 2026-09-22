@@ -35,6 +35,12 @@ export type {
   ConsoleStructuredOutputParser,
   ConsoleStructuredOutputParserContext,
 } from "./components/ConsoleStdout";
+export { processConsoleOutputEntry } from "./processOutput";
+export type {
+  ConsoleProcessOutput,
+  ConsoleProcessOutputProcessorContext,
+  ConsoleProcessOutputProcessorResult,
+} from "./processOutput";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
 export { getConsoleValueType } from "./renderers";
