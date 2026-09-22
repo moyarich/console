@@ -8,9 +8,12 @@
 
 export {
   CONSOLE_ADDON_API_VERSION,
+  CONSOLE_CORE_ADDON_ID_PREFIX,
   consoleCapabilities,
+  consoleCoreAddonIds,
   consoleExtensionPoints,
   consoleServices,
+  createConsoleViewportAddon,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleCapabilityRegistry,
