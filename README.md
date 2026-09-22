@@ -248,10 +248,11 @@ interface ConsoleStructuredOutputParserContext {
   index: number;
   id?: string;
   stream?: "stdout" | "stderr";
+  metadata?: ConsoleProcessOutputMetadata;
 }
 ```
 
-Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to the original ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+Processors run before structured parsers, so parsers receive transformed text and accumulated processor metadata. Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
 
 ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
 
