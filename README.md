@@ -873,26 +873,31 @@ Direct component props remain supported. When both a direct prop and addon contr
 
 `ConsoleStdout` remains the built-in, zero-configuration ANSI/process-output renderer. It is a core default implementation, **not** an addon that applications must install.
 
-The output architecture is:
+The output architecture is symmetric across both modes:
 
 ```text
-Console
-   │
-   ▼
-outputRenderer extensions
-   │
-   ├── handled by an addon
-   │       ↓
-   │   custom surface
-   │
-   └── no addon handles it
-           ↓
-     built-in default
-           ↓
-      ConsoleStdout
+                         Console
+                            │
+                            ▼
+                 outputRenderer extensions
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+   mode: "console"                     mode: "ansi"
+          │                                   │
+     handled?                            handled?
+      │     │                             │     │
+     yes    no                           yes    no
+      │     │                             │     │
+      ▼     ▼                             ▼     ▼
+ custom   built-in                    custom  ConsoleStdout
+ feed     structured                  terminal   default
+ surface  renderer                    surface
 ```
 
 An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, resize behavior, context menu, addon lifecycle, and surrounding layout.
+
+This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
 
 ```tsx
 function createTerminalSurfaceAddon(): ConsoleAddon {
@@ -921,6 +926,41 @@ function createTerminalSurfaceAddon(): ConsoleAddon {
 }
 ```
 
+The same extension point can replace structured console rendering:
+
+```tsx
+function createConsoleFeedAddon(): ConsoleAddon {
+  return {
+    id: "console-feed",
+    activate(host) {
+      host.extensions.register(
+        consoleExtensionPoints.outputRenderer,
+        {
+          mode: "console",
+          render(context) {
+            if (context.mode !== "console") {
+              return undefined;
+            }
+
+            return (
+              <MyConsoleFeed
+                messages={context.messages}
+              />
+            );
+          },
+        },
+      );
+    },
+  };
+}
+```
+
+The discriminated renderer context keeps the source data appropriate to each mode:
+
+- `mode: "console"` receives structured `ConsoleMessageData[]` as `context.messages`
+- `mode: "ansi"` receives strings / `ConsoleStdoutEntry[]` as `context.entries`
+- both modes receive `renderDefault()` for wrapping or decorating the built-in renderer
+
 Returning `undefined` delegates to the next output renderer and ultimately the built-in surface. Any other React result, including `null`, counts as an intentional replacement.
 
 The renderer context also exposes `renderDefault()`, so an addon can wrap or decorate the built-in surface instead of replacing it completely:
@@ -939,9 +979,9 @@ host.extensions.register(
 );
 ```
 
-A custom output renderer still mounts when the message list is empty. This is intentional: terminal implementations such as xterm.js need to initialize an empty terminal surface before future process chunks arrive.
+A custom output renderer can still handle an empty source list. This is intentional: terminal implementations such as xterm.js may need to initialize before future process chunks arrive, and structured feed renderers may want to own their own empty state.
 
-The output renderer is generic rather than xterm-specific. It can support alternative terminal engines, virtualized output views, trace views, or other complete output presentations without adding another `Console` mode or feature-specific field to `ConsoleAddon`.
+The output renderer is implementation-neutral. It can support console-feed-style structured views, alternative terminal engines, virtualized output views, trace views, or other complete output presentations without adding another `Console` mode or feature-specific field to `ConsoleAddon`.
 
 ### Custom extension points
 
