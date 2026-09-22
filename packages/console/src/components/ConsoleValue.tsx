@@ -7,12 +7,19 @@ import {
   type ConsoleValueRenderer,
 } from "../renderers";
 
+/** Props for rendering a single console value. */
 export interface ConsoleValueProps {
+  /** Value to render. */
   value: unknown;
+  /** Initial recursive object-expansion depth. */
   expandLevel?: number;
+  /** Ancestor objects used internally for circular-reference detection. */
   ancestors?: ReadonlySet<object>;
+  /** Property name associated with a nested value. */
   propertyKey?: string;
+  /** Changing this token forces expandable descendants open. */
   expandAllVersion?: number;
+  /** Ordered custom value renderers. */
   renderers?: readonly ConsoleValueRenderer[];
 }
 
@@ -56,6 +63,7 @@ function isSetLike(value: object): value is Set<unknown> {
   );
 }
 
+/** Returns whether a value should use the expandable object inspector. */
 function isInspectableObject(value: unknown): value is object {
   return (
     isObjectLike(value) &&
@@ -96,6 +104,7 @@ function renderPrimitive(value: unknown): ReactNode {
   return <span className={typeClass(value)}>{String(value)}</span>;
 }
 
+/** Produces the short type label shown for an expandable object. */
 function objectLabel(value: object): string {
   if (Array.isArray(value)) return `Array(${value.length})`;
   if (isMapLike(value)) return `Map(${value.size})`;
@@ -112,6 +121,7 @@ function objectLabel(value: object): string {
     : "Object";
 }
 
+/** Normalizes supported object-like values into inspector key/value entries. */
 function objectEntries(value: object): [string, unknown][] {
   if (isMapLike(value)) {
     return Array.from(value.entries()).map((entry, index) => [
@@ -137,6 +147,7 @@ function objectEntries(value: object): [string, unknown][] {
   return Object.entries(value);
 }
 
+/** Produces the compact one-line preview shown while an object is collapsed. */
 function preview(value: object): string {
   if (isMapLike(value)) return `{ ${value.size} entries }`;
   if (isSetLike(value)) return `{ ${value.size} values }`;
@@ -160,6 +171,7 @@ function preview(value: object): string {
   return `{ ${parts.join(", ")}${Object.keys(value).length > 3 ? ", …" : ""} }`;
 }
 
+/** Renders the expandable object inspector with copy and context-menu support. */
 function ConsoleObjectValue({
   value,
   expandLevel,
@@ -287,6 +299,7 @@ function ConsoleObjectValue({
   );
 }
 
+/** Dispatches a value to the built-in primitive or object renderer. */
 function renderDefaultValue({
   value,
   expandLevel,
@@ -313,6 +326,10 @@ function renderDefaultValue({
   );
 }
 
+/**
+ * Renders a console value using the first matching custom renderer, falling
+ * back to the built-in primitive/object inspector.
+ */
 export function ConsoleValue({
   value,
   expandLevel = 0,

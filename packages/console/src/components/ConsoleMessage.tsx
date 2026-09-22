@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useContext } from "react";
 import {
   Braces,
   Bug,
@@ -13,6 +14,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
+import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { ConsoleValue } from "./ConsoleValue";
 import {
   dispatchMessageRenderer,
@@ -40,13 +42,21 @@ const MESSAGE_ICONS: MessageIconMap = {
   groupCollapsed: ChevronDown,
 };
 
+/** Props for rendering one structured console message. */
 export interface ConsoleMessageProps {
+  /** Message to render. */
   message: ConsoleMessageData;
+  /** Zero-based position in the visible message list. */
   index?: number;
+  /** Visible message list used by custom renderers and message actions. */
   messages?: readonly ConsoleMessageData[];
+  /** Token used to force expandable values in this message open. */
   expandAllVersion?: number;
+  /** Optional handler exposed through the message icon to expand all values. */
   onExpandAll?: () => void;
+  /** Ordered custom renderers for the complete message. */
   renderers?: readonly ConsoleMessageRenderer[];
+  /** Ordered custom renderers for values inside the message. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
@@ -126,6 +136,10 @@ function DefaultConsoleMessage({
   );
 }
 
+/**
+ * Renders a structured console message using built-in behavior or the first
+ * matching custom message renderer.
+ */
 export function ConsoleMessage({
   message,
   index = 0,
@@ -136,6 +150,7 @@ export function ConsoleMessage({
   valueRenderers,
 }: ConsoleMessageProps) {
   const sourceMessages = messages ?? [message];
+  const contextMenu = useContext(ConsoleContextMenuContext);
   const renderDefault = () => (
     <DefaultConsoleMessage
       message={message}
@@ -153,5 +168,23 @@ export function ConsoleMessage({
     renderDefault,
   });
 
-  return custom === undefined ? renderDefault() : custom;
+  const renderedMessage = custom === undefined ? renderDefault() : custom;
+
+  if (!contextMenu?.messageContextEnabled) {
+    return renderedMessage;
+  }
+
+  return (
+    <div
+      className="console-message-action-target"
+      role="group"
+      aria-label={`${message.method} console message`}
+      tabIndex={0}
+      onContextMenu={(event) =>
+        contextMenu.openForMessage(event, message, index, sourceMessages)
+      }
+    >
+      {renderedMessage}
+    </div>
+  );
 }

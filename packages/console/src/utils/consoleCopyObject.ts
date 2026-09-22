@@ -1,3 +1,7 @@
+/**
+ * Converts non-JSON console values into copy-friendly representations while
+ * detecting circular references.
+ */
 function normalizeConsoleValue(value: unknown, seen: WeakSet<object>): unknown {
   if (typeof value === "bigint") return `${value}n`;
   if (typeof value === "function")
@@ -20,6 +24,12 @@ function normalizeConsoleValue(value: unknown, seen: WeakSet<object>): unknown {
   );
 }
 
+/**
+ * Formats an inspectable object as readable JSON for clipboard operations.
+ *
+ * Functions, symbols, bigint values, errors, dates, regexes, undefined values,
+ * and circular references are converted to stable textual representations.
+ */
 export function formatConsoleObjectForCopy(value: object): string {
   try {
     return JSON.stringify(

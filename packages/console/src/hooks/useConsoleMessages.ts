@@ -7,18 +7,38 @@ import { createConsoleProxy } from "../utils/createConsoleProxy";
 import { captureConsole } from "../utils/captureConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
+/** Configuration for {@link useConsoleMessages}. */
 export interface UseConsoleMessagesOptions {
+  /** Messages used to initialize hook state. */
   initialMessages?: ConsoleMessageData[];
+  /** Maximum retained message count. Oldest entries are trimmed first. */
   maxMessages?: number;
+  /** Ignore incoming messages whose non-empty id is already retained. */
   dedupeById?: boolean;
+  /** Changing this value clears the current message history. */
   resetKey?: unknown;
+  /** Optional shared event emitter. An internal emitter is created when omitted. */
   events?: ConsoleEventEmitter;
+  /** Whether to intercept calls on `consoleTarget`. */
   capture?: boolean;
+  /** Source metadata attached to messages emitted by the returned console proxy. */
   source?: string;
+  /** Whether captured calls should also reach the original console implementation. */
   passThrough?: boolean;
+  /** Console object to intercept when `capture` is enabled. Defaults to the global console. */
   consoleTarget?: Console;
 }
 
+/**
+ * Manages structured console history and exposes a console-compatible proxy.
+ *
+ * The returned emitter, proxy, `append`, and `clear` methods all feed the
+ * same message state, making the hook suitable for embedded runtimes and
+ * transport adapters.
+ *
+ * @returns Current messages, a `RunOutput`, a console proxy, mutation helpers,
+ * the backing event emitter, and the React state setter.
+ */
 export function useConsoleMessages({
   initialMessages = [],
   maxMessages = 1000,

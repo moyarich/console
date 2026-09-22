@@ -434,6 +434,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `showHeader`          | Show/hide the panel header                                                     |
 | `showClearButton`     | Show clear when `onClear` is available                                         |
 | `actions`             | Add application-defined actions to the ellipsis popover                        |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
 | `title` / `subtitle`  | Customize panel heading text                                                   |
 | `emptyMessage`        | Customize the empty state                                                      |
 | `className` / `style` | Host-owned layout and styling                                                  |
@@ -443,14 +444,15 @@ The host application owns min/max dimensions. The library only applies the reque
 
 ### Structured-mode props
 
-| Prop               | Purpose                                            |
-| ------------------ | -------------------------------------------------- |
-| `messages`         | Structured messages to render                      |
-| `output`           | Alternative `RunOutput` source                     |
-| `error`            | Appends a synthetic `error` message                |
-| `filter`           | Predicate that controls which messages are visible |
-| `onMessagesChange` | Observes the source message list                   |
-| `messageRenderers` | Override rendering for matching messages           |
+| Prop               | Purpose                                               |
+| ------------------ | ----------------------------------------------------- |
+| `messages`         | Structured messages to render                         |
+| `output`           | Alternative `RunOutput` source                        |
+| `error`            | Appends a synthetic `error` message                   |
+| `filter`           | Predicate that controls which messages are visible    |
+| `onMessagesChange` | Observes the source message list                      |
+| `messageRenderers` | Override rendering for matching messages              |
+| `messageActions`   | Add actions that receive the selected message context |
 
 ### ANSI-mode props
 
@@ -462,6 +464,163 @@ The host application owns min/max dimensions. The library only applies the reque
 | `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
+
+## Theming with CSS custom properties
+
+The package styles expose `--console-*` custom properties as **theme inputs**.
+The library does not assign those public properties internally. Instead, it
+resolves them through private `--_console-*` implementation tokens with
+fallback values. This means a theme can be defined on `:root`, a wrapper
+around one console, the `.console-panel` itself, or through the component's
+`style` prop without fighting a same-element default declaration.
+
+Do not depend on or override `--_console-*` properties. They are internal and
+may change. Override only the public `--console-*` variables.
+
+### Native `color-scheme` support
+
+The console uses the CSS `color-scheme` property for browser-rendered UI such
+as scrollbars and native controls. The three public inputs are separate because
+the default panel chrome is light while the output surface and context menu are
+dark:
+
+| Variable                              | Default                                | Applies to                      |
+| ------------------------------------- | -------------------------------------- | ------------------------------- |
+| `--console-panel-color-scheme`        | `light`                                | Panel chrome and header actions |
+| `--console-color-scheme`              | `dark`                                 | Structured/ANSI output surface  |
+| `--console-context-menu-color-scheme` | falls back to `--console-color-scheme` | Right-click menu                |
+
+`color-scheme` tells the browser how to render native UI; it does not
+automatically recolor the library's custom surfaces. Set the corresponding
+color variables when creating a light or dark theme.
+
+### Common theme variables
+
+| Area              | Variables                                                                                                                                                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Panel chrome      | `--console-panel-background`, `--console-panel-foreground`, `--console-panel-muted`, `--console-panel-border`, `--console-panel-header-background`, `--console-panel-header-border`                                                                                                                                    |
+| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border`, `--console-panel-control-foreground`, `--console-panel-control-hover-background`, `--console-panel-control-hover-foreground`, `--console-panel-control-hover-border`                                                                           |
+| Output surface    | `--console-background`, `--console-foreground`, `--console-border`, `--console-muted`, `--console-subtle`                                                                                                                                                                                                              |
+| Message states    | `--console-info`, `--console-debug`, `--console-warning-background`, `--console-warning-foreground`, `--console-error-background`, `--console-error-foreground`                                                                                                                                                        |
+| Values            | `--console-string`, `--console-number`, `--console-null`, `--console-symbol`, `--console-circular`, `--console-property-key`, `--console-object-property-key`                                                                                                                                                          |
+| Icons             | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background`                                                                                                               |
+| Context menu      | `--console-context-menu-background`, `--console-context-menu-foreground`, `--console-context-menu-border`, `--console-context-menu-hover`, `--console-context-menu-hover-foreground`, `--console-context-menu-icon`, `--console-context-menu-danger`, `--console-context-menu-radius`, `--console-context-menu-shadow` |
+| Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height`                                                                                                                                                                                         |
+
+Derived hover colors use `color-mix()` only as fallbacks. Supplying an
+explicit public hover variable completely replaces the derived value, so themes
+do not create circular custom-property dependencies.
+
+### Example: light output theme
+
+```css
+.my-console-theme {
+  --console-panel-color-scheme: light;
+  --console-color-scheme: light;
+  --console-context-menu-color-scheme: light;
+
+  --console-panel-background: #ffffff;
+  --console-panel-foreground: #172033;
+  --console-panel-border: #d8dee8;
+
+  --console-background: #f8fafc;
+  --console-foreground: #172033;
+  --console-border: #e2e8f0;
+  --console-muted: #667085;
+  --console-subtle: #98a2b3;
+
+  --console-string: #b42318;
+  --console-number: #175cd3;
+  --console-null: #7a5af8;
+  --console-symbol: #027a48;
+
+  --console-context-menu-background: #ffffff;
+  --console-context-menu-foreground: #172033;
+  --console-context-menu-border: #d8dee8;
+}
+```
+
+```tsx
+<div className="my-console-theme">
+  <Console messages={messages} />
+</div>
+```
+
+The context menu is rendered through a portal to `document.body`. When it
+opens, the component copies explicitly resolved public context-menu theme
+variables from the console target into the portaled menu. That preserves
+wrapper-scoped themes and allows two consoles with different themes on the same
+page. Global `:root` or `body` variables also work.
+
+## Extensible context and message actions
+
+Use descriptor-based actions when the host application needs commands in the
+console context menu or on individual structured messages. This is separate
+from the `actions` prop, which continues to accept arbitrary React content for
+the header ellipsis popover.
+
+```tsx
+import {
+  Console,
+  type ConsoleContextMenuAction,
+  type ConsoleMessageAction,
+  type ConsoleMessageData,
+} from "@moyarich/console";
+
+const contextMenuActions: ConsoleContextMenuAction[] = [
+  {
+    id: "copy-debug-context",
+    label: "Copy debug context",
+    visible: ({ kind }) => kind !== "object",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: (context) => copyDebugContext(context),
+  },
+];
+
+const messageActions: ConsoleMessageAction[] = [
+  {
+    id: "bookmark",
+    label: "Bookmark",
+    onSelect: ({ message, index }) => bookmarkMessage(message, index),
+  },
+  {
+    id: "open-source",
+    label: "Open source",
+    disabled: ({ message }) => !message.source,
+    onSelect: ({ message }) => openSource(message.source!),
+  },
+];
+
+export function RuntimeConsole({
+  messages,
+}: {
+  messages: ConsoleMessageData[];
+}) {
+  return (
+    <Console
+      messages={messages}
+      contextMenuActions={contextMenuActions}
+      messageActions={messageActions}
+    />
+  );
+}
+```
+
+Each action supports `id`, `label`, `onSelect`, optional `icon`,
+`ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and
+`disabled` can be booleans or predicates evaluated when the menu opens.
+
+`contextMenuActions` receive a discriminated context with
+`kind: "console" | "object" | "message"`. Object contexts include `value`;
+message contexts include `message`, its visible `index`, and the visible
+`messages` list. `messageActions` always receive the message context and are
+available in structured console mode.
+
+Custom actions appear before the built-in copy/clear commands. Enabled menu
+items participate in the existing Arrow Up/Down, Home, and End keyboard
+navigation. Messages become focusable when custom context or message actions
+are configured, so the browser context-menu keyboard command can open the same
+action menu.
 
 ## Custom message and value renderers
 

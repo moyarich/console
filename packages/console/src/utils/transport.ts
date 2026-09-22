@@ -1,10 +1,19 @@
 import { isConsoleMethod } from "../consoleMethods";
 import type { ConsoleTransportEnvelope } from "../types";
 
+/** Stable envelope type used by package transport adapters. */
 export const CONSOLE_TRANSPORT_TYPE = "CONSOLE_PANEL" as const;
+/** Current console transport envelope schema version. */
 export const CONSOLE_TRANSPORT_VERSION = 1 as const;
+/** Channel used when a transport caller does not specify one. */
 export const DEFAULT_CONSOLE_CHANNEL = "default";
 
+/**
+ * Validates an unknown value as a supported console transport envelope.
+ *
+ * The guard verifies envelope metadata and the structural fields required by
+ * clear/message events before transport consumers deserialize the payload.
+ */
 export function isConsoleEnvelope(
   value: unknown,
 ): value is ConsoleTransportEnvelope {
