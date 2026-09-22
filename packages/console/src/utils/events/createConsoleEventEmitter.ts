@@ -1,4 +1,4 @@
-import type { ConsoleMessageData } from "../types";
+import type { ConsoleMessageData } from "../../types";
 
 /** Event names emitted by the in-memory console event bus. */
 export type ConsoleEventName = "message" | "clear";

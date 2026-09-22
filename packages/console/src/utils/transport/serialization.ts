@@ -1,4 +1,5 @@
-import type { ConsoleEvent, ConsoleMessageData } from "../types";
+import type { ConsoleEvent, ConsoleMessageData } from "../../types";
+import { isElementLike } from "../console/isElementLike";
 
 /** Limits applied while serializing rich console values for transport. */
 export interface SerializeConsoleValueOptions {
@@ -33,17 +34,6 @@ type SerializedConsoleType =
 type TaggedConsoleValue = Record<string, unknown> & {
   [SERIALIZED_TYPE]: SerializedConsoleType;
 };
-
-function isElementLike(
-  value: object,
-): value is object & { outerHTML: string; tagName?: string } {
-  const candidate = value as {
-    nodeType?: unknown;
-    outerHTML?: unknown;
-  };
-
-  return candidate.nodeType === 1 && typeof candidate.outerHTML === "string";
-}
 
 function isNodeListLike(value: object): value is object & ArrayLike<unknown> {
   return (

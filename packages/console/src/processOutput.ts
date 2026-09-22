@@ -1,4 +1,5 @@
 import Anser from "anser";
+import type { ConsoleLink } from "./links";
 
 /** Process stream associated with an ANSI/process-output entry. */
 export type ConsoleOutputStream = "stdout" | "stderr";
@@ -14,12 +15,7 @@ export interface ConsoleStdoutEntry {
   data: string;
   /** Optional stdout/stderr classification. */
   stream?: ConsoleOutputStream;
-  /**
-   * Optional descriptive metadata carried into the processor pipeline.
-   *
-   * This intentionally remains an extensible bag until dedicated link,
-   * decoration, and runtime-status contracts are available.
-   */
+  /** Optional descriptive metadata carried into the processor pipeline. */
   metadata?: ConsoleProcessOutputMetadata;
 }
 
@@ -29,6 +25,8 @@ export interface ConsoleProcessOutput {
   readonly data: string;
   /** Optional structured value promoted by a processor. */
   readonly structuredValue?: unknown;
+  /** Link ranges produced by processors for the current text. */
+  readonly links?: readonly ConsoleLink[];
   /** Metadata accumulated from the source entry and earlier processors. */
   readonly metadata: ConsoleProcessOutputMetadata;
 }
@@ -53,6 +51,8 @@ export interface ConsoleProcessOutputProcessorResult {
   data?: string;
   /** Structured value to render instead of text. Use an explicit undefined to clear one. */
   structuredValue?: unknown;
+  /** Link ranges for the current processor output text. */
+  links?: readonly ConsoleLink[];
   /** Metadata merged over metadata accumulated by earlier processors. */
   metadata?: Readonly<Record<string, unknown>>;
 }
@@ -261,9 +261,9 @@ export function normalizeConsoleProcessOutputEntries(
 /**
  * Applies process-output processors in declaration order.
  *
- * Each processor receives the result of the previous processor. A processor
- * failure is isolated: its partial work is discarded and remaining processors
- * continue from the last successful state.
+ * Link ranges produced before a later text transform are discarded because
+ * their offsets no longer describe the transformed output. A processor that
+ * changes data can return replacement links for the new text in the same patch.
  */
 export function processConsoleOutputEntry(
   entry: ConsoleStdoutEntry | string,
@@ -294,13 +294,25 @@ export function processConsoleOutputEntry(
         continue;
       }
 
+      const data = result.data ?? output.data;
+      const dataChanged =
+        result.data !== undefined && result.data !== output.data;
+      const links = result.links
+        ? dataChanged
+          ? result.links
+          : [...(output.links ?? []), ...result.links]
+        : dataChanged
+          ? undefined
+          : output.links;
+
       output = Object.freeze({
-        data: result.data ?? output.data,
+        data,
         ...(hasStructuredValue(result)
           ? { structuredValue: result.structuredValue }
           : output.structuredValue !== undefined
             ? { structuredValue: output.structuredValue }
             : {}),
+        ...(links?.length ? { links: Object.freeze([...links]) } : {}),
         metadata: freezeMetadata({
           ...output.metadata,
           ...(result.metadata ?? {}),

@@ -1,8 +1,11 @@
 import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
-import { normalizeConsoleTableData } from "../utils/consoleTableData";
 import type { ConsoleValueRenderer } from "../renderers";
+import type { ConsoleLinkProvider } from "../links";
+import { collectColumns } from "../utils/console/table/collectColumns";
+import { toRows } from "../utils/console/table/toRows";
+import { isObjectLike } from "../utils/console/isObjectLike";
 
 /** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {
@@ -12,44 +15,10 @@ export interface ConsoleTableProps {
   columns?: string[];
   /** Custom renderers used for individual table cells. */
   valueRenderers?: readonly ConsoleValueRenderer[];
-}
-interface TableRow {
-  index: string;
-  value: Record<string, unknown>;
-}
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-function isObjectLike(value: unknown): value is object {
-  return typeof value === "object" && value !== null;
-}
-/** Normalizes supported table inputs into indexed row records. */
-function toRows(data: unknown): TableRow[] {
-  const normalized = normalizeConsoleTableData(data);
-  if (Array.isArray(normalized))
-    return normalized.map((value, index) => ({
-      index: String(index),
-      value: isRecord(value) ? value : { Value: value },
-    }));
-  if (isRecord(normalized))
-    return Object.entries(normalized).map(([index, value]) => ({
-      index,
-      value: isRecord(value) ? value : { Value: value },
-    }));
-  return [{ index: "0", value: { Value: normalized } }];
-}
-/** Preserves requested columns or derives first-seen columns from all rows. */
-function collectColumns(rows: TableRow[], requested?: string[]): string[] {
-  if (requested?.length) return requested;
-  const seen = new Set<string>();
-  const columns: string[] = [];
-  for (const row of rows)
-    for (const key of Object.keys(row.value)) {
-      if (seen.has(key)) continue;
-      seen.add(key);
-      columns.push(key);
-    }
-  return columns;
+  /** Whether built-in HTTP/HTTPS detection is enabled. @default true */
+  detectLinks?: boolean;
+  /** Ordered application-specific link providers. */
+  linkProviders?: readonly ConsoleLinkProvider[];
 }
 /**
  * Renders `console.table()` data with horizontal scrolling, value renderers,
@@ -59,6 +28,8 @@ export function ConsoleTable({
   data,
   columns,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
 }: ConsoleTableProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const rows = toRows(data);
@@ -109,6 +80,9 @@ export function ConsoleTable({
                       <ConsoleValue
                         value={row.value[column]}
                         renderers={valueRenderers}
+                        detectLinks={detectLinks}
+                        linkProviders={linkProviders}
+                        linkContext={{ mode: "console" }}
                       />
                     ) : (
                       <span className="console-undefined">undefined</span>

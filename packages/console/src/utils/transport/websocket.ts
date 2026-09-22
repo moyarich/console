@@ -1,7 +1,7 @@
-import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
-import { createConsoleEventHandler } from "./createConsoleEventHandler";
+import type { ConsoleEventEmitter } from "../events/createConsoleEventEmitter";
+import { createConsoleEventHandler } from "../events/createConsoleEventHandler";
 import { deserializeConsoleEvent } from "./serialization";
-import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
+import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./envelope";
 
 /** Minimal WebSocket-compatible surface required by the console listener. */
 export interface ConsoleWebSocketLike {

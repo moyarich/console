@@ -39,6 +39,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
+| Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
 ## Install
 
@@ -199,11 +200,48 @@ A processor may:
 - replace `data` while preserving ANSI rendering for the resulting text
 - set `structuredValue` to promote a line into the normal value inspector
 - merge host/plugin data into `metadata`
+- return `links` using the shared `ConsoleLink` range contract
 - observe current ANSI-stripped text through `context.text` without changing output
 
-The metadata bag is deliberately extensible. Link, decoration, progress, and richer runtime metadata can be carried by processors without introducing terminal cursor/buffer abstractions; dedicated contracts can be reused as those APIs are added.
+If a processor changes `data`, link ranges produced for earlier text are discarded because their offsets are no longer valid. A processor that transforms text can return replacement `links` for the new output in the same result. The generic metadata bag remains available for application-specific enrichment that does not yet have a dedicated contract.
 
 For non-React pipelines, `processConsoleOutputEntry(entry, index, processors)` applies the same ordered processor chain directly.
+
+### Interactive links and custom link providers
+
+HTTP and HTTPS URLs are detected by default in both structured console strings and ANSI/process output. Built-in URL detection can be disabled with `detectLinks={false}`.
+
+Use `linkProviders` for application-specific references such as source locations, routes, stack frames, or issue identifiers:
+
+```tsx
+import { Console, type ConsoleLinkProvider } from "@moyarich/console";
+
+const sourceLinks: ConsoleLinkProvider = {
+  id: "source-location",
+  provideLinks(text) {
+    const matches = text.matchAll(
+      /\\b[\\w./-]+\\.(?:ts|tsx|js|jsx):\\d+(?::\\d+)?\\b/g,
+    );
+
+    return Array.from(matches, (match) => ({
+      text: match[0],
+      start: match.index,
+      end: match.index + match[0].length,
+      title: "Open source",
+      action: ({ link }) => openSource(link.text),
+    }));
+  },
+};
+
+<Console messages={messages} linkProviders={[sourceLinks]} />;
+<Console mode="ansi" messages={stdout} linkProviders={[sourceLinks]} />;
+```
+
+Each `ConsoleLink` includes the visible `text`, inclusive `start` offset, exclusive `end` offset, and optionally a safe navigation `target`, `title`, or host-defined `action`. Providers run in declaration order before built-in web-link detection, so application-specific ranges take precedence when links overlap.
+
+Navigation targets are restricted to HTTP/HTTPS URLs and same-site relative/hash targets. External web links open with `noopener noreferrer`. Link rendering preserves normal text selection and copy behavior.
+
+ANSI processors can also return `links` using the same `ConsoleLink` contract, which keeps process-output plugins and renderer-level link providers on one metadata model.
 
 ### Parse structured values from ANSI output
 
@@ -502,6 +540,8 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `emptyMessage`        | Customize the empty state                                                      |
 | `className` / `style` | Host-owned layout and styling                                                  |
 | `valueRenderers`      | Override rendering for matching values                                         |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
+| `linkProviders`       | Add ordered application-specific link providers                                |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
@@ -880,6 +920,18 @@ Available helpers:
 | -------------------------------------- | --------------------------------------------------------- |
 | `ConsoleStructuredOutputParser`        | Parse one ANSI-stripped output entry into a value         |
 | `ConsoleStructuredOutputParserContext` | Original entry metadata passed to structured-output hooks |
+
+### Links
+
+| Export                       | Purpose                                                       |
+| ---------------------------- | ------------------------------------------------------------- |
+| `ConsoleLink`                | Text/range/target/action metadata for one interactive range   |
+| `ConsoleLinkProvider`        | Discover application-specific links in rendered text          |
+| `ConsoleLinkProviderContext` | Mode/value/process metadata supplied to link providers        |
+| `ConsoleLinkActionContext`   | Activated link plus provider/source context                   |
+| `detectWebLinks`             | Detect safe HTTP/HTTPS URL ranges                             |
+| `resolveConsoleLinks`        | Resolve explicit links, providers, and built-in URL detection |
+| `isSafeConsoleLinkTarget`    | Validate navigation targets used by the built-in renderer     |
 
 ### Custom rendering
 

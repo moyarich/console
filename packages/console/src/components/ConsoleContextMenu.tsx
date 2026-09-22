@@ -5,7 +5,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -21,8 +20,12 @@ import {
 } from "../actions";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import type { ConsoleMessageData, ConsoleMode } from "../types";
-import { formatConsoleObjectForCopy } from "../utils/consoleCopyObject";
-import { writeClipboardText } from "../utils/clipboard";
+import { formatConsoleObjectForCopy } from "../utils/console/formatConsoleObjectForCopy";
+import { writeClipboardText } from "../utils/browser/clipboard";
+import { getContextMenuThemeStyle } from "../utils/console/style/getContextMenuThemeStyle";
+import { getEventPoint } from "../utils/console/contextMenu/getEventPoint";
+import { getMenuPosition } from "../utils/console/contextMenu/getMenuPosition";
+import type { ContextMenuThemeStyle } from "../utils/console/style/types";
 
 /** Props for the console's built-in right-click action surface. */
 export interface ConsoleContextMenuProps {
@@ -54,25 +57,6 @@ type MenuTarget =
       messages: readonly ConsoleMessageData[];
     };
 
-const CONTEXT_MENU_THEME_PROPERTIES = [
-  "--console-color-scheme",
-  "--console-context-menu-color-scheme",
-  "--console-context-menu-background",
-  "--console-context-menu-border",
-  "--console-context-menu-foreground",
-  "--console-context-menu-muted",
-  "--console-context-menu-hover",
-  "--console-context-menu-hover-foreground",
-  "--console-context-menu-icon",
-  "--console-context-menu-danger",
-  "--console-context-menu-radius",
-  "--console-context-menu-shadow",
-] as const;
-
-type ContextMenuThemeProperty = (typeof CONTEXT_MENU_THEME_PROPERTIES)[number];
-type ContextMenuThemeStyle = CSSProperties &
-  Partial<Record<ContextMenuThemeProperty, string>>;
-
 interface MenuState {
   x: number;
   y: number;
@@ -84,76 +68,6 @@ interface ConsoleActionMenuItemProps<TContext> {
   resolvedAction: ResolvedConsoleAction<TContext>;
   context: TContext;
   onBeforeSelect: () => void;
-}
-
-const VIEWPORT_MARGIN = 8;
-
-/**
- * Clamps a context-menu position so the measured menu remains in the viewport.
- */
-function getMenuPosition(
-  clientX: number,
-  clientY: number,
-  width: number,
-  height: number,
-) {
-  const maxX = Math.max(
-    VIEWPORT_MARGIN,
-    window.innerWidth - width - VIEWPORT_MARGIN,
-  );
-  const maxY = Math.max(
-    VIEWPORT_MARGIN,
-    window.innerHeight - height - VIEWPORT_MARGIN,
-  );
-
-  return {
-    x: Math.min(Math.max(VIEWPORT_MARGIN, clientX), maxX),
-    y: Math.min(Math.max(VIEWPORT_MARGIN, clientY), maxY),
-  };
-}
-
-/**
- * Reads public context-menu theme variables from the console target.
- *
- * The returned inline style preserves wrapper-scoped themes after the menu is
- * portaled to `document.body`.
- */
-function getContextMenuThemeStyle(
-  element: HTMLElement | null,
-): ContextMenuThemeStyle {
-  if (!element || typeof window === "undefined") {
-    return {};
-  }
-
-  const computedStyle = window.getComputedStyle(element);
-  const themeStyle: ContextMenuThemeStyle = {};
-
-  for (const property of CONTEXT_MENU_THEME_PROPERTIES) {
-    const value = computedStyle.getPropertyValue(property).trim();
-
-    if (value) {
-      themeStyle[property] = value;
-    }
-  }
-
-  return themeStyle;
-}
-
-/**
- * Returns pointer coordinates, falling back to the target bounds for keyboard-
- * initiated context-menu events whose client coordinates are zero.
- */
-function getEventPoint(event: MouseEvent<HTMLElement>) {
-  if (event.clientX !== 0 || event.clientY !== 0) {
-    return { x: event.clientX, y: event.clientY };
-  }
-
-  const rect = event.currentTarget.getBoundingClientRect();
-
-  return {
-    x: rect.left + Math.min(24, rect.width / 2),
-    y: rect.top + Math.min(24, rect.height / 2),
-  };
 }
 
 function ConsoleActionMenuItem<TContext>({
