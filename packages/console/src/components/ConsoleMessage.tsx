@@ -16,13 +16,13 @@ import {
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { ConsoleValue } from "./ConsoleValue";
-import {
-  dispatchMessageRenderer,
-  type ConsoleMessageRenderer,
-  type ConsoleValueRenderer,
-} from "../renderers";
+import { dispatchMessageRenderer } from "../renderers/dispatchMessageRenderer";
+import type {
+  ConsoleMessageRenderer,
+  ConsoleValueRenderer,
+} from "../renderers/types";
 import type { ConsoleMessageData } from "../types";
-import type { ConsoleLinkProvider } from "../links";
+import type { ConsoleLinkProvider } from "../links/types";
 
 type MessageIconMap = {
   [Method in ConsoleMessageData["method"]]?: LucideIcon;
