@@ -11,6 +11,7 @@ import type {
   ConsoleValueRenderer,
 } from "./renderers";
 import type { ConsoleStructuredOutputParser } from "./utils/terminal/types";
+import type { ConsoleViewportService } from "./viewport";
 
 /** Version of the public addon-host contract. */
 export const CONSOLE_ADDON_API_VERSION = "1";
@@ -412,6 +413,12 @@ export const consoleCapabilities = Object.freeze({
   dom: createConsoleCapability("console.dom"),
   structuredMessages: createConsoleCapability("console.structuredMessages"),
   processOutput: createConsoleCapability("console.processOutput"),
+});
+
+/** Built-in services supplied by the React console host. */
+export const consoleServices = Object.freeze({
+  viewport:
+    createConsoleServiceToken<ConsoleViewportService>("console.viewport"),
 });
 
 /** Built-in extension points backed by the console's existing hook contracts. */
