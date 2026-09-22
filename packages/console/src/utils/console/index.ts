@@ -8,7 +8,6 @@ export {
   CONTEXT_MENU_THEME_PROPERTIES,
   CONTEXT_MENU_VIEWPORT_MARGIN,
 } from "./constants";
-export { allRowsAreRecords } from "./allRowsAreRecords";
 export { collectColumns } from "./collectColumns";
 export { formatConsoleObjectForCopy } from "./formatConsoleObjectForCopy";
 export { getContextMenuThemeStyle } from "./getContextMenuThemeStyle";
@@ -20,7 +19,6 @@ export { isMapLike } from "./isMapLike";
 export { isObjectLike } from "./isObjectLike";
 export { isRecord } from "./isRecord";
 export { isSetLike } from "./isSetLike";
-export { isTableRecord } from "./isTableRecord";
 export { normalizeConsoleTableData } from "./normalizeConsoleTableData";
 export { normalizeConsoleValue } from "./normalizeConsoleValue";
 export { objectEntries } from "./objectEntries";
