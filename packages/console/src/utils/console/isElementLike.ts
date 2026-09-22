@@ -10,7 +10,7 @@ import { isObjectLike } from "./isObjectLike";
  */
 export function isElementLike(
   value: unknown,
-): value is object & { outerHTML: string } {
+): value is object & { outerHTML: string; tagName?: string } {
   if (!isObjectLike(value)) {
     return false;
   }
