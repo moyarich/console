@@ -20,14 +20,12 @@ import {
 } from "../actions";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import type { ConsoleMessageData, ConsoleMode } from "../types";
-import { formatConsoleObjectForCopy } from "../utils/console/copyObject";
+import { formatConsoleObjectForCopy } from "../utils/console/formatConsoleObjectForCopy";
 import { writeClipboardText } from "../utils/clipboard";
-import {
-  getContextMenuThemeStyle,
-  getEventPoint,
-  getMenuPosition,
-  type ContextMenuThemeStyle,
-} from "../utils/console/contextMenu";
+import { getContextMenuThemeStyle } from "../utils/console/getContextMenuThemeStyle";
+import { getEventPoint } from "../utils/console/getEventPoint";
+import { getMenuPosition } from "../utils/console/getMenuPosition";
+import type { ContextMenuThemeStyle } from "../utils/console/types";
 
 /** Props for the console's built-in right-click action surface. */
 export interface ConsoleContextMenuProps {
