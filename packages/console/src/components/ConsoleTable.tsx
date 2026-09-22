@@ -1,8 +1,8 @@
 import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
-import type { ConsoleValueRenderer } from "../renderers";
-import type { ConsoleLinkProvider } from "../links";
+import type { ConsoleValueRenderer } from "../renderers/types";
+import type { ConsoleLinkProvider } from "../links/types";
 import { collectColumns } from "../utils/table/collectColumns";
 import { toRows } from "../utils/table/toRows";
 import { isObjectLike } from "../utils/values/isObjectLike";
