@@ -861,12 +861,87 @@ The host exposes four generic concepts:
 - `processOutputProcessor`
 - `structuredOutputParser`
 - `linkProvider`
+- `outputRenderer`
 - `messageRenderer`
 - `valueRenderer`
 - `contextMenuAction`
 - `messageAction`
 
 Direct component props remain supported. When both a direct prop and addon contributions target the same ordered hook, the direct prop entries are placed first so the embedding application retains final control over dispatch precedence.
+
+### Replacing the output surface
+
+`ConsoleStdout` remains the built-in, zero-configuration ANSI/process-output renderer. It is a core default implementation, **not** an addon that applications must install.
+
+The output architecture is:
+
+```text
+Console
+   │
+   ▼
+outputRenderer extensions
+   │
+   ├── handled by an addon
+   │       ↓
+   │   custom surface
+   │
+   └── no addon handles it
+           ↓
+     built-in default
+           ↓
+      ConsoleStdout
+```
+
+An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, resize behavior, context menu, addon lifecycle, and surrounding layout.
+
+```tsx
+function createTerminalSurfaceAddon(): ConsoleAddon {
+  return {
+    id: "terminal-surface",
+    activate(host) {
+      host.extensions.register(
+        consoleExtensionPoints.outputRenderer,
+        {
+          mode: "ansi",
+          render(context) {
+            if (context.mode !== "ansi") {
+              return undefined;
+            }
+
+            return (
+              <MyTerminal
+                entries={context.entries}
+              />
+            );
+          },
+        },
+      );
+    },
+  };
+}
+```
+
+Returning `undefined` delegates to the next output renderer and ultimately the built-in surface. Any other React result, including `null`, counts as an intentional replacement.
+
+The renderer context also exposes `renderDefault()`, so an addon can wrap or decorate the built-in surface instead of replacing it completely:
+
+```tsx
+host.extensions.register(
+  consoleExtensionPoints.outputRenderer,
+  {
+    mode: "ansi",
+    render: ({ renderDefault }) => (
+      <TerminalShell>
+        {renderDefault()}
+      </TerminalShell>
+    ),
+  },
+);
+```
+
+A custom output renderer still mounts when the message list is empty. This is intentional: terminal implementations such as xterm.js need to initialize an empty terminal surface before future process chunks arrive.
+
+The output renderer is generic rather than xterm-specific. It can support alternative terminal engines, virtualized output views, trace views, or other complete output presentations without adding another `Console` mode or feature-specific field to `ConsoleAddon`.
 
 ### Custom extension points
 
@@ -1157,6 +1232,8 @@ Available helpers:
 | `getConsoleValueType`           | Resolve the normalized type key used by value-renderer dispatch |
 | `ConsoleMessageRenderer`        | Message renderer entry type                                     |
 | `ConsoleMessageRendererContext` | Message renderer context type                                   |
+| `ConsoleOutputRenderer`         | Complete output-surface renderer entry type                     |
+| `ConsoleOutputRendererContext`  | Structured/ANSI context plus built-in `renderDefault()`        |
 | `ConsoleValueRenderer`          | Value renderer entry type                                       |
 | `ConsoleValueRendererContext`   | Value renderer context type                                     |
 
