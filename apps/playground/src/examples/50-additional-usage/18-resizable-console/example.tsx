@@ -1,5 +1,10 @@
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
-import { useRef, useState, type PointerEvent } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 import {
   Console,
   type ConsoleMessageData,
@@ -120,7 +125,7 @@ export default function ResizableConsoleExample() {
           "--console-resize-separator-foreground": "#475467",
           "--console-resize-separator-border": "#98a2b3",
           "--console-resize-separator-grip-background": "#ffffff",
-        } as React.CSSProperties
+        } as CSSProperties
       }
     >
       <div
