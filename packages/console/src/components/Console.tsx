@@ -490,21 +490,25 @@ function ConsoleMessageMode({
 
   const renderDefaultOutput = () =>
     visibleMessages.map((message, index) => (
-      <ConsoleMessage
+      <div
         key={
           message.id ??
           `${message.method}-${message.timestamp ?? "na"}-${index}`
         }
-        message={message}
-        index={index}
-        messages={visibleMessages}
-        expandAllVersion={expandedMessages.get(message)}
-        onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
-        renderers={resolvedMessageRenderers}
-        valueRenderers={resolvedValueRenderers}
-        detectLinks={detectLinks}
-        linkProviders={resolvedLinkProviders}
-      />
+        data-console-message-id={message.id}
+      >
+        <ConsoleMessage
+          message={message}
+          index={index}
+          messages={visibleMessages}
+          expandAllVersion={expandedMessages.get(message)}
+          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+          renderers={resolvedMessageRenderers}
+          valueRenderers={resolvedValueRenderers}
+          detectLinks={detectLinks}
+          linkProviders={resolvedLinkProviders}
+        />
+      </div>
     ));
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
