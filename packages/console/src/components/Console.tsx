@@ -117,6 +117,8 @@ interface ConsoleSharedProps {
   linkProviders?: readonly ConsoleLinkProvider[];
   /** Addons activated for this mounted console. */
   addons?: readonly ConsoleAddon[];
+  /** Addon IDs to keep unloaded, including auto-registered core addons. */
+  disabledAddonIds?: readonly string[];
 }
 
 /** Props for browser-style structured console rendering. */
@@ -638,7 +640,12 @@ export function Console({ ref, ...props }: ConsoleProps) {
 
   useImperativeHandle(ref, () => viewport, [viewport]);
 
-  const addonExtensions = useConsoleAddons(props.addons, mode, viewport);
+  const addonExtensions = useConsoleAddons(
+    props.addons,
+    props.disabledAddonIds,
+    mode,
+    viewport,
+  );
   const resolvedProps = { addonExtensions, surfaceRef, viewport };
 
   if (props.mode === "ansi") {
