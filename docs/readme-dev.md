@@ -169,7 +169,7 @@ Structured rendering should not need to know whether a message came from page ca
 
 ### Custom renderer dispatch
 
-Custom message and value rendering is implemented by the public extension domain in `packages/console/src/renderers/`.
+Custom message and value renderer contracts live in `packages/console/src/renderers/types.ts`. Matching and invocation stay next to the components that consume those contracts so one-use dispatch helpers do not become unnecessary abstractions.
 
 - message entries can dispatch by `method`, `match`, or both
 - value entries can dispatch by normalized `type`, `match`, or both
@@ -178,7 +178,7 @@ Custom message and value rendering is implemented by the public extension domain
 - `renderDefault()` lets a custom renderer decorate the built-in result without reimplementing it
 - synchronous matcher/renderer errors are contained so extension code does not prevent console rendering
 
-Keep renderer dispatch data-oriented. Avoid growing method/type handling into large conditionals or switches when a lookup/dispatch table is clearer.
+Keep renderer matching data-oriented. If matching logic becomes shared by multiple consumers, extract a meaningful reusable abstraction; otherwise keep the one-use loop colocated with the consuming component.
 
 Value renderers must continue to propagate through nested `ConsoleValue` instances, `console.table()` cells, and structured ANSI values.
 
