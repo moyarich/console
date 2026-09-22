@@ -174,8 +174,8 @@ export function normalizeConsoleProcessOutputEntries(
     const source: ConsoleStdoutEntry =
       typeof entry === "string" ? { data: entry } : entry;
     const startsWithLineControl =
-      source.data.startsWith("\\r") ||
-      source.data.startsWith("\\n") ||
+      source.data.charCodeAt(0) === 13 ||
+      source.data.charCodeAt(0) === 10 ||
       ANSI_CLEAR_LINE_PATTERN.test(source.data);
     const streamChanged =
       current?.stream !== undefined &&
