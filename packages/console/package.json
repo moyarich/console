@@ -18,14 +18,14 @@
     },
     "./styles.css": "./src/styles.css",
     "./utils/console": {
-      "types": "./dist/utils-console.d.ts",
-      "import": "./dist/utils-console.js",
-      "require": "./dist/utils-console.cjs"
+      "types": "./dist/utils/console/index.d.ts",
+      "import": "./dist/utils/console/index.js",
+      "require": "./dist/utils/console/index.cjs"
     },
     "./utils/terminal": {
-      "types": "./dist/utils-terminal.d.ts",
-      "import": "./dist/utils-terminal.js",
-      "require": "./dist/utils-terminal.cjs"
+      "types": "./dist/utils/terminal/index.d.ts",
+      "import": "./dist/utils/terminal/index.js",
+      "require": "./dist/utils/terminal/index.cjs"
     }
   },
   "files": [
@@ -36,7 +36,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/utils-console.ts src/utils-terminal.ts --format esm,cjs --dts --clean --external react --external react-dom",
+    "build": "tsup src/index.ts src/utils/console/index.ts src/utils/terminal/index.ts --format esm,cjs --dts --clean --external react --external react-dom",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
