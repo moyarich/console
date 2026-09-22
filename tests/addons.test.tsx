@@ -207,6 +207,64 @@ describe("console addon API", () => {
     ).toEqual([provider]);
   });
 
+  it("allows an output renderer to replace the built-in structured surface", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "structured",
+            method: "log",
+            data: ["hello", { ready: true }],
+            depth: 0,
+          },
+        ]}
+        showHeader={false}
+        outputRenderers={[
+          {
+            mode: "console",
+            render: (context) => {
+              if (context.mode !== "console") return undefined;
+
+              return (
+                <div data-testid="custom-console-feed">
+                  messages:{context.messages.length}
+                </div>
+              );
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain('data-testid="custom-console-feed"');
+    expect(markup).toContain("messages:1");
+    expect(markup).not.toContain("hello");
+  });
+
+  it("falls back to the built-in structured surface when output renderers delegate", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "structured-default",
+            method: "log",
+            data: ["built-in structured output"],
+            depth: 0,
+          },
+        ]}
+        showHeader={false}
+        outputRenderers={[
+          {
+            mode: "console",
+            render: () => undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain("built-in structured output");
+  });
+
   it("allows an output renderer to replace the built-in ANSI surface", () => {
     const markup = renderToStaticMarkup(
       <Console
