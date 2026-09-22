@@ -20,13 +20,11 @@ import {
 } from "./ConsoleStdout";
 import type {
   ConsoleMessageData,
+  ConsoleMessageRenderer,
   ConsoleMode as ConsoleModeType,
+  ConsoleValueRenderer,
   RunOutput,
 } from "../types";
-import type {
-  ConsoleMessageRenderer,
-  ConsoleValueRenderer,
-} from "../renderers/types";
 import type {
   ConsoleContextMenuAction,
   ConsoleMessageAction,
