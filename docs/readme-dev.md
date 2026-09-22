@@ -115,7 +115,7 @@ Keep component modules focused on React rendering, state, refs, effects, and eve
 - `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
 - the root `utils/` directory is reserved for cross-cutting helpers such as transport, serialization, clipboard, capture, and WebSocket utilities
 
-Prefer one reusable utility function per module, even when the package currently has only one internal caller. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
+Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
 
 Utility barrels are published as secondary entry points:
 
