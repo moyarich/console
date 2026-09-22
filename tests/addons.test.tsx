@@ -274,11 +274,15 @@ describe("console addon API", () => {
         outputRenderers={[
           {
             mode: "ansi",
-            render: ({ entries }) => (
-              <div data-testid="custom-terminal">
-                terminal:{entries.length}
-              </div>
-            ),
+            render: (context) => {
+              if (context.mode !== "ansi") return undefined;
+
+              return (
+                <div data-testid="custom-terminal">
+                  terminal:{context.entries.length}
+                </div>
+              );
+            },
           },
         ]}
       />,
