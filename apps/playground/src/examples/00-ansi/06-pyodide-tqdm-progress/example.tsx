@@ -47,6 +47,8 @@ from tqdm import tqdm
 tqdm.monitor_interval = 0
 
 class BrowserTqdmStream:
+    encoding = "utf-8"
+
     def write(self, text):
         text = str(text)
         emit_tqdm_chunk(text)
@@ -68,6 +70,7 @@ async def run_tqdm_demo():
         mininterval=0,
         miniters=1,
         ncols=88,
+        ascii=False,
         file=stream,
     ):
         await asyncio.sleep(0.04)
