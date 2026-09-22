@@ -13,8 +13,6 @@ import type {
   ConsoleLinkProvider,
   ConsoleLinkProviderContext,
 } from "../links/types";
-import { dispatchValueRenderer } from "../renderers/dispatchValueRenderer";
-import { getConsoleValueType } from "../renderers/getConsoleValueType";
 import type { ConsoleValueRenderer } from "../renderers/types";
 
 /** Props for rendering a single console value. */
@@ -307,12 +305,35 @@ export function ConsoleValue({
       linkContext,
     });
 
-  const custom = dispatchValueRenderer(renderers, value, {
+  const type =
+    value === null
+      ? "null"
+      : Array.isArray(value)
+        ? "array"
+        : typeof value !== "object"
+          ? typeof value
+          : value.constructor?.name || "object";
+  const rendererContext = {
     propertyKey,
     depth: ancestors.size,
-    type: getConsoleValueType(value),
+    type,
     renderDefault,
-  });
+  };
 
-  return custom === undefined ? renderDefault() : custom;
+  for (const renderer of renderers ?? []) {
+    try {
+      if (renderer.type && renderer.type !== type) continue;
+      if (renderer.match && !renderer.match(value, rendererContext)) continue;
+
+      const rendered = renderer.render(value, rendererContext);
+
+      if (rendered !== undefined) {
+        return rendered;
+      }
+    } catch {
+      // A custom renderer must not prevent the console from rendering.
+    }
+  }
+
+  return renderDefault();
 }
