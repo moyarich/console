@@ -140,7 +140,8 @@
 }
 
 .console-panel .console-actions > button,
-.console-panel .console-actions > a {
+.console-panel .console-actions > a,
+.console-panel .console-panel-action-entry > button {
   display: flex;
   width: 100%;
   min-height: 34px;
@@ -165,15 +166,48 @@
 .console-panel .console-actions > button:hover:not(:disabled),
 .console-panel .console-actions > button:focus-visible,
 .console-panel .console-actions > a:hover,
-.console-panel .console-actions > a:focus-visible {
+.console-panel .console-actions > a:focus-visible,
+.console-panel .console-panel-action-entry > button:hover:not(:disabled),
+.console-panel .console-panel-action-entry > button:focus-visible {
   outline: none;
   background: var(--_console-panel-control-hover-background);
   color: var(--_console-panel-control-hover-foreground);
 }
 
-.console-panel .console-actions > button:disabled {
+.console-panel .console-actions > button:disabled,
+.console-panel .console-panel-action-entry > button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+.console-panel .console-panel-action-entry {
+  display: contents;
+}
+
+.console-panel .console-panel-action-separator {
+  height: 1px;
+  margin: 4px 5px;
+  background: var(--_console-panel-control-border);
+}
+
+.console-panel .console-panel-action-icon {
+  display: inline-flex;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.console-panel .console-panel-action-icon > svg {
+  width: 15px;
+  height: 15px;
+  color: inherit;
+  stroke: currentColor;
+}
+
+.console-panel .console-panel-action-danger:not(:disabled) {
+  color: var(--_console-error-foreground);
 }
 
 /* ==========================================================================
