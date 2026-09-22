@@ -27,23 +27,14 @@ describe("console theme CSS", () => {
     expect(styles).toContain(
       "--_console-background-color: var(--console-background-color, #1e1e1e);",
     );
-    expect(styles).toContain(
-      "--_console-panel-border: var(\n" +
-        "    --console-panel-border,\n" +
-        "    1px solid #dde4ef\n" +
-        "  );",
+    expect(styles).toMatch(
+      /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid #dde4ef\s*\);/,
     );
-    expect(styles).toContain(
-      "--_console-panel-header-border-bottom: var(\n" +
-        "    --console-panel-header-border-bottom,\n" +
-        "    1px solid #e5eaf2\n" +
-        "  );",
+    expect(styles).toMatch(
+      /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid #e5eaf2\s*\);/,
     );
-    expect(styles).toContain(
-      "--_console-context-menu-border: var(\n" +
-        "    --console-context-menu-border,\n" +
-        "    1px solid #454545\n" +
-        "  );",
+    expect(styles).toMatch(
+      /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid #454545\s*\);/,
     );
   });
 
