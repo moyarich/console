@@ -1,4 +1,5 @@
 import * as ConsolePackage from "@moyarich/console";
+import * as LucideReact from "lucide-react";
 import * as React from "react";
 import * as JSXRuntime from "react/jsx-runtime";
 import type { ComponentType } from "react";
@@ -13,6 +14,7 @@ const SUPPORTED_BARE_IMPORTS = [
   "react/jsx-dev-runtime",
   "@moyarich/console",
   "@moyarich/console/styles.css",
+  "lucide-react",
   "typescript",
 ] as const;
 
@@ -57,6 +59,7 @@ function getRuntimeModules(ts: TypeScriptModule) {
     "react/jsx-dev-runtime": JSXRuntime,
     "@moyarich/console": ConsolePackage,
     "@moyarich/console/styles.css": {},
+    "lucide-react": LucideReact,
     typescript: ts,
   } satisfies Record<SupportedBareImport, RuntimeModule>;
 }
