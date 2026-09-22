@@ -4,6 +4,7 @@ import {
   consoleCapabilities,
   createConsoleAddonManager,
   createConsoleViewportAddon,
+  isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleAddonManager,
   type ConsoleExtensionRegistry,
@@ -30,10 +31,7 @@ function validateAddons(
       throw new Error(`Console addon "${id}" appears more than once.`);
     }
 
-    if (
-      id.startsWith(CONSOLE_CORE_ADDON_ID_PREFIX) &&
-      !coreAddonIds.has(id)
-    ) {
+    if (isCoreConsoleAddonId(id) && !coreAddonIds.has(id)) {
       throw new Error(
         `Console addon ID "${id}" uses the reserved core namespace "${CONSOLE_CORE_ADDON_ID_PREFIX}".`,
       );
