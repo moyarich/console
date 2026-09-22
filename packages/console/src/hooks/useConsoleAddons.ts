@@ -79,7 +79,9 @@ export function useConsoleAddons(
   }, [manager]);
 
   useEffect(() => {
-    const nextById = new Map(addonList.map((addon) => [addon.id.trim(), addon]));
+    const nextById = new Map(
+      addonList.map((addon) => [addon.id.trim(), addon]),
+    );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
 
     for (const [id, current] of currentEntries) {
