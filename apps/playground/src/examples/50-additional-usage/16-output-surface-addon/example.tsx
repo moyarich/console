@@ -14,7 +14,7 @@ function TerminalSurface({
 }) {
   return (
     <div
-      role="terminal"
+      role="log"
       aria-label="Custom terminal output"
       style={{
         minHeight: 180,
@@ -27,7 +27,11 @@ function TerminalSurface({
       {entries.map((entry, index) => {
         const text = typeof entry === "string" ? entry : entry.data;
 
-        return <div key={typeof entry === "string" ? index : entry.id ?? index}>{text}</div>;
+        return (
+          <div key={typeof entry === "string" ? index : entry.id ?? index}>
+            {text}
+          </div>
+        );
       })}
     </div>
   );
