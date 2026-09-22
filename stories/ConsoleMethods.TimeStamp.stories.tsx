@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "timeStamp" as const;
-const description = "timeStamp is accepted as a no-op by the proxy; it does not emit a console row.";
+const description =
+  "timeStamp is accepted as a no-op by the proxy; it does not emit a console row.";
 const expected = "After timestamp";
 
 function runExample(console: globalThis.Console) {
