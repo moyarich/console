@@ -5,7 +5,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -59,6 +58,19 @@ type MenuTarget =
       index: number;
       messages: readonly ConsoleMessageData[];
     };
+
+interface MenuState {
+  x: number;
+  y: number;
+  target: MenuTarget;
+  themeStyle: ContextMenuThemeStyle;
+}
+
+interface ConsoleActionMenuItemProps<TContext> {
+  resolvedAction: ResolvedConsoleAction<TContext>;
+  context: TContext;
+  onBeforeSelect: () => void;
+}
 
 function ConsoleActionMenuItem<TContext>({
   resolvedAction,
