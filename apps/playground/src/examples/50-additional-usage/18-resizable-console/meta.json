@@ -1,0 +1,4 @@
+{
+  "label": "Resizable console",
+  "description": "Resize the console shell vertically, horizontally, in both directions, or with logical block/inline directions while preserving a scrollable output viewport."
+}
