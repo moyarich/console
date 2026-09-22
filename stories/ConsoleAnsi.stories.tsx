@@ -86,7 +86,9 @@ export const TqdmLeadingCarriageReturn: Story = {
       "Downloading:  75%",
     ]) {
       if (text.includes(staleFrame)) {
-        throw new Error(`Stale tqdm progress frame remained visible: ${staleFrame}`);
+        throw new Error(
+          `Stale tqdm progress frame remained visible: ${staleFrame}`,
+        );
       }
     }
 
