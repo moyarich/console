@@ -10,7 +10,6 @@ export { getAnsiTokenStyle } from "./getAnsiTokenStyle";
 export { hasAnsiClearLine } from "./hasAnsiClearLine";
 export { parseStrictJsonOutput } from "./parseStrictJsonOutput";
 export { parseStructuredOutput } from "./parseStructuredOutput";
-export { stripAnsiText } from "./stripAnsiText";
 export type {
   AnserToken,
   AnsiTokenRange,
