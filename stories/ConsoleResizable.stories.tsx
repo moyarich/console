@@ -291,9 +291,7 @@ function EditorShell() {
           transition:
             "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
         }}
-      }}
-    >
-
+      >
         {horizontalDock ? (
           <GripVertical size={14} aria-hidden="true" />
         ) : (
