@@ -105,10 +105,7 @@ function createRuntimeBridgeUrl(
   return url;
 }
 
-function resolveEsmSpecifier(
-  moduleId: string,
-  ts: TypeScriptModule,
-): string {
+function resolveEsmSpecifier(moduleId: string, ts: TypeScriptModule): string {
   if (isSupportedBareImport(moduleId)) {
     const runtimeModules = getRuntimeModules(ts);
     return createRuntimeBridgeUrl(moduleId, runtimeModules[moduleId]);
