@@ -27,11 +27,16 @@ describe("runnable example browser ESM compilation", () => {
       import React from "react";
       import { Console } from "@moyarich/console";
       import "@moyarich/console/styles.css";
+      import { GripVertical } from "lucide-react";
       export { useState } from "react";
-      export default function Example() { return <Console />; }
+      export default function Example() {
+        return <Console actions={<GripVertical />} />;
+      }
     `);
     expect(output).toContain("jsx as _jsx");
-    expect(output).not.toMatch(/(?:from\s*|import\s*)["'](?:react|@moyarich)/);
+    expect(output).not.toMatch(
+      /(?:from\s*|import\s*)["'](?:react|@moyarich|lucide-react)/,
+    );
   });
 
   it("preserves absolute URLs and computed dynamic imports", async () => {
@@ -90,7 +95,7 @@ describe("runnable example browser ESM compilation", () => {
         name,
       );
       expect(output).not.toMatch(
-        /(?:from\s*|import\s*)["'](?:react|@moyarich)/,
+        /(?:from\s*|import\s*)["'](?:react|@moyarich|lucide-react)/,
       );
     },
   );

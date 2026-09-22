@@ -39,6 +39,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
+| Bundle reusable console extensions                 | `addons` / `ConsoleAddon`                    |
 | Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
 ## Install
@@ -534,7 +535,8 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
 | `showHeader`          | Show/hide the panel header                                                     |
 | `showClearButton`     | Show clear when `onClear` is available                                         |
-| `actions`             | Add application-defined actions to the ellipsis popover                        |
+| `actions`             | Add arbitrary React content to the ellipsis popover                            |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                           |
 | `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
 | `title` / `subtitle`  | Customize panel heading text                                                   |
 | `emptyMessage`        | Customize the empty state                                                      |
@@ -573,46 +575,168 @@ ANSI mode also adds **Copy output** to the actions menu.
 The package styles expose `--console-*` custom properties as **theme inputs**.
 The library does not assign those public properties internally. Instead, it
 resolves them through private `--_console-*` implementation tokens with
-fallback values. This means a theme can be defined on `:root`, a wrapper
+fallback values. A theme can therefore be defined on `:root`, a wrapper
 around one console, the `.console-panel` itself, or through the component's
-`style` prop without fighting a same-element default declaration.
+`style` prop.
 
 Do not depend on or override `--_console-*` properties. They are internal and
-may change. Override only the public `--console-*` variables.
+may change.
+
+### Theme-token naming contract
+
+Public theme token names identify the CSS property they control:
+
+- `*-color` → `color` or an explicitly named color property such as `border-color`
+- `*-background-color` → `background-color`
+- `*-border` → complete `border` shorthand, such as `1px solid #d0d5dd`
+- `*-border-left` / `*-border-bottom` → complete directional border shorthand
+- `*-border-color` → `border-color` only
+- `*-border-radius` → `border-radius`
+- `*-box-shadow` → `box-shadow`
+- `*-outline` → complete `outline` shorthand
+- typography and sizing tokens use the exact CSS property name
+
+For example, `--console-panel-border` accepts a complete border shorthand,
+while `--console-warning-border-color` changes only the warning message's
+`border-color`.
 
 ### Native `color-scheme` support
 
-The console uses the CSS `color-scheme` property for browser-rendered UI such
-as scrollbars and native controls. The three public inputs are separate because
-the default panel chrome is light while the output surface and context menu are
-dark:
+| Token                                 | CSS property   | Applies to                                                          |
+| ------------------------------------- | -------------- | ------------------------------------------------------------------- |
+| `--console-panel-color-scheme`        | `color-scheme` | Panel chrome and header actions                                     |
+| `--console-color-scheme`              | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
+| `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu                                                    |
 
-| Variable                              | Default                                | Applies to                      |
-| ------------------------------------- | -------------------------------------- | ------------------------------- |
-| `--console-panel-color-scheme`        | `light`                                | Panel chrome and header actions |
-| `--console-color-scheme`              | `dark`                                 | Structured/ANSI output surface  |
-| `--console-context-menu-color-scheme` | falls back to `--console-color-scheme` | Right-click menu                |
+The panel chrome defaults to dark, matching the console output. If
+`--console-color-scheme` is set, the panel inherits that scheme unless
+`--console-panel-color-scheme` overrides it. Header, control, border, muted,
+and heading-icon fallback colors use `light-dark()`, so the header visibly
+tracks the selected light/dark scheme without requiring every panel color token
+to be overridden.
 
-`color-scheme` tells the browser how to render native UI; it does not
-automatically recolor the library's custom surfaces. Set the corresponding
-color variables when creating a light or dark theme.
+`color-scheme` also affects browser-rendered UI such as native scrollbars and
+controls. Explicit public color tokens still take precedence over the
+scheme-derived fallbacks.
 
-### Common theme variables
+### Panel chrome
 
-| Area              | Variables                                                                                                                                                                                                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Panel chrome      | `--console-panel-background`, `--console-panel-foreground`, `--console-panel-muted`, `--console-panel-border`, `--console-panel-header-background`, `--console-panel-header-border`                                                                                                                                    |
-| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border`, `--console-panel-control-foreground`, `--console-panel-control-hover-background`, `--console-panel-control-hover-foreground`, `--console-panel-control-hover-border`                                                                           |
-| Output surface    | `--console-background`, `--console-foreground`, `--console-border`, `--console-muted`, `--console-subtle`                                                                                                                                                                                                              |
-| Message states    | `--console-info`, `--console-debug`, `--console-warning-background`, `--console-warning-foreground`, `--console-error-background`, `--console-error-foreground`                                                                                                                                                        |
-| Values            | `--console-string`, `--console-number`, `--console-null`, `--console-symbol`, `--console-circular`, `--console-property-key`, `--console-object-property-key`                                                                                                                                                          |
-| Icons             | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background`                                                                                                               |
-| Context menu      | `--console-context-menu-background`, `--console-context-menu-foreground`, `--console-context-menu-border`, `--console-context-menu-hover`, `--console-context-menu-hover-foreground`, `--console-context-menu-icon`, `--console-context-menu-danger`, `--console-context-menu-radius`, `--console-context-menu-shadow` |
-| Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height`                                                                                                                                                                                         |
+| Token                                     | CSS property               |
+| ----------------------------------------- | -------------------------- |
+| `--console-panel-background-color`        | `background-color`         |
+| `--console-panel-color`                   | `color`                    |
+| `--console-panel-muted-color`             | `color`                    |
+| `--console-panel-border`                  | `border` shorthand         |
+| `--console-panel-border-radius`           | `border-radius`            |
+| `--console-panel-box-shadow`              | `box-shadow`               |
+| `--console-panel-header-color`            | `color` (header and title) |
+| `--console-panel-header-muted-color`      | `color` (subtitle)         |
+| `--console-panel-header-background-color` | `background-color`         |
+| `--console-panel-header-border-bottom`    | `border-bottom` shorthand  |
+| `--console-panel-popover-box-shadow`      | `box-shadow`               |
+
+### Panel controls and actions
+
+| Token                                               | CSS property       |
+| --------------------------------------------------- | ------------------ |
+| `--console-panel-control-background-color`          | `background-color` |
+| `--console-panel-control-border`                    | `border` shorthand |
+| `--console-panel-control-color`                     | `color`            |
+| `--console-panel-control-hover-background-color`    | `background-color` |
+| `--console-panel-control-hover-color`               | `color`            |
+| `--console-panel-control-hover-border-color`        | `border-color`     |
+| `--console-panel-action-separator-background-color` | `background-color` |
+
+### Output surface and process rows
+
+| Token                                    | CSS property              |
+| ---------------------------------------- | ------------------------- |
+| `--console-background-color`             | `background-color`        |
+| `--console-color`                        | `color`                   |
+| `--console-entry-border-bottom`          | `border-bottom` shorthand |
+| `--console-stderr-border-left`           | `border-left` shorthand   |
+| `--console-clear-line-border-left`       | `border-left` shorthand   |
+| `--console-link-color`                   | `color`                   |
+| `--console-message-action-focus-outline` | `outline` shorthand       |
+| `--console-empty-color`                  | `color`                   |
+| `--console-muted-color`                  | `color`                   |
+| `--console-subtle-color`                 | `color`                   |
+| `--console-group-marker-color`           | `color`                   |
+| `--console-header-icon-color`            | `color`                   |
+
+### Message states
+
+| Token                                | CSS property       |
+| ------------------------------------ | ------------------ |
+| `--console-info-color`               | `color`            |
+| `--console-debug-color`              | `color`            |
+| `--console-warning-border-color`     | `border-color`     |
+| `--console-warning-background-color` | `background-color` |
+| `--console-warning-color`            | `color`            |
+| `--console-error-border-color`       | `border-color`     |
+| `--console-error-background-color`   | `background-color` |
+| `--console-error-color`              | `color`            |
+
+### Values and object inspector
+
+| Token                                 | CSS property            |
+| ------------------------------------- | ----------------------- |
+| `--console-string-color`              | `color`                 |
+| `--console-number-color`              | `color`                 |
+| `--console-null-color`                | `color`                 |
+| `--console-symbol-color`              | `color`                 |
+| `--console-circular-color`            | `color`                 |
+| `--console-property-key-color`        | `color`                 |
+| `--console-object-property-key-color` | `color`                 |
+| `--console-object-border-left`        | `border-left` shorthand |
+
+### Icons
+
+| Token                                           | CSS property       |
+| ----------------------------------------------- | ------------------ |
+| `--console-icon-color`                          | `color`            |
+| `--console-icon-hover-color`                    | `color`            |
+| `--console-icon-hover-background-color`         | `background-color` |
+| `--console-message-icon-color`                  | `color`            |
+| `--console-message-icon-hover-color`            | `color`            |
+| `--console-message-icon-hover-background-color` | `background-color` |
+
+### Tables
+
+| Token                                     | CSS property       |
+| ----------------------------------------- | ------------------ |
+| `--console-table-border`                  | `border` shorthand |
+| `--console-table-header-background-color` | `background-color` |
+| `--console-table-even-background-color`   | `background-color` |
+
+### Context menu
+
+| Token                                               | CSS property       |
+| --------------------------------------------------- | ------------------ |
+| `--console-context-menu-background-color`           | `background-color` |
+| `--console-context-menu-border`                     | `border` shorthand |
+| `--console-context-menu-color`                      | `color`            |
+| `--console-context-menu-muted-color`                | `color`            |
+| `--console-context-menu-hover-background-color`     | `background-color` |
+| `--console-context-menu-hover-color`                | `color`            |
+| `--console-context-menu-icon-color`                 | `color`            |
+| `--console-context-menu-danger-color`               | `color`            |
+| `--console-context-menu-border-radius`              | `border-radius`    |
+| `--console-context-menu-box-shadow`                 | `box-shadow`       |
+| `--console-context-menu-separator-background-color` | `background-color` |
+
+### Typography and sizing
+
+| Token                         | CSS property                                     |
+| ----------------------------- | ------------------------------------------------ |
+| `--console-font-family`       | `font-family`                                    |
+| `--console-font-size`         | `font-size`                                      |
+| `--console-line-height`       | `line-height`                                    |
+| `--console-min-height`        | `min-height`                                     |
+| `--console-mobile-min-height` | `min-height` below the package mobile breakpoint |
 
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
-explicit public hover variable completely replaces the derived value, so themes
-do not create circular custom-property dependencies.
+explicit public hover token replaces that derived value.
 
 ### Example: light output theme
 
@@ -622,24 +746,26 @@ do not create circular custom-property dependencies.
   --console-color-scheme: light;
   --console-context-menu-color-scheme: light;
 
-  --console-panel-background: #ffffff;
-  --console-panel-foreground: #172033;
-  --console-panel-border: #d8dee8;
+  --console-panel-background-color: #ffffff;
+  --console-panel-color: #172033;
+  --console-panel-border: 1px solid #d8dee8;
+  --console-panel-header-border-bottom: 1px solid #e2e8f0;
 
-  --console-background: #f8fafc;
-  --console-foreground: #172033;
-  --console-border: #e2e8f0;
-  --console-muted: #667085;
-  --console-subtle: #98a2b3;
+  --console-background-color: #f8fafc;
+  --console-color: #172033;
+  --console-entry-border-bottom: 1px solid #e2e8f0;
+  --console-muted-color: #667085;
+  --console-subtle-color: #98a2b3;
 
-  --console-string: #b42318;
-  --console-number: #175cd3;
-  --console-null: #7a5af8;
-  --console-symbol: #027a48;
+  --console-string-color: #b42318;
+  --console-number-color: #175cd3;
+  --console-null-color: #7a5af8;
+  --console-symbol-color: #027a48;
 
-  --console-context-menu-background: #ffffff;
-  --console-context-menu-foreground: #172033;
-  --console-context-menu-border: #d8dee8;
+  --console-context-menu-background-color: #ffffff;
+  --console-context-menu-color: #172033;
+  --console-context-menu-border: 1px solid #d8dee8;
+  --console-context-menu-separator-background-color: #d8dee8;
 }
 ```
 
@@ -650,17 +776,25 @@ do not create circular custom-property dependencies.
 ```
 
 The context menu is rendered through a portal to `document.body`. When it
-opens, the component copies explicitly resolved public context-menu theme
-variables from the console target into the portaled menu. That preserves
-wrapper-scoped themes and allows two consoles with different themes on the same
-page. Global `:root` or `body` variables also work.
+opens, the component copies the public context-menu theme inputs from the
+console target into the portaled menu. That preserves wrapper-scoped themes and
+allows two consoles with different themes on the same page. Global `:root` or
+`body` variables also work.
 
-## Extensible context and message actions
+## Extensible panel, context, and message actions
 
 Use descriptor-based actions when the host application needs commands in the
-console context menu or on individual structured messages. This is separate
-from the `actions` prop, which continues to accept arbitrary React content for
-the header ellipsis popover.
+header ellipsis menu, the console context menu, or on individual structured
+messages.
+
+The three typed action surfaces are:
+
+- `panelActions` — panel-level commands in the header ellipsis menu
+- `contextMenuActions` — right-click commands for console/object/message targets
+- `messageActions` — commands specific to structured messages
+
+The existing `actions` prop remains available as an escape hatch for arbitrary
+React content in the header ellipsis popover.
 
 ```tsx
 import {
@@ -668,7 +802,17 @@ import {
   type ConsoleContextMenuAction,
   type ConsoleMessageAction,
   type ConsoleMessageData,
+  type ConsolePanelAction,
 } from "@moyarich/console";
+
+const panelActions: ConsolePanelAction[] = [
+  {
+    id: "export-output",
+    label: "Export output",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: ({ mode }) => exportOutput(mode),
+  },
+];
 
 const contextMenuActions: ConsoleContextMenuAction[] = [
   {
@@ -702,6 +846,7 @@ export function RuntimeConsole({
   return (
     <Console
       messages={messages}
+      panelActions={panelActions}
       contextMenuActions={contextMenuActions}
       messageActions={messageActions}
     />
@@ -711,7 +856,12 @@ export function RuntimeConsole({
 
 Each action supports `id`, `label`, `onSelect`, optional `icon`,
 `ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and
-`disabled` can be booleans or predicates evaluated when the menu opens.
+`disabled` can be booleans or predicates evaluated against the current
+action context.
+
+`panelActions` receive the console surface context with `mode` and
+`hasMessages`. They render before the built-in ANSI Copy output and Clear
+commands.
 
 `contextMenuActions` receive a discriminated context with
 `kind: "console" | "object" | "message"`. Object contexts include `value`;
@@ -791,6 +941,319 @@ Each renderer context exposes `renderDefault()`, which is useful for wrapping or
 - objects use their constructor name when available, for example `"Object"`, `"Map"`, or a custom class name
 
 Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
+
+## Addons
+
+Use `addons` when a reusable feature needs to combine several console extension points, shared APIs, or lifecycle resources behind one package-level abstraction.
+
+```tsx
+import {
+  Console,
+  consoleExtensionPoints,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+function createBuildAddon(): ConsoleAddon {
+  return {
+    id: "build-tools",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.linkProvider, {
+        id: "build-task-links",
+        provideLinks(text) {
+          const match = /TASK-\d+/.exec(text);
+
+          if (!match || match.index === undefined) {
+            return undefined;
+          }
+
+          return [
+            {
+              text: match[0],
+              start: match.index,
+              end: match.index + match[0].length,
+              action: () => openTask(match[0]),
+            },
+          ];
+        },
+      });
+    },
+  };
+}
+
+const buildAddon = createBuildAddon();
+
+<Console messages={messages} addons={[buildAddon]} />;
+```
+
+An addon owns **lifecycle and composition**, not a fixed list of feature fields:
+
+```ts
+interface ConsoleAddon {
+  readonly id: string;
+  activate(host: ConsoleAddonHost): ConsoleAddonCleanup;
+}
+```
+
+The host exposes four generic concepts:
+
+| API                 | Purpose                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `host.extensions`   | Register ordered multi-provider contributions such as processors, parsers, renderers, links, and actions |
+| `host.services`     | Publish or consume a typed single-provider API/state service                                             |
+| `host.capabilities` | Detect optional functionality without reaching into React or DOM internals                               |
+| `host.scope`        | Own listeners, subscriptions, and other disposables for the addon lifetime                               |
+
+### Built-in extension points
+
+`consoleExtensionPoints` currently exposes the package's existing composable hooks:
+
+- `processOutputProcessor`
+- `structuredOutputParser`
+- `linkProvider`
+- `outputRenderer`
+- `messageRenderer`
+- `valueRenderer`
+- `panelAction`
+- `contextMenuAction`
+- `messageAction`
+
+Direct component props remain supported. When both a direct prop and addon contributions target the same ordered hook, the direct prop entries are placed first so the embedding application retains final control over dispatch precedence.
+
+### Replacing the output surface
+
+`ConsoleStdout` remains the built-in, zero-configuration ANSI/process-output renderer. It is a core default implementation, **not** an addon that applications must install.
+
+The output architecture is symmetric across both modes:
+
+```text
+                         Console
+                            │
+                            ▼
+                 outputRenderer extensions
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+   mode: "console"                     mode: "ansi"
+          │                                   │
+     handled?                            handled?
+      │     │                             │     │
+     yes    no                           yes    no
+      │     │                             │     │
+      ▼     ▼                             ▼     ▼
+ custom   built-in                    custom  ConsoleStdout
+ feed     structured                  terminal   default
+ surface  renderer                    surface
+```
+
+An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, resize behavior, context menu, addon lifecycle, and surrounding layout.
+
+This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
+
+```tsx
+function createTerminalSurfaceAddon(): ConsoleAddon {
+  return {
+    id: "terminal-surface",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "ansi",
+        render(context) {
+          if (context.mode !== "ansi") {
+            return undefined;
+          }
+
+          return <MyTerminal entries={context.entries} />;
+        },
+      });
+    },
+  };
+}
+```
+
+The same extension point can replace structured console rendering:
+
+```tsx
+function createConsoleFeedAddon(): ConsoleAddon {
+  return {
+    id: "console-feed",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "console",
+        render(context) {
+          if (context.mode !== "console") {
+            return undefined;
+          }
+
+          return <MyConsoleFeed messages={context.messages} />;
+        },
+      });
+    },
+  };
+}
+```
+
+The discriminated renderer context keeps the source data appropriate to each mode:
+
+- `mode: "console"` receives structured `ConsoleMessageData[]` as `context.messages`
+- `mode: "ansi"` receives strings / `ConsoleStdoutEntry[]` as `context.entries`
+- both modes receive `renderDefault()` for wrapping or decorating the built-in renderer
+
+Returning `undefined` delegates to the next output renderer and ultimately the built-in surface. Any other React result, including `null`, counts as an intentional replacement.
+
+The renderer context also exposes `renderDefault()`, so an addon can wrap or decorate the built-in surface instead of replacing it completely:
+
+```tsx
+host.extensions.register(consoleExtensionPoints.outputRenderer, {
+  mode: "ansi",
+  render: ({ renderDefault }) => (
+    <TerminalShell>{renderDefault()}</TerminalShell>
+  ),
+});
+```
+
+A custom output renderer can still handle an empty source list. This is intentional: terminal implementations such as xterm.js may need to initialize before future process chunks arrive, and structured feed renderers may want to own their own empty state.
+
+The output renderer is implementation-neutral. It can support console-feed-style structured views, alternative terminal engines, virtualized output views, trace views, or other complete output presentations without adding another `Console` mode or feature-specific field to `ConsoleAddon`.
+
+### Custom extension points
+
+Third-party packages can define their own typed extension points without changing `ConsoleAddon`:
+
+```ts
+import {
+  createConsoleExtensionPoint,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface DiagnosticProvider {
+  analyze(text: string): string | undefined;
+}
+
+export const diagnosticProvider =
+  createConsoleExtensionPoint<DiagnosticProvider>("acme.diagnosticProvider");
+
+export function createDiagnosticAddon(): ConsoleAddon {
+  return {
+    id: "acme.diagnostics",
+    activate(host) {
+      host.extensions.register(
+        diagnosticProvider,
+        {
+          analyze: (text) => (text.includes("ERROR") ? "failure" : undefined),
+        },
+        {
+          id: "default",
+          priority: 100,
+        },
+      );
+    },
+  };
+}
+```
+
+Higher extension priorities are returned first. Equal priorities preserve registration order. Registration IDs are optional, but when supplied they must be unique within that extension point.
+
+### Services
+
+Use a service when one addon or core feature publishes an API that another addon consumes:
+
+```ts
+import {
+  createConsoleServiceToken,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface BuildService {
+  rerun(): void;
+}
+
+const buildService = createConsoleServiceToken<BuildService>("acme.build");
+
+const provider: ConsoleAddon = {
+  id: "build-provider",
+  activate(host) {
+    host.services.provide(buildService, {
+      rerun: () => runBuild(),
+    });
+  },
+};
+
+const consumer: ConsoleAddon = {
+  id: "build-actions",
+  activate(host) {
+    const build = host.services.require(buildService);
+
+    // Register actions/commands that call build.rerun().
+  },
+};
+```
+
+A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
+
+### Capabilities
+
+The React `Console` host currently advertises:
+
+- `consoleCapabilities.react`
+- `consoleCapabilities.dom`
+- `consoleCapabilities.structuredMessages` in structured-console mode
+- `consoleCapabilities.processOutput` in ANSI/process-output mode
+
+Use capabilities when an addon can adapt to multiple host surfaces:
+
+```ts
+if (host.capabilities.has(consoleCapabilities.processOutput)) {
+  // Register process-output behavior.
+}
+```
+
+Future headless/session hosts can expose a different capability set without changing the addon contract.
+
+### Lifecycle and cleanup
+
+Every addon activation receives its own disposable scope. Registrations made through the scoped `host.extensions` and `host.services` registries are removed automatically when the addon unloads.
+
+Use `host.scope` for other resources:
+
+```ts
+activate(host) {
+  const controller = new AbortController();
+
+  host.scope.defer(() => {
+    controller.abort();
+  });
+
+  return () => {
+    // Optional additional addon cleanup.
+  };
+}
+```
+
+Cleanup is idempotent. When an addon manager is disposed, loaded addons are disposed in reverse activation order.
+
+`<Console addons={...} />` treats the addon list as controlled state. Removing an addon unloads it. Reusing the same addon instance under the same ID keeps it active even if the array container changes. Stateful addons should therefore be created once, for example with `useMemo`, instead of creating a new instance during every render:
+
+```tsx
+const addons = useMemo(() => [createBuildAddon()], []);
+
+return <Console messages={messages} addons={addons} />;
+```
+
+Duplicate addon IDs are rejected deterministically.
+
+### Headless and advanced hosts
+
+The package also exports the generic factories used by the React integration:
+
+- `createConsoleAddonManager()`
+- `createConsoleExtensionPoint()`
+- `createConsoleExtensionRegistry()`
+- `createConsoleServiceToken()`
+- `createConsoleServiceRegistry()`
+- `createConsoleCapability()`
+- `createConsoleCapabilityRegistry()`
+- `createConsoleDisposableScope()`
+
+These contracts intentionally do not expose private component nodes or terminal cursor/buffer concepts. Future data, view, viewport, selection, session, and raw-process stages can be introduced as new services or extension points without adding feature-specific fields to `ConsoleAddon`.
 
 ## Transport console events
 
@@ -940,8 +1403,22 @@ Available helpers:
 | `getConsoleValueType`           | Resolve the normalized type key used by value-renderer dispatch |
 | `ConsoleMessageRenderer`        | Message renderer entry type                                     |
 | `ConsoleMessageRendererContext` | Message renderer context type                                   |
+| `ConsoleOutputRenderer`         | Complete output-surface renderer entry type                     |
+| `ConsoleOutputRendererContext`  | Structured/ANSI context plus built-in `renderDefault()`         |
 | `ConsoleValueRenderer`          | Value renderer entry type                                       |
 | `ConsoleValueRendererContext`   | Value renderer context type                                     |
+
+### Addons and extension infrastructure
+
+| Export                                            | Purpose                                                                 |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
+| `createConsoleAddonManager`                       | Load/dispose addons against shared registries, including headless hosts |
+| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
+| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
+| `createConsoleServiceToken`                       | Define a typed single-provider service                                  |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                    |
+| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                      |
 
 ### Transport and serialization
 

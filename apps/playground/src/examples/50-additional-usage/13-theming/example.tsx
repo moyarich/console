@@ -11,7 +11,7 @@ const messages: ConsoleMessageData[] = [
   {
     id: "theme-info",
     method: "info",
-    data: ["Theme inputs inherit through the console tree."],
+    data: ["Theme tokens name the CSS property they affect."],
     depth: 0,
   },
   {
@@ -21,7 +21,7 @@ const messages: ConsoleMessageData[] = [
       "Hover the object actions:",
       {
         themeable: true,
-        derivedHoverColors: "color-mix()",
+        naming: "property-specific",
         contextMenu: "ported theme variables",
       },
     ],
@@ -43,76 +43,76 @@ const messages: ConsoleMessageData[] = [
 
 const themes: Record<ThemeName, ConsoleThemeStyle> = {
   dark: {
-    "--console-panel-color-scheme": "dark",
     "--console-color-scheme": "dark",
     "--console-context-menu-color-scheme": "dark",
 
-    "--console-panel-background": "#111827",
-    "--console-panel-foreground": "#f8fafc",
-    "--console-panel-muted": "#94a3b8",
-    "--console-panel-border": "#334155",
-    "--console-panel-header-border": "#334155",
-    "--console-panel-control-background": "#1e293b",
-    "--console-panel-control-border": "#475569",
-    "--console-panel-control-foreground": "#e2e8f0",
+    "--console-panel-background-color": "#111827",
+    "--console-panel-color": "#f8fafc",
+    "--console-panel-muted-color": "#94a3b8",
+    "--console-panel-border": "1px solid #334155",
+    "--console-panel-header-border-bottom": "1px solid #334155",
+    "--console-panel-control-background-color": "#1e293b",
+    "--console-panel-control-border": "1px solid #475569",
+    "--console-panel-control-color": "#e2e8f0",
 
-    "--console-background": "#0f172a",
-    "--console-foreground": "#e2e8f0",
-    "--console-border": "#334155",
-    "--console-muted": "#94a3b8",
-    "--console-subtle": "#64748b",
-    "--console-info": "#7dd3fc",
-    "--console-debug": "#93c5fd",
-    "--console-string": "#fda4af",
-    "--console-number": "#93c5fd",
-    "--console-null": "#d8b4fe",
-    "--console-symbol": "#86efac",
-    "--console-warning-border": "#854d0e",
-    "--console-warning-background": "#422006",
-    "--console-warning-foreground": "#fde68a",
-    "--console-error-border": "#7f1d1d",
-    "--console-error-background": "#450a0a",
-    "--console-error-foreground": "#fecaca",
+    "--console-background-color": "#0f172a",
+    "--console-color": "#e2e8f0",
+    "--console-entry-border-bottom": "1px solid #334155",
+    "--console-muted-color": "#94a3b8",
+    "--console-subtle-color": "#64748b",
+    "--console-info-color": "#7dd3fc",
+    "--console-debug-color": "#93c5fd",
+    "--console-string-color": "#fda4af",
+    "--console-number-color": "#93c5fd",
+    "--console-null-color": "#d8b4fe",
+    "--console-symbol-color": "#86efac",
+    "--console-warning-border-color": "#854d0e",
+    "--console-warning-background-color": "#422006",
+    "--console-warning-color": "#fde68a",
+    "--console-error-border-color": "#7f1d1d",
+    "--console-error-background-color": "#450a0a",
+    "--console-error-color": "#fecaca",
 
-    "--console-context-menu-background": "#111827",
-    "--console-context-menu-foreground": "#f8fafc",
-    "--console-context-menu-border": "#475569",
+    "--console-context-menu-background-color": "#111827",
+    "--console-context-menu-color": "#f8fafc",
+    "--console-context-menu-border": "1px solid #475569",
+    "--console-context-menu-separator-background-color": "#475569",
   },
   light: {
-    "--console-panel-color-scheme": "light",
     "--console-color-scheme": "light",
     "--console-context-menu-color-scheme": "light",
 
-    "--console-panel-background": "#ffffff",
-    "--console-panel-foreground": "#172033",
-    "--console-panel-muted": "#667085",
-    "--console-panel-border": "#d8dee8",
-    "--console-panel-header-border": "#e2e8f0",
-    "--console-panel-control-background": "#ffffff",
-    "--console-panel-control-border": "#cbd5e1",
-    "--console-panel-control-foreground": "#334155",
+    "--console-panel-background-color": "#ffffff",
+    "--console-panel-color": "#172033",
+    "--console-panel-muted-color": "#667085",
+    "--console-panel-border": "1px solid #d8dee8",
+    "--console-panel-header-border-bottom": "1px solid #e2e8f0",
+    "--console-panel-control-background-color": "#ffffff",
+    "--console-panel-control-border": "1px solid #cbd5e1",
+    "--console-panel-control-color": "#334155",
 
-    "--console-background": "#f8fafc",
-    "--console-foreground": "#172033",
-    "--console-border": "#e2e8f0",
-    "--console-muted": "#667085",
-    "--console-subtle": "#98a2b3",
-    "--console-info": "#175cd3",
-    "--console-debug": "#3538cd",
-    "--console-string": "#b42318",
-    "--console-number": "#175cd3",
-    "--console-null": "#7a5af8",
-    "--console-symbol": "#027a48",
-    "--console-warning-border": "#fdb022",
-    "--console-warning-background": "#fffaeb",
-    "--console-warning-foreground": "#7a2e0e",
-    "--console-error-border": "#fda29b",
-    "--console-error-background": "#fef3f2",
-    "--console-error-foreground": "#912018",
+    "--console-background-color": "#f8fafc",
+    "--console-color": "#172033",
+    "--console-entry-border-bottom": "1px solid #e2e8f0",
+    "--console-muted-color": "#667085",
+    "--console-subtle-color": "#98a2b3",
+    "--console-info-color": "#175cd3",
+    "--console-debug-color": "#3538cd",
+    "--console-string-color": "#b42318",
+    "--console-number-color": "#175cd3",
+    "--console-null-color": "#7a5af8",
+    "--console-symbol-color": "#027a48",
+    "--console-warning-border-color": "#fdb022",
+    "--console-warning-background-color": "#fffaeb",
+    "--console-warning-color": "#7a2e0e",
+    "--console-error-border-color": "#fda29b",
+    "--console-error-background-color": "#fef3f2",
+    "--console-error-color": "#912018",
 
-    "--console-context-menu-background": "#ffffff",
-    "--console-context-menu-foreground": "#172033",
-    "--console-context-menu-border": "#d8dee8",
+    "--console-context-menu-background-color": "#ffffff",
+    "--console-context-menu-color": "#172033",
+    "--console-context-menu-border": "1px solid #d8dee8",
+    "--console-context-menu-separator-background-color": "#d8dee8",
   },
 };
 
@@ -152,14 +152,14 @@ export default function ThemingExample() {
         <Console
           messages={messages}
           title="Themeable console"
-          subtitle="Public --console-* inputs + CSS color-scheme"
+          subtitle="Public --console-* inputs map to explicit CSS properties"
         />
       </div>
 
       <small style={{ minWidth: 0, overflowWrap: "anywhere" }}>
-        Hover icons and right-click the console after switching themes. Hover
-        colors are derived with color-mix() unless you override the matching
-        public hover variable.
+        Token suffixes match the CSS property they control. Border tokens such
+        as --console-panel-border accept a complete border shorthand; color-only
+        overrides end in -color.
       </small>
     </div>
   );

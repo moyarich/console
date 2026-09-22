@@ -5,7 +5,14 @@ import { describe, expect, it } from "vitest";
 const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
+const readmePath = fileURLToPath(new URL("../README.md", import.meta.url));
+
 const styles = readFileSync(stylesPath, "utf8");
+const readme = readFileSync(readmePath, "utf8");
+
+function collectPublicThemeTokens(source: string) {
+  return Array.from(new Set(source.match(/--console-[\w-]+/g) ?? [])).sort();
+}
 
 describe("console theme CSS", () => {
   it("keeps public console custom properties as inputs only", () => {
@@ -14,14 +21,158 @@ describe("console theme CSS", () => {
     expect(publicAssignments).toBeNull();
   });
 
-  it("resolves public theme inputs through private internal tokens", () => {
+  it("resolves property-specific public theme inputs through private tokens", () => {
     expect(styles).toContain(
-      "--_console-background: var(--console-background, #1e1e1e);",
+      "--_console-background-color: var(--console-background-color, #1e1e1e);",
+    );
+    expect(styles).toMatch(
+      /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
+    );
+    expect(styles).toMatch(
+      /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
+    );
+    expect(styles).toMatch(
+      /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid #454545\s*\);/,
+    );
+  });
+
+  it("keeps header chrome aligned with light and dark panel schemes", () => {
+    expect(styles).toMatch(
+      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, dark\)\s*\);/,
+    );
+    expect(styles).toContain("light-dark(#fff, #161b22)");
+    expect(styles).toContain("light-dark(#202c40, #e6edf3)");
+    expect(styles).toContain("light-dark(#7b8799, #8b949e)");
+    expect(styles).toContain("light-dark(#42526b, #c9d1d9)");
+    expect(styles).toContain("light-dark(#5266c9, #79c0ff)");
+  });
+
+  it("uses shorthand tokens only with their matching shorthand properties", () => {
+    expect(styles).toContain("border: var(--_console-panel-border);");
+    expect(styles).toContain(
+      "border-bottom: var(--_console-panel-header-border-bottom);",
+    );
+    expect(styles).toContain("border: var(--_console-panel-control-border);");
+    expect(styles).toContain(
+      "border-bottom: var(--_console-entry-border-bottom);",
     );
     expect(styles).toContain(
-      "--_console-panel-background: var(--console-panel-background, #fff);",
+      "border-left: var(--_console-stderr-border-left);",
     );
-    expect(styles).toContain("--_console-context-menu-background: var(");
+    expect(styles).toContain(
+      "border-left: var(--_console-clear-line-border-left);",
+    );
+    expect(styles).toContain(
+      "border-left: var(--_console-object-border-left);",
+    );
+    expect(styles).toContain("border: var(--_console-table-border);");
+    expect(styles).toContain(
+      "outline: var(--_console-message-action-focus-outline);",
+    );
+    expect(styles).toContain("border: var(--_console-context-menu-border);");
+  });
+
+  it("uses explicit color-property tokens for color-only theming", () => {
+    expect(styles).toContain(
+      "background-color: var(--_console-panel-background-color);",
+    );
+    expect(styles).toContain("color: var(--_console-panel-color);");
+    expect(styles).toContain(
+      "border-color: var(--_console-warning-border-color);",
+    );
+    expect(styles).toContain(
+      "background-color: var(--_console-warning-background-color);",
+    );
+    expect(styles).toContain(
+      "background-color: var(--_console-context-menu-hover-background-color);",
+    );
+    expect(styles).toContain(
+      "background-color: var(--_console-context-menu-separator-background-color);",
+    );
+  });
+
+  it("does not expose the previous ambiguous public theme token names", () => {
+    const legacyTokens = [
+      "--console-panel-background",
+      "--console-panel-foreground",
+      "--console-panel-muted",
+      "--console-panel-border-color",
+      "--console-panel-header-background",
+      "--console-panel-header-border",
+      "--console-panel-header-border-color",
+      "--console-panel-radius",
+      "--console-panel-shadow",
+      "--console-panel-popover-shadow",
+      "--console-panel-control-background",
+      "--console-panel-control-border-color",
+      "--console-panel-control-foreground",
+      "--console-panel-control-hover-background",
+      "--console-panel-control-hover-foreground",
+      "--console-background",
+      "--console-foreground",
+      "--console-border",
+      "--console-border-color",
+      "--console-warning-background",
+      "--console-warning-foreground",
+      "--console-error-background",
+      "--console-error-foreground",
+      "--console-info",
+      "--console-debug",
+      "--console-string",
+      "--console-number",
+      "--console-null",
+      "--console-symbol",
+      "--console-circular",
+      "--console-muted",
+      "--console-subtle",
+      "--console-group-marker",
+      "--console-object-border",
+      "--console-table-border-color",
+      "--console-table-header-background",
+      "--console-table-even-background",
+      "--console-empty-foreground",
+      "--console-header-icon",
+      "--console-icon-hover-background",
+      "--console-property-key",
+      "--console-object-property-key",
+      "--console-message-icon-hover-background",
+      "--console-context-menu-background",
+      "--console-context-menu-border-color",
+      "--console-context-menu-foreground",
+      "--console-context-menu-muted",
+      "--console-context-menu-hover",
+      "--console-context-menu-hover-background",
+      "--console-context-menu-hover-foreground",
+      "--console-context-menu-icon",
+      "--console-context-menu-danger",
+      "--console-context-menu-radius",
+      "--console-context-menu-shadow",
+    ];
+
+    const publicTokens = collectPublicThemeTokens(styles);
+
+    for (const token of legacyTokens) {
+      expect(publicTokens).not.toContain(token);
+    }
+  });
+
+  it("documents every public theme token in the README theming section", () => {
+    const themingStart = readme.indexOf(
+      "## Theming with CSS custom properties",
+    );
+    const themingEnd = readme.indexOf(
+      "\n## Extensible panel, context, and message actions",
+      themingStart,
+    );
+
+    expect(themingStart).toBeGreaterThanOrEqual(0);
+    expect(themingEnd).toBeGreaterThan(themingStart);
+
+    const documentedTokens = collectPublicThemeTokens(
+      readme.slice(themingStart, themingEnd),
+    );
+
+    expect(documentedTokens).toEqual(collectPublicThemeTokens(styles));
   });
 
   it("keeps console content shrinkable inside narrow containers", () => {
@@ -39,6 +190,28 @@ describe("console theme CSS", () => {
     );
     expect(styles).not.toContain(
       ".console-property-value {\n  min-width: 12ch;",
+    );
+  });
+
+  it("keeps every public resize direction wired to native CSS resize", () => {
+    for (const direction of [
+      "vertical",
+      "horizontal",
+      "both",
+      "block",
+      "inline",
+    ]) {
+      expect(styles).toContain(
+        `.console-panel[data-resizable="${direction}"] {\n  resize: ${direction};\n}`,
+      );
+    }
+
+    expect(styles).toContain(
+      ".console-panel[data-resizable] .console-surface,\n" +
+        ".console-panel[data-resizable] .console-empty,\n" +
+        ".console-panel[data-resizable] .console-stdout-empty {\n" +
+        "  min-height: 0;\n" +
+        "}",
     );
   });
 
