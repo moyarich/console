@@ -1,6 +1,6 @@
 import { ConsoleValue } from "./ConsoleValue";
 import { ConsoleLinkedText } from "./ConsoleLinkedText";
-import type { ConsoleValueRenderer } from "../renderers/types";
+import type { ConsoleValueRenderer } from "../types";
 import type {
   ConsoleLink,
   ConsoleLinkProvider,
