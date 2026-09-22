@@ -14,6 +14,7 @@ import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import {
   ConsoleStdout,
+  type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
@@ -105,6 +106,8 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   messages?: readonly (ConsoleStdoutEntry | string)[];
   /** Parse complete JSON object/array lines into structured value inspectors. */
   parseStructuredOutput?: boolean;
+  /** Ordered process-output processors applied before structured parsing/rendering. */
+  processors?: readonly ConsoleProcessOutputProcessor[];
   /** Ordered custom parsers that can promote text lines into structured values. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   output?: never;
@@ -396,6 +399,7 @@ function ConsoleMessageMode({
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
+  processors,
   structuredOutputParsers,
   valueRenderers,
   subtitle = "ANSI-aware process output",
@@ -415,6 +419,7 @@ function ConsoleAnsiMode({
       <ConsoleStdout
         entries={messages}
         parseStructuredOutput={parseStructuredOutput}
+        processors={processors}
         structuredOutputParsers={structuredOutputParsers}
         valueRenderers={valueRenderers}
       />
