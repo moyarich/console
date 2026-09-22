@@ -6,6 +6,35 @@
  * points used by embedded developer tools and browser runtimes.
  */
 
+export {
+  CONSOLE_ADDON_API_VERSION,
+  consoleCapabilities,
+  consoleExtensionPoints,
+  createConsoleAddonManager,
+  createConsoleCapability,
+  createConsoleCapabilityRegistry,
+  createConsoleDisposableScope,
+  createConsoleExtensionPoint,
+  createConsoleExtensionRegistry,
+  createConsoleServiceRegistry,
+  createConsoleServiceToken,
+} from "./addons";
+export type {
+  ConsoleAddon,
+  ConsoleAddonCleanup,
+  ConsoleAddonHost,
+  ConsoleAddonManager,
+  ConsoleCapability,
+  ConsoleCapabilityRegistry,
+  ConsoleDisposable,
+  ConsoleDisposableScope,
+  ConsoleExtensionPoint,
+  ConsoleExtensionRegistrationOptions,
+  ConsoleExtensionRegistry,
+  ConsoleServiceRegistry,
+  ConsoleServiceToken,
+  CreateConsoleAddonManagerOptions,
+} from "./addons";
 export { Console } from "./components/Console";
 export type {
   ConsoleAnsiModeProps,
