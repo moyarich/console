@@ -602,11 +602,11 @@ while `--console-warning-border-color` changes only the warning message's
 
 ### Native `color-scheme` support
 
-| Token | CSS property | Applies to |
-| --- | --- | --- |
-| `--console-panel-color-scheme` | `color-scheme` | Panel chrome and header actions |
-| `--console-color-scheme` | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
-| `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu |
+| Token                                 | CSS property   | Applies to                                                          |
+| ------------------------------------- | -------------- | ------------------------------------------------------------------- |
+| `--console-panel-color-scheme`        | `color-scheme` | Panel chrome and header actions                                     |
+| `--console-color-scheme`              | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
+| `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu                                                    |
 
 The panel chrome defaults to light when no scheme is supplied. If
 `--console-color-scheme` is set, the panel inherits that scheme unless
@@ -621,116 +621,116 @@ scheme-derived fallbacks.
 
 ### Panel chrome
 
-| Token | CSS property |
-| --- | --- |
-| `--console-panel-background-color` | `background-color` |
-| `--console-panel-color` | `color` |
-| `--console-panel-muted-color` | `color` |
-| `--console-panel-border` | `border` shorthand |
-| `--console-panel-border-radius` | `border-radius` |
-| `--console-panel-box-shadow` | `box-shadow` |
-| `--console-panel-header-background-color` | `background-color` |
-| `--console-panel-header-border-bottom` | `border-bottom` shorthand |
-| `--console-panel-popover-box-shadow` | `box-shadow` |
+| Token                                     | CSS property              |
+| ----------------------------------------- | ------------------------- |
+| `--console-panel-background-color`        | `background-color`        |
+| `--console-panel-color`                   | `color`                   |
+| `--console-panel-muted-color`             | `color`                   |
+| `--console-panel-border`                  | `border` shorthand        |
+| `--console-panel-border-radius`           | `border-radius`           |
+| `--console-panel-box-shadow`              | `box-shadow`              |
+| `--console-panel-header-background-color` | `background-color`        |
+| `--console-panel-header-border-bottom`    | `border-bottom` shorthand |
+| `--console-panel-popover-box-shadow`      | `box-shadow`              |
 
 ### Panel controls and actions
 
-| Token | CSS property |
-| --- | --- |
-| `--console-panel-control-background-color` | `background-color` |
-| `--console-panel-control-border` | `border` shorthand |
-| `--console-panel-control-color` | `color` |
-| `--console-panel-control-hover-background-color` | `background-color` |
-| `--console-panel-control-hover-color` | `color` |
-| `--console-panel-control-hover-border-color` | `border-color` |
+| Token                                               | CSS property       |
+| --------------------------------------------------- | ------------------ |
+| `--console-panel-control-background-color`          | `background-color` |
+| `--console-panel-control-border`                    | `border` shorthand |
+| `--console-panel-control-color`                     | `color`            |
+| `--console-panel-control-hover-background-color`    | `background-color` |
+| `--console-panel-control-hover-color`               | `color`            |
+| `--console-panel-control-hover-border-color`        | `border-color`     |
 | `--console-panel-action-separator-background-color` | `background-color` |
 
 ### Output surface and process rows
 
-| Token | CSS property |
-| --- | --- |
-| `--console-background-color` | `background-color` |
-| `--console-color` | `color` |
-| `--console-entry-border-bottom` | `border-bottom` shorthand |
-| `--console-stderr-border-left` | `border-left` shorthand |
-| `--console-clear-line-border-left` | `border-left` shorthand |
-| `--console-link-color` | `color` |
-| `--console-message-action-focus-outline` | `outline` shorthand |
-| `--console-empty-color` | `color` |
-| `--console-muted-color` | `color` |
-| `--console-subtle-color` | `color` |
-| `--console-group-marker-color` | `color` |
-| `--console-header-icon-color` | `color` |
+| Token                                    | CSS property              |
+| ---------------------------------------- | ------------------------- |
+| `--console-background-color`             | `background-color`        |
+| `--console-color`                        | `color`                   |
+| `--console-entry-border-bottom`          | `border-bottom` shorthand |
+| `--console-stderr-border-left`           | `border-left` shorthand   |
+| `--console-clear-line-border-left`       | `border-left` shorthand   |
+| `--console-link-color`                   | `color`                   |
+| `--console-message-action-focus-outline` | `outline` shorthand       |
+| `--console-empty-color`                  | `color`                   |
+| `--console-muted-color`                  | `color`                   |
+| `--console-subtle-color`                 | `color`                   |
+| `--console-group-marker-color`           | `color`                   |
+| `--console-header-icon-color`            | `color`                   |
 
 ### Message states
 
-| Token | CSS property |
-| --- | --- |
-| `--console-info-color` | `color` |
-| `--console-debug-color` | `color` |
-| `--console-warning-border-color` | `border-color` |
+| Token                                | CSS property       |
+| ------------------------------------ | ------------------ |
+| `--console-info-color`               | `color`            |
+| `--console-debug-color`              | `color`            |
+| `--console-warning-border-color`     | `border-color`     |
 | `--console-warning-background-color` | `background-color` |
-| `--console-warning-color` | `color` |
-| `--console-error-border-color` | `border-color` |
-| `--console-error-background-color` | `background-color` |
-| `--console-error-color` | `color` |
+| `--console-warning-color`            | `color`            |
+| `--console-error-border-color`       | `border-color`     |
+| `--console-error-background-color`   | `background-color` |
+| `--console-error-color`              | `color`            |
 
 ### Values and object inspector
 
-| Token | CSS property |
-| --- | --- |
-| `--console-string-color` | `color` |
-| `--console-number-color` | `color` |
-| `--console-null-color` | `color` |
-| `--console-symbol-color` | `color` |
-| `--console-circular-color` | `color` |
-| `--console-property-key-color` | `color` |
-| `--console-object-property-key-color` | `color` |
-| `--console-object-border-left` | `border-left` shorthand |
+| Token                                 | CSS property            |
+| ------------------------------------- | ----------------------- |
+| `--console-string-color`              | `color`                 |
+| `--console-number-color`              | `color`                 |
+| `--console-null-color`                | `color`                 |
+| `--console-symbol-color`              | `color`                 |
+| `--console-circular-color`            | `color`                 |
+| `--console-property-key-color`        | `color`                 |
+| `--console-object-property-key-color` | `color`                 |
+| `--console-object-border-left`        | `border-left` shorthand |
 
 ### Icons
 
-| Token | CSS property |
-| --- | --- |
-| `--console-icon-color` | `color` |
-| `--console-icon-hover-color` | `color` |
-| `--console-icon-hover-background-color` | `background-color` |
-| `--console-message-icon-color` | `color` |
-| `--console-message-icon-hover-color` | `color` |
+| Token                                           | CSS property       |
+| ----------------------------------------------- | ------------------ |
+| `--console-icon-color`                          | `color`            |
+| `--console-icon-hover-color`                    | `color`            |
+| `--console-icon-hover-background-color`         | `background-color` |
+| `--console-message-icon-color`                  | `color`            |
+| `--console-message-icon-hover-color`            | `color`            |
 | `--console-message-icon-hover-background-color` | `background-color` |
 
 ### Tables
 
-| Token | CSS property |
-| --- | --- |
-| `--console-table-border` | `border` shorthand |
+| Token                                     | CSS property       |
+| ----------------------------------------- | ------------------ |
+| `--console-table-border`                  | `border` shorthand |
 | `--console-table-header-background-color` | `background-color` |
-| `--console-table-even-background-color` | `background-color` |
+| `--console-table-even-background-color`   | `background-color` |
 
 ### Context menu
 
-| Token | CSS property |
-| --- | --- |
-| `--console-context-menu-background-color` | `background-color` |
-| `--console-context-menu-border` | `border` shorthand |
-| `--console-context-menu-color` | `color` |
-| `--console-context-menu-muted-color` | `color` |
-| `--console-context-menu-hover-background-color` | `background-color` |
-| `--console-context-menu-hover-color` | `color` |
-| `--console-context-menu-icon-color` | `color` |
-| `--console-context-menu-danger-color` | `color` |
-| `--console-context-menu-border-radius` | `border-radius` |
-| `--console-context-menu-box-shadow` | `box-shadow` |
+| Token                                               | CSS property       |
+| --------------------------------------------------- | ------------------ |
+| `--console-context-menu-background-color`           | `background-color` |
+| `--console-context-menu-border`                     | `border` shorthand |
+| `--console-context-menu-color`                      | `color`            |
+| `--console-context-menu-muted-color`                | `color`            |
+| `--console-context-menu-hover-background-color`     | `background-color` |
+| `--console-context-menu-hover-color`                | `color`            |
+| `--console-context-menu-icon-color`                 | `color`            |
+| `--console-context-menu-danger-color`               | `color`            |
+| `--console-context-menu-border-radius`              | `border-radius`    |
+| `--console-context-menu-box-shadow`                 | `box-shadow`       |
 | `--console-context-menu-separator-background-color` | `background-color` |
 
 ### Typography and sizing
 
-| Token | CSS property |
-| --- | --- |
-| `--console-font-family` | `font-family` |
-| `--console-font-size` | `font-size` |
-| `--console-line-height` | `line-height` |
-| `--console-min-height` | `min-height` |
+| Token                         | CSS property                                     |
+| ----------------------------- | ------------------------------------------------ |
+| `--console-font-family`       | `font-family`                                    |
+| `--console-font-size`         | `font-size`                                      |
+| `--console-line-height`       | `line-height`                                    |
+| `--console-min-height`        | `min-height`                                     |
 | `--console-mobile-min-height` | `min-height` below the package mobile breakpoint |
 
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
