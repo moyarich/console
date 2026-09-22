@@ -22,6 +22,20 @@ jobs:
         run: npm install --include=optional
       - name: Lint
         run: npm run lint
+      - name: Capture formatting fixes
+        run: |
+          npx prettier --write \
+            apps/playground/src/examples/50-additional-usage/15-addons/example.tsx \
+            packages/console/src/addons.ts \
+            packages/console/src/hooks/useConsoleAddons.ts \
+            README.md \
+            tests/addons.test.tsx
+          git diff -- \
+            apps/playground/src/examples/50-additional-usage/15-addons/example.tsx \
+            packages/console/src/addons.ts \
+            packages/console/src/hooks/useConsoleAddons.ts \
+            README.md \
+            tests/addons.test.tsx
       - name: Check formatting
         run: npm run format:check
       - name: Typecheck
