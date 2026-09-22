@@ -1,10 +1,5 @@
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
-import {
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
+import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import {
   Console,
   type ConsoleMessageData,
@@ -207,8 +202,7 @@ export default function ResizableConsoleExample() {
               justifyContent: "center",
               background:
                 "var(--console-resize-separator-background, transparent)",
-              color:
-                "var(--console-resize-separator-foreground, currentColor)",
+              color: "var(--console-resize-separator-foreground, currentColor)",
               cursor: "col-resize",
               touchAction: "none",
             }}
@@ -250,8 +244,7 @@ export default function ResizableConsoleExample() {
               justifyContent: "center",
               background:
                 "var(--console-resize-separator-background, transparent)",
-              color:
-                "var(--console-resize-separator-foreground, currentColor)",
+              color: "var(--console-resize-separator-foreground, currentColor)",
               cursor: "row-resize",
               touchAction: "none",
             }}
@@ -295,8 +288,7 @@ export default function ResizableConsoleExample() {
                 "1px solid var(--console-resize-separator-border, currentColor)",
               background:
                 "var(--console-resize-separator-grip-background, transparent)",
-              color:
-                "var(--console-resize-separator-foreground, currentColor)",
+              color: "var(--console-resize-separator-foreground, currentColor)",
               cursor: "nwse-resize",
               touchAction: "none",
             }}
