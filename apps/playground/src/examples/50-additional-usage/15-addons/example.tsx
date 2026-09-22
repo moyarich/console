@@ -96,9 +96,25 @@ function createActionsAddon(): ConsoleAddon {
     activate(host) {
       const info = host.services.require(addonInfoService);
 
+      host.extensions.register(consoleExtensionPoints.panelAction, {
+        id: "addon-status",
+        label: `About ${info.label}`,
+        onSelect: () => {
+          window.alert(`${info.label} is active`);
+        },
+      });
+
+      host.extensions.register(consoleExtensionPoints.contextMenuAction, {
+        id: "copy-addon-context",
+        label: "Show addon context",
+        onSelect: ({ kind }) => {
+          window.alert(`${info.label} context: ${kind}`);
+        },
+      });
+
       host.extensions.register(consoleExtensionPoints.messageAction, {
         id: "addon-info",
-        label: `About ${info.label}`,
+        label: `Inspect with ${info.label}`,
         onSelect: ({ message }) => {
           window.alert(`${info.label} handled ${message.id ?? "message"}`);
         },
