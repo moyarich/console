@@ -207,6 +207,47 @@ describe("console addon API", () => {
     ).toEqual([provider]);
   });
 
+  it("renders typed panel actions in the header actions menu", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "panel-action-message",
+            method: "log",
+            data: ["ready"],
+            depth: 0,
+          },
+        ]}
+        panelActions={[
+          {
+            id: "export-output",
+            label: "Export output",
+            disabled: ({ hasMessages }) => !hasMessages,
+            onSelect: () => undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain("Export output");
+    expect(markup).toContain("console-panel-action");
+  });
+
+  it("exposes panel actions as an addon extension point", () => {
+    const manager = createConsoleAddonManager();
+    const action = {
+      id: "addon-panel-action",
+      label: "Addon action",
+      onSelect: () => undefined,
+    };
+
+    manager.extensions.register(consoleExtensionPoints.panelAction, action);
+
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.panelAction),
+    ).toEqual([action]);
+  });
+
   it("allows an output renderer to replace the built-in structured surface", () => {
     const markup = renderToStaticMarkup(
       <Console
