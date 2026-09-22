@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { ConsoleContextMenu } from "../packages/console/src/components/ConsoleContextMenu";
 import { describe, expect, it } from "vitest";
 import {
   Console,
@@ -68,18 +69,22 @@ describe("Console rendering", () => {
       depth: 0,
     };
     const expanded = renderToStaticMarkup(
-      <ConsoleMessage
-        message={message}
-        allValuesExpanded
-        onToggleExpansion={() => undefined}
-      />,
+      <ConsoleContextMenu mode="console" hasMessages>
+        <ConsoleMessage
+          message={message}
+          allValuesExpanded
+          onToggleExpansion={() => undefined}
+        />
+      </ConsoleContextMenu>,
     );
     const collapsed = renderToStaticMarkup(
-      <ConsoleMessage
-        message={message}
-        allValuesExpanded={false}
-        onToggleExpansion={() => undefined}
-      />,
+      <ConsoleContextMenu mode="console" hasMessages>
+        <ConsoleMessage
+          message={message}
+          allValuesExpanded={false}
+          onToggleExpansion={() => undefined}
+        />
+      </ConsoleContextMenu>,
     );
 
     expect(expanded).toContain(
