@@ -5,8 +5,8 @@
  * `@moyarich/console/utils/console` without expanding the main package API.
  */
 export { formatConsoleObjectForCopy } from "./formatConsoleObjectForCopy";
-export { getEventPoint } from "./getEventPoint";
-export { getMenuPosition } from "./getMenuPosition";
+export { getEventPoint } from "./contextMenu/getEventPoint";
+export { getMenuPosition } from "./contextMenu/getMenuPosition";
 export { isElementLike } from "./isElementLike";
 export { isInspectableObject } from "./isInspectableObject";
 export { isMapLike } from "./isMapLike";
@@ -17,5 +17,9 @@ export { normalizeConsoleValue } from "./normalizeConsoleValue";
 export { objectEntries } from "./objectEntries";
 export { objectLabel } from "./objectLabel";
 export { preview } from "./preview";
+export { captureConsole } from "./runtime/captureConsole";
+export type { CaptureConsoleOptions } from "./runtime/captureConsole";
+export { createConsoleProxy } from "./runtime/createConsoleProxy";
+export type { CreateConsoleProxyOptions } from "./runtime/createConsoleProxy";
 export * from "./style";
 export * from "./table";
