@@ -57,9 +57,9 @@ describe("console addon API", () => {
       capabilities: [consoleCapabilities.structuredMessages, custom],
     });
 
-    expect(manager.capabilities.has(consoleCapabilities.structuredMessages)).toBe(
-      true,
-    );
+    expect(
+      manager.capabilities.has(consoleCapabilities.structuredMessages),
+    ).toBe(true);
     expect(manager.capabilities.has(consoleCapabilities.processOutput)).toBe(
       false,
     );
