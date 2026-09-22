@@ -65,12 +65,12 @@ export type {
   ConsoleValueRenderer,
   ConsoleValueRendererContext,
 } from "./renderers";
-export { CONSOLE_METHODS } from "./consoleMethods";
+export { CONSOLE_METHODS } from "./console/consoleMethods";
 export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
-export { createConsoleProxy } from "./utils/console/runtime/createConsoleProxy";
+export { createConsoleProxy } from "./console/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/console/runtime/createConsoleProxy";
-export { captureConsole } from "./utils/console/runtime/captureConsole";
+export { captureConsole } from "./console/captureConsole";
 export { createConsoleEventEmitter } from "./utils/events/createConsoleEventEmitter";
 export type {
   ConsoleEventEmitter,
