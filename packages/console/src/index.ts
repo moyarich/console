@@ -14,6 +14,7 @@ export {
   consoleExtensionPoints,
   consoleServices,
   createConsoleViewportAddon,
+  isCoreConsoleAddonId,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleCapabilityRegistry,
