@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import PyodideTqdmProgressExample from "../apps/playground/src/examples/10-ansi/06-pyodide-tqdm-progress/example";
 import {
   Console,
   type ConsoleAnsiModeProps,
   type ConsoleStdoutEntry,
 } from "@moyarich/console";
-
-const meta = {
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useEffect, useRef, useState } from "react";
+export const meta = {
   title: "Console/ANSI Process Output",
   component: Console,
   args: {
@@ -24,11 +22,8 @@ const meta = {
     ),
   ],
 } satisfies Meta<ConsoleAnsiModeProps>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-const tqdmChunks: ConsoleStdoutEntry[] = [
+export type Story = StoryObj<typeof meta>;
+export const tqdmChunks: ConsoleStdoutEntry[] = [
   {
     id: "tqdm-0",
     data: "\rDownloading:   0%|          | 0/100 [00:00<?, ?item/s]",
@@ -65,41 +60,7 @@ const tqdmChunks: ConsoleStdoutEntry[] = [
     stream: "stdout",
   },
 ];
-
-export const TqdmLeadingCarriageReturn: Story = {
-  args: {
-    title: "tqdm leading carriage returns",
-    subtitle: "Only the final progress frame should remain visible",
-    messages: tqdmChunks,
-  },
-  play: async ({ canvasElement }) => {
-    const text = canvasElement.textContent ?? "";
-
-    if (!text.includes("Downloading: 100%")) {
-      throw new Error("Expected the final tqdm progress frame to be visible.");
-    }
-
-    for (const staleFrame of [
-      "Downloading:   0%",
-      "Downloading:   1%",
-      "Downloading:  25%",
-      "Downloading:  50%",
-      "Downloading:  75%",
-    ]) {
-      if (text.includes(staleFrame)) {
-        throw new Error(
-          `Stale tqdm progress frame remained visible: ${staleFrame}`,
-        );
-      }
-    }
-
-    if (!text.includes("Python task complete")) {
-      throw new Error("Expected newline-completed output to remain visible.");
-    }
-  },
-};
-
-function LiveTqdmRedrawStory() {
+export function LiveTqdmRedrawStory() {
   const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
   const [run, setRun] = useState(0);
 
@@ -142,104 +103,13 @@ function LiveTqdmRedrawStory() {
     </div>
   );
 }
-
-export const LiveTqdmRedraw: Story = {
-  render: () => <LiveTqdmRedrawStory />,
-  args: {
-    messages: [],
-  },
-};
-
-export const PyodideTqdmBrowserRuntime: Story = {
-  render: () => <PyodideTqdmProgressExample />,
-  args: {
-    messages: [],
-  },
-};
-
-export const EmptyTerminal: Story = {
-  args: {
-    title: "Waiting for a process",
-    emptyMessage: "Run a command to see stdout and stderr here.",
-    messages: [],
-  },
-};
-
-export const ColorsAndTextStyles: Story = {
-  args: {
-    title: "ANSI formatting",
-    messages: [
-      "\u001b[31mRed\u001b[0m  \u001b[32mGreen\u001b[0m  \u001b[33mYellow\u001b[0m  \u001b[34mBlue\u001b[0m\n",
-      "\u001b[1mBold\u001b[0m  \u001b[3mItalic\u001b[0m  \u001b[4mUnderline\u001b[0m  \u001b[9mStrikethrough\u001b[0m\n",
-      "\u001b[38;2;96;165;250mTrue-color foreground\u001b[0m\n",
-      "\u001b[30;43m Contrasting background \u001b[0m\n",
-      "Plain text after reset\n",
-    ],
-  },
-};
-
-export const MixedOutputStreams: Story = {
-  args: {
-    title: "Build output",
-    messages: [
-      { id: "start", stream: "stdout", data: "Starting production build…\n" },
-      {
-        id: "warning",
-        stream: "stderr",
-        data: "\u001b[33mWarning: bundle exceeds 500 kB\u001b[0m\n",
-      },
-      {
-        id: "done",
-        stream: "stdout",
-        data: "\u001b[32mBuild completed\u001b[0m\n",
-      },
-      {
-        id: "error",
-        stream: "stderr",
-        data: "\u001b[31mUpload failed: connection timed out\u001b[0m\n",
-      },
-    ],
-  },
-};
-
-const jsonLines = [
+export const jsonLines = [
   "Receiving structured output…\n",
   '{"event":"build","success":true,"assets":["app.js","app.css"]}\n',
   '[{"name":"API","healthy":true},{"name":"Worker","healthy":false}]\n',
   "{this is not valid JSON}\n",
 ];
-
-export const StructuredJsonOutput: Story = {
-  args: {
-    title: "JSON inspection",
-    parseStructuredOutput: true,
-    messages: jsonLines,
-  },
-};
-
-export const RawJsonOutput: Story = {
-  args: {
-    title: "Raw JSON text",
-    parseStructuredOutput: false,
-    messages: jsonLines,
-  },
-};
-
-export const SplitChunksAndLineEndings: Story = {
-  args: {
-    title: "Chunk boundaries",
-    subtitle: "CRLF can span entries; carriage returns replace progress",
-    messages: [
-      { id: "part-2", stream: "stdout", data: "Downloading dependency\r" },
-      { id: "part-3", stream: "stdout", data: "\n" },
-      { id: "progress-1", stream: "stdout", data: "Processing: 10%" },
-      { id: "progress-2", stream: "stdout", data: "\rProcessing: 100%\n" },
-      { id: "complete", stream: "stdout", data: "Complete\n" },
-    ],
-  },
-};
-
-function ClearableOutputStory(args: ConsoleAnsiModeProps) {
+export function ClearableOutputStory(args: ConsoleAnsiModeProps) {
   const [messages, setMessages] = useState(args.messages ?? []);
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -250,22 +120,7 @@ function ClearableOutputStory(args: ConsoleAnsiModeProps) {
     </div>
   );
 }
-
-export const ClearAndRestore: Story = {
-  render: (args) => <ClearableOutputStory {...args} />,
-  args: {
-    title: "Clear and restore",
-    subtitle: "Use the header actions menu to clear the output",
-    emptyMessage: "Output cleared. Restore it with the button above.",
-    messages: [
-      "First line\n",
-      "Second line\n",
-      "\u001b[32mTask complete\u001b[0m\n",
-    ],
-  },
-};
-
-const streamingAnsiChunks: ConsoleStdoutEntry[] = [
+export const streamingAnsiChunks: ConsoleStdoutEntry[] = [
   {
     data: "\u001b[1;36mStarting production build\u001b[0m\n",
     stream: "stdout",
@@ -283,8 +138,7 @@ const streamingAnsiChunks: ConsoleStdoutEntry[] = [
   { data: "\u001b[35mWriting assets…\u001b[0m\n", stream: "stdout" },
   { data: "\u001b[1;32mBuild complete\u001b[0m\n", stream: "stdout" },
 ];
-
-function StreamingAnsiStory(args: ConsoleAnsiModeProps) {
+export function StreamingAnsiStory(args: ConsoleAnsiModeProps) {
   const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
   const [running, setRunning] = useState(false);
   const nextChunk = useRef(0);
@@ -351,15 +205,3 @@ function StreamingAnsiStory(args: ConsoleAnsiModeProps) {
     </div>
   );
 }
-
-export const StreamingAnsi: Story = {
-  render: (args) => <StreamingAnsiStory {...args} />,
-  args: {
-    title: "Streaming ANSI build output",
-    subtitle:
-      "Colored stdout/stderr arrives every 300 ms; progress redraws in place",
-    emptyMessage: "Start the stream to watch the build output arrive.",
-    autoScroll: true,
-    messages: [],
-  },
-};

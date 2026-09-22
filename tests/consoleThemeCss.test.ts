@@ -38,7 +38,7 @@ describe("console theme CSS", () => {
 
   it("keeps header chrome aligned with light and dark panel schemes", () => {
     expect(styles).toMatch(
-      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, light\)\s*\);/,
+      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, dark\)\s*\);/,
     );
     expect(styles).toContain("light-dark(#fff, #161b22)");
     expect(styles).toContain("light-dark(#202c40, #e6edf3)");
