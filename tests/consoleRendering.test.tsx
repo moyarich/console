@@ -266,11 +266,101 @@ describe("Console rendering", () => {
     expect(html).toContain("rgb(12, 34, 56)");
   });
 
-  it("marks carriage-return output using Anser clearLine metadata", () => {
+  it("collapses carriage-return progress updates into one rendered line", () => {
     const html = renderToStaticMarkup(
-      <ConsoleStdout entries={["loading 10%\rloading 20%"]} />,
+      <ConsoleStdout
+        entries={[
+          { id: "p10", data: "loading 10%\r", stream: "stdout" },
+          { id: "p20", data: "loading 20%\r", stream: "stdout" },
+          { id: "p100", data: "loading 100%", stream: "stdout" },
+        ]}
+      />,
     );
 
+    expect(html).toContain("loading 100%");
+    expect(html).not.toContain("loading 10%");
+    expect(html).not.toContain("loading 20%");
+    expect(html).toContain('data-stream="stdout"');
+  });
+
+  it("collapses leading carriage-return redraw chunks like tqdm", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout
+        entries={[
+          {
+            id: "tqdm-0",
+            data: "\rDownloading:   0%|          | 0/100",
+            stream: "stderr",
+          },
+          {
+            id: "tqdm-1",
+            data: "\rDownloading:   1%|1         | 1/100",
+            stream: "stderr",
+          },
+          {
+            id: "tqdm-2",
+            data: "\rDownloading: 100%|##########| 100/100\n",
+            stream: "stderr",
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("Downloading: 100%");
+    expect(html).not.toContain("Downloading:   0%");
+    expect(html).not.toContain("Downloading:   1%");
+    expect(html).toContain('data-stream="stderr"');
+  });
+
+  it("keeps completed lines stable while progress redraws the current line", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout
+        entries={[
+          "prepare\n",
+          "building 10%\r",
+          "building 60%\r",
+          "building 100%\ncomplete\n",
+        ]}
+      />,
+    );
+
+    expect(html).toContain("prepare");
+    expect(html).toContain("building 100%");
+    expect(html).toContain("complete");
+    expect(html).not.toContain("building 10%");
+    expect(html).not.toContain("building 60%");
+  });
+
+  it("treats chunked CRLF as a normal completed newline", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout entries={["first\r", "\nsecond"]} />,
+    );
+
+    expect(html).toContain("first");
+    expect(html).toContain("second");
+  });
+
+  it("honors ANSI clear-line redraws across process-output entries", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout
+        entries={[
+          {
+            id: "old-progress",
+            data: "old progress",
+            stream: "stderr",
+          },
+          {
+            id: "new-progress",
+            data: `${escape}[2K\rnew progress`,
+            stream: "stderr",
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("new progress");
+    expect(html).not.toContain("old progress");
+    expect(html).toContain('data-stream="stderr"');
     expect(html).toContain('data-clear-line="true"');
   });
 
