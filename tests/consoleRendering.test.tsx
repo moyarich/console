@@ -100,9 +100,7 @@ describe("Console rendering", () => {
   });
 
   it("uses namespaced header classes only", () => {
-    const html = renderConsole([
-      { method: "log", data: ["hello"], depth: 0 },
-    ]);
+    const html = renderConsole([{ method: "log", data: ["hello"], depth: 0 }]);
 
     expect(html).toContain('class="console-panel-header"');
     expect(html).not.toContain('class="console-panel-header panel-header"');
