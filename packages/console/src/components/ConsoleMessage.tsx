@@ -16,7 +16,6 @@ import {
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { ConsoleValue } from "./ConsoleValue";
-import { dispatchMessageRenderer } from "../renderers/dispatchMessageRenderer";
 import type {
   ConsoleMessageRenderer,
   ConsoleValueRenderer,
@@ -181,13 +180,30 @@ export function ConsoleMessage({
     />
   );
 
-  const custom = dispatchMessageRenderer(renderers, message, {
+  const rendererContext = {
     index,
     messages: sourceMessages,
     renderDefault,
-  });
+  };
+  let renderedMessage;
 
-  const renderedMessage = custom === undefined ? renderDefault() : custom;
+  for (const renderer of renderers ?? []) {
+    try {
+      if (renderer.method && renderer.method !== message.method) continue;
+      if (renderer.match && !renderer.match(message, rendererContext)) continue;
+
+      const rendered = renderer.render(message, rendererContext);
+
+      if (rendered !== undefined) {
+        renderedMessage = rendered;
+        break;
+      }
+    } catch {
+      // A custom renderer must not prevent the console from rendering.
+    }
+  }
+
+  renderedMessage ??= renderDefault();
 
   if (!contextMenu?.messageContextEnabled) {
     return renderedMessage;
