@@ -1,0 +1,4 @@
+{
+  "label": "Output surface addon",
+  "description": "Replace the built-in ANSI output surface through the generic addon renderer contract."
+}
