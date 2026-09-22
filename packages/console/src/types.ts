@@ -5,7 +5,9 @@ export type { ConsoleMethod } from "./console/consoleMethods";
 /** Rendering mode shared by console presentation and extension APIs. */
 export type ConsoleMode = "console" | "ansi";
 
-/** Serializable structured message shared by producers, transports, and renderers. */
+/**
+ * Serializable structured message shared by producers, transports, and renderers.
+ */
 export interface ConsoleMessageData {
   /** Optional stable identifier used for keys, deduplication, and transports. */
   id?: string;
