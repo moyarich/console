@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
 import type { ConsoleStdoutEntry } from "./processOutput";
-import type {
-  ConsoleMethod,
-  ConsoleMessageData,
-  ConsoleMode,
-} from "./types";
+import type { ConsoleMethod, ConsoleMessageData, ConsoleMode } from "./types";
 
 /** Context provided to a renderer that can replace the console output surface. */
 export type ConsoleOutputRendererContext =
