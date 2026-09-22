@@ -12,12 +12,10 @@ import { ConsoleLinkedText } from "./ConsoleLinkedText";
 import type {
   ConsoleLinkProvider,
   ConsoleLinkProviderContext,
-} from "../links";
-import {
-  dispatchValueRenderer,
-  getConsoleValueType,
-  type ConsoleValueRenderer,
-} from "../renderers";
+} from "../links/types";
+import { dispatchValueRenderer } from "../renderers/dispatchValueRenderer";
+import { getConsoleValueType } from "../renderers/getConsoleValueType";
+import type { ConsoleValueRenderer } from "../renderers/types";
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
