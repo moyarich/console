@@ -3,8 +3,8 @@ import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
 } from "../utils/events/createConsoleEventEmitter";
-import { createConsoleProxy } from "../utils/console/runtime/createConsoleProxy";
-import { captureConsole } from "../utils/console/runtime/captureConsole";
+import { createConsoleProxy } from "../console/createConsoleProxy";
+import { captureConsole } from "../console/captureConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
 /** Configuration for {@link useConsoleMessages}. */
