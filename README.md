@@ -904,23 +904,16 @@ function createTerminalSurfaceAddon(): ConsoleAddon {
   return {
     id: "terminal-surface",
     activate(host) {
-      host.extensions.register(
-        consoleExtensionPoints.outputRenderer,
-        {
-          mode: "ansi",
-          render(context) {
-            if (context.mode !== "ansi") {
-              return undefined;
-            }
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "ansi",
+        render(context) {
+          if (context.mode !== "ansi") {
+            return undefined;
+          }
 
-            return (
-              <MyTerminal
-                entries={context.entries}
-              />
-            );
-          },
+          return <MyTerminal entries={context.entries} />;
         },
-      );
+      });
     },
   };
 }
@@ -933,23 +926,16 @@ function createConsoleFeedAddon(): ConsoleAddon {
   return {
     id: "console-feed",
     activate(host) {
-      host.extensions.register(
-        consoleExtensionPoints.outputRenderer,
-        {
-          mode: "console",
-          render(context) {
-            if (context.mode !== "console") {
-              return undefined;
-            }
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "console",
+        render(context) {
+          if (context.mode !== "console") {
+            return undefined;
+          }
 
-            return (
-              <MyConsoleFeed
-                messages={context.messages}
-              />
-            );
-          },
+          return <MyConsoleFeed messages={context.messages} />;
         },
-      );
+      });
     },
   };
 }
@@ -966,17 +952,12 @@ Returning `undefined` delegates to the next output renderer and ultimately the b
 The renderer context also exposes `renderDefault()`, so an addon can wrap or decorate the built-in surface instead of replacing it completely:
 
 ```tsx
-host.extensions.register(
-  consoleExtensionPoints.outputRenderer,
-  {
-    mode: "ansi",
-    render: ({ renderDefault }) => (
-      <TerminalShell>
-        {renderDefault()}
-      </TerminalShell>
-    ),
-  },
-);
+host.extensions.register(consoleExtensionPoints.outputRenderer, {
+  mode: "ansi",
+  render: ({ renderDefault }) => (
+    <TerminalShell>{renderDefault()}</TerminalShell>
+  ),
+});
 ```
 
 A custom output renderer can still handle an empty source list. This is intentional: terminal implementations such as xterm.js may need to initialize before future process chunks arrive, and structured feed renderers may want to own their own empty state.
@@ -1273,7 +1254,7 @@ Available helpers:
 | `ConsoleMessageRenderer`        | Message renderer entry type                                     |
 | `ConsoleMessageRendererContext` | Message renderer context type                                   |
 | `ConsoleOutputRenderer`         | Complete output-surface renderer entry type                     |
-| `ConsoleOutputRendererContext`  | Structured/ANSI context plus built-in `renderDefault()`        |
+| `ConsoleOutputRendererContext`  | Structured/ANSI context plus built-in `renderDefault()`         |
 | `ConsoleValueRenderer`          | Value renderer entry type                                       |
 | `ConsoleValueRendererContext`   | Value renderer context type                                     |
 
