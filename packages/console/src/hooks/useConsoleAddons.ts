@@ -106,8 +106,12 @@ export function useConsoleAddons(
 
   useEffect(
     () => () => {
+      const loaded = Array.from(loadedRef.current.values()).reverse();
       loadedRef.current.clear();
-      manager.dispose();
+
+      for (const current of loaded) {
+        current.registration.dispose();
+      }
     },
     [manager],
   );
