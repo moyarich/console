@@ -7,7 +7,7 @@ import { isObjectLike } from "../utils/console/isObjectLike";
 import { objectEntries } from "../utils/console/objectEntries";
 import { objectLabel } from "../utils/console/objectLabel";
 import { preview } from "../utils/console/preview";
-import { typeClass } from "../utils/console/typeClass";
+import { typeClass } from "../utils/console/style/typeClass";
 import {
   ConsoleLinkedText,
   type ConsoleLinkProvider,
