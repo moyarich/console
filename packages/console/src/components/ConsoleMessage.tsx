@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { useContext } from "react";
+import { useContext, type ReactNode } from "react";
 import {
   Braces,
   Bug,
@@ -185,7 +185,7 @@ export function ConsoleMessage({
     messages: sourceMessages,
     renderDefault,
   };
-  let renderedMessage;
+  let renderedMessage: ReactNode | undefined;
 
   for (const renderer of renderers ?? []) {
     try {
@@ -203,7 +203,9 @@ export function ConsoleMessage({
     }
   }
 
-  renderedMessage ??= renderDefault();
+  if (renderedMessage === undefined) {
+    renderedMessage = renderDefault();
+  }
 
   if (!contextMenu?.messageContextEnabled) {
     return renderedMessage;
