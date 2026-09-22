@@ -20,9 +20,8 @@ interface Metric {
   unit: string;
 }
 
-const addonInfoService = createConsoleServiceToken<AddonInfoService>(
-  "example.addon-info",
-);
+const addonInfoService =
+  createConsoleServiceToken<AddonInfoService>("example.addon-info");
 
 function isMetric(value: unknown): value is Metric {
   if (typeof value !== "object" || value === null) return false;
