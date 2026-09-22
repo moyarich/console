@@ -111,7 +111,8 @@ packages/console/src/utils/terminal/
 
 Keep component modules focused on React rendering, state, refs, effects, and event wiring. Component-independent helpers belong in domain utility directories:
 
-- `utils/console/` for shared structured-console behavior such as context-menu geometry/theme extraction, object/value inspection helpers, and console copy formatting
+- `utils/console/` for shared structured-console behavior such as context-menu geometry, object/value inspection helpers, and console copy formatting
+- `utils/console/style/` for console theme variables/types, theme extraction, and renderer CSS-class mapping
 - `utils/console/table/` for `console.table()` normalization, row shaping, column collection, and table-specific types
 - `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
 - the root `utils/` directory is reserved for cross-cutting helpers such as transport, serialization, clipboard, capture, and WebSocket utilities
