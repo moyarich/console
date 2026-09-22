@@ -22,10 +22,6 @@ jobs:
         run: npm install --include=optional
       - name: Lint
         run: npm run lint
-      - name: Capture resize example formatting
-        run: |
-          npx prettier --write stories/ConsoleResizable.stories.tsx apps/playground/src/examples/50-additional-usage/18-resizable-console/example.tsx
-          git diff -- stories/ConsoleResizable.stories.tsx apps/playground/src/examples/50-additional-usage/18-resizable-console/example.tsx
       - name: Check formatting
         run: npm run format:check
       - name: Typecheck
