@@ -1,5 +1,3 @@
-import Anser from "anser";
-import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 import {
@@ -11,11 +9,19 @@ import {
 import {
   normalizeConsoleProcessOutputEntries,
   processConsoleOutputEntry,
-  type ConsoleOutputStream,
-  type ConsoleProcessOutputMetadata,
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
 } from "../processOutput";
+import {
+  getAnsiTokenRanges,
+  getAnsiTokenStyle,
+  hasAnsiClearLine,
+} from "../utils/terminal/ansi";
+import {
+  parseStructuredOutput,
+  type ConsoleStructuredOutputParser,
+  type ConsoleStructuredOutputParserContext,
+} from "../utils/terminal/structuredOutput";
 
 export type {
   ConsoleOutputStream,
@@ -24,30 +30,10 @@ export type {
   ConsoleStdoutEntry,
 } from "../processOutput";
 
-/** Metadata supplied to structured-output parsers. */
-export interface ConsoleStructuredOutputParserContext {
-  /** Logical process-output entry after core CR/newline normalization. */
-  entry: ConsoleStdoutEntry | string;
-  /** Zero-based entry index. */
-  index: number;
-  /** Stable entry id when one was supplied. */
-  id?: string;
-  /** stdout/stderr metadata when one was supplied. */
-  stream?: ConsoleOutputStream;
-  /** Metadata accumulated by process-output processors. */
-  metadata?: ConsoleProcessOutputMetadata;
-}
-
-/**
- * Parses a plain-text ANSI line into a structured value.
- *
- * Return `undefined` to leave the line as ANSI text or allow another parser
- * to handle it.
- */
-export type ConsoleStructuredOutputParser = (
-  text: string,
-  context: ConsoleStructuredOutputParserContext,
-) => unknown | undefined;
+export type {
+  ConsoleStructuredOutputParser,
+  ConsoleStructuredOutputParserContext,
+} from "../utils/terminal/structuredOutput";
 
 /** Props for rendering ANSI-aware stdout/stderr entries. */
 export interface ConsoleStdoutProps {
@@ -69,116 +55,6 @@ export interface ConsoleStdoutProps {
   linkProviders?: readonly ConsoleLinkProvider[];
 }
 
-type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
-
-const ANSI_ESCAPE = String.fromCharCode(27);
-const ANSI_CLEAR_LINE_PATTERN = new RegExp(`${ANSI_ESCAPE}\\[[012]?K`);
-
-/** Converts an Anser token into React inline styles. */
-function getAnsiTokenStyle(token: AnserToken): CSSProperties {
-  const decorations = token.decorations ?? [];
-  const textDecoration: string[] = [];
-  const style: CSSProperties = {};
-
-  if (token.fg) {
-    style.color = `rgb(${token.fg})`;
-  }
-
-  if (token.bg) {
-    style.backgroundColor = `rgb(${token.bg})`;
-  }
-
-  if (decorations.includes("bold")) {
-    style.fontWeight = "bold";
-  }
-
-  if (decorations.includes("dim")) {
-    style.opacity = 0.5;
-  }
-
-  if (decorations.includes("italic")) {
-    style.fontStyle = "italic";
-  }
-
-  if (decorations.includes("hidden")) {
-    style.visibility = "hidden";
-  }
-
-  if (decorations.includes("underline")) {
-    textDecoration.push("underline");
-  }
-
-  if (decorations.includes("strikethrough")) {
-    textDecoration.push("line-through");
-  }
-
-  if (decorations.includes("blink")) {
-    textDecoration.push("blink");
-  }
-
-  if (textDecoration.length) {
-    style.textDecoration = textDecoration.join(" ");
-  }
-
-  return style;
-}
-
-/** Parses only complete JSON object/array text, never scalar JSON values. */
-function parseStrictJsonOutput(text: string): object | undefined {
-  const trimmedText = text.trim();
-
-  if (
-    !trimmedText ||
-    (!trimmedText.startsWith("{") && !trimmedText.startsWith("["))
-  ) {
-    return undefined;
-  }
-
-  try {
-    const value: unknown = JSON.parse(trimmedText);
-
-    return typeof value === "object" && value !== null ? value : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-/** Runs custom structured parsers before the optional strict JSON parser. */
-function parseStructuredOutput(
-  data: string,
-  entry: ConsoleStdoutEntry | string,
-  index: number,
-  shouldParseStrictJson: boolean,
-  parsers: readonly ConsoleStructuredOutputParser[] | undefined,
-  processMetadata: ConsoleProcessOutputMetadata,
-): unknown | undefined {
-  const text = Anser.ansiToText(data);
-  const context =
-    typeof entry === "string"
-      ? { entry, index, metadata: processMetadata }
-      : {
-          entry,
-          index,
-          id: entry.id,
-          stream: entry.stream,
-          metadata: processMetadata,
-        };
-
-  for (const parser of parsers ?? []) {
-    try {
-      const value = parser(text, context);
-
-      if (value !== undefined) {
-        return value;
-      }
-    } catch {
-      // A custom parser must not prevent the original output from rendering.
-    }
-  }
-
-  return shouldParseStrictJson ? parseStrictJsonOutput(text) : undefined;
-}
-
 function AnsiText({
   data,
   context,
@@ -192,15 +68,7 @@ function AnsiText({
   linkProviders?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
 }) {
-  const tokens = Anser.ansiToJson(data, { remove_empty: true });
-  let tokenOffset = 0;
-  const tokenRanges = tokens.map((token) => {
-    const start = tokenOffset;
-    tokenOffset += token.content.length;
-
-    return { token, start, end: tokenOffset };
-  });
-  const text = tokenRanges.map(({ token }) => token.content).join("");
+  const { text, tokenRanges } = getAnsiTokenRanges(data);
 
   // Source ranges come from ConsoleLinkedText so this renderer stays pure when
   // React StrictMode renders the child component more than once.
@@ -294,9 +162,7 @@ export function ConsoleStdout({
                   processedOutput.metadata,
                 )
               : undefined;
-        const clearLine =
-          ANSI_CLEAR_LINE_PATTERN.test(data) ||
-          Anser.ansiToJson(data).some((token) => token.clearLine);
+        const clearLine = hasAnsiClearLine(data);
         const linkContext: ConsoleLinkProviderContext =
           typeof entry === "string"
             ? {
