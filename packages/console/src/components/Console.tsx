@@ -23,9 +23,11 @@ import type {
   ConsoleMode as ConsoleModeType,
   RunOutput,
 } from "../types";
-import type {
-  ConsoleMessageRenderer,
-  ConsoleValueRenderer,
+import {
+  dispatchOutputRenderer,
+  type ConsoleMessageRenderer,
+  type ConsoleOutputRenderer,
+  type ConsoleValueRenderer,
 } from "../renderers";
 import type {
   ConsoleContextMenuAction,
@@ -81,6 +83,8 @@ interface ConsoleSharedProps {
   className?: string;
   /** Inline styles applied to the root console element, including public theme variables. */
   style?: CSSProperties;
+  /** Custom renderers that can replace the complete inner output surface. */
+  outputRenderers?: readonly ConsoleOutputRenderer[];
   /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
   /** Whether built-in HTTP/HTTPS link detection is enabled. @default true */
@@ -346,6 +350,7 @@ function ConsoleMessageMode({
   messageRenderers,
   messageActions,
   contextMenuActions,
+  outputRenderers,
   valueRenderers,
   detectLinks = true,
   linkProviders,
@@ -365,6 +370,10 @@ function ConsoleMessageMode({
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
     addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
+  );
+  const resolvedOutputRenderers = mergeContributions(
+    outputRenderers,
+    addonExtensions.getAll(consoleExtensionPoints.outputRenderer),
   );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
@@ -415,6 +424,31 @@ function ConsoleMessageMode({
     });
   };
 
+  const renderDefaultOutput = () =>
+    visibleMessages.map((message, index) => (
+      <ConsoleMessage
+        key={
+          message.id ??
+          `${message.method}-${message.timestamp ?? "na"}-${index}`
+        }
+        message={message}
+        index={index}
+        messages={visibleMessages}
+        expandAllVersion={expandedMessages.get(message)}
+        onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+        renderers={resolvedMessageRenderers}
+        valueRenderers={resolvedValueRenderers}
+        detectLinks={detectLinks}
+        linkProviders={resolvedLinkProviders}
+      />
+    ));
+  const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
+    mode: "console",
+    messages: visibleMessages,
+    renderDefault: renderDefaultOutput,
+  });
+  const hasCustomOutput = renderedOutput !== undefined;
+
   return (
     <ConsoleFrame
       {...frameProps}
@@ -422,28 +456,12 @@ function ConsoleMessageMode({
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
-      isEmpty={visibleMessages.length === 0}
+      isEmpty={visibleMessages.length === 0 && !hasCustomOutput}
       scrollKey={visibleMessages}
       contextMenuActions={resolvedContextMenuActions}
       messageActions={resolvedMessageActions}
     >
-      {visibleMessages.map((message, index) => (
-        <ConsoleMessage
-          key={
-            message.id ??
-            `${message.method}-${message.timestamp ?? "na"}-${index}`
-          }
-          message={message}
-          index={index}
-          messages={visibleMessages}
-          expandAllVersion={expandedMessages.get(message)}
-          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
-          renderers={resolvedMessageRenderers}
-          valueRenderers={resolvedValueRenderers}
-          detectLinks={detectLinks}
-          linkProviders={resolvedLinkProviders}
-        />
-      ))}
+      {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
   );
 }
@@ -455,6 +473,7 @@ function ConsoleAnsiMode({
   processors,
   structuredOutputParsers,
   contextMenuActions,
+  outputRenderers,
   valueRenderers,
   detectLinks = true,
   linkProviders,
@@ -475,6 +494,10 @@ function ConsoleAnsiMode({
     contextMenuActions,
     addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
   );
+  const resolvedOutputRenderers = mergeContributions(
+    outputRenderers,
+    addonExtensions.getAll(consoleExtensionPoints.outputRenderer),
+  );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
     addonExtensions.getAll(consoleExtensionPoints.valueRenderer),
@@ -483,6 +506,23 @@ function ConsoleAnsiMode({
     linkProviders,
     addonExtensions.getAll(consoleExtensionPoints.linkProvider),
   );
+  const renderDefaultOutput = () => (
+    <ConsoleStdout
+      entries={messages}
+      parseStructuredOutput={parseStructuredOutput}
+      processors={resolvedProcessors}
+      structuredOutputParsers={resolvedStructuredOutputParsers}
+      valueRenderers={resolvedValueRenderers}
+      detectLinks={detectLinks}
+      linkProviders={resolvedLinkProviders}
+    />
+  );
+  const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
+    mode: "ansi",
+    entries: messages,
+    renderDefault: renderDefaultOutput,
+  });
+  const hasCustomOutput = renderedOutput !== undefined;
 
   return (
     <ConsoleFrame
@@ -491,19 +531,11 @@ function ConsoleAnsiMode({
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
-      isEmpty={messages.length === 0}
+      isEmpty={messages.length === 0 && !hasCustomOutput}
       scrollKey={messages}
       contextMenuActions={resolvedContextMenuActions}
     >
-      <ConsoleStdout
-        entries={messages}
-        parseStructuredOutput={parseStructuredOutput}
-        processors={resolvedProcessors}
-        structuredOutputParsers={resolvedStructuredOutputParsers}
-        valueRenderers={resolvedValueRenderers}
-        detectLinks={detectLinks}
-        linkProviders={resolvedLinkProviders}
-      />
+      {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
   );
 }
