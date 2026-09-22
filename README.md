@@ -36,7 +36,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Connect producers and consumers without React      | `createConsoleEventEmitter()`                |
 | Receive console events from an iframe              | `listenForConsolePostMessages()`             |
 | Receive console events from a WebSocket            | `listenForConsoleWebSocket()`                |
-| Transform/enrich ANSI process output              | `processors`                                 |
+| Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
 
