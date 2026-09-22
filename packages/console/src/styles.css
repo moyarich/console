@@ -221,7 +221,10 @@
 
 .console-panel {
   --_console-color-scheme: var(--console-color-scheme, dark);
-  --_console-panel-color-scheme: var(--console-panel-color-scheme, light);
+  --_console-panel-color-scheme: var(
+    --console-panel-color-scheme,
+    var(--console-color-scheme, light)
+  );
 
   --_console-panel-background-color: var(
     --console-panel-background-color,
