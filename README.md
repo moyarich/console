@@ -39,6 +39,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
+| Bundle reusable console extensions                  | `addons` / `ConsoleAddon`                    |
 | Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
 ## Install
@@ -792,6 +793,247 @@ Each renderer context exposes `renderDefault()`, which is useful for wrapping or
 
 Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
 
+## Addons
+
+Use `addons` when a reusable feature needs to combine several console extension points, shared APIs, or lifecycle resources behind one package-level abstraction.
+
+```tsx
+import {
+  Console,
+  consoleExtensionPoints,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+function createBuildAddon(): ConsoleAddon {
+  return {
+    id: "build-tools",
+    activate(host) {
+      host.extensions.register(
+        consoleExtensionPoints.linkProvider,
+        {
+          id: "build-task-links",
+          provideLinks(text) {
+            const match = /TASK-\d+/.exec(text);
+
+            if (!match || match.index === undefined) {
+              return undefined;
+            }
+
+            return [
+              {
+                text: match[0],
+                start: match.index,
+                end: match.index + match[0].length,
+                action: () => openTask(match[0]),
+              },
+            ];
+          },
+        },
+      );
+    },
+  };
+}
+
+const buildAddon = createBuildAddon();
+
+<Console
+  messages={messages}
+  addons={[buildAddon]}
+/>;
+```
+
+An addon owns **lifecycle and composition**, not a fixed list of feature fields:
+
+```ts
+interface ConsoleAddon {
+  readonly id: string;
+  activate(host: ConsoleAddonHost): ConsoleAddonCleanup;
+}
+```
+
+The host exposes four generic concepts:
+
+| API | Purpose |
+| --- | --- |
+| `host.extensions` | Register ordered multi-provider contributions such as processors, parsers, renderers, links, and actions |
+| `host.services` | Publish or consume a typed single-provider API/state service |
+| `host.capabilities` | Detect optional functionality without reaching into React or DOM internals |
+| `host.scope` | Own listeners, subscriptions, and other disposables for the addon lifetime |
+
+### Built-in extension points
+
+`consoleExtensionPoints` currently exposes the package's existing composable hooks:
+
+- `processOutputProcessor`
+- `structuredOutputParser`
+- `linkProvider`
+- `messageRenderer`
+- `valueRenderer`
+- `contextMenuAction`
+- `messageAction`
+
+Direct component props remain supported. When both a direct prop and addon contributions target the same ordered hook, the direct prop entries are placed first so the embedding application retains final control over dispatch precedence.
+
+### Custom extension points
+
+Third-party packages can define their own typed extension points without changing `ConsoleAddon`:
+
+```ts
+import {
+  createConsoleExtensionPoint,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface DiagnosticProvider {
+  analyze(text: string): string | undefined;
+}
+
+export const diagnosticProvider =
+  createConsoleExtensionPoint<DiagnosticProvider>(
+    "acme.diagnosticProvider",
+  );
+
+export function createDiagnosticAddon(): ConsoleAddon {
+  return {
+    id: "acme.diagnostics",
+    activate(host) {
+      host.extensions.register(
+        diagnosticProvider,
+        {
+          analyze: (text) =>
+            text.includes("ERROR") ? "failure" : undefined,
+        },
+        {
+          id: "default",
+          priority: 100,
+        },
+      );
+    },
+  };
+}
+```
+
+Higher extension priorities are returned first. Equal priorities preserve registration order. Registration IDs are optional, but when supplied they must be unique within that extension point.
+
+### Services
+
+Use a service when one addon or core feature publishes an API that another addon consumes:
+
+```ts
+import {
+  createConsoleServiceToken,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface BuildService {
+  rerun(): void;
+}
+
+const buildService =
+  createConsoleServiceToken<BuildService>(
+    "acme.build",
+  );
+
+const provider: ConsoleAddon = {
+  id: "build-provider",
+  activate(host) {
+    host.services.provide(buildService, {
+      rerun: () => runBuild(),
+    });
+  },
+};
+
+const consumer: ConsoleAddon = {
+  id: "build-actions",
+  activate(host) {
+    const build =
+      host.services.require(buildService);
+
+    // Register actions/commands that call build.rerun().
+  },
+};
+```
+
+A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
+
+### Capabilities
+
+The React `Console` host currently advertises:
+
+- `consoleCapabilities.react`
+- `consoleCapabilities.dom`
+- `consoleCapabilities.structuredMessages` in structured-console mode
+- `consoleCapabilities.processOutput` in ANSI/process-output mode
+
+Use capabilities when an addon can adapt to multiple host surfaces:
+
+```ts
+if (
+  host.capabilities.has(
+    consoleCapabilities.processOutput,
+  )
+) {
+  // Register process-output behavior.
+}
+```
+
+Future headless/session hosts can expose a different capability set without changing the addon contract.
+
+### Lifecycle and cleanup
+
+Every addon activation receives its own disposable scope. Registrations made through the scoped `host.extensions` and `host.services` registries are removed automatically when the addon unloads.
+
+Use `host.scope` for other resources:
+
+```ts
+activate(host) {
+  const controller = new AbortController();
+
+  host.scope.defer(() => {
+    controller.abort();
+  });
+
+  return () => {
+    // Optional additional addon cleanup.
+  };
+}
+```
+
+Cleanup is idempotent. When an addon manager is disposed, loaded addons are disposed in reverse activation order.
+
+`<Console addons={...} />` treats the addon list as controlled state. Removing an addon unloads it. Reusing the same addon instance under the same ID keeps it active even if the array container changes. Stateful addons should therefore be created once, for example with `useMemo`, instead of creating a new instance during every render:
+
+```tsx
+const addons = useMemo(
+  () => [createBuildAddon()],
+  [],
+);
+
+return (
+  <Console
+    messages={messages}
+    addons={addons}
+  />
+);
+```
+
+Duplicate addon IDs are rejected deterministically.
+
+### Headless and advanced hosts
+
+The package also exports the generic factories used by the React integration:
+
+- `createConsoleAddonManager()`
+- `createConsoleExtensionPoint()`
+- `createConsoleExtensionRegistry()`
+- `createConsoleServiceToken()`
+- `createConsoleServiceRegistry()`
+- `createConsoleCapability()`
+- `createConsoleCapabilityRegistry()`
+- `createConsoleDisposableScope()`
+
+These contracts intentionally do not expose private component nodes or terminal cursor/buffer concepts. Future data, view, viewport, selection, session, and raw-process stages can be introduced as new services or extension points without adding feature-specific fields to `ConsoleAddon`.
+
 ## Transport console events
 
 The package does not prescribe where code runs. Console events can be moved from an iframe, worker-adjacent bridge, server relay, or remote runtime into the same event channel used by the React UI.
@@ -942,6 +1184,18 @@ Available helpers:
 | `ConsoleMessageRendererContext` | Message renderer context type                                   |
 | `ConsoleValueRenderer`          | Value renderer entry type                                       |
 | `ConsoleValueRendererContext`   | Value renderer context type                                     |
+
+### Addons and extension infrastructure
+
+| Export | Purpose |
+| --- | --- |
+| `ConsoleAddon` / `ConsoleAddonHost` | Stable lifecycle contract for reusable addons |
+| `createConsoleAddonManager` | Load/dispose addons against shared registries, including headless hosts |
+| `consoleExtensionPoints` | Built-in processor/parser/link/renderer/action extension points |
+| `createConsoleExtensionPoint` | Define a typed third-party multi-provider extension point |
+| `createConsoleServiceToken` | Define a typed single-provider service |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality |
+| `createConsoleDisposableScope` | Group arbitrary resources under idempotent cleanup |
 
 ### Transport and serialization
 
