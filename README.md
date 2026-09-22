@@ -577,17 +577,11 @@ Use a `ConsoleHandle` ref when surrounding application UI needs to navigate the 
 
 ```tsx
 import { useRef } from "react";
-import {
-  Console,
-  type ConsoleHandle,
-} from "@moyarich/console";
+import { Console, type ConsoleHandle } from "@moyarich/console";
 
 const consoleRef = useRef<ConsoleHandle>(null);
 
-<Console
-  ref={consoleRef}
-  messages={messages}
-/>;
+<Console ref={consoleRef} messages={messages} />;
 
 consoleRef.current?.scrollToTop();
 consoleRef.current?.scrollToBottom();
@@ -604,17 +598,12 @@ The handle also exposes `isAtTop()` and `isAtBottom()`. `isAtBottom()` uses the 
 Addons consume the same implementation through `consoleServices.viewport`:
 
 ```ts
-import {
-  consoleServices,
-  type ConsoleAddon,
-} from "@moyarich/console";
+import { consoleServices, type ConsoleAddon } from "@moyarich/console";
 
 const navigationAddon: ConsoleAddon = {
   id: "navigation",
   activate(host) {
-    const viewport = host.services.require(
-      consoleServices.viewport,
-    );
+    const viewport = host.services.require(consoleServices.viewport);
 
     viewport.scrollToMessage("message-42");
   },
