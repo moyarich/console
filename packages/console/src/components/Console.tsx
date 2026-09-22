@@ -29,9 +29,12 @@ import {
   type ConsoleOutputRenderer,
   type ConsoleValueRenderer,
 } from "../renderers";
-import type {
-  ConsoleContextMenuAction,
-  ConsoleMessageAction,
+import {
+  resolveConsoleActions,
+  type ConsoleContextMenuAction,
+  type ConsoleMessageAction,
+  type ConsolePanelAction,
+  type ConsoleSurfaceActionContext,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
@@ -71,6 +74,8 @@ interface ConsoleSharedProps {
   showClearButton?: boolean;
   /** Additional React content rendered in the header actions popover. */
   actions?: ReactNode;
+  /** Typed actions rendered in the header actions popover. */
+  panelActions?: readonly ConsolePanelAction[];
   /** Host-defined actions available from the right-click context menu. */
   contextMenuActions?: readonly ConsoleContextMenuAction[];
   /** Header title. @default "Console" */
@@ -175,6 +180,7 @@ function ConsoleFrame({
   showHeader = true,
   showClearButton = true,
   actions,
+  panelActions,
   contextMenuActions,
   title = "Console",
   subtitle,
@@ -220,8 +226,24 @@ function ConsoleFrame({
     shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
   };
 
+  const panelActionContext = useMemo<ConsoleSurfaceActionContext>(
+    () => ({
+      kind: "console",
+      mode,
+      hasMessages,
+    }),
+    [hasMessages, mode],
+  );
+  const resolvedPanelActions = useMemo(
+    () => resolveConsoleActions(panelActions, panelActionContext),
+    [panelActionContext, panelActions],
+  );
   const showCopyButton = mode === "ansi";
-  const showActions = actions || showCopyButton || (showClearButton && onClear);
+  const showActions =
+    actions ||
+    resolvedPanelActions.length > 0 ||
+    showCopyButton ||
+    (showClearButton && onClear);
 
   return (
     <article
@@ -276,6 +298,40 @@ function ConsoleFrame({
                 >
                   <div className="console-actions result-actions">
                     {actions}
+
+                    {resolvedPanelActions.map(({ action, disabled }) => (
+                      <div
+                        className="console-panel-action-entry"
+                        key={action.id}
+                      >
+                        {action.separatorBefore && (
+                          <div
+                            className="console-panel-action-separator"
+                            role="separator"
+                          />
+                        )}
+                        <button
+                          type="button"
+                          className={
+                            action.variant === "danger"
+                              ? "console-panel-action console-panel-action-danger"
+                              : "console-panel-action"
+                          }
+                          aria-label={action.ariaLabel}
+                          disabled={disabled}
+                          onClick={() => {
+                            void action.onSelect(panelActionContext);
+                          }}
+                        >
+                          {action.icon && (
+                            <span className="console-panel-action-icon">
+                              {action.icon}
+                            </span>
+                          )}
+                          <span>{action.label}</span>
+                        </button>
+                      </div>
+                    ))}
 
                     {showCopyButton && (
                       <button
@@ -349,6 +405,7 @@ function ConsoleMessageMode({
   filter,
   messageRenderers,
   messageActions,
+  panelActions,
   contextMenuActions,
   outputRenderers,
   valueRenderers,
@@ -366,6 +423,10 @@ function ConsoleMessageMode({
   const resolvedMessageActions = mergeContributions(
     messageActions,
     addonExtensions.getAll(consoleExtensionPoints.messageAction),
+  );
+  const resolvedPanelActions = mergeContributions(
+    panelActions,
+    addonExtensions.getAll(consoleExtensionPoints.panelAction),
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
@@ -458,6 +519,7 @@ function ConsoleMessageMode({
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0 && !hasCustomOutput}
       scrollKey={visibleMessages}
+      panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       messageActions={resolvedMessageActions}
     >
@@ -472,6 +534,7 @@ function ConsoleAnsiMode({
   parseStructuredOutput = false,
   processors,
   structuredOutputParsers,
+  panelActions,
   contextMenuActions,
   outputRenderers,
   valueRenderers,
@@ -489,6 +552,10 @@ function ConsoleAnsiMode({
   const resolvedStructuredOutputParsers = mergeContributions(
     structuredOutputParsers,
     addonExtensions.getAll(consoleExtensionPoints.structuredOutputParser),
+  );
+  const resolvedPanelActions = mergeContributions(
+    panelActions,
+    addonExtensions.getAll(consoleExtensionPoints.panelAction),
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
@@ -533,6 +600,7 @@ function ConsoleAnsiMode({
       hasMessages={messages.length > 0}
       isEmpty={messages.length === 0 && !hasCustomOutput}
       scrollKey={messages}
+      panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
