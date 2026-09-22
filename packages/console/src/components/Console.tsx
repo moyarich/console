@@ -31,7 +31,7 @@ import type {
   ConsoleContextMenuAction,
   ConsoleMessageAction,
 } from "../actions";
-import { writeClipboardText } from "../utils/clipboard";
+import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
 
 /** Rendering mode selected by the top-level console component. */
