@@ -3,6 +3,7 @@ import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
 import { normalizeConsoleTableData } from "../utils/consoleTableData";
 import type { ConsoleValueRenderer } from "../renderers";
+import type { ConsoleLinkProvider } from "../links";
 
 /** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {
@@ -12,6 +13,10 @@ export interface ConsoleTableProps {
   columns?: string[];
   /** Custom renderers used for individual table cells. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Whether built-in HTTP/HTTPS detection is enabled. @default true */
+  detectLinks?: boolean;
+  /** Ordered application-specific link providers. */
+  linkProviders?: readonly ConsoleLinkProvider[];
 }
 interface TableRow {
   index: string;
@@ -59,6 +64,8 @@ export function ConsoleTable({
   data,
   columns,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
 }: ConsoleTableProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const rows = toRows(data);
@@ -109,6 +116,9 @@ export function ConsoleTable({
                       <ConsoleValue
                         value={row.value[column]}
                         renderers={valueRenderers}
+                        detectLinks={detectLinks}
+                        linkProviders={linkProviders}
+                        linkContext={{ mode: "console" }}
                       />
                     ) : (
                       <span className="console-undefined">undefined</span>
