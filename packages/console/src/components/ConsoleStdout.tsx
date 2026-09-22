@@ -210,23 +210,25 @@ function AnsiText({
 
     return (
       <>
-        {tokenRanges.map(({ token, start: tokenStart, end: tokenEnd }, index) => {
-          const overlapStart = Math.max(start, tokenStart);
-          const overlapEnd = Math.min(end, tokenEnd);
+        {tokenRanges.map(
+          ({ token, start: tokenStart, end: tokenEnd }, index) => {
+            const overlapStart = Math.max(start, tokenStart);
+            const overlapEnd = Math.min(end, tokenEnd);
 
-          if (overlapStart >= overlapEnd) {
-            return null;
-          }
+            if (overlapStart >= overlapEnd) {
+              return null;
+            }
 
-          return (
-            <span key={`${key}-${index}`} style={getAnsiTokenStyle(token)}>
-              {token.content.slice(
-                overlapStart - tokenStart,
-                overlapEnd - tokenStart,
-              )}
-            </span>
-          );
-        })}
+            return (
+              <span key={`${key}-${index}`} style={getAnsiTokenStyle(token)}>
+                {token.content.slice(
+                  overlapStart - tokenStart,
+                  overlapEnd - tokenStart,
+                )}
+              </span>
+            );
+          },
+        )}
       </>
     );
   };
