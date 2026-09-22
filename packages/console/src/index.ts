@@ -58,7 +58,6 @@ export type {
 export type { ConsoleLinkedTextProps } from "./components/ConsoleLinkedText";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
-export { getConsoleValueType } from "./renderers/getConsoleValueType";
 export type {
   ConsoleMessageRenderer,
   ConsoleMessageRendererContext,
