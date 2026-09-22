@@ -22,10 +22,6 @@ jobs:
         run: npm install --include=optional
       - name: Lint
         run: npm run lint
-      - name: Capture theme formatting
-        run: |
-          npx prettier --write packages/console/src/styles.css packages/console/src/components/Console.tsx apps/playground/src/examples/50-additional-usage/13-theming/example.tsx README.md stories/ConsoleResizable.stories.tsx tests/consoleThemeCss.test.ts tests/consoleRendering.test.tsx
-          git diff -- packages/console/src/styles.css packages/console/src/components/Console.tsx apps/playground/src/examples/50-additional-usage/13-theming/example.tsx README.md stories/ConsoleResizable.stories.tsx tests/consoleThemeCss.test.ts tests/consoleRendering.test.tsx
       - name: Check formatting
         run: npm run format:check
       - name: Typecheck
