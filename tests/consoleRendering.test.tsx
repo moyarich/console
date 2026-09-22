@@ -1,9 +1,11 @@
+import { createRef } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   Console,
   ConsoleLinkedText,
   ConsoleStdout,
+  type ConsoleHandle,
   type ConsoleLinkProvider,
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
@@ -17,6 +19,49 @@ function renderConsole(messages: ConsoleMessageData[], error = "") {
 
 describe("Console rendering", () => {
   const escape = String.fromCharCode(27);
+
+  it("renders stable logical message ids as viewport targets", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "message-42",
+            method: "log",
+            data: ["target"],
+            depth: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('data-console-message-id="message-42"');
+  });
+
+  it("renders ANSI entry ids as viewport targets", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[{ id: "stdout-42", data: "target", stream: "stdout" }]}
+      />,
+    );
+
+    expect(html).toContain('data-console-message-id="stdout-42"');
+  });
+
+  it("accepts a ConsoleHandle ref across the server render lifecycle", () => {
+    const ref = createRef<ConsoleHandle>();
+
+    expect(ref.current).toBeNull();
+
+    renderToStaticMarkup(
+      <Console
+        ref={ref}
+        messages={[{ id: "ref-target", method: "log", data: ["ref"], depth: 0 }]}
+      />,
+    );
+
+    expect(ref.current).toBeNull();
+  });
 
   it("renders primitive values", () => {
     const html = renderConsole([
