@@ -765,4 +765,17 @@ describe("Console rendering", () => {
     expect(html).toContain(">ISSUE-42</a>");
   });
 
+  it("detects one ANSI link across style-token boundaries", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[
+          `Visit ${escape}[36mhttps://example${escape}[0m.com/docs`,
+        ]}
+      />,
+    );
+
+    expect(html).toContain('href="https://example.com/docs"');
+    expect(html.match(/href="https:\/\/example\.com\/docs"/g)?.length).toBe(1);
+  });
 });
