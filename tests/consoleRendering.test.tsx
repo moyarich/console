@@ -2,7 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   Console,
+  ConsoleLinkedText,
   ConsoleStdout,
+  type ConsoleLinkProvider,
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
@@ -644,5 +646,203 @@ describe("Console rendering", () => {
 
     expect(html).toContain('data-method="log"');
     expect(html).toContain("safe fallback");
+  });
+
+  it("detects web links in structured console strings", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            method: "log",
+            data: ["Docs: https://example.com/docs."],
+            depth: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('href="https://example.com/docs"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain("console-link");
+  });
+
+  it("can disable built-in web-link detection", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        detectLinks={false}
+        messages={[
+          {
+            method: "log",
+            data: ["https://example.com/docs"],
+            depth: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("https://example.com/docs");
+    expect(html).not.toContain('class="console-link"');
+    expect(html).not.toContain('href="https://example.com/docs"');
+  });
+
+  it("passes stable source ranges to linked text renderers", () => {
+    const text = "Before https://example.com after";
+    const target = "https://example.com";
+    const linkStart = text.indexOf(target);
+    const linkEnd = linkStart + target.length;
+    const ranges: Array<[string, number, number]> = [];
+
+    renderToStaticMarkup(
+      <ConsoleLinkedText
+        text={text}
+        context={{ mode: "ansi" }}
+        renderText={(value, _key, start, end) => {
+          ranges.push([value, start, end]);
+          return value;
+        }}
+      />,
+    );
+
+    expect(ranges).toEqual([
+      [text.slice(0, linkStart), 0, linkStart],
+      [target, linkStart, linkEnd],
+      [text.slice(linkEnd), linkEnd, text.length],
+    ]);
+  });
+
+  it("uses custom link providers in structured and ANSI modes", () => {
+    const provider: ConsoleLinkProvider = {
+      id: "source-location",
+      provideLinks(text) {
+        const match = /src\/app\.ts:42:8/.exec(text);
+
+        if (match?.index === undefined) {
+          return undefined;
+        }
+
+        return [
+          {
+            text: match[0],
+            start: match.index,
+            end: match.index + match[0].length,
+            title: "Open source",
+            action: () => undefined,
+          },
+        ];
+      },
+    };
+
+    const consoleHtml = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            method: "error",
+            data: ["Failure at src/app.ts:42:8"],
+            depth: 0,
+          },
+        ]}
+        linkProviders={[provider]}
+      />,
+    );
+    const ansiHtml = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={["Failure at src/app.ts:42:8"]}
+        linkProviders={[provider]}
+      />,
+    );
+
+    expect(consoleHtml).toContain("console-link-button");
+    expect(consoleHtml).toContain('title="Open source"');
+    expect(ansiHtml).toContain("console-link-button");
+    expect(ansiHtml).toContain('title="Open source"');
+  });
+
+  it("renders processor-supplied link metadata in ANSI output", () => {
+    const text = "Build failed ISSUE-42";
+    const start = text.indexOf("ISSUE-42");
+    const processors: ConsoleProcessOutputProcessor[] = [
+      {
+        id: "issue-link",
+        process: () => ({
+          links: [
+            {
+              text: "ISSUE-42",
+              start,
+              end: start + "ISSUE-42".length,
+              target: "#issue-42",
+            },
+          ],
+        }),
+      },
+    ];
+
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[text]}
+        processors={processors}
+        detectLinks={false}
+      />,
+    );
+
+    expect(html).toContain('href="#issue-42"');
+    expect(html).toContain("ISSUE-42");
+  });
+
+  it("renders link providers for completed stdout and stderr entries", () => {
+    const provider: ConsoleLinkProvider = {
+      id: "source-location",
+      provideLinks(text) {
+        const match = /src\/cli\/run\.ts:91:12/.exec(text);
+
+        return match?.index === undefined
+          ? undefined
+          : [
+              {
+                text: match[0],
+                start: match.index,
+                end: match.index + match[0].length,
+                action: () => undefined,
+              },
+            ];
+      },
+    };
+
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[
+          {
+            id: "docs",
+            stream: "stdout",
+            data: "Docs: https://example.com/cli\n",
+          },
+          {
+            id: "source-error",
+            stream: "stderr",
+            data: "Error: src/cli/run.ts:91:12\n",
+          },
+        ]}
+        linkProviders={[provider]}
+      />,
+    );
+
+    expect(html).toContain('href="https://example.com/cli"');
+    expect(html).toContain("console-link-button");
+    expect(html).toContain("src/cli/run.ts:91:12");
+  });
+
+  it("detects one ANSI link across style-token boundaries", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[`Visit ${escape}[36mhttps://example${escape}[0m.com/docs`]}
+      />,
+    );
+
+    expect(html).toContain('href="https://example.com/docs"');
+    expect(html.match(/href="https:\/\/example\.com\/docs"/g)?.length).toBe(1);
   });
 });

@@ -1,4 +1,4 @@
-import type { ConsoleEvent } from "../types";
+import type { ConsoleEvent } from "../../types";
 import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
 
 type ConsoleEventHandlers = {

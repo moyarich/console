@@ -104,7 +104,52 @@ packages/console/src/components/ConsoleStdout.tsx
 packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
+packages/console/src/links.tsx
+packages/console/src/utils/browser/
+packages/console/src/utils/console/
+packages/console/src/utils/events/
+packages/console/src/utils/terminal/
+packages/console/src/utils/transport/
 ```
+
+Keep component modules focused on React rendering, state, refs, effects, and event wiring. Component-independent helpers belong in domain utility directories:
+
+- `utils/browser/` for browser-platform helpers such as clipboard access
+- `utils/console/` for shared structured-console value/object behavior and console copy formatting
+- `utils/console/contextMenu/` for context-menu geometry and event-position helpers
+- `utils/console/runtime/` for console capture/proxy runtime behavior
+- `utils/console/style/` for console theme variables/types, theme extraction, and renderer CSS-class mapping
+- `utils/console/table/` for `console.table()` normalization, row shaping, column collection, and table-specific types
+- `utils/events/` for the package event emitter and event-routing helpers
+- `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
+- `utils/transport/` for envelope validation, serialization, postMessage, and WebSocket adapters
+
+Prefer domain subdirectories over leaf modules directly under `utils/`. Add a root-level utility file only when the behavior is genuinely domain-neutral and shared across multiple utility domains.
+
+Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
+
+Avoid pass-through entry shims whose only purpose is to re-export another module, such as a flat file containing only `export * from "./utils/console"`. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as `utils/console/index.ts`, `utils/console/table/index.ts`, and `utils/terminal/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
+
+Avoid aliased function wrappers that merely rename an existing implementation, for example `function stripAnsiText(data) { return Anser.ansiToText(data); }`. Call or import the underlying implementation directly unless the wrapper adds package-specific validation, normalization, compatibility behavior, error containment, or another meaningful contract.
+
+Utility barrels are published as secondary entry points:
+
+```ts
+import {
+  normalizeConsoleValue,
+  objectEntries,
+  collectColumns,
+} from "@moyarich/console/utils/console";
+
+import {
+  getAnsiTokenRanges,
+  parseStrictJsonOutput,
+} from "@moyarich/console/utils/terminal";
+```
+
+These secondary entry points are intentionally separate from the main reported API: they keep the root import concise while making reusable implementation modules available to advanced consumers.
+
+Do not add parsing, normalization, formatting, geometry, or value-inspection helpers directly to component files when they can be expressed independently of JSX.
 
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
 
@@ -122,6 +167,21 @@ Custom message and value rendering is implemented as ordered dispatch tables in 
 Keep renderer dispatch data-oriented. Avoid growing method/type handling into large conditionals or switches when a lookup/dispatch table is clearer.
 
 Value renderers must continue to propagate through nested `ConsoleValue` instances, `console.table()` cells, and structured ANSI values.
+
+### Link detection and providers
+
+Interactive text ranges use the shared contract in `packages/console/src/links.tsx`.
+
+- built-in detection handles only HTTP/HTTPS URLs and can be disabled with `detectLinks`
+- `linkProviders` run in array order before built-in URL detection
+- provider output must use exact plain-text `text`, `start`, and `end` ranges
+- invalid and overlapping ranges fail closed without suppressing the original text
+- provider navigation targets are restricted to HTTP/HTTPS and relative/hash targets; application-specific schemes should use `action`
+- the same providers propagate through structured strings, nested values, tables, promoted ANSI values, and ANSI text
+- process-output processors reuse `ConsoleLink` through their dedicated `links` result field rather than storing link ranges in generic metadata
+- when a processor transforms `data`, older link ranges are discarded unless replacement links are returned for the transformed text
+
+Keep URL/link detection as progressive enhancement. Copying and ordinary text selection must continue to work when no provider handles a range.
 
 ### Message state
 

@@ -1,6 +1,18 @@
 import { ChevronRight, Copy } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
+import { isElementLike } from "../utils/console/isElementLike";
+import { isInspectableObject } from "../utils/console/isInspectableObject";
+import { isObjectLike } from "../utils/console/isObjectLike";
+import { objectEntries } from "../utils/console/objectEntries";
+import { objectLabel } from "../utils/console/objectLabel";
+import { preview } from "../utils/console/preview";
+import { typeClass } from "../utils/console/style/typeClass";
+import {
+  ConsoleLinkedText,
+  type ConsoleLinkProvider,
+  type ConsoleLinkProviderContext,
+} from "../links";
 import {
   dispatchValueRenderer,
   getConsoleValueType,
@@ -9,18 +21,15 @@ import {
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
-  /** Value to render. */
   value: unknown;
-  /** Initial recursive object-expansion depth. */
   expandLevel?: number;
-  /** Ancestor objects used internally for circular-reference detection. */
   ancestors?: ReadonlySet<object>;
-  /** Property name associated with a nested value. */
   propertyKey?: string;
-  /** Changing this token forces expandable descendants open. */
   expandAllVersion?: number;
-  /** Ordered custom value renderers. */
   renderers?: readonly ConsoleValueRenderer[];
+  detectLinks?: boolean;
+  linkProviders?: readonly ConsoleLinkProvider[];
+  linkContext?: Omit<ConsoleLinkProviderContext, "value" | "propertyKey">;
 }
 
 interface ConsoleObjectValueProps {
@@ -30,72 +39,62 @@ interface ConsoleObjectValueProps {
   propertyKey?: string;
   expandAllVersion?: number;
   renderers?: readonly ConsoleValueRenderer[];
+  detectLinks?: boolean;
+  linkProviders?: readonly ConsoleLinkProvider[];
+  linkContext?: Omit<ConsoleLinkProviderContext, "value" | "propertyKey">;
 }
 
-function isObjectLike(value: unknown): value is object {
-  return typeof value === "object" && value !== null;
-}
-
-function isElementLike(
+function renderPrimitive(
   value: unknown,
-): value is object & { outerHTML: string } {
-  if (!isObjectLike(value)) return false;
-
-  const candidate = value as {
-    nodeType?: unknown;
-    outerHTML?: unknown;
+  propertyKey: string | undefined,
+  detectLinks: boolean,
+  linkProviders: readonly ConsoleLinkProvider[] | undefined,
+  linkContext:
+    Omit<ConsoleLinkProviderContext, "value" | "propertyKey"> | undefined,
+): ReactNode {
+  const context: ConsoleLinkProviderContext = {
+    mode: linkContext?.mode ?? "console",
+    ...linkContext,
+    value,
+    propertyKey,
   };
 
-  return candidate.nodeType === 1 && typeof candidate.outerHTML === "string";
-}
-
-function isMapLike(value: object): value is Map<unknown, unknown> {
-  return (
-    value.constructor?.name === "Map" &&
-    typeof (value as Map<unknown, unknown>).entries === "function"
-  );
-}
-
-function isSetLike(value: object): value is Set<unknown> {
-  return (
-    value.constructor?.name === "Set" &&
-    typeof (value as Set<unknown>).values === "function"
-  );
-}
-
-/** Returns whether a value should use the expandable object inspector. */
-function isInspectableObject(value: unknown): value is object {
-  return (
-    isObjectLike(value) &&
-    !isElementLike(value) &&
-    !(value instanceof Error) &&
-    !(value instanceof Date) &&
-    !(value instanceof RegExp)
-  );
-}
-
-function typeClass(value: unknown): string {
-  if (value === null) return "console-null";
-  if (typeof value === "string") return "console-string";
-  if (typeof value === "number" || typeof value === "bigint")
-    return "console-number";
-  if (typeof value === "boolean") return "console-boolean";
-  if (typeof value === "undefined") return "console-undefined";
-  if (typeof value === "symbol") return "console-symbol";
-  return "";
-}
-
-function renderPrimitive(value: unknown): ReactNode {
   if (isElementLike(value))
     return <span className="console-html">{value.outerHTML}</span>;
-  if (value instanceof Error)
-    return <pre className="console-stack">{value.stack || value.message}</pre>;
+
+  if (value instanceof Error) {
+    const text = value.stack || value.message;
+    return (
+      <pre className="console-stack">
+        <ConsoleLinkedText
+          text={text}
+          context={context}
+          detectLinks={detectLinks}
+          providers={linkProviders}
+        />
+      </pre>
+    );
+  }
+
   if (typeof value === "function")
     return (
       <span className="console-function">ƒ {value.name || "anonymous"}()</span>
     );
+
   if (typeof value === "string")
-    return <span className="console-string">{JSON.stringify(value)}</span>;
+    return (
+      <span className="console-string">
+        "
+        <ConsoleLinkedText
+          text={value}
+          context={context}
+          detectLinks={detectLinks}
+          providers={linkProviders}
+        />
+        "
+      </span>
+    );
+
   if (typeof value === "symbol")
     return <span className="console-symbol">{String(value)}</span>;
   if (value === null) return <span className="console-null">null</span>;
@@ -104,74 +103,6 @@ function renderPrimitive(value: unknown): ReactNode {
   return <span className={typeClass(value)}>{String(value)}</span>;
 }
 
-/** Produces the short type label shown for an expandable object. */
-function objectLabel(value: object): string {
-  if (Array.isArray(value)) return `Array(${value.length})`;
-  if (isMapLike(value)) return `Map(${value.size})`;
-  if (isSetLike(value)) return `Set(${value.size})`;
-  if (value instanceof ArrayBuffer) return `ArrayBuffer(${value.byteLength})`;
-  if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
-    const length = (value as unknown as { length?: number }).length;
-    return `${value.constructor.name}(${length ?? value.byteLength})`;
-  }
-
-  const constructorName = value.constructor?.name;
-  return constructorName && constructorName !== "Object"
-    ? constructorName
-    : "Object";
-}
-
-/** Normalizes supported object-like values into inspector key/value entries. */
-function objectEntries(value: object): [string, unknown][] {
-  if (isMapLike(value)) {
-    return Array.from(value.entries()).map((entry, index) => [
-      String(index),
-      entry,
-    ]);
-  }
-
-  if (isSetLike(value)) {
-    return Array.from(value.values()).map((item, index) => [
-      String(index),
-      item,
-    ]);
-  }
-
-  if (value instanceof ArrayBuffer) {
-    return Array.from(new Uint8Array(value)).map((item, index) => [
-      String(index),
-      item,
-    ]);
-  }
-
-  return Object.entries(value);
-}
-
-/** Produces the compact one-line preview shown while an object is collapsed. */
-function preview(value: object): string {
-  if (isMapLike(value)) return `{ ${value.size} entries }`;
-  if (isSetLike(value)) return `{ ${value.size} values }`;
-
-  if (Array.isArray(value)) {
-    const items = value.slice(0, 3).map((item) => {
-      if (typeof item === "string") return JSON.stringify(item);
-      if (isObjectLike(item)) return Array.isArray(item) ? "Array" : "Object";
-      return String(item);
-    });
-    return `[${items.join(", ")}${value.length > 3 ? ", …" : ""}]`;
-  }
-
-  const entries = objectEntries(value).slice(0, 3);
-  const parts = entries.map(([key, item]) => {
-    if (typeof item === "string") return `${key}: ${JSON.stringify(item)}`;
-    if (isObjectLike(item))
-      return `${key}: ${Array.isArray(item) ? "Array" : "Object"}`;
-    return `${key}: ${String(item)}`;
-  });
-  return `{ ${parts.join(", ")}${Object.keys(value).length > 3 ? ", …" : ""} }`;
-}
-
-/** Renders the expandable object inspector with copy and context-menu support. */
 function ConsoleObjectValue({
   value,
   expandLevel,
@@ -179,6 +110,9 @@ function ConsoleObjectValue({
   propertyKey,
   expandAllVersion,
   renderers,
+  detectLinks,
+  linkProviders,
+  linkContext,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const [isOpen, setIsOpen] = useState(
@@ -261,6 +195,9 @@ function ConsoleObjectValue({
                       ancestors={nextAncestors}
                       expandAllVersion={expandAllVersion}
                       renderers={renderers}
+                      detectLinks={detectLinks}
+                      linkProviders={linkProviders}
+                      linkContext={linkContext}
                     />
                   );
                 }
@@ -282,6 +219,9 @@ function ConsoleObjectValue({
                         ancestors={nextAncestors}
                         expandAllVersion={expandAllVersion}
                         renderers={renderers}
+                        detectLinks={detectLinks}
+                        linkProviders={linkProviders}
+                        linkContext={linkContext}
                       />
                     </div>
                   </div>
@@ -299,7 +239,6 @@ function ConsoleObjectValue({
   );
 }
 
-/** Dispatches a value to the built-in primitive or object renderer. */
 function renderDefaultValue({
   value,
   expandLevel,
@@ -307,10 +246,27 @@ function renderDefaultValue({
   propertyKey,
   expandAllVersion,
   renderers,
+  detectLinks = true,
+  linkProviders,
+  linkContext,
 }: Required<Pick<ConsoleValueProps, "expandLevel" | "ancestors">> &
   Omit<ConsoleValueProps, "expandLevel" | "ancestors">): ReactNode {
-  if (!isObjectLike(value)) return renderPrimitive(value);
-  if (!isInspectableObject(value)) return renderPrimitive(value);
+  if (!isObjectLike(value))
+    return renderPrimitive(
+      value,
+      propertyKey,
+      detectLinks,
+      linkProviders,
+      linkContext,
+    );
+  if (!isInspectableObject(value))
+    return renderPrimitive(
+      value,
+      propertyKey,
+      detectLinks,
+      linkProviders,
+      linkContext,
+    );
   if (ancestors.has(value))
     return <span className="console-circular">[Circular]</span>;
 
@@ -322,14 +278,13 @@ function renderDefaultValue({
       propertyKey={propertyKey}
       expandAllVersion={expandAllVersion}
       renderers={renderers}
+      detectLinks={detectLinks}
+      linkProviders={linkProviders}
+      linkContext={linkContext}
     />
   );
 }
 
-/**
- * Renders a console value using the first matching custom renderer, falling
- * back to the built-in primitive/object inspector.
- */
 export function ConsoleValue({
   value,
   expandLevel = 0,
@@ -337,6 +292,9 @@ export function ConsoleValue({
   propertyKey,
   expandAllVersion,
   renderers,
+  detectLinks = true,
+  linkProviders,
+  linkContext,
 }: ConsoleValueProps) {
   const renderDefault = () =>
     renderDefaultValue({
@@ -346,6 +304,9 @@ export function ConsoleValue({
       propertyKey,
       expandAllVersion,
       renderers,
+      detectLinks,
+      linkProviders,
+      linkContext,
     });
 
   const custom = dispatchValueRenderer(renderers, value, {

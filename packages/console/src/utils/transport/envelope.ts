@@ -1,5 +1,5 @@
-import { isConsoleMethod } from "../consoleMethods";
-import type { ConsoleTransportEnvelope } from "../types";
+import { isConsoleMethod } from "../../consoleMethods";
+import type { ConsoleTransportEnvelope } from "../../types";
 
 /** Stable envelope type used by package transport adapters. */
 export const CONSOLE_TRANSPORT_TYPE = "CONSOLE_PANEL" as const;

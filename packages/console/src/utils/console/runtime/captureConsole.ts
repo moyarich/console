@@ -1,5 +1,5 @@
-import { CAPTURED_CONSOLE_METHODS } from "../consoleMethods";
-import type { ConsoleEventEmitter } from "./createConsoleEventEmitter";
+import { CAPTURED_CONSOLE_METHODS } from "../../../consoleMethods";
+import type { ConsoleEventEmitter } from "../../events/createConsoleEventEmitter";
 import { createConsoleProxy } from "./createConsoleProxy";
 
 /** Options for temporarily intercepting an existing Console object. */
