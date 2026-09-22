@@ -61,6 +61,11 @@ export interface ConsoleStdoutProps {
 
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
 
+const ANSI_ESCAPE = String.fromCharCode(27);
+const ANSI_CLEAR_LINE_PATTERN = new RegExp(
+  `${ANSI_ESCAPE}\\[[012]?K`,
+);
+
 /** Converts an Anser token into React inline styles. */
 function getAnsiTokenStyle(token: AnserToken): CSSProperties {
   const decorations = token.decorations ?? [];
@@ -225,9 +230,9 @@ export function ConsoleStdout({
                   processedOutput.metadata,
                 )
               : undefined;
-        const clearLine = Anser.ansiToJson(data).some(
-          (token) => token.clearLine,
-        );
+        const clearLine =
+          ANSI_CLEAR_LINE_PATTERN.test(data) ||
+          Anser.ansiToJson(data).some((token) => token.clearLine);
 
         if (structuredValue !== undefined) {
           return (
