@@ -4,12 +4,7 @@
  * These helpers are available through the secondary package entry point
  * `@moyarich/console/utils/console` without expanding the main package API.
  */
-export {
-  CONTEXT_MENU_THEME_PROPERTIES,
-  CONTEXT_MENU_VIEWPORT_MARGIN,
-} from "./constants";
 export { formatConsoleObjectForCopy } from "./formatConsoleObjectForCopy";
-export { getContextMenuThemeStyle } from "./getContextMenuThemeStyle";
 export { getEventPoint } from "./getEventPoint";
 export { getMenuPosition } from "./getMenuPosition";
 export { isElementLike } from "./isElementLike";
@@ -22,6 +17,5 @@ export { normalizeConsoleValue } from "./normalizeConsoleValue";
 export { objectEntries } from "./objectEntries";
 export { objectLabel } from "./objectLabel";
 export { preview } from "./preview";
-export { typeClass } from "./typeClass";
+export * from "./style";
 export * from "./table";
-export type { ContextMenuThemeProperty, ContextMenuThemeStyle } from "./types";
