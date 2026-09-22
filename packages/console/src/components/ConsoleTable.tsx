@@ -3,8 +3,8 @@ import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 import type { ConsoleLinkProvider } from "../links";
-import { collectColumns } from "../utils/console/collectColumns";
-import { toRows } from "../utils/console/toRows";
+import { collectColumns } from "../utils/console/table/collectColumns";
+import { toRows } from "../utils/console/table/toRows";
 import { isObjectLike } from "../utils/console/isObjectLike";
 
 /** Props for rendering normalized `console.table()` output. */
