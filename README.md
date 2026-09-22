@@ -546,7 +546,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
 | `linkProviders`       | Add ordered application-specific link providers                                |
 | `addons`              | Add reusable `ConsoleAddon` instances                                          |
-| `disabledAddonIds`   | Keep selected user or auto-registered core addons unloaded by stable ID         |
+| `disabledAddonIds`    | Keep selected user or auto-registered core addons unloaded by stable ID        |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
@@ -1044,7 +1044,7 @@ Every addon has a required stable ID. Use a package-qualified ID to avoid collis
 - multiple addons from one package: `@acme/console-tools:search`
 - application-local addons: use an application namespace such as `my-app:build-tools`
 
-The `@moyarich/console:` namespace is reserved for built-in core addons. Core IDs are exported through `consoleCoreAddonIds` so hosts do not need to hard-code them.
+The `@moyarich/console:` namespace is reserved for built-in core addons. Core IDs are exported through `consoleCoreAddonIds` so hosts do not need to hard-code them. Use `isCoreConsoleAddonId(id)` when runtime code needs to distinguish a core addon ID from an external addon ID.
 
 ### Core addons and opt-out
 
@@ -1062,9 +1062,7 @@ Disable any addon, including an auto-registered core addon, with `disabledAddonI
 ```tsx
 <Console
   messages={messages}
-  disabledAddonIds={[
-    consoleCoreAddonIds.viewport,
-  ]}
+  disabledAddonIds={[consoleCoreAddonIds.viewport]}
 />
 ```
 
@@ -1508,6 +1506,7 @@ Available helpers:
 | `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts  |
 | `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons            |
 | `createConsoleViewportAddon`                      | Create the core viewport-service addon                                  |
+| `isCoreConsoleAddonId`                            | Distinguish reserved core addon IDs from external addon IDs             |
 | `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
 | `consoleServices`                                 | Built-in typed services, including the shared viewport service          |
 | `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
