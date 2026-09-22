@@ -91,6 +91,8 @@ export { getConsoleValueType } from "./renderers";
 export type {
   ConsoleMessageRenderer,
   ConsoleMessageRendererContext,
+  ConsoleOutputRenderer,
+  ConsoleOutputRendererContext,
   ConsoleValueRenderer,
   ConsoleValueRendererContext,
 } from "./renderers";
