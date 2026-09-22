@@ -1,6 +1,5 @@
-import { ConsoleValue } from "./ConsoleValue";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
 import { ConsoleLinkedText } from "./ConsoleLinkedText";
-import type { ConsoleValueRenderer } from "../types";
 import type {
   ConsoleLink,
   ConsoleLinkProvider,
