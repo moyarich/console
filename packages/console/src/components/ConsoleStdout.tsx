@@ -20,7 +20,6 @@ import {
 import {
   parseStructuredOutput,
   type ConsoleStructuredOutputParser,
-  type ConsoleStructuredOutputParserContext,
 } from "../utils/terminal/structuredOutput";
 
 export type {
