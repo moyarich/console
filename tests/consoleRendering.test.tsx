@@ -283,6 +283,35 @@ describe("Console rendering", () => {
     expect(html).toContain('data-stream="stdout"');
   });
 
+  it("collapses leading carriage-return redraw chunks like tqdm", () => {
+    const html = renderToStaticMarkup(
+      <ConsoleStdout
+        entries={[
+          {
+            id: "tqdm-0",
+            data: "\rDownloading:   0%|          | 0/100",
+            stream: "stderr",
+          },
+          {
+            id: "tqdm-1",
+            data: "\rDownloading:   1%|1         | 1/100",
+            stream: "stderr",
+          },
+          {
+            id: "tqdm-2",
+            data: "\rDownloading: 100%|##########| 100/100\n",
+            stream: "stderr",
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("Downloading: 100%");
+    expect(html).not.toContain("Downloading:   0%");
+    expect(html).not.toContain("Downloading:   1%");
+    expect(html).toContain('data-stream="stderr"');
+  });
+
   it("keeps completed lines stable while progress redraws the current line", () => {
     const html = renderToStaticMarkup(
       <ConsoleStdout
