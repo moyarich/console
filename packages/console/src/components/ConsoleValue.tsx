@@ -95,8 +95,7 @@ function renderPrimitive(
   detectLinks: boolean,
   linkProviders: readonly ConsoleLinkProvider[] | undefined,
   linkContext:
-    | Omit<ConsoleLinkProviderContext, "value" | "propertyKey">
-    | undefined,
+    Omit<ConsoleLinkProviderContext, "value" | "propertyKey"> | undefined,
 ): ReactNode {
   const context: ConsoleLinkProviderContext = {
     mode: linkContext?.mode ?? "console",
