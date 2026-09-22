@@ -1505,7 +1505,9 @@ Available helpers:
 | Export                                            | Purpose                                                                 |
 | ------------------------------------------------- | ----------------------------------------------------------------------- |
 | `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
-| `createConsoleAddonManager`                       | Load/dispose addons against shared registries, including headless hosts |
+| `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts  |
+| `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons            |
+| `createConsoleViewportAddon`                      | Create the core viewport-service addon                                  |
 | `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
 | `consoleServices`                                 | Built-in typed services, including the shared viewport service          |
 | `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
