@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import PyodideTqdmProgressExample from "../apps/playground/src/examples/00-ansi/06-pyodide-tqdm-progress/example";
 import {
   Console,
   type ConsoleAnsiModeProps,
@@ -144,6 +145,13 @@ function LiveTqdmRedrawStory() {
 
 export const LiveTqdmRedraw: Story = {
   render: () => <LiveTqdmRedrawStory />,
+  args: {
+    messages: [],
+  },
+};
+
+export const PyodideTqdmBrowserRuntime: Story = {
+  render: () => <PyodideTqdmProgressExample />,
   args: {
     messages: [],
   },
