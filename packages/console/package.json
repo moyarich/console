@@ -36,7 +36,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/utils/console/index.ts src/utils/terminal/index.ts --format esm,cjs --dts --clean --external react --external react-dom",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external react --external react-dom",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
