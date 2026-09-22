@@ -32,6 +32,7 @@ import type {
   ConsoleMessageAction,
 } from "../actions";
 import { writeClipboardText } from "../utils/clipboard";
+import type { ConsoleLinkProvider } from "../links";
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
@@ -76,6 +77,10 @@ interface ConsoleSharedProps {
   style?: CSSProperties;
   /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Whether built-in HTTP/HTTPS link detection is enabled. @default true */
+  detectLinks?: boolean;
+  /** Ordered application-specific link providers used in either mode. */
+  linkProviders?: readonly ConsoleLinkProvider[];
 }
 
 /** Props for browser-style structured console rendering. */
@@ -320,6 +325,8 @@ function ConsoleMessageMode({
   messageRenderers,
   messageActions,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
   ...frameProps
@@ -389,6 +396,8 @@ function ConsoleMessageMode({
           onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
           renderers={messageRenderers}
           valueRenderers={valueRenderers}
+          detectLinks={detectLinks}
+          linkProviders={linkProviders}
         />
       ))}
     </ConsoleFrame>
@@ -402,6 +411,8 @@ function ConsoleAnsiMode({
   processors,
   structuredOutputParsers,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
@@ -422,6 +433,8 @@ function ConsoleAnsiMode({
         processors={processors}
         structuredOutputParsers={structuredOutputParsers}
         valueRenderers={valueRenderers}
+        detectLinks={detectLinks}
+        linkProviders={linkProviders}
       />
     </ConsoleFrame>
   );
