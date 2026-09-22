@@ -282,6 +282,36 @@ describe("console addon API", () => {
     expect(markup).not.toContain("hello");
   });
 
+  it("keeps the resizable console frame around a replaced output surface", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        messages={[
+          {
+            id: "resizable-custom-surface",
+            method: "log",
+            data: ["source message"],
+            depth: 0,
+          },
+        ]}
+        resizable="both"
+        outputRenderers={[
+          {
+            mode: "console",
+            render: (context) => {
+              if (context.mode !== "console") return undefined;
+
+              return <div data-testid="custom-resizable-surface">custom</div>;
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain('data-resizable="both"');
+    expect(markup).toContain('data-testid="custom-resizable-surface"');
+    expect(markup).toContain('class="console-surface"');
+  });
+
   it("falls back to the built-in structured surface when output renderers delegate", () => {
     const markup = renderToStaticMarkup(
       <Console
