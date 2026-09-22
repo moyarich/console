@@ -39,7 +39,7 @@ export default function ImperativeScrollControlsExample() {
   const addons = useMemo<ConsoleAddon[]>(
     () => [
       {
-        id: "viewport-navigation-example",
+        id: "@moyarich/console-playground:viewport-navigation",
         activate(host) {
           const viewport = host.services.require(consoleServices.viewport);
 
