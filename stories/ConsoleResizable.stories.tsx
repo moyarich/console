@@ -1,3 +1,4 @@
+import Editor from "@monaco-editor/react";
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
@@ -6,7 +7,9 @@ import {
   type ConsoleMessageModeProps,
 } from "@moyarich/console";
 
-type DockPosition = "bottom" | "right";
+type DockPosition = "top" | "right" | "bottom" | "left";
+
+const DOCK_POSITIONS: DockPosition[] = ["top", "right", "bottom", "left"];
 
 const initialMessages: ConsoleMessageData[] = [
   {
@@ -53,6 +56,10 @@ export default function App() {
 }
 `;
 
+function isHorizontalDock(dock: DockPosition) {
+  return dock === "left" || dock === "right";
+}
+
 function EditorShell() {
   const [dock, setDock] = useState<DockPosition>("bottom");
   const [minimized, setMinimized] = useState(false);
@@ -60,55 +67,60 @@ function EditorShell() {
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
 
+  const horizontalDock = isHorizontalDock(dock);
+
   const consolePane = minimized ? (
-    <div
+    <button
+      type="button"
+      onClick={() => setMinimized(false)}
       style={{
         display: "flex",
+        width: horizontalDock ? 42 : "100%",
+        height: horizontalDock ? "100%" : 42,
+        minWidth: horizontalDock ? 42 : 0,
+        minHeight: horizontalDock ? 0 : 42,
         alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-        minWidth: 0,
+        justifyContent: "center",
+        border: 0,
         borderTop: dock === "bottom" ? "1px solid #30363d" : undefined,
+        borderRight: dock === "left" ? "1px solid #30363d" : undefined,
+        borderBottom: dock === "top" ? "1px solid #30363d" : undefined,
         borderLeft: dock === "right" ? "1px solid #30363d" : undefined,
-        padding: "8px 10px",
+        padding: 0,
         background: "#161b22",
         color: "#c9d1d9",
+        cursor: "pointer",
         fontFamily: "system-ui, sans-serif",
         fontSize: 12,
+        fontWeight: 700,
+        writingMode: horizontalDock ? "vertical-rl" : undefined,
       }}
     >
-      <strong>Console</strong>
-      <button type="button" onClick={() => setMinimized(false)}>
-        Restore
-      </button>
-    </div>
+      Console
+    </button>
   ) : (
     <Console
       messages={messages}
       onClear={() => setMessages([])}
       autoScroll={false}
-      resizable={dock === "bottom" ? "vertical" : "horizontal"}
+      resizable={horizontalDock ? "horizontal" : "vertical"}
       title="Console"
-      subtitle={
-        dock === "bottom"
-          ? "Docked to bottom · drag the resize handle vertically"
-          : "Docked to right · drag the resize handle horizontally"
-      }
+      subtitle={`Docked to ${dock} · drag the native resize handle ${horizontalDock ? "horizontally" : "vertically"}`}
       style={
-        dock === "bottom"
+        horizontalDock
           ? {
-              width: "100%",
-              height: 250,
-              minHeight: 150,
-              maxHeight: 480,
-              borderRadius: 0,
-            }
-          : {
               width: 390,
               minWidth: 280,
               maxWidth: 620,
               height: "100%",
               minHeight: 0,
+              borderRadius: 0,
+            }
+          : {
+              width: "100%",
+              height: 250,
+              minHeight: 150,
+              maxHeight: 480,
               borderRadius: 0,
             }
       }
@@ -121,6 +133,54 @@ function EditorShell() {
       ]}
     />
   );
+
+  const editorPane = (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: "34px minmax(0, 1fr)",
+        minWidth: 0,
+        minHeight: 0,
+        overflow: "hidden",
+        background: "#0d1117",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          borderBottom: "1px solid #21262d",
+          padding: "0 12px",
+          color: "#8b949e",
+          fontFamily: "system-ui, sans-serif",
+          fontSize: 12,
+        }}
+      >
+        TypeScript React
+      </div>
+
+      <Editor
+        path="file:///src/App.tsx"
+        language="typescript"
+        value={source}
+        theme="vs-dark"
+        onChange={(value) => setSource(value ?? "")}
+        options={{
+          automaticLayout: true,
+          fontSize: 13,
+          minimap: { enabled: false },
+          padding: { top: 14 },
+          scrollBeyondLastLine: false,
+          tabSize: 2,
+        }}
+      />
+    </div>
+  );
+
+  const panes =
+    dock === "top" || dock === "left"
+      ? [consolePane, editorPane]
+      : [editorPane, consolePane];
 
   return (
     <div
@@ -162,27 +222,20 @@ function EditorShell() {
 
         <span aria-hidden="true">Dock:</span>
 
-        <button
-          type="button"
-          aria-pressed={dock === "bottom"}
-          onClick={() => {
-            setDock("bottom");
-            setMinimized(false);
-          }}
-        >
-          Bottom
-        </button>
-
-        <button
-          type="button"
-          aria-pressed={dock === "right"}
-          onClick={() => {
-            setDock("right");
-            setMinimized(false);
-          }}
-        >
-          Right
-        </button>
+        {DOCK_POSITIONS.map((position) => (
+          <button
+            key={position}
+            type="button"
+            aria-pressed={dock === position}
+            onClick={() => {
+              setDock(position);
+              setMinimized(false);
+            }}
+          >
+            {position[0]?.toUpperCase()}
+            {position.slice(1)}
+          </button>
+        ))}
 
         <button type="button" onClick={() => setMinimized((value) => !value)}>
           {minimized ? "Restore console" : "Minimize console"}
@@ -191,71 +244,28 @@ function EditorShell() {
 
       <div
         style={
-          dock === "right"
+          horizontalDock
             ? {
                 display: "grid",
-                gridTemplateColumns: "minmax(0, 1fr) auto",
+                gridTemplateColumns:
+                  dock === "left"
+                    ? "auto minmax(0, 1fr)"
+                    : "minmax(0, 1fr) auto",
                 minHeight: 0,
                 minWidth: 0,
               }
             : {
                 display: "grid",
-                gridTemplateRows: "minmax(0, 1fr) auto",
+                gridTemplateRows:
+                  dock === "top"
+                    ? "auto minmax(0, 1fr)"
+                    : "minmax(0, 1fr) auto",
                 minHeight: 0,
                 minWidth: 0,
               }
         }
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateRows: "34px minmax(0, 1fr)",
-            minWidth: 0,
-            minHeight: 0,
-            overflow: "hidden",
-            background: "#0d1117",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              borderBottom: "1px solid #21262d",
-              padding: "0 12px",
-              color: "#8b949e",
-              fontFamily: "system-ui, sans-serif",
-              fontSize: 12,
-            }}
-          >
-            TypeScript React
-          </div>
-
-          <textarea
-            aria-label="Source code editor"
-            value={source}
-            spellCheck={false}
-            onChange={(event) => setSource(event.target.value)}
-            style={{
-              width: "100%",
-              height: "100%",
-              minWidth: 0,
-              minHeight: 0,
-              resize: "none",
-              border: 0,
-              outline: 0,
-              padding: 16,
-              background: "#0d1117",
-              color: "#e6edf3",
-              fontFamily:
-                '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
-              fontSize: 13,
-              lineHeight: 1.6,
-              tabSize: 2,
-            }}
-          />
-        </div>
-
-        {consolePane}
+        {panes}
       </div>
     </div>
   );
