@@ -1,4 +1,4 @@
-import { isConsoleMethod } from "../../consoleMethods";
+import { isConsoleMethod } from "../../console/consoleMethods";
 import type { ConsoleTransportEnvelope } from "../../types";
 
 /** Stable envelope type used by package transport adapters. */
