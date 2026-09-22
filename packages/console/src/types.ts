@@ -1,12 +1,11 @@
-import type { ReactNode } from "react";
 import type { ConsoleMethod } from "./console/consoleMethods";
 
 export type { ConsoleMethod } from "./console/consoleMethods";
 
-/** Rendering mode supported by the top-level Console component. */
+/** Rendering mode shared by console presentation and extension APIs. */
 export type ConsoleMode = "console" | "ansi";
 
-/** Serializable structured message consumed by the browser-style console renderer. */
+/** Serializable structured message shared by producers, transports, and renderers. */
 export interface ConsoleMessageData {
   /** Optional stable identifier used for keys, deduplication, and transports. */
   id?: string;
@@ -28,70 +27,7 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
-/** Context provided to custom structured-message renderers. */
-export interface ConsoleMessageRendererContext {
-  index: number;
-  messages: readonly ConsoleMessageData[];
-  renderDefault: () => ReactNode;
-}
-
-/**
- * Custom renderer for structured console messages.
- *
- * Returning `undefined` allows the next renderer, or the built-in renderer,
- * to handle the message.
- */
-export interface ConsoleMessageRenderer {
-  method?: ConsoleMethod;
-  match?: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext,
-  ) => boolean;
-  render: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext,
-  ) => ReactNode | undefined;
-}
-
-/** Context provided to custom value renderers. */
-export interface ConsoleValueRendererContext {
-  propertyKey?: string;
-  depth: number;
-  type: string;
-  renderDefault: () => ReactNode;
-}
-
-/**
- * Custom renderer for individual console values.
- *
- * Returning `undefined` delegates to the next matching renderer.
- */
-export interface ConsoleValueRenderer {
-  type?: string;
-  match?: (value: unknown, context: ConsoleValueRendererContext) => boolean;
-  render: (
-    value: unknown,
-    context: ConsoleValueRendererContext,
-  ) => ReactNode | undefined;
-}
-
-/** Standard run result shape accepted by structured console mode. */
-export interface RunOutput {
-  messages: ConsoleMessageData[];
-  error?: string;
-}
-/** Supported `console.dir()` options used by the console proxy. */
-export interface DirOptions {
-  depth?: number | null;
-  showHidden?: boolean;
-}
-/** Event emitted by console capture/proxy utilities and transports. */
+/** Event shared by console producers, event emitters, and transports. */
 export type ConsoleEvent =
-  { type: "message"; message: ConsoleMessageData } | { type: "clear" };
-/** Versioned envelope used to move console events across transport boundaries. */
-export interface ConsoleTransportEnvelope {
-  type: "CONSOLE_PANEL";
-  version: 1;
-  channel: string;
-  event: ConsoleEvent;
-}
+  | { type: "message"; message: ConsoleMessageData }
+  | { type: "clear" };
