@@ -11,9 +11,7 @@ const styles = readFileSync(stylesPath, "utf8");
 const readme = readFileSync(readmePath, "utf8");
 
 function collectPublicThemeTokens(source: string) {
-  return Array.from(
-    new Set(source.match(/--console-[\w-]+/g) ?? []),
-  ).sort();
+  return Array.from(new Set(source.match(/--console-[\w-]+/g) ?? [])).sort();
 }
 
 describe("console theme CSS", () => {
@@ -42,21 +40,11 @@ describe("console theme CSS", () => {
     expect(styles).toMatch(
       /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, light\)\s*\);/,
     );
-    expect(styles).toContain(
-      "light-dark(#fff, #161b22)",
-    );
-    expect(styles).toContain(
-      "light-dark(#202c40, #e6edf3)",
-    );
-    expect(styles).toContain(
-      "light-dark(#7b8799, #8b949e)",
-    );
-    expect(styles).toContain(
-      "light-dark(#42526b, #c9d1d9)",
-    );
-    expect(styles).toContain(
-      "light-dark(#5266c9, #79c0ff)",
-    );
+    expect(styles).toContain("light-dark(#fff, #161b22)");
+    expect(styles).toContain("light-dark(#202c40, #e6edf3)");
+    expect(styles).toContain("light-dark(#7b8799, #8b949e)");
+    expect(styles).toContain("light-dark(#42526b, #c9d1d9)");
+    expect(styles).toContain("light-dark(#5266c9, #79c0ff)");
   });
 
   it("uses shorthand tokens only with their matching shorthand properties", () => {
@@ -64,9 +52,7 @@ describe("console theme CSS", () => {
     expect(styles).toContain(
       "border-bottom: var(--_console-panel-header-border-bottom);",
     );
-    expect(styles).toContain(
-      "border: var(--_console-panel-control-border);",
-    );
+    expect(styles).toContain("border: var(--_console-panel-control-border);");
     expect(styles).toContain(
       "border-bottom: var(--_console-entry-border-bottom);",
     );
@@ -80,7 +66,9 @@ describe("console theme CSS", () => {
       "border-left: var(--_console-object-border-left);",
     );
     expect(styles).toContain("border: var(--_console-table-border);");
-    expect(styles).toContain("outline: var(--_console-message-action-focus-outline);");
+    expect(styles).toContain(
+      "outline: var(--_console-message-action-focus-outline);",
+    );
     expect(styles).toContain("border: var(--_console-context-menu-border);");
   });
 
@@ -169,7 +157,9 @@ describe("console theme CSS", () => {
   });
 
   it("documents every public theme token in the README theming section", () => {
-    const themingStart = readme.indexOf("## Theming with CSS custom properties");
+    const themingStart = readme.indexOf(
+      "## Theming with CSS custom properties",
+    );
     const themingEnd = readme.indexOf(
       "\n## Extensible panel, context, and message actions",
       themingStart,
