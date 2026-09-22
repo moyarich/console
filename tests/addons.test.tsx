@@ -11,6 +11,7 @@ import {
   createConsoleExtensionPoint,
   createConsoleServiceToken,
   createConsoleViewportAddon,
+  isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleViewportService,
 } from "@moyarich/console";
@@ -53,6 +54,13 @@ describe("console addon API", () => {
     expect(manager.services.has(token)).toBe(false);
     expect(manager.services.get(token)).toBeUndefined();
     expect(() => manager.services.require(token)).toThrow(/not available/);
+  });
+
+  it("differentiates core and external addons by reserved namespace", () => {
+    expect(isCoreConsoleAddonId(consoleCoreAddonIds.viewport)).toBe(true);
+    expect(isCoreConsoleAddonId("@moyarich/console:search")).toBe(true);
+    expect(isCoreConsoleAddonId("@acme/console-addon-search")).toBe(false);
+    expect(isCoreConsoleAddonId("@acme/console-tools:search")).toBe(false);
   });
 
   it("loads the core viewport provider as a removable ConsoleAddon", () => {
