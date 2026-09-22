@@ -35,7 +35,7 @@ export interface ConsoleProcessOutput {
 
 /** Context supplied to each process-output processor. */
 export interface ConsoleProcessOutputProcessorContext {
-  /** Original entry before any processor transforms. */
+  /** Logical process-output entry after core CR/newline normalization. */
   readonly entry: ConsoleStdoutEntry | string;
   /** Zero-based entry index. */
   readonly index: number;
@@ -172,15 +172,24 @@ export function normalizeConsoleProcessOutputEntries(
   for (const entry of entries) {
     const source: ConsoleStdoutEntry =
       typeof entry === "string" ? { data: entry } : entry;
-
-    if (
+    const startsWithLineControl =
+      source.data.startsWith("\\r") ||
+      source.data.startsWith("\\n") ||
+      ANSI_CLEAR_LINE_PATTERN.test(source.data);
+    const streamChanged =
       current?.stream !== undefined &&
       source.stream !== undefined &&
-      current.stream !== source.stream
+      current.stream !== source.stream;
+
+    if (
+      current &&
+      (streamChanged || (!pendingCarriageReturn && !startsWithLineControl))
     ) {
       commitCurrent();
       pendingCarriageReturn = false;
-    } else if (current) {
+    }
+
+    if (current) {
       mergeOutputLineMetadata(current, source);
     }
 
