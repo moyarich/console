@@ -19,7 +19,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --write apps/playground/src/examples/50-additional-usage/14-link-providers/example.tsx packages/console/src/components/ConsoleValue.tsx packages/console/src/links.tsx README.md tests/consoleRendering.test.tsx tests/links.test.ts && git diff -- apps/playground/src/examples/50-additional-usage/14-link-providers/example.tsx packages/console/src/components/ConsoleValue.tsx packages/console/src/links.tsx README.md tests/consoleRendering.test.tsx tests/links.test.ts && exit 1",
+    "format:check": "prettier --write apps/playground/src/examples/50-additional-usage/14-link-providers/example.tsx packages/console/src/components/ConsoleStdout.tsx packages/console/src/components/ConsoleValue.tsx packages/console/src/links.tsx README.md tests/consoleRendering.test.tsx tests/links.test.ts && git diff -- apps/playground/src/examples/50-additional-usage/14-link-providers/example.tsx packages/console/src/components/ConsoleStdout.tsx packages/console/src/components/ConsoleValue.tsx packages/console/src/links.tsx README.md tests/consoleRendering.test.tsx tests/links.test.ts && exit 1",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "engines": {
