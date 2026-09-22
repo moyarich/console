@@ -146,7 +146,7 @@ ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emu
 
 #### Carriage-return and progress output
 
-ANSI mode normalizes common process-output redraw behavior before rendering. A standalone `\r` updates the current logical line instead of creating another permanent row, while `\n` completes the current line. `\r\n` remains a normal newline. Supported ANSI clear-line sequences apply to the current logical line as well.
+ANSI mode normalizes common process-output redraw behavior before rendering. A standalone `\r` updates the current logical line instead of creating another permanent row, whether a producer places the carriage return at the end of one chunk (`progress\r`) or at the start of the next redraw chunk (`\rprogress`, as `tqdm` does). `\n` completes the current line, and `\r\n` remains a normal newline. Supported ANSI clear-line sequences apply to the current logical line as well.
 
 This keeps spinner/progress output from build tools, package managers, test runners, and downloads readable without turning the component into a terminal emulator. Completed lines stay stable, and `stdout` / `stderr` metadata remains attached to the visible logical line.
 
