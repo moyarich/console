@@ -38,6 +38,8 @@ export type {
 export { processConsoleOutputEntry } from "./processOutput";
 export type {
   ConsoleProcessOutput,
+  ConsoleProcessOutputMetadata,
+  ConsoleProcessOutputProcessor,
   ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
 } from "./processOutput";
