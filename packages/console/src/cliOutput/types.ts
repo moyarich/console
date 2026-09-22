@@ -1,4 +1,4 @@
-import type { ConsoleLink } from "../links";
+import type { ConsoleLink } from "../links/types";
 
 /** Process stream associated with an ANSI/CLI-output entry. */
 export type ConsoleOutputStream = "stdout" | "stderr";
