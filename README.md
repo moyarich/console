@@ -39,7 +39,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
-| Bundle reusable console extensions                  | `addons` / `ConsoleAddon`                    |
+| Bundle reusable console extensions                 | `addons` / `ConsoleAddon`                    |
 | Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
 ## Install
@@ -808,38 +808,32 @@ function createBuildAddon(): ConsoleAddon {
   return {
     id: "build-tools",
     activate(host) {
-      host.extensions.register(
-        consoleExtensionPoints.linkProvider,
-        {
-          id: "build-task-links",
-          provideLinks(text) {
-            const match = /TASK-\d+/.exec(text);
+      host.extensions.register(consoleExtensionPoints.linkProvider, {
+        id: "build-task-links",
+        provideLinks(text) {
+          const match = /TASK-\d+/.exec(text);
 
-            if (!match || match.index === undefined) {
-              return undefined;
-            }
+          if (!match || match.index === undefined) {
+            return undefined;
+          }
 
-            return [
-              {
-                text: match[0],
-                start: match.index,
-                end: match.index + match[0].length,
-                action: () => openTask(match[0]),
-              },
-            ];
-          },
+          return [
+            {
+              text: match[0],
+              start: match.index,
+              end: match.index + match[0].length,
+              action: () => openTask(match[0]),
+            },
+          ];
         },
-      );
+      });
     },
   };
 }
 
 const buildAddon = createBuildAddon();
 
-<Console
-  messages={messages}
-  addons={[buildAddon]}
-/>;
+<Console messages={messages} addons={[buildAddon]} />;
 ```
 
 An addon owns **lifecycle and composition**, not a fixed list of feature fields:
@@ -853,12 +847,12 @@ interface ConsoleAddon {
 
 The host exposes four generic concepts:
 
-| API | Purpose |
-| --- | --- |
-| `host.extensions` | Register ordered multi-provider contributions such as processors, parsers, renderers, links, and actions |
-| `host.services` | Publish or consume a typed single-provider API/state service |
-| `host.capabilities` | Detect optional functionality without reaching into React or DOM internals |
-| `host.scope` | Own listeners, subscriptions, and other disposables for the addon lifetime |
+| API                 | Purpose                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `host.extensions`   | Register ordered multi-provider contributions such as processors, parsers, renderers, links, and actions |
+| `host.services`     | Publish or consume a typed single-provider API/state service                                             |
+| `host.capabilities` | Detect optional functionality without reaching into React or DOM internals                               |
+| `host.scope`        | Own listeners, subscriptions, and other disposables for the addon lifetime                               |
 
 ### Built-in extension points
 
@@ -889,9 +883,7 @@ interface DiagnosticProvider {
 }
 
 export const diagnosticProvider =
-  createConsoleExtensionPoint<DiagnosticProvider>(
-    "acme.diagnosticProvider",
-  );
+  createConsoleExtensionPoint<DiagnosticProvider>("acme.diagnosticProvider");
 
 export function createDiagnosticAddon(): ConsoleAddon {
   return {
@@ -900,8 +892,7 @@ export function createDiagnosticAddon(): ConsoleAddon {
       host.extensions.register(
         diagnosticProvider,
         {
-          analyze: (text) =>
-            text.includes("ERROR") ? "failure" : undefined,
+          analyze: (text) => (text.includes("ERROR") ? "failure" : undefined),
         },
         {
           id: "default",
@@ -929,10 +920,7 @@ interface BuildService {
   rerun(): void;
 }
 
-const buildService =
-  createConsoleServiceToken<BuildService>(
-    "acme.build",
-  );
+const buildService = createConsoleServiceToken<BuildService>("acme.build");
 
 const provider: ConsoleAddon = {
   id: "build-provider",
@@ -946,8 +934,7 @@ const provider: ConsoleAddon = {
 const consumer: ConsoleAddon = {
   id: "build-actions",
   activate(host) {
-    const build =
-      host.services.require(buildService);
+    const build = host.services.require(buildService);
 
     // Register actions/commands that call build.rerun().
   },
@@ -968,11 +955,7 @@ The React `Console` host currently advertises:
 Use capabilities when an addon can adapt to multiple host surfaces:
 
 ```ts
-if (
-  host.capabilities.has(
-    consoleCapabilities.processOutput,
-  )
-) {
+if (host.capabilities.has(consoleCapabilities.processOutput)) {
   // Register process-output behavior.
 }
 ```
@@ -1004,17 +987,9 @@ Cleanup is idempotent. When an addon manager is disposed, loaded addons are disp
 `<Console addons={...} />` treats the addon list as controlled state. Removing an addon unloads it. Reusing the same addon instance under the same ID keeps it active even if the array container changes. Stateful addons should therefore be created once, for example with `useMemo`, instead of creating a new instance during every render:
 
 ```tsx
-const addons = useMemo(
-  () => [createBuildAddon()],
-  [],
-);
+const addons = useMemo(() => [createBuildAddon()], []);
 
-return (
-  <Console
-    messages={messages}
-    addons={addons}
-  />
-);
+return <Console messages={messages} addons={addons} />;
 ```
 
 Duplicate addon IDs are rejected deterministically.
@@ -1187,15 +1162,15 @@ Available helpers:
 
 ### Addons and extension infrastructure
 
-| Export | Purpose |
-| --- | --- |
-| `ConsoleAddon` / `ConsoleAddonHost` | Stable lifecycle contract for reusable addons |
-| `createConsoleAddonManager` | Load/dispose addons against shared registries, including headless hosts |
-| `consoleExtensionPoints` | Built-in processor/parser/link/renderer/action extension points |
-| `createConsoleExtensionPoint` | Define a typed third-party multi-provider extension point |
-| `createConsoleServiceToken` | Define a typed single-provider service |
-| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality |
-| `createConsoleDisposableScope` | Group arbitrary resources under idempotent cleanup |
+| Export                                            | Purpose                                                                 |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
+| `createConsoleAddonManager`                       | Load/dispose addons against shared registries, including headless hosts |
+| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
+| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
+| `createConsoleServiceToken`                       | Define a typed single-provider service                                  |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                    |
+| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                      |
 
 ### Transport and serialization
 
