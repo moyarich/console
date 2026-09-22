@@ -272,17 +272,19 @@ function EditorShell() {
           height: horizontalDock ? 34 : 22,
           alignItems: "center",
           justifyContent: "center",
-          border: splitterHovered || splitterActive
-            ? "1px solid var(--console-resize-separator-border, #3d444d)"
-            : "1px solid transparent",
-          borderRadius:
-            "var(--console-resize-separator-grip-radius, 999px)",
-          background: splitterHovered || splitterActive
-            ? "var(--console-resize-separator-grip-background, #21262d)"
-            : "transparent",
-          boxShadow: splitterHovered || splitterActive
-            ? "var(--console-resize-separator-grip-shadow, 0 2px 8px rgb(0 0 0 / 0.28))"
-            : "none",
+          border:
+            splitterHovered || splitterActive
+              ? "1px solid var(--console-resize-separator-border, #3d444d)"
+              : "1px solid transparent",
+          borderRadius: "var(--console-resize-separator-grip-radius, 999px)",
+          background:
+            splitterHovered || splitterActive
+              ? "var(--console-resize-separator-grip-background, #21262d)"
+              : "transparent",
+          boxShadow:
+            splitterHovered || splitterActive
+              ? "var(--console-resize-separator-grip-shadow, 0 2px 8px rgb(0 0 0 / 0.28))"
+              : "none",
           color: splitterActive
             ? "var(--console-resize-separator-active, #58a6ff)"
             : "var(--console-resize-separator-foreground, #8b949e)",
@@ -446,7 +448,6 @@ function EditorShell() {
         >
           Run
         </button>
-
       </div>
 
       <div
