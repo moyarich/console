@@ -66,7 +66,7 @@ export type {
   ConsoleValueRendererContext,
 } from "./renderers";
 export { CONSOLE_METHODS } from "./consoleMethods";
-export { normalizeConsoleTableData } from "./utils/console/normalizeConsoleTableData";
+export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
 export { createConsoleProxy } from "./utils/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
