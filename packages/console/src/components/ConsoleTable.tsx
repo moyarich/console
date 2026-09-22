@@ -1,9 +1,10 @@
 import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { ConsoleValue } from "./ConsoleValue";
-import { normalizeConsoleTableData } from "../utils/consoleTableData";
 import type { ConsoleValueRenderer } from "../renderers";
 import type { ConsoleLinkProvider } from "../links";
+import { collectColumns, toRows } from "../utils/console/table";
+import { isObjectLike } from "../utils/console/value";
 
 /** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {
@@ -17,44 +18,6 @@ export interface ConsoleTableProps {
   detectLinks?: boolean;
   /** Ordered application-specific link providers. */
   linkProviders?: readonly ConsoleLinkProvider[];
-}
-interface TableRow {
-  index: string;
-  value: Record<string, unknown>;
-}
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-function isObjectLike(value: unknown): value is object {
-  return typeof value === "object" && value !== null;
-}
-/** Normalizes supported table inputs into indexed row records. */
-function toRows(data: unknown): TableRow[] {
-  const normalized = normalizeConsoleTableData(data);
-  if (Array.isArray(normalized))
-    return normalized.map((value, index) => ({
-      index: String(index),
-      value: isRecord(value) ? value : { Value: value },
-    }));
-  if (isRecord(normalized))
-    return Object.entries(normalized).map(([index, value]) => ({
-      index,
-      value: isRecord(value) ? value : { Value: value },
-    }));
-  return [{ index: "0", value: { Value: normalized } }];
-}
-/** Preserves requested columns or derives first-seen columns from all rows. */
-function collectColumns(rows: TableRow[], requested?: string[]): string[] {
-  if (requested?.length) return requested;
-  const seen = new Set<string>();
-  const columns: string[] = [];
-  for (const row of rows)
-    for (const key of Object.keys(row.value)) {
-      if (seen.has(key)) continue;
-      seen.add(key);
-      columns.push(key);
-    }
-  return columns;
 }
 /**
  * Renders `console.table()` data with horizontal scrolling, value renderers,
