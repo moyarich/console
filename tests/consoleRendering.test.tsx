@@ -99,6 +99,16 @@ describe("Console rendering", () => {
     expect(html).not.toContain("&quot;hidden&quot;");
   });
 
+  it("uses namespaced header classes only", () => {
+    const html = renderConsole([
+      { method: "log", data: ["hello"], depth: 0 },
+    ]);
+
+    expect(html).toContain('class="console-panel-header"');
+    expect(html).not.toContain('class="console-panel-header panel-header"');
+    expect(html).not.toContain('class="console-actions result-actions"');
+  });
+
   it("can hide the header", () => {
     const html = renderToStaticMarkup(
       <Console
