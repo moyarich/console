@@ -99,36 +99,47 @@ The package is intentionally split into a few responsibilities.
 Key files include:
 
 ```text
-packages/console/src/components/Console.tsx
-packages/console/src/components/ConsoleStdout.tsx
-packages/console/src/components/ConsoleMessage.tsx
-packages/console/src/components/ConsoleValue.tsx
-packages/console/src/components/ConsoleTable.tsx
-packages/console/src/links.tsx
+packages/console/src/console/
+packages/console/src/cliOutput/
+packages/console/src/components/
+packages/console/src/links/
+packages/console/src/utils/ansi/
 packages/console/src/utils/browser/
-packages/console/src/utils/console/
+packages/console/src/utils/contextMenu/
 packages/console/src/utils/events/
-packages/console/src/utils/terminal/
+packages/console/src/utils/style/
+packages/console/src/utils/table/
 packages/console/src/utils/transport/
+packages/console/src/utils/values/
 ```
 
 Keep component modules focused on React rendering, state, refs, effects, and event wiring. Component-independent helpers belong in domain utility directories:
 
+First-class domains live directly under `src/`:
+
+- `console/` implements browser-console API/runtime semantics such as capture, proxying, and supported console methods
+- `cliOutput/` owns stdout/stderr processing, processor plugins, structured-output parsers, and CLI-output types
+- `links/` owns shared link detection, target validation, provider contracts, and range resolution
+- `components/` owns React presentation, including `ConsoleLinkedText`
+
+Low-level reusable helpers live under `utils/`:
+
+- `utils/ansi/` for ANSI token parsing, styling, and control-sequence helpers
 - `utils/browser/` for browser-platform helpers such as clipboard access
-- `utils/console/` for shared structured-console value/object behavior and console copy formatting
-- `utils/console/contextMenu/` for context-menu geometry and event-position helpers
-- `utils/console/runtime/` for console capture/proxy runtime behavior
-- `utils/console/style/` for console theme variables/types, theme extraction, and renderer CSS-class mapping
-- `utils/console/table/` for `console.table()` normalization, row shaping, column collection, and table-specific types
+- `utils/contextMenu/` for context-menu geometry and event-position helpers
 - `utils/events/` for the package event emitter and event-routing helpers
-- `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
+- `utils/style/` for console theme variables/types, theme extraction, and CSS-class mapping
+- `utils/table/` for `console.table()` normalization, row shaping, column collection, and table-specific types
 - `utils/transport/` for envelope validation, serialization, postMessage, and WebSocket adapters
+- `utils/values/` for structured-value inspection, normalization, labels, previews, and copy formatting
 
 Prefer domain subdirectories over leaf modules directly under `utils/`. Add a root-level utility file only when the behavior is genuinely domain-neutral and shared across multiple utility domains.
 
+Keep `packages/console/src/types.ts` limited to contracts shared across multiple domains. Component-specific props and extension contracts belong with their component; console-runtime types belong under `console/`; transport protocol types belong under `utils/transport/`.
+
 Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
 
-Avoid pass-through entry shims whose only purpose is to re-export another module, such as a flat file containing only `export * from "./utils/console"`. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as `utils/console/index.ts`, `utils/console/table/index.ts`, and `utils/terminal/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
+Avoid pass-through entry shims whose only purpose is to re-export another module. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as the published `utils/ansi/index.ts`, `utils/table/index.ts`, and `utils/values/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
 
 Avoid aliased function wrappers that merely rename an existing implementation, for example `function stripAnsiText(data) { return Anser.ansiToText(data); }`. Call or import the underlying implementation directly unless the wrapper adds package-specific validation, normalization, compatibility behavior, error containment, or another meaningful contract.
 
@@ -138,24 +149,27 @@ Utility barrels are published as secondary entry points:
 import {
   normalizeConsoleValue,
   objectEntries,
-  collectColumns,
-} from "@moyarich/console/utils/console";
+} from "@moyarich/console/utils/values";
+
+import { collectColumns } from "@moyarich/console/utils/table";
 
 import {
   getAnsiTokenRanges,
-  parseStrictJsonOutput,
-} from "@moyarich/console/utils/terminal";
+  hasAnsiClearLine,
+} from "@moyarich/console/utils/ansi";
 ```
 
 These secondary entry points are intentionally separate from the main reported API: they keep the root import concise while making reusable implementation modules available to advanced consumers.
 
 Do not add parsing, normalization, formatting, geometry, or value-inspection helpers directly to component files when they can be expressed independently of JSX.
 
+The internal `cliOutput/` name refers specifically to stdout/stderr-style command/process output. It is not a generic package-wide output layer and does not imply terminal emulation. Parsing is one stage of this domain; processor plugins can also transform or enrich output before rendering.
+
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
 
 ### Custom renderer dispatch
 
-Custom message and value rendering is implemented as ordered dispatch tables in `packages/console/src/renderers.ts`.
+Custom renderer contracts live beside the components that own them: message renderer types in `ConsoleMessage.tsx` and value renderer types in `ConsoleValue.tsx`. Matching and invocation stay next to those components so one-use dispatch helpers do not become unnecessary abstractions.
 
 - message entries can dispatch by `method`, `match`, or both
 - value entries can dispatch by normalized `type`, `match`, or both
@@ -164,13 +178,13 @@ Custom message and value rendering is implemented as ordered dispatch tables in 
 - `renderDefault()` lets a custom renderer decorate the built-in result without reimplementing it
 - synchronous matcher/renderer errors are contained so extension code does not prevent console rendering
 
-Keep renderer dispatch data-oriented. Avoid growing method/type handling into large conditionals or switches when a lookup/dispatch table is clearer.
+Keep renderer matching data-oriented. If matching logic becomes shared by multiple consumers, extract a meaningful reusable abstraction; otherwise keep the one-use loop colocated with the consuming component.
 
 Value renderers must continue to propagate through nested `ConsoleValue` instances, `console.table()` cells, and structured ANSI values.
 
 ### Link detection and providers
 
-Interactive text ranges use the shared contract in `packages/console/src/links.tsx`.
+Interactive text ranges use the shared contracts and resolution pipeline in `packages/console/src/links/`; React rendering lives in `packages/console/src/components/ConsoleLinkedText.tsx`.
 
 - built-in detection handles only HTTP/HTTPS URLs and can be disabled with `detectLinks`
 - `linkProviders` run in array order before built-in URL detection
@@ -315,7 +329,7 @@ Regression coverage should include:
 The capture registry lives in:
 
 ```text
-packages/console/src/consoleMethods.ts
+packages/console/src/console/consoleMethods.ts
 ```
 
 When adding or changing a console method:

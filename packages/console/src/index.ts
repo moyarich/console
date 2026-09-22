@@ -16,6 +16,10 @@ export type {
 } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export type {
+  ConsoleMessageRenderer,
+  ConsoleMessageRendererContext,
+} from "./components/ConsoleMessage";
+export type {
   ConsoleAction,
   ConsoleActionContextBase,
   ConsoleActionPredicate,
@@ -35,48 +39,48 @@ export type {
   ConsoleStructuredOutputParser,
   ConsoleStructuredOutputParserContext,
 } from "./components/ConsoleStdout";
-export { processConsoleOutputEntry } from "./processOutput";
+export { processConsoleOutputEntry } from "./cliOutput/processOutput";
 export type {
   ConsoleProcessOutput,
   ConsoleProcessOutputMetadata,
+} from "./cliOutput/types";
+export type {
   ConsoleProcessOutputProcessor,
   ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
-} from "./processOutput";
-export {
-  ConsoleLinkedText,
-  detectWebLinks,
-  isSafeConsoleLinkTarget,
-  resolveConsoleLinks,
-} from "./links";
+} from "./cliOutput/processors/types";
+export { ConsoleLinkedText } from "./components/ConsoleLinkedText";
+export { detectWebLinks } from "./links/detectWebLinks";
+export { isSafeConsoleLinkTarget } from "./links/isSafeConsoleLinkTarget";
+export { resolveConsoleLinks } from "./links/resolveConsoleLinks";
 export type {
   ConsoleLink,
   ConsoleLinkActionContext,
   ConsoleLinkProvider,
   ConsoleLinkProviderContext,
-  ConsoleLinkedTextProps,
-} from "./links";
+} from "./links/types";
+export type { ConsoleLinkedTextProps } from "./components/ConsoleLinkedText";
 export { ConsoleValue } from "./components/ConsoleValue";
-export { ConsoleTable } from "./components/ConsoleTable";
-export { getConsoleValueType } from "./renderers";
 export type {
-  ConsoleMessageRenderer,
-  ConsoleMessageRendererContext,
   ConsoleValueRenderer,
   ConsoleValueRendererContext,
-} from "./renderers";
-export { CONSOLE_METHODS } from "./consoleMethods";
-export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
-export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
-export { createConsoleProxy } from "./utils/console/runtime/createConsoleProxy";
-export type { CreateConsoleProxyOptions } from "./utils/console/runtime/createConsoleProxy";
-export { captureConsole } from "./utils/console/runtime/captureConsole";
+} from "./components/ConsoleValue";
+export { ConsoleTable } from "./components/ConsoleTable";
+export { CONSOLE_METHODS } from "./console/consoleMethods";
+export { normalizeConsoleTableData } from "./utils/table/normalizeConsoleTableData";
+export { formatConsoleObjectForCopy } from "./utils/values/formatConsoleObjectForCopy";
+export { createConsoleProxy } from "./console/createConsoleProxy";
+export type {
+  CreateConsoleProxyOptions,
+  DirOptions,
+} from "./console/createConsoleProxy";
+export { captureConsole } from "./console/captureConsole";
 export { createConsoleEventEmitter } from "./utils/events/createConsoleEventEmitter";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
 } from "./utils/events/createConsoleEventEmitter";
-export type { CaptureConsoleOptions } from "./utils/console/runtime/captureConsole";
+export type { CaptureConsoleOptions } from "./console/captureConsole";
 export { useConsoleMessages } from "./hooks/useConsoleMessages";
 export type { UseConsoleMessagesOptions } from "./hooks/useConsoleMessages";
 export {
@@ -94,6 +98,7 @@ export {
   DEFAULT_CONSOLE_CHANNEL,
   isConsoleEnvelope,
 } from "./utils/transport/envelope";
+export type { ConsoleTransportEnvelope } from "./utils/transport/envelope";
 export { listenForConsolePostMessages } from "./utils/transport/postMessage";
 export type { ListenForConsolePostMessagesOptions } from "./utils/transport/postMessage";
 export { listenForConsoleWebSocket } from "./utils/transport/websocket";
@@ -105,7 +110,5 @@ export type {
   ConsoleMethod,
   ConsoleMessageData,
   RunOutput,
-  DirOptions,
   ConsoleEvent,
-  ConsoleTransportEnvelope,
 } from "./types";

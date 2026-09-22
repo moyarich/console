@@ -1,23 +1,40 @@
 import { ChevronRight, Copy } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
-import { isElementLike } from "../utils/console/isElementLike";
-import { isInspectableObject } from "../utils/console/isInspectableObject";
-import { isObjectLike } from "../utils/console/isObjectLike";
-import { objectEntries } from "../utils/console/objectEntries";
-import { objectLabel } from "../utils/console/objectLabel";
-import { preview } from "../utils/console/preview";
-import { typeClass } from "../utils/console/style/typeClass";
-import {
-  ConsoleLinkedText,
-  type ConsoleLinkProvider,
-  type ConsoleLinkProviderContext,
-} from "../links";
-import {
-  dispatchValueRenderer,
-  getConsoleValueType,
-  type ConsoleValueRenderer,
-} from "../renderers";
+import { isElementLike } from "../utils/values/isElementLike";
+import { isInspectableObject } from "../utils/values/isInspectableObject";
+import { isObjectLike } from "../utils/values/isObjectLike";
+import { objectEntries } from "../utils/values/objectEntries";
+import { objectLabel } from "../utils/values/objectLabel";
+import { preview } from "../utils/values/preview";
+import { typeClass } from "../utils/style/typeClass";
+import { ConsoleLinkedText } from "./ConsoleLinkedText";
+import type {
+  ConsoleLinkProvider,
+  ConsoleLinkProviderContext,
+} from "../links/types";
+
+/** Context provided to custom value renderers. */
+export interface ConsoleValueRendererContext {
+  propertyKey?: string;
+  depth: number;
+  type: string;
+  renderDefault: () => ReactNode;
+}
+
+/**
+ * Custom renderer for individual console values.
+ *
+ * Returning `undefined` delegates to the next matching renderer.
+ */
+export interface ConsoleValueRenderer {
+  type?: string;
+  match?: (value: unknown, context: ConsoleValueRendererContext) => boolean;
+  render: (
+    value: unknown,
+    context: ConsoleValueRendererContext,
+  ) => ReactNode | undefined;
+}
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
@@ -25,7 +42,7 @@ export interface ConsoleValueProps {
   expandLevel?: number;
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
-  expandAllVersion?: number;
+  allValuesExpanded?: boolean;
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
@@ -37,7 +54,7 @@ interface ConsoleObjectValueProps {
   expandLevel: number;
   ancestors: ReadonlySet<object>;
   propertyKey?: string;
-  expandAllVersion?: number;
+  allValuesExpanded?: boolean;
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
@@ -108,22 +125,20 @@ function ConsoleObjectValue({
   expandLevel,
   ancestors,
   propertyKey,
-  expandAllVersion,
+  allValuesExpanded,
   renderers,
   detectLinks,
   linkProviders,
   linkContext,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
-  const [isOpen, setIsOpen] = useState(
-    expandLevel > 0 || expandAllVersion !== undefined,
-  );
+  const [isOpen, setIsOpen] = useState(allValuesExpanded ?? expandLevel > 0);
 
   useEffect(() => {
-    if (expandAllVersion !== undefined) {
-      setIsOpen(true);
+    if (allValuesExpanded !== undefined) {
+      setIsOpen(allValuesExpanded);
     }
-  }, [expandAllVersion]);
+  }, [allValuesExpanded]);
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
@@ -193,7 +208,7 @@ function ConsoleObjectValue({
                       propertyKey={key}
                       expandLevel={Math.max(0, expandLevel - 1)}
                       ancestors={nextAncestors}
-                      expandAllVersion={expandAllVersion}
+                      allValuesExpanded={allValuesExpanded}
                       renderers={renderers}
                       detectLinks={detectLinks}
                       linkProviders={linkProviders}
@@ -217,7 +232,7 @@ function ConsoleObjectValue({
                         value={child}
                         expandLevel={Math.max(0, expandLevel - 1)}
                         ancestors={nextAncestors}
-                        expandAllVersion={expandAllVersion}
+                        allValuesExpanded={allValuesExpanded}
                         renderers={renderers}
                         detectLinks={detectLinks}
                         linkProviders={linkProviders}
@@ -244,7 +259,7 @@ function renderDefaultValue({
   expandLevel,
   ancestors,
   propertyKey,
-  expandAllVersion,
+  allValuesExpanded,
   renderers,
   detectLinks = true,
   linkProviders,
@@ -276,7 +291,7 @@ function renderDefaultValue({
       expandLevel={expandLevel}
       ancestors={ancestors}
       propertyKey={propertyKey}
-      expandAllVersion={expandAllVersion}
+      allValuesExpanded={allValuesExpanded}
       renderers={renderers}
       detectLinks={detectLinks}
       linkProviders={linkProviders}
@@ -290,7 +305,7 @@ export function ConsoleValue({
   expandLevel = 0,
   ancestors = new Set<object>(),
   propertyKey,
-  expandAllVersion,
+  allValuesExpanded,
   renderers,
   detectLinks = true,
   linkProviders,
@@ -302,19 +317,45 @@ export function ConsoleValue({
       expandLevel,
       ancestors,
       propertyKey,
-      expandAllVersion,
+      allValuesExpanded,
       renderers,
       detectLinks,
       linkProviders,
       linkContext,
     });
 
-  const custom = dispatchValueRenderer(renderers, value, {
+  let type: string;
+
+  if (value === null) {
+    type = "null";
+  } else if (Array.isArray(value)) {
+    type = "array";
+  } else if (typeof value !== "object") {
+    type = typeof value;
+  } else {
+    type = value.constructor?.name || "object";
+  }
+  const rendererContext = {
     propertyKey,
     depth: ancestors.size,
-    type: getConsoleValueType(value),
+    type,
     renderDefault,
-  });
+  };
 
-  return custom === undefined ? renderDefault() : custom;
+  for (const renderer of renderers ?? []) {
+    try {
+      if (renderer.type && renderer.type !== type) continue;
+      if (renderer.match && !renderer.match(value, rendererContext)) continue;
+
+      const rendered = renderer.render(value, rendererContext);
+
+      if (rendered !== undefined) {
+        return rendered;
+      }
+    } catch {
+      // A custom renderer must not prevent the console from rendering.
+    }
+  }
+
+  return renderDefault();
 }

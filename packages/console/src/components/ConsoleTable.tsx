@@ -1,11 +1,10 @@
 import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
-import { ConsoleValue } from "./ConsoleValue";
-import type { ConsoleValueRenderer } from "../renderers";
-import type { ConsoleLinkProvider } from "../links";
-import { collectColumns } from "../utils/console/table/collectColumns";
-import { toRows } from "../utils/console/table/toRows";
-import { isObjectLike } from "../utils/console/isObjectLike";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
+import type { ConsoleLinkProvider } from "../links/types";
+import { collectColumns } from "../utils/table/collectColumns";
+import { toRows } from "../utils/table/toRows";
+import { isObjectLike } from "../utils/values/isObjectLike";
 
 /** Props for rendering normalized `console.table()` output. */
 export interface ConsoleTableProps {

@@ -1,4 +1,4 @@
-import { isObjectLike } from "../isObjectLike";
+import { isObjectLike } from "../values/isObjectLike";
 
 /**
  * Normalizes console.table input so scalar entries are wrapped in a Value column.

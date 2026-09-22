@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { useContext } from "react";
+import { useContext, type ReactNode } from "react";
 import {
   Braces,
   Bug,
@@ -15,14 +15,9 @@ import {
 } from "lucide-react";
 import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
-import { ConsoleValue } from "./ConsoleValue";
-import {
-  dispatchMessageRenderer,
-  type ConsoleMessageRenderer,
-  type ConsoleValueRenderer,
-} from "../renderers";
-import type { ConsoleMessageData } from "../types";
-import type { ConsoleLinkProvider } from "../links";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
+import type { ConsoleMessageData, ConsoleMethod } from "../types";
+import type { ConsoleLinkProvider } from "../links/types";
 
 type MessageIconMap = {
   [Method in ConsoleMessageData["method"]]?: LucideIcon;
@@ -43,6 +38,31 @@ const MESSAGE_ICONS: MessageIconMap = {
   groupCollapsed: ChevronDown,
 };
 
+/** Context provided to custom structured-message renderers. */
+export interface ConsoleMessageRendererContext {
+  index: number;
+  messages: readonly ConsoleMessageData[];
+  renderDefault: () => ReactNode;
+}
+
+/**
+ * Custom renderer for structured console messages.
+ *
+ * Returning `undefined` allows the next renderer, or the built-in renderer,
+ * to handle the message.
+ */
+export interface ConsoleMessageRenderer {
+  method?: ConsoleMethod;
+  match?: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext,
+  ) => boolean;
+  render: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext,
+  ) => ReactNode | undefined;
+}
+
 /** Props for rendering one structured console message. */
 export interface ConsoleMessageProps {
   /** Message to render. */
@@ -51,10 +71,10 @@ export interface ConsoleMessageProps {
   index?: number;
   /** Visible message list used by custom renderers and message actions. */
   messages?: readonly ConsoleMessageData[];
-  /** Token used to force expandable values in this message open. */
-  expandAllVersion?: number;
-  /** Optional handler exposed through the message icon to expand all values. */
-  onExpandAll?: () => void;
+  /** Desired expanded state for every expandable value in this message. */
+  allValuesExpanded?: boolean;
+  /** Toggles all expandable values in this message. */
+  onToggleExpansion?: () => void;
   /** Ordered custom renderers for the complete message. */
   renderers?: readonly ConsoleMessageRenderer[];
   /** Ordered custom renderers for values inside the message. */
@@ -67,21 +87,25 @@ export interface ConsoleMessageProps {
 
 function DefaultConsoleMessage({
   message,
-  expandAllVersion,
-  onExpandAll,
+  allValuesExpanded,
+  onToggleExpansion,
   valueRenderers,
   detectLinks = true,
   linkProviders,
 }: ConsoleMessageProps) {
   const style = { paddingLeft: 14 + message.depth * 16 };
   const MessageIcon = MESSAGE_ICONS[message.method] ?? Terminal;
-  const icon = onExpandAll ? (
+  const expansionLabel = allValuesExpanded
+    ? "Collapse all console values in this message"
+    : "Expand all console values in this message";
+  const icon = onToggleExpansion ? (
     <button
       type="button"
       className="console-message-icon console-message-icon-button"
-      aria-label="Expand all collapsed console values"
-      title="Expand all collapsed console values"
-      onClick={onExpandAll}
+      aria-label={expansionLabel}
+      aria-expanded={allValuesExpanded ?? false}
+      title={expansionLabel}
+      onClick={onToggleExpansion}
     >
       <MessageIcon size={14} strokeWidth={1.8} aria-hidden="true" />
     </button>
@@ -121,7 +145,7 @@ function DefaultConsoleMessage({
         <ConsoleValue
           value={message.data[0]}
           expandLevel={message.expandLevel ?? 1}
-          expandAllVersion={expandAllVersion}
+          allValuesExpanded={allValuesExpanded}
           renderers={valueRenderers}
           detectLinks={detectLinks}
           linkProviders={linkProviders}
@@ -139,7 +163,7 @@ function DefaultConsoleMessage({
           <ConsoleValue
             key={valueIndex}
             value={value}
-            expandAllVersion={expandAllVersion}
+            allValuesExpanded={allValuesExpanded}
             renderers={valueRenderers}
             detectLinks={detectLinks}
             linkProviders={linkProviders}
@@ -159,8 +183,8 @@ export function ConsoleMessage({
   message,
   index = 0,
   messages,
-  expandAllVersion,
-  onExpandAll,
+  allValuesExpanded,
+  onToggleExpansion,
   renderers,
   valueRenderers,
   detectLinks = true,
@@ -173,21 +197,40 @@ export function ConsoleMessage({
       message={message}
       index={index}
       messages={sourceMessages}
-      expandAllVersion={expandAllVersion}
-      onExpandAll={onExpandAll}
+      allValuesExpanded={allValuesExpanded}
+      onToggleExpansion={onToggleExpansion}
       valueRenderers={valueRenderers}
       detectLinks={detectLinks}
       linkProviders={linkProviders}
     />
   );
 
-  const custom = dispatchMessageRenderer(renderers, message, {
+  const rendererContext = {
     index,
     messages: sourceMessages,
     renderDefault,
-  });
+  };
+  let renderedMessage: ReactNode | undefined;
 
-  const renderedMessage = custom === undefined ? renderDefault() : custom;
+  for (const renderer of renderers ?? []) {
+    try {
+      if (renderer.method && renderer.method !== message.method) continue;
+      if (renderer.match && !renderer.match(message, rendererContext)) continue;
+
+      const rendered = renderer.render(message, rendererContext);
+
+      if (rendered !== undefined) {
+        renderedMessage = rendered;
+        break;
+      }
+    } catch {
+      // A custom renderer must not prevent the console from rendering.
+    }
+  }
+
+  if (renderedMessage === undefined) {
+    renderedMessage = renderDefault();
+  }
 
   if (!contextMenu?.messageContextEnabled) {
     return renderedMessage;

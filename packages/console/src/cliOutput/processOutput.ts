@@ -1,76 +1,16 @@
 import Anser from "anser";
-import type { ConsoleLink } from "./links";
-
-/** Process stream associated with an ANSI/process-output entry. */
-export type ConsoleOutputStream = "stdout" | "stderr";
-
-/** Arbitrary processor-produced metadata owned by the host or plugin. */
-export type ConsoleProcessOutputMetadata = Readonly<Record<string, unknown>>;
-
-/** One ANSI/process-output entry with optional identity, stream, and metadata. */
-export interface ConsoleStdoutEntry {
-  /** Optional stable key for the rendered entry. */
-  id?: string;
-  /** Raw ANSI or plain-text chunk. */
-  data: string;
-  /** Optional stdout/stderr classification. */
-  stream?: ConsoleOutputStream;
-  /** Optional descriptive metadata carried into the processor pipeline. */
-  metadata?: ConsoleProcessOutputMetadata;
-}
-
-/** Immutable process-output state passed from one processor to the next. */
-export interface ConsoleProcessOutput {
-  /** Current ANSI or plain-text data after earlier processors. */
-  readonly data: string;
-  /** Optional structured value promoted by a processor. */
-  readonly structuredValue?: unknown;
-  /** Link ranges produced by processors for the current text. */
-  readonly links?: readonly ConsoleLink[];
-  /** Metadata accumulated from the source entry and earlier processors. */
-  readonly metadata: ConsoleProcessOutputMetadata;
-}
-
-/** Context supplied to each process-output processor. */
-export interface ConsoleProcessOutputProcessorContext {
-  /** Logical process-output entry after core CR/newline normalization. */
-  readonly entry: ConsoleStdoutEntry | string;
-  /** Zero-based entry index. */
-  readonly index: number;
-  /** ANSI-stripped text for the current transformed data. */
-  readonly text: string;
-  /** Stable entry id when one was supplied. */
-  readonly id?: string;
-  /** stdout/stderr metadata when one was supplied. */
-  readonly stream?: ConsoleOutputStream;
-}
-
-/** Patch returned by a process-output processor. */
-export interface ConsoleProcessOutputProcessorResult {
-  /** Replacement ANSI/plain-text data for subsequent processors and rendering. */
-  data?: string;
-  /** Structured value to render instead of text. Use an explicit undefined to clear one. */
-  structuredValue?: unknown;
-  /** Link ranges for the current processor output text. */
-  links?: readonly ConsoleLink[];
-  /** Metadata merged over metadata accumulated by earlier processors. */
-  metadata?: Readonly<Record<string, unknown>>;
-}
-
-/**
- * Ordered plugin that can transform or enrich one process-output entry.
- *
- * Processors should return only the fields they want to change. Returning
- * undefined leaves the current state untouched.
- */
-export interface ConsoleProcessOutputProcessor {
-  /** Optional identifier useful to hosts for diagnostics and composition. */
-  readonly id?: string;
-  process(
-    output: ConsoleProcessOutput,
-    context: ConsoleProcessOutputProcessorContext,
-  ): ConsoleProcessOutputProcessorResult | undefined | void;
-}
+import { ANSI_CLEAR_LINE_PREFIX_PATTERN } from "../utils/ansi/constants";
+import type {
+  ConsoleProcessOutputProcessor,
+  ConsoleProcessOutputProcessorContext,
+  ConsoleProcessOutputProcessorResult,
+} from "./processors/types";
+import type {
+  ConsoleOutputStream,
+  ConsoleProcessOutput,
+  ConsoleProcessOutputMetadata,
+  ConsoleStdoutEntry,
+} from "./types";
 
 const EMPTY_METADATA: ConsoleProcessOutputMetadata = Object.freeze({});
 
@@ -92,9 +32,6 @@ interface MutableConsoleOutputLine {
   stream?: ConsoleOutputStream;
   metadata?: ConsoleProcessOutputMetadata;
 }
-
-const ANSI_ESCAPE = String.fromCharCode(27);
-const ANSI_CLEAR_LINE_PATTERN = new RegExp(`^${ANSI_ESCAPE}\\[[012]?K`);
 
 function createOutputLine(
   source: ConsoleStdoutEntry,
@@ -176,7 +113,7 @@ export function normalizeConsoleProcessOutputEntries(
     const startsWithLineControl =
       source.data.charCodeAt(0) === 13 ||
       source.data.charCodeAt(0) === 10 ||
-      ANSI_CLEAR_LINE_PATTERN.test(source.data);
+      ANSI_CLEAR_LINE_PREFIX_PATTERN.test(source.data);
     const streamChanged =
       current?.stream !== undefined &&
       source.stream !== undefined &&
@@ -206,7 +143,7 @@ export function normalizeConsoleProcessOutputEntries(
 
     while (offset < source.data.length) {
       const remaining = source.data.slice(offset);
-      const clearLineMatch = remaining.match(ANSI_CLEAR_LINE_PATTERN);
+      const clearLineMatch = remaining.match(ANSI_CLEAR_LINE_PREFIX_PATTERN);
 
       if (clearLineMatch) {
         current = createOutputLine(source, clearLineMatch[0]);
@@ -227,7 +164,7 @@ export function normalizeConsoleProcessOutputEntries(
         }
 
         const clearLinePrefix =
-          current && ANSI_CLEAR_LINE_PATTERN.test(current.data)
+          current && ANSI_CLEAR_LINE_PREFIX_PATTERN.test(current.data)
             ? current.data
             : "";
         current = createOutputLine(source, clearLinePrefix);

@@ -2,13 +2,15 @@ import {
   CAPTURED_CONSOLE_METHODS,
   getConsoleMessageMethod,
   isDirectConsoleMethod,
-} from "../../../consoleMethods";
-import type {
-  ConsoleMessageData,
-  ConsoleMethod,
-  DirOptions,
-} from "../../../types";
-import type { ConsoleEventEmitter } from "../../events/createConsoleEventEmitter";
+} from "./consoleMethods";
+import type { ConsoleMessageData, ConsoleMethod } from "../types";
+import type { ConsoleEventEmitter } from "../utils/events/createConsoleEventEmitter";
+
+/** Supported `console.dir()` options normalized by the console proxy. */
+export interface DirOptions {
+  depth?: number | null;
+  showHidden?: boolean;
+}
 
 /** Configuration for {@link createConsoleProxy}. */
 export interface CreateConsoleProxyOptions {

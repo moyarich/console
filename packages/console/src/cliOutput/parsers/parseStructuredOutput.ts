@@ -2,7 +2,7 @@ import Anser from "anser";
 import type {
   ConsoleProcessOutputMetadata,
   ConsoleStdoutEntry,
-} from "../../processOutput";
+} from "../types";
 import { parseStrictJsonOutput } from "./parseStrictJsonOutput";
 import type { ConsoleStructuredOutputParser } from "./types";
 

@@ -1,6 +1,6 @@
-import type { ConsoleMethod } from "./consoleMethods";
+import type { ConsoleMethod } from "./console/consoleMethods";
 
-export type { ConsoleMethod } from "./consoleMethods";
+export type { ConsoleMethod } from "./console/consoleMethods";
 
 /** Rendering mode supported by the top-level Console component. */
 export type ConsoleMode = "console" | "ansi";
@@ -27,23 +27,12 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
-/** Standard run result shape accepted by structured console mode. */
+/** Standard run result shape shared by console state and rendering. */
 export interface RunOutput {
   messages: ConsoleMessageData[];
   error?: string;
 }
-/** Supported `console.dir()` options used by the console proxy. */
-export interface DirOptions {
-  depth?: number | null;
-  showHidden?: boolean;
-}
+
 /** Event emitted by console capture/proxy utilities and transports. */
 export type ConsoleEvent =
   { type: "message"; message: ConsoleMessageData } | { type: "clear" };
-/** Versioned envelope used to move console events across transport boundaries. */
-export interface ConsoleTransportEnvelope {
-  type: "CONSOLE_PANEL";
-  version: 1;
-  channel: string;
-  event: ConsoleEvent;
-}
