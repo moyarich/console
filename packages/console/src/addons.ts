@@ -440,6 +440,13 @@ export const consoleCoreAddonIds = Object.freeze({
   viewport: `${CONSOLE_CORE_ADDON_ID_PREFIX}viewport`,
 });
 
+/** Returns whether an addon ID belongs to the reserved core namespace. */
+export function isCoreConsoleAddonId(id: string): boolean {
+  return validateIdentifier(id, "Addon").startsWith(
+    CONSOLE_CORE_ADDON_ID_PREFIX,
+  );
+}
+
 /** Creates the core addon that provides the shared viewport service. */
 export function createConsoleViewportAddon(
   viewport: ConsoleViewportService,
