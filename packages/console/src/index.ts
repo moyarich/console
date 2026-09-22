@@ -68,10 +68,10 @@ export type {
 export { CONSOLE_METHODS } from "./consoleMethods";
 export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
-export { createConsoleProxy } from "./utils/createConsoleProxy";
+export { createConsoleProxy } from "./utils/console/runtime/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/createConsoleProxy";
-export { captureConsole } from "./utils/captureConsole";
-export { createConsoleEventEmitter } from "./utils/createConsoleEventEmitter";
+export { captureConsole } from "./utils/console/runtime/captureConsole";
+export { createConsoleEventEmitter } from "./utils/events/createConsoleEventEmitter";
 export type {
   ConsoleEventEmitter,
   ConsoleEventName,
@@ -86,17 +86,17 @@ export {
   deserializeConsoleMessage,
   serializeConsoleEvent,
   deserializeConsoleEvent,
-} from "./utils/serialization";
+} from "./utils/transport/serialization";
 export type { SerializeConsoleValueOptions } from "./utils/serialization";
 export {
   CONSOLE_TRANSPORT_TYPE,
   CONSOLE_TRANSPORT_VERSION,
   DEFAULT_CONSOLE_CHANNEL,
   isConsoleEnvelope,
-} from "./utils/transport";
-export { listenForConsolePostMessages } from "./utils/postMessage";
+} from "./utils/transport/envelope";
+export { listenForConsolePostMessages } from "./utils/transport/postMessage";
 export type { ListenForConsolePostMessagesOptions } from "./utils/postMessage";
-export { listenForConsoleWebSocket } from "./utils/websocket";
+export { listenForConsoleWebSocket } from "./utils/transport/websocket";
 export type {
   ConsoleWebSocketLike,
   ListenForConsoleWebSocketOptions,
