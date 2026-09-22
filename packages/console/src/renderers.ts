@@ -1,5 +1,36 @@
 import type { ReactNode } from "react";
-import type { ConsoleMethod, ConsoleMessageData } from "./types";
+import type { ConsoleStdoutEntry } from "./processOutput";
+import type {
+  ConsoleMethod,
+  ConsoleMessageData,
+  ConsoleMode,
+} from "./types";
+
+/** Context provided to a renderer that can replace the console output surface. */
+export type ConsoleOutputRendererContext =
+  | {
+      mode: "console";
+      messages: readonly ConsoleMessageData[];
+      renderDefault: () => ReactNode;
+    }
+  | {
+      mode: "ansi";
+      entries: readonly (ConsoleStdoutEntry | string)[];
+      renderDefault: () => ReactNode;
+    };
+
+/**
+ * Renderer for the complete inner output surface.
+ *
+ * Returning `undefined` delegates to the next renderer and eventually the
+ * built-in structured or ANSI renderer. Any other React result, including
+ * `null`, counts as an intentional replacement.
+ */
+export interface ConsoleOutputRenderer {
+  mode?: ConsoleMode;
+  match?: (context: ConsoleOutputRendererContext) => boolean;
+  render: (context: ConsoleOutputRendererContext) => ReactNode | undefined;
+}
 
 /** Context provided to custom structured-message renderers. */
 export interface ConsoleMessageRendererContext {
@@ -60,6 +91,34 @@ export function getConsoleValueType(value: unknown): string {
   }
 
   return value.constructor?.name || "object";
+}
+
+/**
+ * Runs complete-output renderers in declaration order and returns the first
+ * defined result.
+ *
+ * Renderer errors are isolated so third-party surfaces cannot break the
+ * built-in console fallback.
+ */
+export function dispatchOutputRenderer(
+  renderers: readonly ConsoleOutputRenderer[] | undefined,
+  context: ConsoleOutputRendererContext,
+): ReactNode | undefined {
+  if (!renderers?.length) return undefined;
+
+  for (const renderer of renderers) {
+    try {
+      if (renderer.mode && renderer.mode !== context.mode) continue;
+      if (renderer.match && !renderer.match(context)) continue;
+
+      const rendered = renderer.render(context);
+      if (rendered !== undefined) return rendered;
+    } catch {
+      // A custom output renderer must not prevent the default surface.
+    }
+  }
+
+  return undefined;
 }
 
 /**
