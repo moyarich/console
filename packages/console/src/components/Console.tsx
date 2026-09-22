@@ -33,6 +33,12 @@ import type {
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
+import {
+  consoleExtensionPoints,
+  type ConsoleAddon,
+  type ConsoleExtensionRegistry,
+} from "../addons";
+import { useConsoleAddons } from "../hooks/useConsoleAddons";
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
@@ -81,6 +87,8 @@ interface ConsoleSharedProps {
   detectLinks?: boolean;
   /** Ordered application-specific link providers used in either mode. */
   linkProviders?: readonly ConsoleLinkProvider[];
+  /** Addons activated for this mounted console. */
+  addons?: readonly ConsoleAddon[];
 }
 
 /** Props for browser-style structured console rendering. */
@@ -137,6 +145,19 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
 const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
+
+interface ConsoleResolvedAddonProps {
+  addonExtensions: ConsoleExtensionRegistry;
+}
+
+function mergeContributions<T>(
+  direct: readonly T[] | undefined,
+  addon: readonly T[],
+): readonly T[] | undefined {
+  if (!direct?.length) return addon.length ? addon : undefined;
+  if (!addon.length) return direct;
+  return [...direct, ...addon];
+}
 
 /**
  * Shared frame that renders panel chrome, actions, context-menu support, and
@@ -324,13 +345,35 @@ function ConsoleMessageMode({
   filter,
   messageRenderers,
   messageActions,
+  contextMenuActions,
   valueRenderers,
   detectLinks = true,
   linkProviders,
+  addonExtensions,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
   ...frameProps
-}: ConsoleMessageModeProps) {
+}: ConsoleMessageModeProps & ConsoleResolvedAddonProps) {
+  const resolvedMessageRenderers = mergeContributions(
+    messageRenderers,
+    addonExtensions.getAll(consoleExtensionPoints.messageRenderer),
+  );
+  const resolvedMessageActions = mergeContributions(
+    messageActions,
+    addonExtensions.getAll(consoleExtensionPoints.messageAction),
+  );
+  const resolvedContextMenuActions = mergeContributions(
+    contextMenuActions,
+    addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
+  );
+  const resolvedValueRenderers = mergeContributions(
+    valueRenderers,
+    addonExtensions.getAll(consoleExtensionPoints.valueRenderer),
+  );
+  const resolvedLinkProviders = mergeContributions(
+    linkProviders,
+    addonExtensions.getAll(consoleExtensionPoints.linkProvider),
+  );
   const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
   const runtimeError = errorProp ?? output?.error ?? "";
   const messages = useMemo<ConsoleMessageData[]>(
@@ -381,7 +424,8 @@ function ConsoleMessageMode({
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0}
       scrollKey={visibleMessages}
-      messageActions={messageActions}
+      contextMenuActions={resolvedContextMenuActions}
+      messageActions={resolvedMessageActions}
     >
       {visibleMessages.map((message, index) => (
         <ConsoleMessage
@@ -394,10 +438,10 @@ function ConsoleMessageMode({
           messages={visibleMessages}
           expandAllVersion={expandedMessages.get(message)}
           onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
-          renderers={messageRenderers}
-          valueRenderers={valueRenderers}
+          renderers={resolvedMessageRenderers}
+          valueRenderers={resolvedValueRenderers}
           detectLinks={detectLinks}
-          linkProviders={linkProviders}
+          linkProviders={resolvedLinkProviders}
         />
       ))}
     </ConsoleFrame>
@@ -410,13 +454,36 @@ function ConsoleAnsiMode({
   parseStructuredOutput = false,
   processors,
   structuredOutputParsers,
+  contextMenuActions,
   valueRenderers,
   detectLinks = true,
   linkProviders,
+  addonExtensions,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
-}: ConsoleAnsiModeProps) {
+}: ConsoleAnsiModeProps & ConsoleResolvedAddonProps) {
+  const resolvedProcessors = mergeContributions(
+    processors,
+    addonExtensions.getAll(consoleExtensionPoints.processOutputProcessor),
+  );
+  const resolvedStructuredOutputParsers = mergeContributions(
+    structuredOutputParsers,
+    addonExtensions.getAll(consoleExtensionPoints.structuredOutputParser),
+  );
+  const resolvedContextMenuActions = mergeContributions(
+    contextMenuActions,
+    addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
+  );
+  const resolvedValueRenderers = mergeContributions(
+    valueRenderers,
+    addonExtensions.getAll(consoleExtensionPoints.valueRenderer),
+  );
+  const resolvedLinkProviders = mergeContributions(
+    linkProviders,
+    addonExtensions.getAll(consoleExtensionPoints.linkProvider),
+  );
+
   return (
     <ConsoleFrame
       {...frameProps}
@@ -426,15 +493,16 @@ function ConsoleAnsiMode({
       hasMessages={messages.length > 0}
       isEmpty={messages.length === 0}
       scrollKey={messages}
+      contextMenuActions={resolvedContextMenuActions}
     >
       <ConsoleStdout
         entries={messages}
         parseStructuredOutput={parseStructuredOutput}
-        processors={processors}
-        structuredOutputParsers={structuredOutputParsers}
-        valueRenderers={valueRenderers}
+        processors={resolvedProcessors}
+        structuredOutputParsers={resolvedStructuredOutputParsers}
+        valueRenderers={resolvedValueRenderers}
         detectLinks={detectLinks}
-        linkProviders={linkProviders}
+        linkProviders={resolvedLinkProviders}
       />
     </ConsoleFrame>
   );
@@ -447,9 +515,12 @@ function ConsoleAnsiMode({
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
 export function Console(props: ConsoleProps) {
+  const mode: ConsoleMode = props.mode === "ansi" ? "ansi" : "console";
+  const addonExtensions = useConsoleAddons(props.addons, mode);
+
   if (props.mode === "ansi") {
-    return <ConsoleAnsiMode {...props} />;
+    return <ConsoleAnsiMode {...props} addonExtensions={addonExtensions} />;
   }
 
-  return <ConsoleMessageMode {...props} />;
+  return <ConsoleMessageMode {...props} addonExtensions={addonExtensions} />;
 }
