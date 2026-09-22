@@ -1,4 +1,4 @@
-import { isRecord } from "../isRecord";
+import { isRecord } from "../values/isRecord";
 import { normalizeConsoleTableData } from "./normalizeConsoleTableData";
 import type { ConsoleTableRow } from "./types";
 

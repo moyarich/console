@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 import { Console, useConsoleMessages } from "@moyarich/console";
-import type { CapturedConsoleMethod } from "../packages/console/src/consoleMethods";
+import type { CapturedConsoleMethod } from "../packages/console/src/console/consoleMethods";
 
 type MethodExample = {
   description: string;

@@ -1,34 +1,33 @@
-import { ConsoleValue } from "./ConsoleValue";
-import type { ConsoleValueRenderer } from "../renderers";
-import {
-  ConsoleLinkedText,
-  type ConsoleLink,
-  type ConsoleLinkProvider,
-  type ConsoleLinkProviderContext,
-} from "../links";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
+import { ConsoleLinkedText } from "./ConsoleLinkedText";
+import type {
+  ConsoleLink,
+  ConsoleLinkProvider,
+  ConsoleLinkProviderContext,
+} from "../links/types";
 import {
   normalizeConsoleProcessOutputEntries,
   processConsoleOutputEntry,
-  type ConsoleProcessOutputProcessor,
-  type ConsoleStdoutEntry,
-} from "../processOutput";
-import { getAnsiTokenRanges } from "../utils/terminal/getAnsiTokenRanges";
-import { getAnsiTokenStyle } from "../utils/terminal/getAnsiTokenStyle";
-import { hasAnsiClearLine } from "../utils/terminal/hasAnsiClearLine";
-import { parseStructuredOutput } from "../utils/terminal/parseStructuredOutput";
-import type { ConsoleStructuredOutputParser } from "../utils/terminal/types";
+} from "../cliOutput/processOutput";
+import type { ConsoleProcessOutputProcessor } from "../cliOutput/processors/types";
+import type { ConsoleStdoutEntry } from "../cliOutput/types";
+import { getAnsiTokenRanges } from "../utils/ansi/getAnsiTokenRanges";
+import { getAnsiTokenStyle } from "../utils/ansi/getAnsiTokenStyle";
+import { hasAnsiClearLine } from "../utils/ansi/hasAnsiClearLine";
+import { parseStructuredOutput } from "../cliOutput/parsers/parseStructuredOutput";
+import type { ConsoleStructuredOutputParser } from "../cliOutput/parsers/types";
 
 export type {
   ConsoleOutputStream,
   ConsoleProcessOutputMetadata,
-  ConsoleProcessOutputProcessor,
   ConsoleStdoutEntry,
-} from "../processOutput";
+} from "../cliOutput/types";
+export type { ConsoleProcessOutputProcessor } from "../cliOutput/processors/types";
 
 export type {
   ConsoleStructuredOutputParser,
   ConsoleStructuredOutputParserContext,
-} from "../utils/terminal/types";
+} from "../cliOutput/parsers/types";
 
 /** Props for rendering ANSI-aware stdout/stderr entries. */
 export interface ConsoleStdoutProps {

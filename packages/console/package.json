@@ -17,15 +17,30 @@
       "require": "./dist/index.cjs"
     },
     "./styles.css": "./src/styles.css",
-    "./utils/console": {
-      "types": "./dist/utils/console/index.d.ts",
-      "import": "./dist/utils/console/index.js",
-      "require": "./dist/utils/console/index.cjs"
+    "./utils/ansi": {
+      "types": "./dist/utils/ansi/index.d.ts",
+      "import": "./dist/utils/ansi/index.js",
+      "require": "./dist/utils/ansi/index.cjs"
     },
-    "./utils/terminal": {
-      "types": "./dist/utils/terminal/index.d.ts",
-      "import": "./dist/utils/terminal/index.js",
-      "require": "./dist/utils/terminal/index.cjs"
+    "./utils/contextMenu": {
+      "types": "./dist/utils/contextMenu/index.d.ts",
+      "import": "./dist/utils/contextMenu/index.js",
+      "require": "./dist/utils/contextMenu/index.cjs"
+    },
+    "./utils/style": {
+      "types": "./dist/utils/style/index.d.ts",
+      "import": "./dist/utils/style/index.js",
+      "require": "./dist/utils/style/index.cjs"
+    },
+    "./utils/table": {
+      "types": "./dist/utils/table/index.d.ts",
+      "import": "./dist/utils/table/index.js",
+      "require": "./dist/utils/table/index.cjs"
+    },
+    "./utils/values": {
+      "types": "./dist/utils/values/index.d.ts",
+      "import": "./dist/utils/values/index.js",
+      "require": "./dist/utils/values/index.cjs"
     }
   },
   "files": [
@@ -36,7 +51,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external react --external react-dom",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom && tsup src/utils/ansi/index.ts --out-dir dist/utils/ansi --format esm,cjs --dts --external react --external react-dom && tsup src/utils/contextMenu/index.ts --out-dir dist/utils/contextMenu --format esm,cjs --dts --external react --external react-dom && tsup src/utils/style/index.ts --out-dir dist/utils/style --format esm,cjs --dts --external react --external react-dom && tsup src/utils/table/index.ts --out-dir dist/utils/table --format esm,cjs --dts --external react --external react-dom && tsup src/utils/values/index.ts --out-dir dist/utils/values --format esm,cjs --dts --external react --external react-dom",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""

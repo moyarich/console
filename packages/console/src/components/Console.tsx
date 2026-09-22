@@ -11,28 +11,26 @@ import {
   type UIEvent,
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
-import { ConsoleMessage } from "./ConsoleMessage";
+import { ConsoleMessage, type ConsoleMessageRenderer } from "./ConsoleMessage";
 import {
   ConsoleStdout,
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
+import type { ConsoleValueRenderer } from "./ConsoleValue";
 import type {
   ConsoleMessageData,
   ConsoleMode as ConsoleModeType,
   RunOutput,
 } from "../types";
 import type {
-  ConsoleMessageRenderer,
-  ConsoleValueRenderer,
-} from "../renderers";
-import type {
   ConsoleContextMenuAction,
   ConsoleMessageAction,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
-import type { ConsoleLinkProvider } from "../links";
+import { isInspectableObject } from "../utils/values/isInspectableObject";
+import type { ConsoleLinkProvider } from "../links/types";
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
@@ -350,25 +348,23 @@ function ConsoleMessageMode({
         : messages,
     [filter, messages],
   );
-  const [expandedMessages, setExpandedMessages] = useState<
-    Map<ConsoleMessageData, number>
+  const [messageExpansion, setMessageExpansion] = useState<
+    Map<ConsoleMessageData, boolean>
   >(() => new Map());
 
   useEffect(() => {
     onMessagesChange?.(sourceMessages);
   }, [onMessagesChange, sourceMessages]);
 
-  const hasExpandableValues = visibleMessages.some(
-    (message) =>
-      message.method !== "table" &&
-      message.data.some((value) => typeof value === "object" && value !== null),
-  );
+  const hasExpandableValues = (message: ConsoleMessageData) =>
+    message.method !== "table" && message.data.some(isInspectableObject);
 
-  const expandAllCollapsed = () => {
-    setExpandedMessages((current) => {
-      const version = Math.max(0, ...Array.from(current.values())) + 1;
+  const toggleMessageExpansion = (message: ConsoleMessageData) => {
+    setMessageExpansion((current) => {
+      const next = new Map(current);
+      next.set(message, !(current.get(message) ?? false));
 
-      return new Map(visibleMessages.map((message) => [message, version]));
+      return next;
     });
   };
 
@@ -392,8 +388,12 @@ function ConsoleMessageMode({
           message={message}
           index={index}
           messages={visibleMessages}
-          expandAllVersion={expandedMessages.get(message)}
-          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+          allValuesExpanded={messageExpansion.get(message)}
+          onToggleExpansion={
+            hasExpandableValues(message)
+              ? () => toggleMessageExpansion(message)
+              : undefined
+          }
           renderers={messageRenderers}
           valueRenderers={valueRenderers}
           detectLinks={detectLinks}
