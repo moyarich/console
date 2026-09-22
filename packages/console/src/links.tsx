@@ -215,8 +215,7 @@ export function resolveConsoleLinks(
   for (const { link } of sorted) {
     if (
       resolved.some(
-        (existing) =>
-          link.start < existing.end && link.end > existing.start,
+        (existing) => link.start < existing.end && link.end > existing.start,
       )
     ) {
       continue;
@@ -265,9 +264,7 @@ export function ConsoleLinkedText({
 
   resolved.forEach((link, index) => {
     if (offset < link.start) {
-      parts.push(
-        renderText(text.slice(offset, link.start), `text-${index}`),
-      );
+      parts.push(renderText(text.slice(offset, link.start), `text-${index}`));
     }
 
     const linkContext: ConsoleLinkActionContext = {
