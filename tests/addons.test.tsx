@@ -3,12 +3,14 @@ import { describe, expect, it } from "vitest";
 import {
   Console,
   consoleCapabilities,
+  consoleCoreAddonIds,
   consoleExtensionPoints,
   consoleServices,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleExtensionPoint,
   createConsoleServiceToken,
+  createConsoleViewportAddon,
   type ConsoleAddon,
   type ConsoleViewportService,
 } from "@moyarich/console";
@@ -51,6 +53,50 @@ describe("console addon API", () => {
     expect(manager.services.has(token)).toBe(false);
     expect(manager.services.get(token)).toBeUndefined();
     expect(() => manager.services.require(token)).toThrow(/not available/);
+  });
+
+  it("loads the core viewport provider as a removable ConsoleAddon", () => {
+    const manager = createConsoleAddonManager();
+    const viewport: ConsoleViewportService = {
+      scrollToTop: () => undefined,
+      scrollToBottom: () => undefined,
+      scrollToMessage: () => false,
+      isAtBottom: () => true,
+      isAtTop: () => false,
+      focus: () => undefined,
+    };
+    const addon: ConsoleAddon = createConsoleViewportAddon(viewport);
+
+    expect(addon.id).toBe(consoleCoreAddonIds.viewport);
+    expect(addon.id).toBe("@moyarich/console:viewport");
+
+    manager.load(addon);
+
+    expect(manager.has(addon.id)).toBe(true);
+    expect(manager.services.require(consoleServices.viewport)).toBe(viewport);
+
+    expect(manager.unload(addon.id)).toBe(true);
+    expect(manager.unload(addon.id)).toBe(false);
+    expect(manager.has(addon.id)).toBe(false);
+    expect(manager.services.get(consoleServices.viewport)).toBeUndefined();
+  });
+
+  it("unloads addons directly by stable id", () => {
+    const manager = createConsoleAddonManager();
+    const point = createConsoleExtensionPoint<string>("test.unload");
+    const addon: ConsoleAddon = {
+      id: "@example/console-addon-unload",
+      activate(host) {
+        host.extensions.register(point, "loaded");
+      },
+    };
+
+    manager.load(addon);
+
+    expect(manager.extensions.getAll(point)).toEqual(["loaded"]);
+    expect(manager.unload(addon.id)).toBe(true);
+    expect(manager.extensions.getAll(point)).toEqual([]);
+    expect(manager.unload(addon.id)).toBe(false);
   });
 
   it("exposes a typed built-in viewport service token", () => {
@@ -415,6 +461,38 @@ describe("console addon API", () => {
     expect(
       manager.extensions.getAll(consoleExtensionPoints.outputRenderer),
     ).toEqual([renderer]);
+  });
+
+  it("reserves the package-qualified core addon namespace", () => {
+    const addons: ConsoleAddon[] = [
+      {
+        id: "@moyarich/console:not-a-public-core-addon",
+        activate: () => undefined,
+      },
+    ];
+
+    expect(() =>
+      renderToStaticMarkup(<Console messages={[]} addons={addons} />),
+    ).toThrow(/reserved core namespace/);
+  });
+
+  it("does not allow a disabled core addon id to be impersonated", () => {
+    const addons: ConsoleAddon[] = [
+      {
+        id: consoleCoreAddonIds.viewport,
+        activate: () => undefined,
+      },
+    ];
+
+    expect(() =>
+      renderToStaticMarkup(
+        <Console
+          messages={[]}
+          addons={addons}
+          disabledAddonIds={[consoleCoreAddonIds.viewport]}
+        />,
+      ),
+    ).toThrow(/appears more than once/);
   });
 
   it("rejects duplicate addon IDs through the React Console API", () => {
