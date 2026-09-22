@@ -1,9 +1,9 @@
+import Anser from "anser";
 import type {
   ConsoleProcessOutputMetadata,
   ConsoleStdoutEntry,
 } from "../../processOutput";
 import { parseStrictJsonOutput } from "./parseStrictJsonOutput";
-import { stripAnsiText } from "./stripAnsiText";
 import type { ConsoleStructuredOutputParser } from "./types";
 
 /**
@@ -28,7 +28,7 @@ export function parseStructuredOutput(
   parsers: readonly ConsoleStructuredOutputParser[] | undefined,
   processMetadata: ConsoleProcessOutputMetadata,
 ): unknown | undefined {
-  const text = stripAnsiText(data);
+  const text = Anser.ansiToText(data);
   const context =
     typeof entry === "string"
       ? { entry, index, metadata: processMetadata }
