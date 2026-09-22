@@ -6,17 +6,14 @@ const PYODIDE_VERSION = "314.0.7";
 const PYODIDE_INDEX_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYODIDE_MODULE_URL = `${PYODIDE_INDEX_URL}pyodide.mjs`;
 
-interface PyodideWriter {
-  isatty: boolean;
-  getTerminalSize(): { columns: number; rows: number };
-  write(buffer: Uint8Array): number;
+interface PyodideGlobals {
+  set(name: string, value: unknown): void;
 }
 
 interface PyodideRuntime {
+  globals: PyodideGlobals;
   loadPackage(name: string): Promise<void>;
   runPythonAsync(code: string): Promise<unknown>;
-  setStdout(handler: PyodideWriter): void;
-  setStderr(handler: PyodideWriter): void;
 }
 
 interface PyodideModule {
@@ -45,6 +42,24 @@ const PYTHON_SOURCE = `
 import asyncio
 from tqdm import tqdm
 
+# Pyodide does not provide Python threading in this configuration.
+# Disabling tqdm's optional monitor avoids TqdmMonitorWarning.
+tqdm.monitor_interval = 0
+
+class BrowserTqdmStream:
+    def write(self, text):
+        text = str(text)
+        emit_tqdm_chunk(text)
+        return len(text)
+
+    def flush(self):
+        pass
+
+    def isatty(self):
+        return True
+
+stream = BrowserTqdmStream()
+
 async def run_tqdm_demo():
     for _ in tqdm(
         range(100),
@@ -52,11 +67,12 @@ async def run_tqdm_demo():
         unit="item",
         mininterval=0,
         miniters=1,
-        dynamic_ncols=True,
+        ncols=88,
+        file=stream,
     ):
         await asyncio.sleep(0.04)
 
-    print("Python task complete")
+    emit_stdout_chunk("Python task complete\\n")
 
 await run_tqdm_demo()
 `;
@@ -88,29 +104,18 @@ export default function PyodideTqdmProgressExample() {
       ]);
     };
 
-    const createWriter = (
-      stream: ConsoleStdoutEntry["stream"],
-    ): PyodideWriter => {
-      const decoder = new TextDecoder();
-
-      return {
-        isatty: true,
-        getTerminalSize: () => ({ columns: 88, rows: 24 }),
-        write: (buffer) => {
-          append(decoder.decode(buffer, { stream: true }), stream);
-          return buffer.length;
-        },
-      };
-    };
-
     setMessages([]);
     setStatus("loading");
 
     try {
       const runtime = await getPyodideRuntime();
 
-      runtime.setStdout(createWriter("stdout"));
-      runtime.setStderr(createWriter("stderr"));
+      runtime.globals.set("emit_tqdm_chunk", (text: string) => {
+        append(text, "stderr");
+      });
+      runtime.globals.set("emit_stdout_chunk", (text: string) => {
+        append(text, "stdout");
+      });
 
       setStatus("running");
       await runtime.runPythonAsync(PYTHON_SOURCE);
@@ -147,16 +152,17 @@ export default function PyodideTqdmProgressExample() {
       </div>
 
       <p style={{ margin: 0 }}>
-        Pyodide exposes stdout/stderr as TTY-like byte writers here. Each real
-        tqdm write is decoded and appended immediately, so carriage-return
-        updates redraw one logical console line while the Python loop runs.
-        Network access is required for the first Pyodide load.
+        The real tqdm formatter writes to a custom Python file-like stream.
+        Every exact write, including its carriage return, is forwarded straight
+        to JavaScript and appended as process output. This bypasses Pyodide
+        stdout/stderr buffering so the console receives the same redraw control
+        that tqdm intended.
       </p>
 
       <Console
         mode="ansi"
         title="Pyodide + tqdm"
-        subtitle="Live Python tqdm progress streamed through real stderr writes"
+        subtitle="Live tqdm carriage-return writes streamed directly into the console"
         messages={messages}
         resizable="vertical"
         style={{ height: 420, minHeight: 240, maxHeight: 720 }}
