@@ -2,6 +2,15 @@ import { ChevronRight, Copy } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import {
+  isElementLike,
+  isInspectableObject,
+  isObjectLike,
+  objectEntries,
+  objectLabel,
+  preview,
+  typeClass,
+} from "../utils/console/value";
+import {
   ConsoleLinkedText,
   type ConsoleLinkProvider,
   type ConsoleLinkProviderContext,
@@ -35,58 +44,6 @@ interface ConsoleObjectValueProps {
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
   linkContext?: Omit<ConsoleLinkProviderContext, "value" | "propertyKey">;
-}
-
-function isObjectLike(value: unknown): value is object {
-  return typeof value === "object" && value !== null;
-}
-
-function isElementLike(
-  value: unknown,
-): value is object & { outerHTML: string } {
-  if (!isObjectLike(value)) return false;
-
-  const candidate = value as {
-    nodeType?: unknown;
-    outerHTML?: unknown;
-  };
-
-  return candidate.nodeType === 1 && typeof candidate.outerHTML === "string";
-}
-
-function isMapLike(value: object): value is Map<unknown, unknown> {
-  return (
-    value.constructor?.name === "Map" &&
-    typeof (value as Map<unknown, unknown>).entries === "function"
-  );
-}
-
-function isSetLike(value: object): value is Set<unknown> {
-  return (
-    value.constructor?.name === "Set" &&
-    typeof (value as Set<unknown>).values === "function"
-  );
-}
-
-function isInspectableObject(value: unknown): value is object {
-  return (
-    isObjectLike(value) &&
-    !isElementLike(value) &&
-    !(value instanceof Error) &&
-    !(value instanceof Date) &&
-    !(value instanceof RegExp)
-  );
-}
-
-function typeClass(value: unknown): string {
-  if (value === null) return "console-null";
-  if (typeof value === "string") return "console-string";
-  if (typeof value === "number" || typeof value === "bigint")
-    return "console-number";
-  if (typeof value === "boolean") return "console-boolean";
-  if (typeof value === "undefined") return "console-undefined";
-  if (typeof value === "symbol") return "console-symbol";
-  return "";
 }
 
 function renderPrimitive(
