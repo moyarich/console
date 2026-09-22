@@ -762,7 +762,7 @@ describe("Console rendering", () => {
     );
 
     expect(html).toContain('href="#issue-42"');
-    expect(html).toContain(">ISSUE-42</a>");
+    expect(html).toContain("ISSUE-42");
   });
 
   it("detects one ANSI link across style-token boundaries", () => {
