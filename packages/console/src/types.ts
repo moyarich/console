@@ -1,6 +1,6 @@
-import type { ConsoleMethod } from "./consoleMethods";
+import type { ConsoleMethod } from "./console/consoleMethods";
 
-export type { ConsoleMethod } from "./consoleMethods";
+export type { ConsoleMethod } from "./console/consoleMethods";
 
 /** Rendering mode supported by the top-level Console component. */
 export type ConsoleMode = "console" | "ansi";
