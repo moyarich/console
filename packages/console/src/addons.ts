@@ -1,4 +1,8 @@
-import type { ConsoleContextMenuAction, ConsoleMessageAction } from "./actions";
+import type {
+  ConsoleContextMenuAction,
+  ConsoleMessageAction,
+  ConsolePanelAction,
+} from "./actions";
 import type { ConsoleLinkProvider } from "./links";
 import type { ConsoleProcessOutputProcessor } from "./processOutput";
 import type {
@@ -431,6 +435,9 @@ export const consoleExtensionPoints = Object.freeze({
   ),
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
+  ),
+  panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
+    "console.action.panel",
   ),
   contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
     "console.action.contextMenu",
