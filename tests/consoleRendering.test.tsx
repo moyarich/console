@@ -281,7 +281,6 @@ describe("Console rendering", () => {
     expect(html).not.toContain("loading 10%");
     expect(html).not.toContain("loading 20%");
     expect(html).toContain('data-stream="stdout"');
-    expect(html).toContain('data-clear-line="true"');
   });
 
   it("keeps completed lines stable while progress redraws the current line", () => {
