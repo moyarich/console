@@ -2,19 +2,20 @@ import Anser from "anser";
 import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
+import {
+  processConsoleOutputEntry,
+  type ConsoleOutputStream,
+  type ConsoleProcessOutputMetadata,
+  type ConsoleProcessOutputProcessor,
+  type ConsoleStdoutEntry,
+} from "../processOutput";
 
-/** Process stream associated with an ANSI output entry. */
-export type ConsoleOutputStream = "stdout" | "stderr";
-
-/** One ANSI/process-output entry with optional identity and stream metadata. */
-export interface ConsoleStdoutEntry {
-  /** Optional stable key for the rendered entry. */
-  id?: string;
-  /** Raw ANSI or plain-text chunk. */
-  data: string;
-  /** Optional stdout/stderr classification. */
-  stream?: ConsoleOutputStream;
-}
+export type {
+  ConsoleOutputStream,
+  ConsoleProcessOutputMetadata,
+  ConsoleProcessOutputProcessor,
+  ConsoleStdoutEntry,
+} from "../processOutput";
 
 /** Metadata supplied to structured-output parsers. */
 export interface ConsoleStructuredOutputParserContext {
@@ -26,6 +27,8 @@ export interface ConsoleStructuredOutputParserContext {
   id?: string;
   /** stdout/stderr metadata when one was supplied. */
   stream?: ConsoleOutputStream;
+  /** Metadata accumulated by process-output processors. */
+  metadata?: ConsoleProcessOutputMetadata;
 }
 
 /**
@@ -47,6 +50,8 @@ export interface ConsoleStdoutProps {
   emptyMessage?: string;
   /** Whether complete JSON object/array lines should render as structured values. */
   parseStructuredOutput?: boolean;
+  /** Ordered process-output processors applied before structured parsing. */
+  processors?: readonly ConsoleProcessOutputProcessor[];
   /** Ordered custom structured-output parsers. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   /** Custom renderers used when a line becomes a structured value. */
@@ -131,16 +136,23 @@ function parseStructuredOutput(
   index: number,
   shouldParseStrictJson: boolean,
   parsers: readonly ConsoleStructuredOutputParser[] | undefined,
+  processMetadata: ConsoleProcessOutputMetadata,
 ): unknown | undefined {
   const text = Anser.ansiToText(data);
-  const metadata =
+  const context =
     typeof entry === "string"
-      ? { entry, index }
-      : { entry, index, id: entry.id, stream: entry.stream };
+      ? { entry, index, metadata: processMetadata }
+      : {
+          entry,
+          index,
+          id: entry.id,
+          stream: entry.stream,
+          metadata: processMetadata,
+        };
 
   for (const parser of parsers ?? []) {
     try {
-      const value = parser(text, metadata);
+      const value = parser(text, context);
 
       if (value !== undefined) {
         return value;
@@ -175,6 +187,7 @@ export function ConsoleStdout({
   entries,
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
+  processors,
   structuredOutputParsers,
   valueRenderers,
 }: ConsoleStdoutProps) {
@@ -185,22 +198,30 @@ export function ConsoleStdout({
   return (
     <div className="console-stdout-list">
       {entries.map((entry, index) => {
-        const data = typeof entry === "string" ? entry : entry.data;
+        const processedOutput = processConsoleOutputEntry(
+          entry,
+          index,
+          processors,
+        );
+        const data = processedOutput.data;
         const stream = typeof entry === "string" ? undefined : entry.stream;
         const key =
           typeof entry === "string"
             ? `stdout-${index}`
             : (entry.id ?? `stdout-${index}`);
         const structuredValue =
-          shouldParseStructuredOutput || structuredOutputParsers?.length
-            ? parseStructuredOutput(
-                data,
-                entry,
-                index,
-                shouldParseStructuredOutput,
-                structuredOutputParsers,
-              )
-            : undefined;
+          processedOutput.structuredValue !== undefined
+            ? processedOutput.structuredValue
+            : shouldParseStructuredOutput || structuredOutputParsers?.length
+              ? parseStructuredOutput(
+                  data,
+                  entry,
+                  index,
+                  shouldParseStructuredOutput,
+                  structuredOutputParsers,
+                  processedOutput.metadata,
+                )
+              : undefined;
         const clearLine = Anser.ansiToJson(data).some(
           (token) => token.clearLine,
         );
