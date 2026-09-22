@@ -18,11 +18,3 @@ export type ContextMenuThemeProperty =
 /** Inline style used to preserve console theme variables on a portaled context menu. */
 export type ContextMenuThemeStyle = CSSProperties &
   Partial<Record<ContextMenuThemeProperty, string>>;
-
-/** Normalized row used by the console.table renderer. */
-export interface ConsoleTableRow {
-  /** Display index for the row. */
-  index: string;
-  /** Normalized key/value cells for the row. */
-  value: Record<string, unknown>;
-}
