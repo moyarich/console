@@ -193,35 +193,53 @@ function AnsiText({
   links?: readonly ConsoleLink[];
 }) {
   const tokens = Anser.ansiToJson(data, { remove_empty: true });
-  let offset = 0;
+  let tokenOffset = 0;
+  const tokenRanges = tokens.map((token) => {
+    const start = tokenOffset;
+    tokenOffset += token.content.length;
+
+    return { token, start, end: tokenOffset };
+  });
+  const text = tokenRanges.map(({ token }) => token.content).join("");
+  let renderOffset = 0;
+
+  const renderText = (value: string, key: string) => {
+    const start = renderOffset;
+    const end = start + value.length;
+    renderOffset = end;
+
+    return (
+      <>
+        {tokenRanges.map(({ token, start: tokenStart, end: tokenEnd }, index) => {
+          const overlapStart = Math.max(start, tokenStart);
+          const overlapEnd = Math.min(end, tokenEnd);
+
+          if (overlapStart >= overlapEnd) {
+            return null;
+          }
+
+          return (
+            <span key={`${key}-${index}`} style={getAnsiTokenStyle(token)}>
+              {token.content.slice(
+                overlapStart - tokenStart,
+                overlapEnd - tokenStart,
+              )}
+            </span>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
-    <>
-      {tokens.map((token, index) => {
-        const start = offset;
-        const end = start + token.content.length;
-        offset = end;
-        const tokenLinks = links
-          ?.filter((link) => link.start >= start && link.end <= end)
-          .map((link) => ({
-            ...link,
-            start: link.start - start,
-            end: link.end - start,
-          }));
-
-        return (
-          <span key={index} style={getAnsiTokenStyle(token)}>
-            <ConsoleLinkedText
-              text={token.content}
-              context={context}
-              detectLinks={detectLinks}
-              providers={linkProviders}
-              links={tokenLinks}
-            />
-          </span>
-        );
-      })}
-    </>
+    <ConsoleLinkedText
+      text={text}
+      context={context}
+      detectLinks={detectLinks}
+      providers={linkProviders}
+      links={links}
+      renderText={renderText}
+    />
   );
 }
 
