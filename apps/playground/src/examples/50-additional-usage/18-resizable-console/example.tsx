@@ -1,3 +1,4 @@
+import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
 import { useRef, useState, type PointerEvent } from "react";
 import {
   Console,
@@ -37,47 +38,6 @@ const MIN_HEIGHT = 180;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), Math.max(min, max));
-}
-
-function GripIcon({
-  direction,
-}: {
-  direction: "horizontal" | "vertical" | "both";
-}) {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 15 15"
-      fill="none"
-      aria-hidden="true"
-    >
-      {direction === "horizontal" ? (
-        <>
-          <circle cx="5" cy="4" r="1" fill="currentColor" />
-          <circle cx="10" cy="4" r="1" fill="currentColor" />
-          <circle cx="5" cy="8" r="1" fill="currentColor" />
-          <circle cx="10" cy="8" r="1" fill="currentColor" />
-          <circle cx="5" cy="12" r="1" fill="currentColor" />
-          <circle cx="10" cy="12" r="1" fill="currentColor" />
-        </>
-      ) : direction === "vertical" ? (
-        <>
-          <circle cx="4" cy="5" r="1" fill="currentColor" />
-          <circle cx="8" cy="5" r="1" fill="currentColor" />
-          <circle cx="12" cy="5" r="1" fill="currentColor" />
-          <circle cx="4" cy="10" r="1" fill="currentColor" />
-          <circle cx="8" cy="10" r="1" fill="currentColor" />
-          <circle cx="12" cy="10" r="1" fill="currentColor" />
-        </>
-      ) : (
-        <>
-          <path d="M5 10 10 5" stroke="currentColor" strokeWidth="1.4" />
-          <path d="M7 12 12 7" stroke="currentColor" strokeWidth="1.4" />
-        </>
-      )}
-    </svg>
-  );
 }
 
 export default function ResizableConsoleExample() {
@@ -150,7 +110,19 @@ export default function ResizableConsoleExample() {
   };
 
   return (
-    <div ref={containerRef} style={{ width: "100%", minWidth: 0 }}>
+    <div
+      ref={containerRef}
+      style={
+        {
+          width: "100%",
+          minWidth: 0,
+          "--console-resize-separator-background": "#f8fafc",
+          "--console-resize-separator-foreground": "#475467",
+          "--console-resize-separator-border": "#98a2b3",
+          "--console-resize-separator-grip-background": "#ffffff",
+        } as React.CSSProperties
+      }
+    >
       <div
         style={{
           display: "flex",
@@ -228,6 +200,10 @@ export default function ResizableConsoleExample() {
               height: "100%",
               alignItems: "center",
               justifyContent: "center",
+              background:
+                "var(--console-resize-separator-background, transparent)",
+              color:
+                "var(--console-resize-separator-foreground, currentColor)",
               cursor: "col-resize",
               touchAction: "none",
             }}
@@ -235,15 +211,17 @@ export default function ResizableConsoleExample() {
             <span
               style={{
                 display: "inline-flex",
-                border: "1px solid #667085",
+                border:
+                  "1px solid var(--console-resize-separator-border, currentColor)",
                 borderRadius: 4,
                 padding: 1,
-                background: "#fff",
-                color: "#344054",
+                background:
+                  "var(--console-resize-separator-grip-background, transparent)",
+                color: "inherit",
                 pointerEvents: "none",
               }}
             >
-              <GripIcon direction="horizontal" />
+              <GripVertical size={14} aria-hidden="true" />
             </span>
           </div>
         )}
@@ -265,6 +243,10 @@ export default function ResizableConsoleExample() {
               height: 10,
               alignItems: "center",
               justifyContent: "center",
+              background:
+                "var(--console-resize-separator-background, transparent)",
+              color:
+                "var(--console-resize-separator-foreground, currentColor)",
               cursor: "row-resize",
               touchAction: "none",
             }}
@@ -272,15 +254,17 @@ export default function ResizableConsoleExample() {
             <span
               style={{
                 display: "inline-flex",
-                border: "1px solid #667085",
+                border:
+                  "1px solid var(--console-resize-separator-border, currentColor)",
                 borderRadius: 4,
                 padding: 1,
-                background: "#fff",
-                color: "#344054",
+                background:
+                  "var(--console-resize-separator-grip-background, transparent)",
+                color: "inherit",
                 pointerEvents: "none",
               }}
             >
-              <GripIcon direction="vertical" />
+              <GripHorizontal size={14} aria-hidden="true" />
             </span>
           </div>
         )}
@@ -302,13 +286,17 @@ export default function ResizableConsoleExample() {
               alignItems: "center",
               justifyContent: "center",
               borderTopLeftRadius: 6,
-              background: "#fff",
-              color: "#344054",
+              border:
+                "1px solid var(--console-resize-separator-border, currentColor)",
+              background:
+                "var(--console-resize-separator-grip-background, transparent)",
+              color:
+                "var(--console-resize-separator-foreground, currentColor)",
               cursor: "nwse-resize",
               touchAction: "none",
             }}
           >
-            <GripIcon direction="both" />
+            <MoveDiagonal2 size={15} aria-hidden="true" />
           </div>
         )}
       </div>
