@@ -4,6 +4,7 @@ import {
   Console,
   ConsoleStdout,
   type ConsoleMessageData,
+  type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
 
 function renderConsole(messages: ConsoleMessageData[], error = "") {
@@ -371,6 +372,89 @@ describe("Console rendering", () => {
 
     expect(html).toContain("plain fallback");
     expect(html).not.toContain('aria-label="Copy object"');
+  });
+
+  it("runs process-output processors in order and composes their output", () => {
+    const observations: Array<[string, unknown]> = [];
+    const processors: ConsoleProcessOutputProcessor[] = [
+      {
+        id: "prefix",
+        process: (output) => ({
+          data: `first: ${output.data}`,
+          metadata: { stage: "first" },
+        }),
+      },
+      {
+        id: "promote",
+        process: (output, context) => {
+          observations.push([context.text, output.metadata.stage]);
+
+          return {
+            structuredValue: {
+              kind: "processed",
+              text: context.text,
+              stage: output.metadata.stage,
+            },
+          };
+        },
+      },
+    ];
+
+    const html = renderToStaticMarkup(
+      <Console mode="ansi" messages={["hello"]} processors={processors} />,
+    );
+
+    expect(observations).toEqual([["first: hello", "first"]]);
+    expect(html).toContain("processed");
+    expect(html).toContain("first: hello");
+    expect(html).toContain("first");
+    expect(html).not.toContain(">hello<");
+  });
+
+  it("continues with later processors when one throws", () => {
+    const processors: ConsoleProcessOutputProcessor[] = [
+      {
+        process: (output) => ({ data: `before ${output.data}` }),
+      },
+      {
+        process: () => {
+          throw new Error("plugin failed");
+        },
+      },
+      {
+        process: (output) => ({ data: `${output.data} after` }),
+      },
+    ];
+
+    const html = renderToStaticMarkup(
+      <Console mode="ansi" messages={["value"]} processors={processors} />,
+    );
+
+    expect(html).toContain("before value after");
+  });
+
+  it("passes processor metadata to structured output parsers", () => {
+    let receivedKind: unknown;
+
+    renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={["EVENT ready"]}
+        processors={[
+          {
+            process: () => ({ metadata: { kind: "runtime-event" } }),
+          },
+        ]}
+        structuredOutputParsers={[
+          (text, context) => {
+            receivedKind = context.metadata?.kind;
+            return text.startsWith("EVENT") ? { text } : undefined;
+          },
+        ]}
+      />,
+    );
+
+    expect(receivedKind).toBe("runtime-event");
   });
 
   it("leaves JavaScript-like terminal objects as text", () => {
