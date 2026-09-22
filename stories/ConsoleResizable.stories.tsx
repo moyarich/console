@@ -7,12 +7,7 @@ import {
   PanelTop,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
-import {
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
+import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
@@ -225,10 +220,8 @@ function EditorShell() {
         alignItems: "center",
         justifyContent: "center",
         flex: "0 0 auto",
-        background:
-          "var(--console-resize-separator-background, #161b22)",
-        color:
-          "var(--console-resize-separator-foreground, #8b949e)",
+        background: "var(--console-resize-separator-background, #161b22)",
+        color: "var(--console-resize-separator-foreground, #8b949e)",
         cursor: horizontalDock ? "col-resize" : "row-resize",
         touchAction: "none",
       }}
@@ -238,10 +231,8 @@ function EditorShell() {
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          border:
-            "1px solid var(--console-resize-separator-border, #3d444d)",
-          borderRadius:
-            "var(--console-resize-separator-grip-radius, 4px)",
+          border: "1px solid var(--console-resize-separator-border, #3d444d)",
+          borderRadius: "var(--console-resize-separator-grip-radius, 4px)",
           padding: 1,
           background:
             "var(--console-resize-separator-grip-background, #21262d)",
@@ -350,23 +341,25 @@ function EditorShell() {
 
   return (
     <div
-      style={{
-        display: "grid",
-        gridTemplateRows: "44px minmax(0, 1fr)",
-        width: "100%",
-        height: "min(720px, calc(100vh - 48px))",
-        minHeight: 460,
-        overflow: "hidden",
-        border: "1px solid #30363d",
-        borderRadius: 10,
-        background: "#0d1117",
-        boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
-        "--console-resize-separator-background": "#161b22",
-        "--console-resize-separator-foreground": "#8b949e",
-        "--console-resize-separator-border": "#3d444d",
-        "--console-resize-separator-grip-background": "#21262d",
-        "--console-resize-separator-grip-radius": "4px",
-      } as CSSProperties}
+      style={
+        {
+          display: "grid",
+          gridTemplateRows: "44px minmax(0, 1fr)",
+          width: "100%",
+          height: "min(720px, calc(100vh - 48px))",
+          minHeight: 460,
+          overflow: "hidden",
+          border: "1px solid #30363d",
+          borderRadius: 10,
+          background: "#0d1117",
+          boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
+          "--console-resize-separator-background": "#161b22",
+          "--console-resize-separator-foreground": "#8b949e",
+          "--console-resize-separator-border": "#3d444d",
+          "--console-resize-separator-grip-background": "#21262d",
+          "--console-resize-separator-grip-radius": "4px",
+        } as CSSProperties
+      }
     >
       <div
         style={{
