@@ -13,7 +13,28 @@ import type {
   ConsoleLinkProvider,
   ConsoleLinkProviderContext,
 } from "../links/types";
-import type { ConsoleValueRenderer } from "../types";
+
+/** Context provided to custom value renderers. */
+export interface ConsoleValueRendererContext {
+  propertyKey?: string;
+  depth: number;
+  type: string;
+  renderDefault: () => ReactNode;
+}
+
+/**
+ * Custom renderer for individual console values.
+ *
+ * Returning `undefined` delegates to the next matching renderer.
+ */
+export interface ConsoleValueRenderer {
+  type?: string;
+  match?: (value: unknown, context: ConsoleValueRendererContext) => boolean;
+  render: (
+    value: unknown,
+    context: ConsoleValueRendererContext,
+  ) => ReactNode | undefined;
+}
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
