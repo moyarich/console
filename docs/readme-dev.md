@@ -104,6 +104,7 @@ packages/console/src/components/ConsoleStdout.tsx
 packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
+packages/console/src/links.tsx
 ```
 
 Structured rendering should not need to know whether a message came from page capture, a sandbox, an iframe, or a WebSocket. Process-channel metadata such as stdout/stderr should remain distinct from browser console methods.
@@ -122,6 +123,21 @@ Custom message and value rendering is implemented as ordered dispatch tables in 
 Keep renderer dispatch data-oriented. Avoid growing method/type handling into large conditionals or switches when a lookup/dispatch table is clearer.
 
 Value renderers must continue to propagate through nested `ConsoleValue` instances, `console.table()` cells, and structured ANSI values.
+
+### Link detection and providers
+
+Interactive text ranges use the shared contract in `packages/console/src/links.tsx`.
+
+- built-in detection handles only HTTP/HTTPS URLs and can be disabled with `detectLinks`
+- `linkProviders` run in array order before built-in URL detection
+- provider output must use exact plain-text `text`, `start`, and `end` ranges
+- invalid and overlapping ranges fail closed without suppressing the original text
+- provider navigation targets are restricted to HTTP/HTTPS and relative/hash targets; application-specific schemes should use `action`
+- the same providers propagate through structured strings, nested values, tables, promoted ANSI values, and ANSI text
+- process-output processors reuse `ConsoleLink` through their dedicated `links` result field rather than storing link ranges in generic metadata
+- when a processor transforms `data`, older link ranges are discarded unless replacement links are returned for the transformed text
+
+Keep URL/link detection as progressive enhancement. Copying and ordinary text selection must continue to work when no provider handles a range.
 
 ### Message state
 
