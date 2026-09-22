@@ -1,15 +1,13 @@
+import { Console, useConsoleMessages } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
-import { Console, useConsoleMessages } from "@moyarich/console";
 import type { CapturedConsoleMethod } from "../packages/console/src/consoleMethods";
-
-type MethodExample = {
+export type MethodExample = {
   description: string;
   run: (console: globalThis.Console) => void;
   expected: string;
 };
-
-const examples = {
+export const examples = {
   log: {
     description: "Log strings, numbers, booleans, and inspectable objects.",
     run: (console) =>
@@ -186,8 +184,11 @@ const examples = {
     expected: "No console output yet.",
   },
 } satisfies Record<CapturedConsoleMethod, MethodExample>;
-
-function ConsoleMethodExample({ method }: { method: CapturedConsoleMethod }) {
+export function ConsoleMethodExample({
+  method,
+}: {
+  method: CapturedConsoleMethod;
+}) {
   const { messages, console, clear } = useConsoleMessages({
     source: `storybook-console-${method}`,
     initialMessages:
@@ -217,15 +218,12 @@ function ConsoleMethodExample({ method }: { method: CapturedConsoleMethod }) {
     </div>
   );
 }
-
-const meta = {
+export const meta = {
   title: "Console/Console methods",
   component: ConsoleMethodExample,
 } satisfies Meta<typeof ConsoleMethodExample>;
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-function methodStory(method: CapturedConsoleMethod): Story {
+export type Story = StoryObj<typeof meta>;
+export function methodStory(method: CapturedConsoleMethod): Story {
   return {
     name: `console.${method}`,
     args: { method },
@@ -248,48 +246,3 @@ function methodStory(method: CapturedConsoleMethod): Story {
     },
   };
 }
-
-export const Log: Story = { ...methodStory("log"), name: "console.log" };
-export const Debug: Story = { ...methodStory("debug"), name: "console.debug" };
-export const Info: Story = { ...methodStory("info"), name: "console.info" };
-export const Warn: Story = { ...methodStory("warn"), name: "console.warn" };
-export const Error: Story = { ...methodStory("error"), name: "console.error" };
-export const Assert: Story = {
-  ...methodStory("assert"),
-  name: "console.assert",
-};
-export const Dir: Story = { ...methodStory("dir"), name: "console.dir" };
-export const Dirxml: Story = {
-  ...methodStory("dirxml"),
-  name: "console.dirxml",
-};
-export const Table: Story = { ...methodStory("table"), name: "console.table" };
-export const Count: Story = { ...methodStory("count"), name: "console.count" };
-export const CountReset: Story = {
-  ...methodStory("countReset"),
-  name: "console.countReset",
-};
-export const Time: Story = { ...methodStory("time"), name: "console.time" };
-export const TimeLog: Story = {
-  ...methodStory("timeLog"),
-  name: "console.timeLog",
-};
-export const TimeEnd: Story = {
-  ...methodStory("timeEnd"),
-  name: "console.timeEnd",
-};
-export const TimeStamp: Story = {
-  ...methodStory("timeStamp"),
-  name: "console.timeStamp",
-};
-export const Trace: Story = { ...methodStory("trace"), name: "console.trace" };
-export const Group: Story = { ...methodStory("group"), name: "console.group" };
-export const GroupCollapsed: Story = {
-  ...methodStory("groupCollapsed"),
-  name: "console.groupCollapsed",
-};
-export const GroupEnd: Story = {
-  ...methodStory("groupEnd"),
-  name: "console.groupEnd",
-};
-export const Clear: Story = { ...methodStory("clear"), name: "console.clear" };

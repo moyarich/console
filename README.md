@@ -608,7 +608,7 @@ while `--console-warning-border-color` changes only the warning message's
 | `--console-color-scheme`              | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
 | `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu                                                    |
 
-The panel chrome defaults to light when no scheme is supplied. If
+The panel chrome defaults to dark, matching the console output. If
 `--console-color-scheme` is set, the panel inherits that scheme unless
 `--console-panel-color-scheme` overrides it. Header, control, border, muted,
 and heading-icon fallback colors use `light-dark()`, so the header visibly
@@ -621,17 +621,19 @@ scheme-derived fallbacks.
 
 ### Panel chrome
 
-| Token                                     | CSS property              |
-| ----------------------------------------- | ------------------------- |
-| `--console-panel-background-color`        | `background-color`        |
-| `--console-panel-color`                   | `color`                   |
-| `--console-panel-muted-color`             | `color`                   |
-| `--console-panel-border`                  | `border` shorthand        |
-| `--console-panel-border-radius`           | `border-radius`           |
-| `--console-panel-box-shadow`              | `box-shadow`              |
-| `--console-panel-header-background-color` | `background-color`        |
-| `--console-panel-header-border-bottom`    | `border-bottom` shorthand |
-| `--console-panel-popover-box-shadow`      | `box-shadow`              |
+| Token                                     | CSS property               |
+| ----------------------------------------- | -------------------------- |
+| `--console-panel-background-color`        | `background-color`         |
+| `--console-panel-color`                   | `color`                    |
+| `--console-panel-muted-color`             | `color`                    |
+| `--console-panel-border`                  | `border` shorthand         |
+| `--console-panel-border-radius`           | `border-radius`            |
+| `--console-panel-box-shadow`              | `box-shadow`               |
+| `--console-panel-header-color`            | `color` (header and title) |
+| `--console-panel-header-muted-color`      | `color` (subtitle)         |
+| `--console-panel-header-background-color` | `background-color`         |
+| `--console-panel-header-border-bottom`    | `border-bottom` shorthand  |
+| `--console-panel-popover-box-shadow`      | `box-shadow`               |
 
 ### Panel controls and actions
 
