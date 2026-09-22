@@ -23,11 +23,7 @@ export { objectEntries } from "./objectEntries";
 export { objectLabel } from "./objectLabel";
 export { preview } from "./preview";
 export { typeClass } from "./typeClass";
-export {
-  collectColumns,
-  normalizeConsoleTableData,
-  toRows,
-} from "./table";
+export { collectColumns, normalizeConsoleTableData, toRows } from "./table";
 export type { ConsoleTableRow } from "./table";
 export type {
   ContextMenuThemeProperty,
