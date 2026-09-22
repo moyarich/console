@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   Console,
   ConsoleLinkedText,
+  ConsoleMessage,
   ConsoleStdout,
   type ConsoleLinkProvider,
   type ConsoleMessageData,
@@ -37,6 +38,60 @@ describe("Console rendering", () => {
     expect(html).toContain("margin");
     expect(html).toContain("Array(3)");
     expect(html.match(/aria-label="Copy object"/g)?.length).toBe(2);
+  });
+
+  it("adds an expand/collapse message icon only for expandable messages", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        messages={[
+          { method: "log", data: ["plain"], depth: 0 },
+          {
+            method: "log",
+            data: [{ nested: { value: 1 } }],
+            depth: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(html.match(/console-message-icon-button/g)?.length).toBe(1);
+    expect(html).toContain(
+      'aria-label="Expand all console values in this message"',
+    );
+    expect(html).toContain('aria-expanded="false"');
+  });
+
+  it("renders expanded and collapsed message-icon states", () => {
+    const message: ConsoleMessageData = {
+      method: "log",
+      data: [{ nested: { value: 1 } }],
+      depth: 0,
+    };
+    const expanded = renderToStaticMarkup(
+      <ConsoleMessage
+        message={message}
+        allValuesExpanded
+        onToggleExpansion={() => undefined}
+      />,
+    );
+    const collapsed = renderToStaticMarkup(
+      <ConsoleMessage
+        message={message}
+        allValuesExpanded={false}
+        onToggleExpansion={() => undefined}
+      />,
+    );
+
+    expect(expanded).toContain(
+      'aria-label="Collapse all console values in this message"',
+    );
+    expect(expanded).toContain('aria-expanded="true"');
+    expect(expanded.match(/<details[^>]* open=""/g)?.length).toBe(2);
+    expect(collapsed).toContain(
+      'aria-label="Expand all console values in this message"',
+    );
+    expect(collapsed).toContain('aria-expanded="false"');
+    expect(collapsed).not.toContain('open=""');
   });
 
   it("honors dir expansion depth", () => {
