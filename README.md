@@ -39,7 +39,7 @@ Provides utilities for capturing a real `console`, creating a console-compatible
 | Transform/enrich ANSI process output               | `processors`                                 |
 | Parse structured values from ANSI output           | `structuredOutputParsers`                    |
 | Customize how messages or values render            | `messageRenderers` / `valueRenderers`        |
-| Make URLs and application references interactive     | `detectLinks` / `linkProviders`              |
+| Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
 ## Install
 
@@ -540,8 +540,8 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `emptyMessage`        | Customize the empty state                                                      |
 | `className` / `style` | Host-owned layout and styling                                                  |
 | `valueRenderers`      | Override rendering for matching values                                         |
-| `detectLinks`           | Enable/disable built-in HTTP/HTTPS detection                                   |
-| `linkProviders`         | Add ordered application-specific link providers                                |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
+| `linkProviders`       | Add ordered application-specific link providers                                |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
@@ -923,15 +923,15 @@ Available helpers:
 
 ### Links
 
-| Export                       | Purpose                                                      |
-| ---------------------------- | ------------------------------------------------------------ |
-| `ConsoleLink`                | Text/range/target/action metadata for one interactive range  |
-| `ConsoleLinkProvider`        | Discover application-specific links in rendered text         |
-| `ConsoleLinkProviderContext` | Mode/value/process metadata supplied to link providers       |
-| `ConsoleLinkActionContext`   | Activated link plus provider/source context                  |
+| Export                       | Purpose                                                       |
+| ---------------------------- | ------------------------------------------------------------- |
+| `ConsoleLink`                | Text/range/target/action metadata for one interactive range   |
+| `ConsoleLinkProvider`        | Discover application-specific links in rendered text          |
+| `ConsoleLinkProviderContext` | Mode/value/process metadata supplied to link providers        |
+| `ConsoleLinkActionContext`   | Activated link plus provider/source context                   |
 | `detectWebLinks`             | Detect safe HTTP/HTTPS URL ranges                             |
 | `resolveConsoleLinks`        | Resolve explicit links, providers, and built-in URL detection |
-| `isSafeConsoleLinkTarget`    | Validate navigation targets used by the built-in renderer    |
+| `isSafeConsoleLinkTarget`    | Validate navigation targets used by the built-in renderer     |
 
 ### Custom rendering
 
