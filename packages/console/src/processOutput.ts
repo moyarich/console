@@ -86,6 +86,164 @@ function hasStructuredValue(
   return Object.prototype.hasOwnProperty.call(result, "structuredValue");
 }
 
+interface MutableConsoleOutputLine {
+  data: string;
+  id?: string;
+  stream?: ConsoleOutputStream;
+  metadata?: ConsoleProcessOutputMetadata;
+}
+
+const ANSI_CLEAR_LINE_PATTERN = /^\u001b\[[012]?K/;
+
+function createOutputLine(
+  source: ConsoleStdoutEntry,
+  data = "",
+): MutableConsoleOutputLine {
+  return {
+    data,
+    ...(source.id !== undefined ? { id: source.id } : {}),
+    ...(source.stream !== undefined ? { stream: source.stream } : {}),
+    ...(source.metadata !== undefined
+      ? { metadata: { ...source.metadata } }
+      : {}),
+  };
+}
+
+function mergeOutputLineMetadata(
+  line: MutableConsoleOutputLine,
+  source: ConsoleStdoutEntry,
+) {
+  if (line.id === undefined && source.id !== undefined) {
+    line.id = source.id;
+  }
+
+  if (line.stream === undefined && source.stream !== undefined) {
+    line.stream = source.stream;
+  }
+
+  if (source.metadata) {
+    line.metadata = {
+      ...(line.metadata ?? {}),
+      ...source.metadata,
+    };
+  }
+}
+
+/**
+ * Converts raw stdout/stderr chunks into stable logical lines.
+ *
+ * Newlines commit the current line. A standalone carriage return keeps the
+ * current line visible until more output arrives, then the next content
+ * replaces that line. CRLF is treated as a normal newline. ANSI clear-line
+ * sequences clear the current logical line without introducing cursor/buffer
+ * emulation.
+ */
+export function normalizeConsoleProcessOutputEntries(
+  entries: readonly (ConsoleStdoutEntry | string)[],
+): ConsoleStdoutEntry[] {
+  const normalized: ConsoleStdoutEntry[] = [];
+  const idCounts = new Map<string, number>();
+  let current: MutableConsoleOutputLine | undefined;
+  let pendingCarriageReturn = false;
+
+  const commitCurrent = () => {
+    if (!current) {
+      return;
+    }
+
+    const next: ConsoleStdoutEntry = {
+      data: current.data,
+      ...(current.stream !== undefined ? { stream: current.stream } : {}),
+      ...(current.metadata !== undefined
+        ? { metadata: Object.freeze({ ...current.metadata }) }
+        : {}),
+    };
+
+    if (current.id !== undefined) {
+      const count = idCounts.get(current.id) ?? 0;
+      next.id = count === 0 ? current.id : `${current.id}:${count}`;
+      idCounts.set(current.id, count + 1);
+    }
+
+    normalized.push(next);
+    current = undefined;
+  };
+
+  for (const entry of entries) {
+    const source: ConsoleStdoutEntry =
+      typeof entry === "string" ? { data: entry } : entry;
+
+    if (
+      current?.stream !== undefined &&
+      source.stream !== undefined &&
+      current.stream !== source.stream
+    ) {
+      commitCurrent();
+      pendingCarriageReturn = false;
+    } else if (current) {
+      mergeOutputLineMetadata(current, source);
+    }
+
+    if (source.data.length === 0) {
+      commitCurrent();
+      pendingCarriageReturn = false;
+      current = createOutputLine(source);
+      commitCurrent();
+      continue;
+    }
+
+    let offset = 0;
+
+    while (offset < source.data.length) {
+      const remaining = source.data.slice(offset);
+      const clearLineMatch = remaining.match(ANSI_CLEAR_LINE_PATTERN);
+
+      if (clearLineMatch) {
+        current = createOutputLine(source, clearLineMatch[0]);
+        pendingCarriageReturn = false;
+        offset += clearLineMatch[0].length;
+        continue;
+      }
+
+      const character = source.data[offset];
+
+      if (pendingCarriageReturn) {
+        if (character === "\n") {
+          current ??= createOutputLine(source);
+          commitCurrent();
+          pendingCarriageReturn = false;
+          offset += 1;
+          continue;
+        }
+
+        current = createOutputLine(source, "\r");
+        pendingCarriageReturn = false;
+      }
+
+      if (character === "\r") {
+        current ??= createOutputLine(source);
+        pendingCarriageReturn = true;
+        offset += 1;
+        continue;
+      }
+
+      if (character === "\n") {
+        current ??= createOutputLine(source);
+        commitCurrent();
+        offset += 1;
+        continue;
+      }
+
+      current ??= createOutputLine(source);
+      current.data += character;
+      offset += 1;
+    }
+  }
+
+  commitCurrent();
+  return normalized;
+}
+
 /**
  * Applies process-output processors in declaration order.
  *
