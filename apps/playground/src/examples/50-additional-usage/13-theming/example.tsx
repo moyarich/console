@@ -43,7 +43,6 @@ const messages: ConsoleMessageData[] = [
 
 const themes: Record<ThemeName, ConsoleThemeStyle> = {
   dark: {
-    "--console-panel-color-scheme": "dark",
     "--console-color-scheme": "dark",
     "--console-context-menu-color-scheme": "dark",
 
@@ -80,7 +79,6 @@ const themes: Record<ThemeName, ConsoleThemeStyle> = {
     "--console-context-menu-separator-background-color": "#475569",
   },
   light: {
-    "--console-panel-color-scheme": "light",
     "--console-color-scheme": "light",
     "--console-context-menu-color-scheme": "light",
 
