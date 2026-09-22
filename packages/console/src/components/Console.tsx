@@ -17,52 +17,95 @@ import {
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
-import type { ConsoleMessageData, RunOutput } from "../types";
+import type {
+  ConsoleMessageData,
+  ConsoleMode as ConsoleModeType,
+  RunOutput,
+} from "../types";
 import type {
   ConsoleMessageRenderer,
   ConsoleValueRenderer,
 } from "../renderers";
+import type {
+  ConsoleContextMenuAction,
+  ConsoleMessageAction,
+} from "../actions";
 import { writeClipboardText } from "../utils/clipboard";
 
-export type ConsoleMode = "console" | "ansi";
+/** Rendering mode selected by the top-level console component. */
+export type ConsoleMode = ConsoleModeType;
+/** CSS resize direction supported by the console shell. */
 export type ConsoleResizeDirection =
   "vertical" | "horizontal" | "both" | "block" | "inline";
 
+/**
+ * Predicate used to decide whether a structured message should be visible.
+ */
 export type ConsoleMessageFilter = (
   message: ConsoleMessageData,
   index: number,
   messages: readonly ConsoleMessageData[],
 ) => boolean;
 
+/** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
+  /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
+  /** Keep the output pinned to the bottom while the user remains near it. @default true */
   autoScroll?: boolean;
+  /** Enables native CSS resizing in the requested direction. */
   resizable?: ConsoleResizeDirection;
+  /** Whether to render the panel header. @default true */
   showHeader?: boolean;
+  /** Whether to include the built-in clear command when `onClear` is provided. @default true */
   showClearButton?: boolean;
+  /** Additional React content rendered in the header actions popover. */
   actions?: ReactNode;
+  /** Host-defined actions available from the right-click context menu. */
+  contextMenuActions?: readonly ConsoleContextMenuAction[];
+  /** Header title. @default "Console" */
   title?: string;
+  /** Optional header subtitle. Mode-specific defaults are used when omitted. */
   subtitle?: string;
+  /** Message shown when the selected mode has no visible output. */
   emptyMessage?: string;
+  /** Additional class names applied to the root console element. */
   className?: string;
+  /** Inline styles applied to the root console element, including public theme variables. */
   style?: CSSProperties;
+  /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
 }
 
+/** Props for browser-style structured console rendering. */
 export interface ConsoleMessageModeProps extends ConsoleSharedProps {
+  /** Selects structured console mode. This is the default mode. */
   mode?: "console";
+  /** Run result used as an alternative source of messages and runtime error text. */
   output?: RunOutput;
+  /** Structured messages to render. Takes precedence over `output.messages`. */
   messages?: ConsoleMessageData[];
+  /** Optional runtime error appended as a synthetic error message. */
   error?: string;
+  /** Observes the unfiltered source message collection. */
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
+  /** Controls which structured messages are visible. */
   filter?: ConsoleMessageFilter;
+  /** Ordered custom renderers for complete structured messages. */
   messageRenderers?: readonly ConsoleMessageRenderer[];
+  /** Host-defined actions shown for a selected structured message. */
+  messageActions?: readonly ConsoleMessageAction[];
 }
 
+/** Props for terminal-style ANSI/process-output rendering. */
 export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
+  /** Selects ANSI/process-output mode. */
   mode: "ansi";
+  /** ANSI-aware stdout/stderr entries or raw strings to render. */
   messages?: readonly (ConsoleStdoutEntry | string)[];
+  /** Parse complete JSON object/array lines into structured value inspectors. */
   parseStructuredOutput?: boolean;
+  /** Ordered custom parsers that can promote text lines into structured values. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   output?: never;
   error?: never;
@@ -71,6 +114,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   messageRenderers?: never;
 }
 
+/** Discriminated prop union for the top-level {@link Console} component. */
 export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
 
 interface ConsoleFrameProps extends ConsoleSharedProps {
@@ -79,12 +123,17 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   isEmpty: boolean;
   scrollKey: unknown;
   children: ReactNode;
+  messageActions?: readonly ConsoleMessageAction[];
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
 const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 const AUTO_SCROLL_THRESHOLD = 24;
 
+/**
+ * Shared frame that renders panel chrome, actions, context-menu support, and
+ * the scrollable output surface for both console modes.
+ */
 function ConsoleFrame({
   mode,
   onClear,
@@ -93,6 +142,7 @@ function ConsoleFrame({
   showHeader = true,
   showClearButton = true,
   actions,
+  contextMenuActions,
   title = "Console",
   subtitle,
   emptyMessage,
@@ -102,6 +152,7 @@ function ConsoleFrame({
   isEmpty,
   scrollKey,
   children,
+  messageActions,
 }: ConsoleFrameProps) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -223,6 +274,10 @@ function ConsoleFrame({
       )}
 
       <ConsoleContextMenu
+        mode={mode}
+        hasMessages={hasMessages}
+        actions={contextMenuActions}
+        messageActions={messageActions}
         copyDisabled={!hasMessages}
         clearDisabled={!hasMessages || !onClear}
         onClear={onClear ? clear : undefined}
@@ -252,6 +307,7 @@ function ConsoleFrame({
   );
 }
 
+/** Renders structured console messages and custom message/value renderers. */
 function ConsoleMessageMode({
   output,
   messages: messagesProp,
@@ -259,6 +315,7 @@ function ConsoleMessageMode({
   onMessagesChange,
   filter,
   messageRenderers,
+  messageActions,
   valueRenderers,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
@@ -314,6 +371,7 @@ function ConsoleMessageMode({
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0}
       scrollKey={visibleMessages}
+      messageActions={messageActions}
     >
       {visibleMessages.map((message, index) => (
         <ConsoleMessage
@@ -334,6 +392,7 @@ function ConsoleMessageMode({
   );
 }
 
+/** Renders ANSI-aware process output with optional structured parsing. */
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
@@ -363,6 +422,12 @@ function ConsoleAnsiMode({
   );
 }
 
+/**
+ * Renders either structured browser-console output or ANSI process output.
+ *
+ * Set `mode="ansi"` for terminal-style entries; omit `mode` (or use
+ * `"console"`) for structured {@link ConsoleMessageData} messages.
+ */
 export function Console(props: ConsoleProps) {
   if (props.mode === "ansi") {
     return <ConsoleAnsiMode {...props} />;

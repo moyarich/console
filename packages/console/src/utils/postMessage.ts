@@ -3,14 +3,21 @@ import { createConsoleEventHandler } from "./createConsoleEventHandler";
 import { deserializeConsoleEvent } from "./serialization";
 import { DEFAULT_CONSOLE_CHANNEL, isConsoleEnvelope } from "./transport";
 
+/** Options for receiving versioned console envelopes through `postMessage`. */
 export interface ListenForConsolePostMessagesOptions {
+  /** Event bus that receives validated console events. */
   events: ConsoleEventEmitter;
+  /** Transport channel to accept. @default "default" */
   channel?: string;
+  /** Optional origin allow-list expressed as a string, RegExp, or predicate. */
   origin?: string | RegExp | ((origin: string) => boolean);
+  /** Optional MessageEvent source that must match exactly. */
   source?: MessageEventSource | null;
+  /** Window-like event target. Defaults to the current `window`. */
   targetWindow?: Pick<Window, "addEventListener" | "removeEventListener">;
 }
 
+/** Evaluates the configured origin allow-list against a MessageEvent origin. */
 function originMatches(
   expected: ListenForConsolePostMessagesOptions["origin"],
   actual: string,
@@ -21,6 +28,14 @@ function originMatches(
   return expected(actual);
 }
 
+/**
+ * Listens for console transport envelopes delivered through `window.postMessage`.
+ *
+ * Source, origin, channel, envelope shape, and serialized event data are
+ * validated before forwarding events to the supplied emitter.
+ *
+ * @returns A cleanup function that removes the message listener.
+ */
 export function listenForConsolePostMessages({
   events,
   channel = DEFAULT_CONSOLE_CHANNEL,
