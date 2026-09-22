@@ -31,6 +31,7 @@ export interface ConsoleMessageData {
 }
 
 /** Event shared by console producers, event emitters, and transports. */
-export type ConsoleEvent =
-  | { type: "message"; message: ConsoleMessageData }
-  | { type: "clear" };
+export type ConsoleEvent = {
+  type: "message";
+  message: ConsoleMessageData;
+} | { type: "clear" };
