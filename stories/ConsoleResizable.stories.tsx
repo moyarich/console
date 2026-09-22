@@ -1,5 +1,13 @@
 import Editor from "@monaco-editor/react";
-import { useState } from "react";
+import {
+  GripHorizontal,
+  GripVertical,
+  PanelBottom,
+  PanelLeft,
+  PanelRight,
+  PanelTop,
+} from "lucide-react";
+import { useRef, useState, type PointerEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
@@ -9,7 +17,16 @@ import {
 
 type DockPosition = "top" | "right" | "bottom" | "left";
 
-const DOCK_POSITIONS: DockPosition[] = ["top", "right", "bottom", "left"];
+const DOCK_OPTIONS = [
+  { position: "top", label: "Top", icon: PanelTop },
+  { position: "right", label: "Right", icon: PanelRight },
+  { position: "bottom", label: "Bottom", icon: PanelBottom },
+  { position: "left", label: "Left", icon: PanelLeft },
+] as const satisfies readonly {
+  position: DockPosition;
+  label: string;
+  icon: typeof PanelTop;
+}[];
 
 const initialMessages: ConsoleMessageData[] = [
   {
@@ -56,18 +73,78 @@ export default function App() {
 }
 `;
 
+const MIN_CONSOLE_SIZE = 150;
+const MIN_EDITOR_SIZE = 220;
+const SPLITTER_SIZE = 10;
+
 function isHorizontalDock(dock: DockPosition) {
   return dock === "left" || dock === "right";
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
 function EditorShell() {
+  const workspaceRef = useRef<HTMLDivElement>(null);
   const [dock, setDock] = useState<DockPosition>("bottom");
   const [minimized, setMinimized] = useState(false);
+  const [verticalSize, setVerticalSize] = useState(250);
+  const [horizontalSize, setHorizontalSize] = useState(390);
   const [source, setSource] = useState(initialSource);
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
 
   const horizontalDock = isHorizontalDock(dock);
+  const consoleSize = horizontalDock ? horizontalSize : verticalSize;
+
+  const startResize = (event: PointerEvent<HTMLDivElement>) => {
+    if (minimized) return;
+
+    event.preventDefault();
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startSize = consoleSize;
+    const bounds = workspace.getBoundingClientRect();
+    const maxSize =
+      (horizontalDock ? bounds.width : bounds.height) -
+      MIN_EDITOR_SIZE -
+      SPLITTER_SIZE;
+
+    const handlePointerMove = (pointerEvent: globalThis.PointerEvent) => {
+      const delta = horizontalDock
+        ? pointerEvent.clientX - startX
+        : pointerEvent.clientY - startY;
+      const direction =
+        dock === "left" || dock === "top" ? 1 : -1;
+      const nextSize = clamp(
+        startSize + delta * direction,
+        MIN_CONSOLE_SIZE,
+        maxSize,
+      );
+
+      if (horizontalDock) {
+        setHorizontalSize(nextSize);
+      } else {
+        setVerticalSize(nextSize);
+      }
+    };
+
+    const stopResize = () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", stopResize);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+
+    document.body.style.cursor = horizontalDock ? "col-resize" : "row-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", stopResize, { once: true });
+  };
 
   const consolePane = minimized ? (
     <button
@@ -75,17 +152,13 @@ function EditorShell() {
       onClick={() => setMinimized(false)}
       style={{
         display: "flex",
-        width: horizontalDock ? 42 : "100%",
-        height: horizontalDock ? "100%" : 42,
-        minWidth: horizontalDock ? 42 : 0,
-        minHeight: horizontalDock ? 0 : 42,
+        width: horizontalDock ? 38 : "100%",
+        height: horizontalDock ? "100%" : 38,
+        minWidth: horizontalDock ? 38 : 0,
+        minHeight: horizontalDock ? 0 : 38,
         alignItems: "center",
         justifyContent: "center",
         border: 0,
-        borderTop: dock === "bottom" ? "1px solid #30363d" : undefined,
-        borderRight: dock === "left" ? "1px solid #30363d" : undefined,
-        borderBottom: dock === "top" ? "1px solid #30363d" : undefined,
-        borderLeft: dock === "right" ? "1px solid #30363d" : undefined,
         padding: 0,
         background: "#161b22",
         color: "#c9d1d9",
@@ -95,43 +168,84 @@ function EditorShell() {
         fontWeight: 700,
         writingMode: horizontalDock ? "vertical-rl" : undefined,
       }}
+      aria-label="Restore console"
+      title="Restore console"
     >
       Console
     </button>
   ) : (
-    <Console
-      messages={messages}
-      onClear={() => setMessages([])}
-      autoScroll={false}
-      resizable={horizontalDock ? "horizontal" : "vertical"}
-      title="Console"
-      subtitle={`Docked to ${dock} · drag the native resize handle ${horizontalDock ? "horizontally" : "vertically"}`}
-      style={
-        horizontalDock
-          ? {
-              width: 390,
-              minWidth: 280,
-              maxWidth: 620,
-              height: "100%",
-              minHeight: 0,
-              borderRadius: 0,
-            }
-          : {
-              width: "100%",
-              height: 250,
-              minHeight: 150,
-              maxHeight: 480,
-              borderRadius: 0,
-            }
-      }
-      panelActions={[
-        {
-          id: "minimize",
-          label: "Minimize console",
-          onSelect: () => setMinimized(true),
-        },
-      ]}
-    />
+    <div
+      style={{
+        minWidth: 0,
+        minHeight: 0,
+        overflow: "hidden",
+      }}
+    >
+      <Console
+        messages={messages}
+        onClear={() => setMessages([])}
+        autoScroll={false}
+        title="Console"
+        subtitle={`Docked to ${dock}`}
+        style={{
+          width: "100%",
+          height: "100%",
+          minWidth: 0,
+          minHeight: 0,
+          borderRadius: 0,
+        }}
+        panelActions={[
+          {
+            id: "minimize",
+            label: "Minimize console",
+            onSelect: () => setMinimized(true),
+          },
+        ]}
+      />
+    </div>
+  );
+
+  const splitter = minimized ? null : (
+    <div
+      role="separator"
+      aria-orientation={horizontalDock ? "vertical" : "horizontal"}
+      aria-label={`Resize ${dock}-docked console`}
+      title={`Drag to resize the ${dock}-docked console`}
+      onPointerDown={startResize}
+      style={{
+        position: "relative",
+        zIndex: 2,
+        display: "flex",
+        width: horizontalDock ? SPLITTER_SIZE : "100%",
+        height: horizontalDock ? "100%" : SPLITTER_SIZE,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: "0 0 auto",
+        background: "#161b22",
+        color: "#8b949e",
+        cursor: horizontalDock ? "col-resize" : "row-resize",
+        touchAction: "none",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "1px solid #3d444d",
+          borderRadius: 4,
+          padding: 1,
+          background: "#21262d",
+          pointerEvents: "none",
+        }}
+      >
+        {horizontalDock ? (
+          <GripVertical size={14} aria-hidden="true" />
+        ) : (
+          <GripHorizontal size={14} aria-hidden="true" />
+        )}
+      </span>
+    </div>
   );
 
   const editorPane = (
@@ -139,6 +253,8 @@ function EditorShell() {
       style={{
         display: "grid",
         gridTemplateRows: "34px minmax(0, 1fr)",
+        width: "100%",
+        height: "100%",
         minWidth: 0,
         minHeight: 0,
         overflow: "hidden",
@@ -148,6 +264,7 @@ function EditorShell() {
       <div
         style={{
           display: "flex",
+          minWidth: 0,
           alignItems: "center",
           borderBottom: "1px solid #21262d",
           padding: "0 12px",
@@ -159,35 +276,77 @@ function EditorShell() {
         TypeScript React
       </div>
 
-      <Editor
-        path="file:///src/App.tsx"
-        language="typescript"
-        value={source}
-        theme="vs-dark"
-        onChange={(value) => setSource(value ?? "")}
-        options={{
-          automaticLayout: true,
-          fontSize: 13,
-          minimap: { enabled: false },
-          padding: { top: 14 },
-          scrollBeyondLastLine: false,
-          tabSize: 2,
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          minWidth: 0,
+          minHeight: 0,
+          overflow: "hidden",
         }}
-      />
+      >
+        <Editor
+          path="file:///src/App.tsx"
+          language="typescript"
+          value={source}
+          width="100%"
+          height="100%"
+          theme="vs-dark"
+          onChange={(value) => setSource(value ?? "")}
+          options={{
+            automaticLayout: true,
+            fontSize: 13,
+            minimap: { enabled: false },
+            padding: { top: 14 },
+            scrollBeyondLastLine: false,
+            tabSize: 2,
+          }}
+        />
+      </div>
     </div>
   );
 
+  const dockedConsoleTrack = minimized
+    ? horizontalDock
+      ? "38px"
+      : "38px"
+    : `${consoleSize}px`;
+  const splitTrack = minimized ? "" : ` ${SPLITTER_SIZE}px`;
+
+  const workspaceStyle =
+    dock === "left"
+      ? {
+          gridTemplateColumns: `${dockedConsoleTrack}${splitTrack} minmax(0, 1fr)`,
+          gridTemplateRows: "minmax(0, 1fr)",
+        }
+      : dock === "right"
+        ? {
+            gridTemplateColumns: `minmax(0, 1fr)${splitTrack} ${dockedConsoleTrack}`,
+            gridTemplateRows: "minmax(0, 1fr)",
+          }
+        : dock === "top"
+          ? {
+              gridTemplateColumns: "minmax(0, 1fr)",
+              gridTemplateRows: `${dockedConsoleTrack}${splitTrack} minmax(0, 1fr)`,
+            }
+          : {
+              gridTemplateColumns: "minmax(0, 1fr)",
+              gridTemplateRows: `minmax(0, 1fr)${splitTrack} ${dockedConsoleTrack}`,
+            };
+
   const panes =
-    dock === "top" || dock === "left"
-      ? [consolePane, editorPane]
-      : [editorPane, consolePane];
+    dock === "left" || dock === "top"
+      ? [consolePane, splitter, editorPane]
+      : [editorPane, splitter, consolePane];
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateRows: "42px minmax(0, 1fr)",
-        height: 720,
+        gridTemplateRows: "44px minmax(0, 1fr)",
+        width: "100%",
+        height: "min(720px, calc(100vh - 48px))",
+        minHeight: 460,
         overflow: "hidden",
         border: "1px solid #30363d",
         borderRadius: 10,
@@ -198,8 +357,10 @@ function EditorShell() {
       <div
         style={{
           display: "flex",
+          minWidth: 0,
           alignItems: "center",
           gap: 8,
+          overflowX: "auto",
           borderBottom: "1px solid #30363d",
           padding: "0 10px",
           background: "#161b22",
@@ -208,7 +369,9 @@ function EditorShell() {
           fontSize: 12,
         }}
       >
-        <strong style={{ marginRight: "auto" }}>src/App.tsx</strong>
+        <strong style={{ marginRight: "auto", whiteSpace: "nowrap" }}>
+          src/App.tsx
+        </strong>
 
         <button
           type="button"
@@ -220,50 +383,53 @@ function EditorShell() {
           Run
         </button>
 
-        <span aria-hidden="true">Dock:</span>
+        <span aria-hidden="true" style={{ whiteSpace: "nowrap" }}>
+          Dock:
+        </span>
 
-        {DOCK_POSITIONS.map((position) => (
+        {DOCK_OPTIONS.map(({ position, label, icon: Icon }) => (
           <button
             key={position}
             type="button"
+            aria-label={`Dock console ${position}`}
             aria-pressed={dock === position}
+            title={`Dock console ${position}`}
             onClick={() => {
               setDock(position);
               setMinimized(false);
             }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              whiteSpace: "nowrap",
+            }}
           >
-            {position[0]?.toUpperCase()}
-            {position.slice(1)}
+            <Icon size={14} aria-hidden="true" />
+            {label}
           </button>
         ))}
 
-        <button type="button" onClick={() => setMinimized((value) => !value)}>
+        <button
+          type="button"
+          onClick={() => setMinimized((value) => !value)}
+          style={{ whiteSpace: "nowrap" }}
+        >
           {minimized ? "Restore console" : "Minimize console"}
         </button>
       </div>
 
       <div
-        style={
-          horizontalDock
-            ? {
-                display: "grid",
-                gridTemplateColumns:
-                  dock === "left"
-                    ? "auto minmax(0, 1fr)"
-                    : "minmax(0, 1fr) auto",
-                minHeight: 0,
-                minWidth: 0,
-              }
-            : {
-                display: "grid",
-                gridTemplateRows:
-                  dock === "top"
-                    ? "auto minmax(0, 1fr)"
-                    : "minmax(0, 1fr) auto",
-                minHeight: 0,
-                minWidth: 0,
-              }
-        }
+        ref={workspaceRef}
+        style={{
+          display: "grid",
+          width: "100%",
+          height: "100%",
+          minWidth: 0,
+          minHeight: 0,
+          overflow: "hidden",
+          ...workspaceStyle,
+        }}
       >
         {panes}
       </div>
@@ -284,7 +450,15 @@ type Story = StoryObj<typeof meta>;
 
 export const DockableConsole: Story = {
   render: () => (
-    <div style={{ padding: 24 }}>
+    <div
+      style={{
+        width: "100%",
+        minWidth: 0,
+        minHeight: 0,
+        padding: 24,
+        overflow: "hidden",
+      }}
+    >
       <EditorShell />
     </div>
   ),
