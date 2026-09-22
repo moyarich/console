@@ -114,6 +114,35 @@ describe("console addon API", () => {
     expect(cleanup).toEqual(["activate", "scope", "service"]);
   });
 
+  it("allows an addon to reload after scoped unload", () => {
+    const manager = createConsoleAddonManager();
+    const point = createConsoleExtensionPoint<string>("test.replay");
+    let activations = 0;
+
+    const addon: ConsoleAddon = {
+      id: "strict-mode-addon",
+      activate(host) {
+        activations += 1;
+        host.extensions.register(point, `activation-${activations}`);
+      },
+    };
+
+    const first = manager.load(addon);
+
+    expect(manager.extensions.getAll(point)).toEqual(["activation-1"]);
+
+    first.dispose();
+
+    expect(manager.has(addon.id)).toBe(false);
+    expect(manager.extensions.getAll(point)).toEqual([]);
+
+    const second = manager.load(addon);
+
+    expect(manager.extensions.getAll(point)).toEqual(["activation-2"]);
+
+    second.dispose();
+  });
+
   it("rejects duplicate addon and extension registration IDs", () => {
     const manager = createConsoleAddonManager();
     const point = createConsoleExtensionPoint<string>("test.ids");
