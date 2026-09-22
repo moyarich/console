@@ -12,15 +12,11 @@ import {
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
 } from "../processOutput";
-import {
-  getAnsiTokenRanges,
-  getAnsiTokenStyle,
-  hasAnsiClearLine,
-} from "../utils/terminal/ansi";
-import {
-  parseStructuredOutput,
-  type ConsoleStructuredOutputParser,
-} from "../utils/terminal/structuredOutput";
+import { getAnsiTokenRanges } from "../utils/terminal/getAnsiTokenRanges";
+import { getAnsiTokenStyle } from "../utils/terminal/getAnsiTokenStyle";
+import { hasAnsiClearLine } from "../utils/terminal/hasAnsiClearLine";
+import { parseStructuredOutput } from "../utils/terminal/parseStructuredOutput";
+import type { ConsoleStructuredOutputParser } from "../utils/terminal/types";
 
 export type {
   ConsoleOutputStream,
@@ -32,7 +28,7 @@ export type {
 export type {
   ConsoleStructuredOutputParser,
   ConsoleStructuredOutputParserContext,
-} from "../utils/terminal/structuredOutput";
+} from "../utils/terminal/types";
 
 /** Props for rendering ANSI-aware stdout/stderr entries. */
 export interface ConsoleStdoutProps {
