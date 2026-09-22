@@ -5,6 +5,7 @@ import {
   PanelLeft,
   PanelRight,
   PanelTop,
+  Minimize2,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
@@ -94,6 +95,8 @@ function EditorShell() {
   const [source, setSource] = useState(initialSource);
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
+  const [splitterHovered, setSplitterHovered] = useState(false);
+  const [splitterActive, setSplitterActive] = useState(false);
 
   const horizontalDock = isHorizontalDock(dock);
   const consoleSize = horizontalDock ? horizontalSize : verticalSize;
@@ -137,8 +140,10 @@ function EditorShell() {
       window.removeEventListener("pointerup", stopResize);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
+      setSplitterActive(false);
     };
 
+    setSplitterActive(true);
     document.body.style.cursor = horizontalDock ? "col-resize" : "row-resize";
     document.body.style.userSelect = "none";
     window.addEventListener("pointermove", handlePointerMove);
@@ -194,9 +199,21 @@ function EditorShell() {
           borderRadius: 0,
         }}
         panelActions={[
+          ...DOCK_OPTIONS.map(({ position, label, icon: Icon }) => ({
+            id: `dock-${position}`,
+            label: `Dock ${label.toLowerCase()}`,
+            icon: <Icon size={14} aria-hidden="true" />,
+            disabled: position === dock,
+            onSelect: () => {
+              setDock(position);
+              setMinimized(false);
+            },
+          })),
           {
             id: "minimize",
             label: "Minimize console",
+            icon: <Minimize2 size={14} aria-hidden="true" />,
+            separatorBefore: true,
             onSelect: () => setMinimized(true),
           },
         ]}
@@ -210,7 +227,12 @@ function EditorShell() {
       aria-orientation={horizontalDock ? "vertical" : "horizontal"}
       aria-label={`Resize ${dock}-docked console`}
       title={`Drag to resize the ${dock}-docked console`}
+      tabIndex={0}
       onPointerDown={startResize}
+      onPointerEnter={() => setSplitterHovered(true)}
+      onPointerLeave={() => setSplitterHovered(false)}
+      onFocus={() => setSplitterHovered(true)}
+      onBlur={() => setSplitterHovered(false)}
       style={{
         position: "relative",
         zIndex: 2,
@@ -220,25 +242,58 @@ function EditorShell() {
         alignItems: "center",
         justifyContent: "center",
         flex: "0 0 auto",
-        background: "var(--console-resize-separator-background, #161b22)",
+        background: "transparent",
         color: "var(--console-resize-separator-foreground, #8b949e)",
         cursor: horizontalDock ? "col-resize" : "row-resize",
+        outline: "none",
         touchAction: "none",
       }}
     >
       <span
+        aria-hidden="true"
         style={{
+          position: "absolute",
+          width: horizontalDock ? 1 : "100%",
+          height: horizontalDock ? "100%" : 1,
+          background: splitterActive
+            ? "var(--console-resize-separator-active, #58a6ff)"
+            : splitterHovered
+              ? "var(--console-resize-separator-hover, #6e7681)"
+              : "var(--console-resize-separator-line, #30363d)",
+          pointerEvents: "none",
+          transition: "background 120ms ease",
+        }}
+      />
+      <span
+        style={{
+          position: "relative",
           display: "inline-flex",
+          width: horizontalDock ? 22 : 34,
+          height: horizontalDock ? 34 : 22,
           alignItems: "center",
           justifyContent: "center",
-          border: "1px solid var(--console-resize-separator-border, #3d444d)",
-          borderRadius: "var(--console-resize-separator-grip-radius, 4px)",
-          padding: 1,
-          background:
-            "var(--console-resize-separator-grip-background, #21262d)",
+          border: splitterHovered || splitterActive
+            ? "1px solid var(--console-resize-separator-border, #3d444d)"
+            : "1px solid transparent",
+          borderRadius:
+            "var(--console-resize-separator-grip-radius, 999px)",
+          background: splitterHovered || splitterActive
+            ? "var(--console-resize-separator-grip-background, #21262d)"
+            : "transparent",
+          boxShadow: splitterHovered || splitterActive
+            ? "var(--console-resize-separator-grip-shadow, 0 2px 8px rgb(0 0 0 / 0.28))"
+            : "none",
+          color: splitterActive
+            ? "var(--console-resize-separator-active, #58a6ff)"
+            : "var(--console-resize-separator-foreground, #8b949e)",
+          opacity: splitterHovered || splitterActive ? 1 : 0.55,
           pointerEvents: "none",
+          transition:
+            "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
         }}
-      >
+      }}
+    >
+
         {horizontalDock ? (
           <GripVertical size={14} aria-hidden="true" />
         ) : (
@@ -353,11 +408,15 @@ function EditorShell() {
           borderRadius: 10,
           background: "#0d1117",
           boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
-          "--console-resize-separator-background": "#161b22",
+          "--console-resize-separator-line": "#30363d",
+          "--console-resize-separator-hover": "#6e7681",
+          "--console-resize-separator-active": "#58a6ff",
           "--console-resize-separator-foreground": "#8b949e",
           "--console-resize-separator-border": "#3d444d",
           "--console-resize-separator-grip-background": "#21262d",
-          "--console-resize-separator-grip-radius": "4px",
+          "--console-resize-separator-grip-radius": "999px",
+          "--console-resize-separator-grip-shadow":
+            "0 2px 8px rgb(0 0 0 / 0.28)",
         } as CSSProperties
       }
     >
@@ -390,40 +449,14 @@ function EditorShell() {
           Run
         </button>
 
-        <span aria-hidden="true" style={{ whiteSpace: "nowrap" }}>
-          Dock:
-        </span>
-
-        {DOCK_OPTIONS.map(({ position, label, icon: Icon }) => (
-          <button
-            key={position}
-            type="button"
-            aria-label={`Dock console ${position}`}
-            aria-pressed={dock === position}
-            title={`Dock console ${position}`}
-            onClick={() => {
-              setDock(position);
-              setMinimized(false);
-            }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <Icon size={14} aria-hidden="true" />
-            {label}
-          </button>
-        ))}
-
-        <button
-          type="button"
-          onClick={() => setMinimized((value) => !value)}
-          style={{ whiteSpace: "nowrap" }}
+        <span
+          style={{
+            color: "#8b949e",
+            whiteSpace: "nowrap",
+          }}
         >
-          {minimized ? "Restore console" : "Minimize console"}
-        </button>
+          Console controls are in the console menu
+        </span>
       </div>
 
       <div
