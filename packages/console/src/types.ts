@@ -2,13 +2,10 @@ import type { ConsoleMethod } from "./console/consoleMethods";
 
 export type { ConsoleMethod } from "./console/consoleMethods";
 
-/** Rendering mode shared by console presentation and extension APIs. */
+/** Rendering mode supported by the top-level Console component. */
 export type ConsoleMode = "console" | "ansi";
 
-/**
- * Serializable structured message shared by producers, transports, and
- * renderers.
- */
+/** Serializable structured message consumed by the browser-style console renderer. */
 export interface ConsoleMessageData {
   /** Optional stable identifier used for keys, deduplication, and transports. */
   id?: string;
@@ -30,8 +27,6 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
-/** Event shared by console producers, event emitters, and transports. */
-export type ConsoleEvent = {
-  type: "message";
-  message: ConsoleMessageData;
-} | { type: "clear" };
+/** Event emitted by console capture/proxy utilities and transports. */
+export type ConsoleEvent =
+  { type: "message"; message: ConsoleMessageData } | { type: "clear" };
