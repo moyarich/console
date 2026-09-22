@@ -253,7 +253,7 @@ function ConsoleFrame({
       data-resizable={resizable}
     >
       {showHeader && (
-        <div className="console-panel-header panel-header">
+        <div className="console-panel-header">
           <div className="console-panel-header-main">
             <div className="console-heading">
               <SquareTerminal
@@ -296,7 +296,7 @@ function ConsoleFrame({
                     }
                   }}
                 >
-                  <div className="console-actions result-actions">
+                  <div className="console-actions">
                     {actions}
 
                     {resolvedPanelActions.map(({ action, disabled }) => (
