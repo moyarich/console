@@ -101,7 +101,9 @@ export function processConsoleOutputEntry(
   const source = typeof entry === "string" ? undefined : entry;
   let output: ConsoleProcessOutput = Object.freeze({
     data: typeof entry === "string" ? entry : entry.data,
-    metadata: source?.metadata ? freezeMetadata(source.metadata) : EMPTY_METADATA,
+    metadata: source?.metadata
+      ? freezeMetadata(source.metadata)
+      : EMPTY_METADATA,
   });
 
   for (const processor of processors) {
