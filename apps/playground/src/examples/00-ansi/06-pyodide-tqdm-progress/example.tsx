@@ -135,9 +135,8 @@ export default function PyodideTqdmProgressExample() {
 
       <p style={{ margin: 0 }}>
         This loads Pyodide as an ES module in the browser, imports its bundled
-        <code> tqdm </code>
-        package, and sends the library&apos;s real stdout/stderr writes directly
-        to the console. Network access is required for the first load.
+        tqdm package, and sends the library&apos;s real stdout/stderr writes
+        directly to the console. Network access is required for the first load.
       </p>
 
       <Console
