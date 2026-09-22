@@ -73,7 +73,8 @@ export function useConsoleAddons(
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   const coreAddons = useMemo(
-    () => [createConsoleViewportAddon(viewport)] satisfies readonly ConsoleAddon[],
+    () =>
+      [createConsoleViewportAddon(viewport)] satisfies readonly ConsoleAddon[],
     [viewport],
   );
   const coreAddonIds = useMemo(
