@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   Console,
+  ConsoleLinkedText,
   ConsoleStdout,
   type ConsoleLinkProvider,
   type ConsoleMessageData,
@@ -683,6 +684,31 @@ describe("Console rendering", () => {
     expect(html).toContain("https://example.com/docs");
     expect(html).not.toContain('class="console-link"');
     expect(html).not.toContain('href="https://example.com/docs"');
+  });
+
+  it("passes stable source ranges to linked text renderers", () => {
+    const text = "Before https://example.com after";
+    const target = "https://example.com";
+    const linkStart = text.indexOf(target);
+    const linkEnd = linkStart + target.length;
+    const ranges: Array<[string, number, number]> = [];
+
+    renderToStaticMarkup(
+      <ConsoleLinkedText
+        text={text}
+        context={{ mode: "ansi" }}
+        renderText={(value, _key, start, end) => {
+          ranges.push([value, start, end]);
+          return value;
+        }}
+      />,
+    );
+
+    expect(ranges).toEqual([
+      [text.slice(0, linkStart), 0, linkStart],
+      [target, linkStart, linkEnd],
+      [text.slice(linkEnd), linkEnd, text.length],
+    ]);
   });
 
   it("uses custom link providers in structured and ANSI modes", () => {
