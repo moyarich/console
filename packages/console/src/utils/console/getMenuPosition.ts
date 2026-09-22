@@ -1,4 +1,4 @@
-import { CONTEXT_MENU_VIEWPORT_MARGIN } from "./constants";
+const CONTEXT_MENU_VIEWPORT_MARGIN = 8;
 
 /**
  * Clamps context-menu coordinates so the measured menu remains inside the viewport.
