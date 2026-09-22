@@ -7,7 +7,12 @@ import {
   PanelTop,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
-import { useRef, useState, type PointerEvent } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
@@ -361,7 +366,7 @@ function EditorShell() {
         "--console-resize-separator-border": "#3d444d",
         "--console-resize-separator-grip-background": "#21262d",
         "--console-resize-separator-grip-radius": "4px",
-      } as React.CSSProperties}
+      } as CSSProperties}
     >
       <div
         style={{
