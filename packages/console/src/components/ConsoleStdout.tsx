@@ -3,6 +3,12 @@ import type { CSSProperties } from "react";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 import {
+  ConsoleLinkedText,
+  type ConsoleLink,
+  type ConsoleLinkProvider,
+  type ConsoleLinkProviderContext,
+} from "../links";
+import {
   normalizeConsoleProcessOutputEntries,
   processConsoleOutputEntry,
   type ConsoleOutputStream,
@@ -57,6 +63,10 @@ export interface ConsoleStdoutProps {
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   /** Custom renderers used when a line becomes a structured value. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Whether built-in HTTP/HTTPS detection is enabled. @default true */
+  detectLinks?: boolean;
+  /** Ordered application-specific link providers. */
+  linkProviders?: readonly ConsoleLinkProvider[];
 }
 
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
@@ -169,16 +179,48 @@ function parseStructuredOutput(
   return shouldParseStrictJson ? parseStrictJsonOutput(text) : undefined;
 }
 
-function AnsiText({ data }: { data: string }) {
+function AnsiText({
+  data,
+  context,
+  detectLinks,
+  linkProviders,
+  links,
+}: {
+  data: string;
+  context: ConsoleLinkProviderContext;
+  detectLinks: boolean;
+  linkProviders?: readonly ConsoleLinkProvider[];
+  links?: readonly ConsoleLink[];
+}) {
   const tokens = Anser.ansiToJson(data, { remove_empty: true });
+  let offset = 0;
 
   return (
     <>
-      {tokens.map((token, index) => (
-        <span key={index} style={getAnsiTokenStyle(token)}>
-          {token.content}
-        </span>
-      ))}
+      {tokens.map((token, index) => {
+        const start = offset;
+        const end = start + token.content.length;
+        offset = end;
+        const tokenLinks = links
+          ?.filter((link) => link.start >= start && link.end <= end)
+          .map((link) => ({
+            ...link,
+            start: link.start - start,
+            end: link.end - start,
+          }));
+
+        return (
+          <span key={index} style={getAnsiTokenStyle(token)}>
+            <ConsoleLinkedText
+              text={token.content}
+              context={context}
+              detectLinks={detectLinks}
+              providers={linkProviders}
+              links={tokenLinks}
+            />
+          </span>
+        );
+      })}
     </>
   );
 }
@@ -194,6 +236,8 @@ export function ConsoleStdout({
   processors,
   structuredOutputParsers,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
 }: ConsoleStdoutProps) {
   const normalizedEntries = normalizeConsoleProcessOutputEntries(entries);
 
@@ -231,6 +275,20 @@ export function ConsoleStdout({
         const clearLine =
           ANSI_CLEAR_LINE_PATTERN.test(data) ||
           Anser.ansiToJson(data).some((token) => token.clearLine);
+        const linkContext: ConsoleLinkProviderContext =
+          typeof entry === "string"
+            ? {
+                mode: "ansi",
+                index,
+                metadata: processedOutput.metadata,
+              }
+            : {
+                mode: "ansi",
+                index,
+                id: entry.id,
+                stream: entry.stream,
+                metadata: processedOutput.metadata,
+              };
 
         if (structuredValue !== undefined) {
           return (
@@ -243,6 +301,9 @@ export function ConsoleStdout({
               <ConsoleValue
                 value={structuredValue}
                 renderers={valueRenderers}
+                detectLinks={detectLinks}
+                linkProviders={linkProviders}
+                linkContext={linkContext}
               />
             </div>
           );
@@ -255,7 +316,13 @@ export function ConsoleStdout({
             data-clear-line={clearLine || undefined}
             key={key}
           >
-            <AnsiText data={data} />
+            <AnsiText
+              data={data}
+              context={linkContext}
+              detectLinks={detectLinks}
+              linkProviders={linkProviders}
+              links={processedOutput.links}
+            />
           </pre>
         );
       })}
