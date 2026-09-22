@@ -16,6 +16,9 @@ import type { ConsoleViewportService } from "./viewport";
 /** Version of the public addon-host contract. */
 export const CONSOLE_ADDON_API_VERSION = "1";
 
+/** Reserved package namespace for built-in console addon IDs. */
+export const CONSOLE_CORE_ADDON_ID_PREFIX = "@moyarich/console:";
+
 /** Resource that can be released deterministically. */
 export interface ConsoleDisposable {
   dispose(): void;
@@ -114,6 +117,7 @@ export interface ConsoleAddonManager extends ConsoleDisposable {
   readonly services: ConsoleServiceRegistry;
   readonly capabilities: ConsoleCapabilityRegistry;
   load(addon: ConsoleAddon): ConsoleDisposable;
+  unload(id: string): boolean;
   has(id: string): boolean;
 }
 
@@ -421,6 +425,29 @@ export const consoleServices = Object.freeze({
     createConsoleServiceToken<ConsoleViewportService>("console.viewport"),
 });
 
+/**
+ * Stable IDs for core addons that are auto-registered by the React host.
+ *
+ * Addon IDs are package-qualified to avoid collisions. Third-party packages
+ * should use their npm package name as the ID, or `<package>:<feature>` when
+ * one package provides multiple addons.
+ */
+export const consoleCoreAddonIds = Object.freeze({
+  viewport: `${CONSOLE_CORE_ADDON_ID_PREFIX}viewport`,
+});
+
+/** Creates the core addon that provides the shared viewport service. */
+export function createConsoleViewportAddon(
+  viewport: ConsoleViewportService,
+): ConsoleAddon {
+  return {
+    id: consoleCoreAddonIds.viewport,
+    activate(host) {
+      host.services.provide(consoleServices.viewport, viewport);
+    },
+  };
+}
+
 /** Built-in extension points backed by the console's existing hook contracts. */
 export const consoleExtensionPoints = Object.freeze({
   processOutputProcessor:
@@ -537,6 +564,19 @@ export function createConsoleAddonManager(
   >();
   let disposed = false;
 
+  const unloadAddon = (id: string, expectedAddon?: ConsoleAddon): boolean => {
+    const normalizedId = validateIdentifier(id, "Addon");
+    const current = loaded.get(normalizedId);
+
+    if (!current || (expectedAddon && current.addon !== expectedAddon)) {
+      return false;
+    }
+
+    loaded.delete(normalizedId);
+    current.scope.dispose();
+    return true;
+  };
+
   const manager: ConsoleAddonManager = {
     version,
     extensions,
@@ -574,13 +614,11 @@ export function createConsoleAddonManager(
       loaded.set(id, { addon, scope });
 
       return createDisposable(() => {
-        const current = loaded.get(id);
-
-        if (!current || current.addon !== addon) return;
-
-        loaded.delete(id);
-        current.scope.dispose();
+        unloadAddon(id, addon);
       });
+    },
+    unload(id) {
+      return unloadAddon(id);
     },
     has(id) {
       return loaded.has(validateIdentifier(id, "Addon"));
