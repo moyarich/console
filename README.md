@@ -530,6 +530,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 | Prop                  | Purpose                                                                        |
 | --------------------- | ------------------------------------------------------------------------------ |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation              |
 | `onClear`             | Callback used by the clear action                                              |
 | `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
 | `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
@@ -569,6 +570,58 @@ The host application owns min/max dimensions. The library only applies the reque
 | `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
+
+## Imperative viewport controls
+
+Use a `ConsoleHandle` ref when surrounding application UI needs to navigate the console without reaching into its DOM:
+
+```tsx
+import { useRef } from "react";
+import {
+  Console,
+  type ConsoleHandle,
+} from "@moyarich/console";
+
+const consoleRef = useRef<ConsoleHandle>(null);
+
+<Console
+  ref={consoleRef}
+  messages={messages}
+/>;
+
+consoleRef.current?.scrollToTop();
+consoleRef.current?.scrollToBottom();
+consoleRef.current?.scrollToMessage("message-42", {
+  block: "center",
+});
+consoleRef.current?.focus();
+```
+
+The handle also exposes `isAtTop()` and `isAtBottom()`. `isAtBottom()` uses the same near-bottom threshold as smart auto-scroll. Calling `scrollToBottom()` restores pinned-to-latest behavior; scrolling to the top or an older logical message leaves the viewport unpinned so new output does not immediately snap it back down.
+
+`scrollToMessage(id)` targets stable logical message IDs and returns `false` when the requested ID is not rendered. Structured messages use `ConsoleMessageData.id`; ANSI/process entries use `ConsoleStdoutEntry.id`.
+
+Addons consume the same implementation through `consoleServices.viewport`:
+
+```ts
+import {
+  consoleServices,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+const navigationAddon: ConsoleAddon = {
+  id: "navigation",
+  activate(host) {
+    const viewport = host.services.require(
+      consoleServices.viewport,
+    );
+
+    viewport.scrollToMessage("message-42");
+  },
+};
+```
+
+The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.
 
 ## Theming with CSS custom properties
 
@@ -1189,6 +1242,8 @@ const consumer: ConsoleAddon = {
 
 A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
 
+The React host also provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. It is the addon-facing form of the same viewport implementation exposed to host applications through `ConsoleHandle`.
+
 ### Capabilities
 
 The React `Console` host currently advertises:
@@ -1363,6 +1418,7 @@ Available helpers:
 | Export           | Purpose                                  |
 | ---------------- | ---------------------------------------- |
 | `Console`        | Complete structured-console / ANSI panel |
+| `ConsoleHandle`  | Supported imperative viewport navigation  |
 | `ConsoleMessage` | Render one structured message            |
 | `ConsoleValue`   | Render one JavaScript value              |
 | `ConsoleTable`   | Render normalized `console.table()` data |
@@ -1415,6 +1471,7 @@ Available helpers:
 | `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
 | `createConsoleAddonManager`                       | Load/dispose addons against shared registries, including headless hosts |
 | `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
+| `consoleServices`                                 | Built-in typed services, including the shared viewport service          |
 | `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
 | `createConsoleServiceToken`                       | Define a typed single-provider service                                  |
 | `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                    |
