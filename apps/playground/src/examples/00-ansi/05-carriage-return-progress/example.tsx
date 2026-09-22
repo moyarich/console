@@ -2,37 +2,37 @@ import { useState } from "react";
 import { Console, type ConsoleStdoutEntry } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
-const ESC = "\\u001b[";
+const ESC = "\u001b[";
 
 const chunks: ConsoleStdoutEntry[] = [
   {
     id: "prepare",
-    data: "Preparing build...\\n",
+    data: "Preparing build...\n",
     stream: "stdout",
   },
   {
     id: "progress-10",
-    data: `${ESC}36mProgress 10%${ESC}0m\\r`,
+    data: `${ESC}36mProgress 10%${ESC}0m\r`,
     stream: "stdout",
   },
   {
     id: "progress-35",
-    data: `${ESC}36mProgress 35%${ESC}0m\\r`,
+    data: `${ESC}36mProgress 35%${ESC}0m\r`,
     stream: "stdout",
   },
   {
     id: "progress-72",
-    data: `${ESC}36mProgress 72%${ESC}0m\\r`,
+    data: `${ESC}36mProgress 72%${ESC}0m\r`,
     stream: "stdout",
   },
   {
     id: "progress-100",
-    data: `${ESC}32mProgress 100%${ESC}0m\\n`,
+    data: `${ESC}32mProgress 100%${ESC}0m\n`,
     stream: "stdout",
   },
   {
     id: "warning",
-    data: `${ESC}33mwarning:${ESC}0m optional peer dependency missing\\n`,
+    data: `${ESC}33mwarning:${ESC}0m optional peer dependency missing\n`,
     stream: "stderr",
   },
   {
