@@ -10,6 +10,7 @@ export {
   CONSOLE_ADDON_API_VERSION,
   consoleCapabilities,
   consoleExtensionPoints,
+  consoleServices,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleCapabilityRegistry,
@@ -38,11 +39,13 @@ export type {
 export { Console } from "./components/Console";
 export type {
   ConsoleAnsiModeProps,
+  ConsoleHandle,
   ConsoleMessageFilter,
   ConsoleMessageModeProps,
   ConsoleMode,
   ConsoleProps,
 } from "./components/Console";
+export type { ConsoleScrollOptions, ConsoleViewportService } from "./viewport";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export type {
   ConsoleAction,
