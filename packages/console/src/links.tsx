@@ -233,7 +233,12 @@ export interface ConsoleLinkedTextProps {
   detectLinks?: boolean;
   providers?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
-  renderText?: (text: string, key: string, start: number, end: number) => ReactNode;
+  renderText?: (
+    text: string,
+    key: string,
+    start: number,
+    end: number,
+  ) => ReactNode;
 }
 
 function isExternalWebTarget(target: string): boolean {
