@@ -1,13 +1,7 @@
-import type {
-  ConsoleContextMenuAction,
-  ConsoleMessageAction,
-} from "./actions";
+import type { ConsoleContextMenuAction, ConsoleMessageAction } from "./actions";
 import type { ConsoleLinkProvider } from "./links";
 import type { ConsoleProcessOutputProcessor } from "./processOutput";
-import type {
-  ConsoleMessageRenderer,
-  ConsoleValueRenderer,
-} from "./renderers";
+import type { ConsoleMessageRenderer, ConsoleValueRenderer } from "./renderers";
 import type { ConsoleStructuredOutputParser } from "./utils/terminal/types";
 
 /** Version of the public addon-host contract. */
@@ -19,10 +13,7 @@ export interface ConsoleDisposable {
 }
 
 /** Cleanup value optionally returned from {@link ConsoleAddon.activate}. */
-export type ConsoleAddonCleanup =
-  | void
-  | (() => void)
-  | ConsoleDisposable;
+export type ConsoleAddonCleanup = void | (() => void) | ConsoleDisposable;
 
 /**
  * A console addon owns lifecycle only. Feature-specific behavior is registered
@@ -187,10 +178,7 @@ interface ExtensionRegistration {
 }
 
 class ExtensionRegistry implements ConsoleExtensionRegistry {
-  private readonly registrations = new Map<
-    string,
-    ExtensionRegistration[]
-  >();
+  private readonly registrations = new Map<string, ExtensionRegistration[]>();
   private readonly listeners = new Set<() => void>();
   private nextOrder = 0;
 
@@ -295,8 +283,7 @@ class ServiceRegistry implements ConsoleServiceRegistry {
 
   get<T>(token: ConsoleServiceToken<T>): T | undefined {
     return this.services.get(validateIdentifier(token.id, "Service")) as
-      | T
-      | undefined;
+      T | undefined;
   }
 
   require<T>(token: ConsoleServiceToken<T>): T {
@@ -360,7 +347,9 @@ class CapabilityRegistry implements ConsoleCapabilityRegistry {
   }
 
   has(capability: ConsoleCapability): boolean {
-    return this.capabilities.has(validateIdentifier(capability.id, "Capability"));
+    return this.capabilities.has(
+      validateIdentifier(capability.id, "Capability"),
+    );
   }
 
   getAll(): readonly ConsoleCapability[] {
@@ -381,7 +370,9 @@ export function createConsoleExtensionRegistry(): ConsoleExtensionRegistry {
 }
 
 /** Creates a typed single-provider service token. */
-export function createConsoleServiceToken<T>(id: string): ConsoleServiceToken<T> {
+export function createConsoleServiceToken<T>(
+  id: string,
+): ConsoleServiceToken<T> {
   return Object.freeze({ id: validateIdentifier(id, "Service") });
 }
 
@@ -425,22 +416,21 @@ export const consoleExtensionPoints = Object.freeze({
     createConsoleExtensionPoint<ConsoleStructuredOutputParser>(
       "console.process.structuredOutputParser",
     ),
-  linkProvider:
-    createConsoleExtensionPoint<ConsoleLinkProvider>("console.linkProvider"),
-  messageRenderer:
-    createConsoleExtensionPoint<ConsoleMessageRenderer>(
-      "console.render.message",
-    ),
-  valueRenderer:
-    createConsoleExtensionPoint<ConsoleValueRenderer>("console.render.value"),
-  contextMenuAction:
-    createConsoleExtensionPoint<ConsoleContextMenuAction>(
-      "console.action.contextMenu",
-    ),
-  messageAction:
-    createConsoleExtensionPoint<ConsoleMessageAction>(
-      "console.action.message",
-    ),
+  linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
+    "console.linkProvider",
+  ),
+  messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
+    "console.render.message",
+  ),
+  valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
+    "console.render.value",
+  ),
+  contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
+    "console.action.contextMenu",
+  ),
+  messageAction: createConsoleExtensionPoint<ConsoleMessageAction>(
+    "console.action.message",
+  ),
 });
 
 function createScopedExtensionRegistry(
@@ -533,7 +523,9 @@ export function createConsoleAddonManager(
     capabilities,
     load(addon) {
       if (disposed) {
-        throw new Error("Cannot load an addon after the addon manager is disposed.");
+        throw new Error(
+          "Cannot load an addon after the addon manager is disposed.",
+        );
       }
 
       const id = validateIdentifier(addon.id, "Addon");
