@@ -56,7 +56,14 @@ describe("Console rendering", () => {
     renderToStaticMarkup(
       <Console
         ref={ref}
-        messages={[{ id: "ref-target", method: "log", data: ["ref"], depth: 0 }]}
+        messages={[
+          {
+            id: "ref-target",
+            method: "log",
+            data: ["ref"],
+            depth: 0,
+          },
+        ]}
       />,
     );
 
