@@ -1,17 +1,17 @@
 import { ChevronRight, Copy } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
-import { isElementLike } from "../utils/console/isElementLike";
-import { isInspectableObject } from "../utils/console/isInspectableObject";
-import { isObjectLike } from "../utils/console/isObjectLike";
-import { objectEntries } from "../utils/console/objectEntries";
-import { objectLabel } from "../utils/console/objectLabel";
-import { preview } from "../utils/console/preview";
-import { typeClass } from "../utils/console/style/typeClass";
-import {
-  ConsoleLinkedText,
-  type ConsoleLinkProvider,
-  type ConsoleLinkProviderContext,
+import { isElementLike } from "../utils/values/isElementLike";
+import { isInspectableObject } from "../utils/values/isInspectableObject";
+import { isObjectLike } from "../utils/values/isObjectLike";
+import { objectEntries } from "../utils/values/objectEntries";
+import { objectLabel } from "../utils/values/objectLabel";
+import { preview } from "../utils/values/preview";
+import { typeClass } from "../utils/style/typeClass";
+import { ConsoleLinkedText } from "./ConsoleLinkedText";
+import type {
+  ConsoleLinkProvider,
+  ConsoleLinkProviderContext,
 } from "../links";
 import {
   dispatchValueRenderer,
