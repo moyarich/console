@@ -276,7 +276,8 @@ function EditorShell() {
             splitterHovered || splitterActive
               ? "var(--console-resize-separator-grip-border, 1px solid #3d444d)"
               : "1px solid transparent",
-          borderRadius: "var(--console-resize-separator-grip-border-radius, 999px)",
+          borderRadius:
+            "var(--console-resize-separator-grip-border-radius, 999px)",
           background:
             splitterHovered || splitterActive
               ? "var(--console-resize-separator-grip-background-color, #21262d)"
