@@ -42,7 +42,7 @@ export interface ConsoleValueProps {
   expandLevel?: number;
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
-  expandAllVersion?: number;
+  expansion?: { version: number; expanded: boolean };
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
@@ -54,7 +54,7 @@ interface ConsoleObjectValueProps {
   expandLevel: number;
   ancestors: ReadonlySet<object>;
   propertyKey?: string;
-  expandAllVersion?: number;
+  expansion?: { version: number; expanded: boolean };
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
@@ -125,7 +125,7 @@ function ConsoleObjectValue({
   expandLevel,
   ancestors,
   propertyKey,
-  expandAllVersion,
+  expansion,
   renderers,
   detectLinks,
   linkProviders,
@@ -133,14 +133,14 @@ function ConsoleObjectValue({
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
   const [isOpen, setIsOpen] = useState(
-    expandLevel > 0 || expandAllVersion !== undefined,
+    expansion?.expanded ?? expandLevel > 0,
   );
 
   useEffect(() => {
-    if (expandAllVersion !== undefined) {
-      setIsOpen(true);
+    if (expansion) {
+      setIsOpen(expansion.expanded);
     }
-  }, [expandAllVersion]);
+  }, [expansion]);
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
@@ -210,7 +210,7 @@ function ConsoleObjectValue({
                       propertyKey={key}
                       expandLevel={Math.max(0, expandLevel - 1)}
                       ancestors={nextAncestors}
-                      expandAllVersion={expandAllVersion}
+                      expansion={expansion}
                       renderers={renderers}
                       detectLinks={detectLinks}
                       linkProviders={linkProviders}
@@ -234,7 +234,7 @@ function ConsoleObjectValue({
                         value={child}
                         expandLevel={Math.max(0, expandLevel - 1)}
                         ancestors={nextAncestors}
-                        expandAllVersion={expandAllVersion}
+                        expansion={expansion}
                         renderers={renderers}
                         detectLinks={detectLinks}
                         linkProviders={linkProviders}
@@ -261,7 +261,7 @@ function renderDefaultValue({
   expandLevel,
   ancestors,
   propertyKey,
-  expandAllVersion,
+  expansion,
   renderers,
   detectLinks = true,
   linkProviders,
@@ -293,7 +293,7 @@ function renderDefaultValue({
       expandLevel={expandLevel}
       ancestors={ancestors}
       propertyKey={propertyKey}
-      expandAllVersion={expandAllVersion}
+      expansion={expansion}
       renderers={renderers}
       detectLinks={detectLinks}
       linkProviders={linkProviders}
@@ -307,7 +307,7 @@ export function ConsoleValue({
   expandLevel = 0,
   ancestors = new Set<object>(),
   propertyKey,
-  expandAllVersion,
+  expansion,
   renderers,
   detectLinks = true,
   linkProviders,
@@ -319,7 +319,7 @@ export function ConsoleValue({
       expandLevel,
       ancestors,
       propertyKey,
-      expandAllVersion,
+      expansion,
       renderers,
       detectLinks,
       linkProviders,
