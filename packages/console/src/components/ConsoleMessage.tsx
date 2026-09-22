@@ -71,8 +71,8 @@ export interface ConsoleMessageProps {
   index?: number;
   /** Visible message list used by custom renderers and message actions. */
   messages?: readonly ConsoleMessageData[];
-  /** Command used to expand or collapse every expandable value in this message. */
-  expansion?: { version: number; expanded: boolean };
+  /** Desired expanded state for every expandable value in this message. */
+  allValuesExpanded?: boolean;
   /** Toggles all expandable values in this message. */
   onToggleExpansion?: () => void;
   /** Ordered custom renderers for the complete message. */
@@ -87,7 +87,7 @@ export interface ConsoleMessageProps {
 
 function DefaultConsoleMessage({
   message,
-  expansion,
+  allValuesExpanded,
   onToggleExpansion,
   valueRenderers,
   detectLinks = true,
@@ -95,7 +95,7 @@ function DefaultConsoleMessage({
 }: ConsoleMessageProps) {
   const style = { paddingLeft: 14 + message.depth * 16 };
   const MessageIcon = MESSAGE_ICONS[message.method] ?? Terminal;
-  const expansionLabel = expansion?.expanded
+  const expansionLabel = allValuesExpanded
     ? "Collapse all console values in this message"
     : "Expand all console values in this message";
   const icon = onToggleExpansion ? (
@@ -103,7 +103,7 @@ function DefaultConsoleMessage({
       type="button"
       className="console-message-icon console-message-icon-button"
       aria-label={expansionLabel}
-      aria-expanded={expansion?.expanded ?? false}
+      aria-expanded={allValuesExpanded ?? false}
       title={expansionLabel}
       onClick={onToggleExpansion}
     >
@@ -145,7 +145,7 @@ function DefaultConsoleMessage({
         <ConsoleValue
           value={message.data[0]}
           expandLevel={message.expandLevel ?? 1}
-          expansion={expansion}
+          allValuesExpanded={allValuesExpanded}
           renderers={valueRenderers}
           detectLinks={detectLinks}
           linkProviders={linkProviders}
@@ -163,7 +163,7 @@ function DefaultConsoleMessage({
           <ConsoleValue
             key={valueIndex}
             value={value}
-            expansion={expansion}
+            allValuesExpanded={allValuesExpanded}
             renderers={valueRenderers}
             detectLinks={detectLinks}
             linkProviders={linkProviders}
@@ -183,7 +183,7 @@ export function ConsoleMessage({
   message,
   index = 0,
   messages,
-  expansion,
+  allValuesExpanded,
   onToggleExpansion,
   renderers,
   valueRenderers,
@@ -197,7 +197,7 @@ export function ConsoleMessage({
       message={message}
       index={index}
       messages={sourceMessages}
-      expansion={expansion}
+      allValuesExpanded={allValuesExpanded}
       onToggleExpansion={onToggleExpansion}
       valueRenderers={valueRenderers}
       detectLinks={detectLinks}
