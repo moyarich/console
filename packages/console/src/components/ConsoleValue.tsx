@@ -132,9 +132,7 @@ function ConsoleObjectValue({
   linkContext,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
-  const [isOpen, setIsOpen] = useState(
-    allValuesExpanded ?? expandLevel > 0,
-  );
+  const [isOpen, setIsOpen] = useState(allValuesExpanded ?? expandLevel > 0);
 
   useEffect(() => {
     if (allValuesExpanded !== undefined) {
