@@ -1,4 +1,4 @@
-import type { ConsoleLink } from "../../links";
+import type { ConsoleLink } from "../../links/types";
 import type {
   ConsoleOutputStream,
   ConsoleProcessOutput,
