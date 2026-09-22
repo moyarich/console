@@ -32,7 +32,11 @@ export type ConsoleAddonCleanup = void | (() => void) | ConsoleDisposable;
  * through extension points and services on the addon host.
  */
 export interface ConsoleAddon {
-  /** Stable identifier used for lifecycle management and duplicate detection. */
+  /**
+   * Stable, package-qualified identifier used for lifecycle management and
+   * duplicate detection. Prefer the npm package name, or
+   * `<package>:<feature>` when one package provides multiple addons.
+   */
   readonly id: string;
   /** Activates the addon against one scoped console host. */
   activate(host: ConsoleAddonHost): ConsoleAddonCleanup;
