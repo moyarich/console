@@ -201,13 +201,13 @@ function AnsiText({
     return { token, start, end: tokenOffset };
   });
   const text = tokenRanges.map(({ token }) => token.content).join("");
-  let renderOffset = 0;
 
-  const renderText = (value: string, key: string) => {
-    const start = renderOffset;
-    const end = start + value.length;
-    renderOffset = end;
-
+  const renderText = (
+    value: string,
+    key: string,
+    start: number,
+    end: number,
+  ) => {
     return (
       <>
         {tokenRanges.map(
