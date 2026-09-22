@@ -202,6 +202,8 @@ function AnsiText({
   });
   const text = tokenRanges.map(({ token }) => token.content).join("");
 
+  // Source ranges come from ConsoleLinkedText so this renderer stays pure when
+  // React StrictMode renders the child component more than once.
   const renderText = (
     value: string,
     key: string,
