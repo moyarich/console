@@ -33,7 +33,7 @@ export const StructuredAndAnsi: Story = {
     }
 
     const webLink = ansiConsole.querySelector(
-      'a.console-link[href="https://example.com/cli"]',
+      'a.console-link[href="https://github.com/moyarich/console"]',
     );
 
     if (!webLink) {
@@ -44,16 +44,25 @@ export const StructuredAndAnsi: Story = {
       "button.console-link-button",
     );
 
-    if (!sourceLink || sourceLink.textContent !== "src/cli/run.ts:91:12") {
+    if (
+      !sourceLink ||
+      sourceLink.textContent !==
+        "packages/console/src/components/ConsoleStdout.tsx:1"
+    ) {
       throw new Error("Expected the ANSI source-location provider link.");
     }
 
     sourceLink.click();
     await new Promise((resolve) => window.setTimeout(resolve, 0));
 
-    const result = canvasElement.querySelector("[data-link-provider-result]");
+    const result = canvasElement.querySelector(
+      "[data-ansi-link-provider-result] strong",
+    );
 
-    if (result?.textContent?.trim() !== "src/cli/run.ts:91:12") {
+    if (
+      result?.textContent?.trim() !==
+      "packages/console/src/components/ConsoleStdout.tsx:1"
+    ) {
       throw new Error("Expected the custom ANSI provider action to run.");
     }
   },
