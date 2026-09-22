@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
-} from "../utils/createConsoleEventEmitter";
-import { createConsoleProxy } from "../utils/createConsoleProxy";
-import { captureConsole } from "../utils/captureConsole";
+} from "../utils/events/createConsoleEventEmitter";
+import { createConsoleProxy } from "../utils/console/runtime/createConsoleProxy";
+import { captureConsole } from "../utils/console/runtime/captureConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
 /** Configuration for {@link useConsoleMessages}. */
