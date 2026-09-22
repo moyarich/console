@@ -135,6 +135,8 @@ Low-level reusable helpers live under `utils/`:
 
 Prefer domain subdirectories over leaf modules directly under `utils/`. Add a root-level utility file only when the behavior is genuinely domain-neutral and shared across multiple utility domains.
 
+Keep `packages/console/src/types.ts` limited to contracts shared across multiple domains. Component-specific props and extension contracts belong with their component; console-runtime types belong under `console/`; transport protocol types belong under `utils/transport/`.
+
 Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
 
 Avoid pass-through entry shims whose only purpose is to re-export another module. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as the published `utils/ansi/index.ts`, `utils/table/index.ts`, and `utils/values/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
@@ -167,7 +169,7 @@ Structured rendering should not need to know whether a message came from page ca
 
 ### Custom renderer dispatch
 
-Custom message and value renderer contracts live in the shared `packages/console/src/types.ts`. Matching and invocation stay next to the components that consume those contracts so one-use dispatch helpers do not become unnecessary abstractions.
+Custom renderer contracts live beside the components that own them: message renderer types in `ConsoleMessage.tsx` and value renderer types in `ConsoleValue.tsx`. Matching and invocation stay next to those components so one-use dispatch helpers do not become unnecessary abstractions.
 
 - message entries can dispatch by `method`, `match`, or both
 - value entries can dispatch by normalized `type`, `match`, or both
@@ -327,7 +329,7 @@ Regression coverage should include:
 The capture registry lives in:
 
 ```text
-packages/console/src/consoleMethods.ts
+packages/console/src/console/consoleMethods.ts
 ```
 
 When adding or changing a console method:
