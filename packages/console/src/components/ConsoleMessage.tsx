@@ -17,10 +17,10 @@ import { ConsoleTable } from "./ConsoleTable";
 import { ConsoleContextMenuContext } from "../context/ConsoleContextMenuContext";
 import { ConsoleValue } from "./ConsoleValue";
 import type {
+  ConsoleMessageData,
   ConsoleMessageRenderer,
   ConsoleValueRenderer,
-} from "../renderers/types";
-import type { ConsoleMessageData } from "../types";
+} from "../types";
 import type { ConsoleLinkProvider } from "../links/types";
 
 type MessageIconMap = {
