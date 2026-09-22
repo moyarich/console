@@ -119,6 +119,8 @@ Keep component modules focused on React rendering, state, refs, effects, and eve
 
 Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
 
+Avoid pass-through entry shims whose only purpose is to re-export another module, such as a flat file containing only `export * from "./utils/console"`. When callers, package export maps, or build configuration can target the real nested module directly, use that module instead. Aggregation barrels such as `utils/console/index.ts`, `utils/console/table/index.ts`, and `utils/terminal/index.ts` are appropriate when they intentionally combine several related modules into a useful import surface.
+
 Utility barrels are published as secondary entry points:
 
 ```ts
