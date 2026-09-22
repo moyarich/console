@@ -105,17 +105,26 @@ packages/console/src/components/ConsoleMessage.tsx
 packages/console/src/components/ConsoleValue.tsx
 packages/console/src/components/ConsoleTable.tsx
 packages/console/src/links.tsx
+packages/console/src/utils/browser/
 packages/console/src/utils/console/
+packages/console/src/utils/events/
 packages/console/src/utils/terminal/
+packages/console/src/utils/transport/
 ```
 
 Keep component modules focused on React rendering, state, refs, effects, and event wiring. Component-independent helpers belong in domain utility directories:
 
-- `utils/console/` for shared structured-console behavior such as context-menu geometry, object/value inspection helpers, and console copy formatting
+- `utils/browser/` for browser-platform helpers such as clipboard access
+- `utils/console/` for shared structured-console value/object behavior and console copy formatting
+- `utils/console/contextMenu/` for context-menu geometry and event-position helpers
+- `utils/console/runtime/` for console capture/proxy runtime behavior
 - `utils/console/style/` for console theme variables/types, theme extraction, and renderer CSS-class mapping
 - `utils/console/table/` for `console.table()` normalization, row shaping, column collection, and table-specific types
+- `utils/events/` for the package event emitter and event-routing helpers
 - `utils/terminal/` for ANSI/process-output behavior such as token styling/ranges and structured-output parsing
-- the root `utils/` directory is reserved for cross-cutting helpers such as transport, serialization, clipboard, capture, and WebSocket utilities
+- `utils/transport/` for envelope validation, serialization, postMessage, and WebSocket adapters
+
+Prefer domain subdirectories over leaf modules directly under `utils/`. Add a root-level utility file only when the behavior is genuinely domain-neutral and shared across multiple utility domains.
 
 Prefer one meaningful reusable abstraction per utility module. Do not create separate helpers that duplicate an existing predicate, merely rename another helper, or wrap a trivial one-line expression used in only one place; reuse the existing utility or inline that logic instead. Small helpers are appropriate when they remove repeated logic, express a distinct reusable concept, or provide a useful consumer-facing abstraction. Export useful helpers from their module and add JSDoc that explains inputs, outputs, and behavioral constraints. Open-source consumers should be able to reuse implementation utilities without requiring them to become top-level `@moyarich/console` exports.
 
