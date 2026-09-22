@@ -45,6 +45,12 @@ export default function ResizableConsoleExample() {
   const [resizable, setResizable] = useState<ResizeDirection>("both");
   const [width, setWidth] = useState(720);
   const [height, setHeight] = useState(300);
+  const [hoveredAxis, setHoveredAxis] = useState<
+    "horizontal" | "vertical" | "both" | null
+  >(null);
+  const [activeAxis, setActiveAxis] = useState<
+    "horizontal" | "vertical" | "both" | null
+  >(null);
 
   const allowsHorizontal =
     resizable === "horizontal" ||
@@ -96,8 +102,10 @@ export default function ResizableConsoleExample() {
       window.removeEventListener("pointerup", stopResize);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
+      setActiveAxis(null);
     };
 
+    setActiveAxis(axis);
     document.body.style.cursor =
       axis === "both"
         ? "nwse-resize"
@@ -116,10 +124,15 @@ export default function ResizableConsoleExample() {
         {
           width: "100%",
           minWidth: 0,
-          "--console-resize-separator-background": "#f8fafc",
-          "--console-resize-separator-foreground": "#475467",
-          "--console-resize-separator-border": "#98a2b3",
+          "--console-resize-separator-line": "#d0d5dd",
+          "--console-resize-separator-hover": "#98a2b3",
+          "--console-resize-separator-active": "#475467",
+          "--console-resize-separator-foreground": "#667085",
+          "--console-resize-separator-border": "#d0d5dd",
           "--console-resize-separator-grip-background": "#ffffff",
+          "--console-resize-separator-grip-radius": "999px",
+          "--console-resize-separator-grip-shadow":
+            "0 2px 8px rgb(16 24 40 / 0.14)",
         } as CSSProperties
       }
     >
@@ -189,35 +202,77 @@ export default function ResizableConsoleExample() {
             aria-orientation="vertical"
             aria-label="Resize console horizontally"
             title="Drag to resize horizontally"
+            tabIndex={0}
             onPointerDown={(event) => startResize(event, "horizontal")}
+            onPointerEnter={() => setHoveredAxis("horizontal")}
+            onPointerLeave={() => setHoveredAxis(null)}
+            onFocus={() => setHoveredAxis("horizontal")}
+            onBlur={() => setHoveredAxis(null)}
             style={{
               position: "absolute",
               top: 0,
-              right: 0,
+              right: -5,
               zIndex: 3,
               display: "flex",
               width: 10,
               height: "100%",
               alignItems: "center",
               justifyContent: "center",
-              background:
-                "var(--console-resize-separator-background, transparent)",
               color: "var(--console-resize-separator-foreground, currentColor)",
               cursor: "col-resize",
+              outline: "none",
               touchAction: "none",
             }}
           >
             <span
+              aria-hidden="true"
               style={{
-                display: "inline-flex",
-                border:
-                  "1px solid var(--console-resize-separator-border, currentColor)",
-                borderRadius: 4,
-                padding: 1,
+                position: "absolute",
+                width: 1,
+                height: "100%",
                 background:
-                  "var(--console-resize-separator-grip-background, transparent)",
-                color: "inherit",
+                  activeAxis === "horizontal"
+                    ? "var(--console-resize-separator-active, currentColor)"
+                    : hoveredAxis === "horizontal"
+                      ? "var(--console-resize-separator-hover, currentColor)"
+                      : "var(--console-resize-separator-line, currentColor)",
                 pointerEvents: "none",
+                transition: "background 120ms ease",
+              }}
+            />
+            <span
+              style={{
+                position: "relative",
+                display: "inline-flex",
+                width: 22,
+                height: 34,
+                alignItems: "center",
+                justifyContent: "center",
+                border:
+                  hoveredAxis === "horizontal" || activeAxis === "horizontal"
+                    ? "1px solid var(--console-resize-separator-border, currentColor)"
+                    : "1px solid transparent",
+                borderRadius:
+                  "var(--console-resize-separator-grip-radius, 999px)",
+                background:
+                  hoveredAxis === "horizontal" || activeAxis === "horizontal"
+                    ? "var(--console-resize-separator-grip-background, transparent)"
+                    : "transparent",
+                boxShadow:
+                  hoveredAxis === "horizontal" || activeAxis === "horizontal"
+                    ? "var(--console-resize-separator-grip-shadow, none)"
+                    : "none",
+                color:
+                  activeAxis === "horizontal"
+                    ? "var(--console-resize-separator-active, currentColor)"
+                    : "inherit",
+                opacity:
+                  hoveredAxis === "horizontal" || activeAxis === "horizontal"
+                    ? 1
+                    : 0.55,
+                pointerEvents: "none",
+                transition:
+                  "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
               }}
             >
               <GripVertical size={14} aria-hidden="true" />
@@ -231,35 +286,77 @@ export default function ResizableConsoleExample() {
             aria-orientation="horizontal"
             aria-label="Resize console vertically"
             title="Drag to resize vertically"
+            tabIndex={0}
             onPointerDown={(event) => startResize(event, "vertical")}
+            onPointerEnter={() => setHoveredAxis("vertical")}
+            onPointerLeave={() => setHoveredAxis(null)}
+            onFocus={() => setHoveredAxis("vertical")}
+            onBlur={() => setHoveredAxis(null)}
             style={{
               position: "absolute",
               right: 0,
-              bottom: 0,
+              bottom: -5,
               zIndex: 3,
               display: "flex",
               width: "100%",
               height: 10,
               alignItems: "center",
               justifyContent: "center",
-              background:
-                "var(--console-resize-separator-background, transparent)",
               color: "var(--console-resize-separator-foreground, currentColor)",
               cursor: "row-resize",
+              outline: "none",
               touchAction: "none",
             }}
           >
             <span
+              aria-hidden="true"
               style={{
-                display: "inline-flex",
-                border:
-                  "1px solid var(--console-resize-separator-border, currentColor)",
-                borderRadius: 4,
-                padding: 1,
+                position: "absolute",
+                width: "100%",
+                height: 1,
                 background:
-                  "var(--console-resize-separator-grip-background, transparent)",
-                color: "inherit",
+                  activeAxis === "vertical"
+                    ? "var(--console-resize-separator-active, currentColor)"
+                    : hoveredAxis === "vertical"
+                      ? "var(--console-resize-separator-hover, currentColor)"
+                      : "var(--console-resize-separator-line, currentColor)",
                 pointerEvents: "none",
+                transition: "background 120ms ease",
+              }}
+            />
+            <span
+              style={{
+                position: "relative",
+                display: "inline-flex",
+                width: 34,
+                height: 22,
+                alignItems: "center",
+                justifyContent: "center",
+                border:
+                  hoveredAxis === "vertical" || activeAxis === "vertical"
+                    ? "1px solid var(--console-resize-separator-border, currentColor)"
+                    : "1px solid transparent",
+                borderRadius:
+                  "var(--console-resize-separator-grip-radius, 999px)",
+                background:
+                  hoveredAxis === "vertical" || activeAxis === "vertical"
+                    ? "var(--console-resize-separator-grip-background, transparent)"
+                    : "transparent",
+                boxShadow:
+                  hoveredAxis === "vertical" || activeAxis === "vertical"
+                    ? "var(--console-resize-separator-grip-shadow, none)"
+                    : "none",
+                color:
+                  activeAxis === "vertical"
+                    ? "var(--console-resize-separator-active, currentColor)"
+                    : "inherit",
+                opacity:
+                  hoveredAxis === "vertical" || activeAxis === "vertical"
+                    ? 1
+                    : 0.55,
+                pointerEvents: "none",
+                transition:
+                  "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
               }}
             >
               <GripHorizontal size={14} aria-hidden="true" />
@@ -272,25 +369,46 @@ export default function ResizableConsoleExample() {
             role="separator"
             aria-label="Resize console in both directions"
             title="Drag to resize width and height"
+            tabIndex={0}
             onPointerDown={(event) => startResize(event, "both")}
+            onPointerEnter={() => setHoveredAxis("both")}
+            onPointerLeave={() => setHoveredAxis(null)}
+            onFocus={() => setHoveredAxis("both")}
+            onBlur={() => setHoveredAxis(null)}
             style={{
               position: "absolute",
-              right: 0,
-              bottom: 0,
+              right: -4,
+              bottom: -4,
               zIndex: 4,
               display: "flex",
-              width: 24,
-              height: 24,
+              width: 28,
+              height: 28,
               alignItems: "center",
               justifyContent: "center",
-              borderTopLeftRadius: 6,
               border:
-                "1px solid var(--console-resize-separator-border, currentColor)",
+                hoveredAxis === "both" || activeAxis === "both"
+                  ? "1px solid var(--console-resize-separator-border, currentColor)"
+                  : "1px solid transparent",
+              borderRadius: 8,
               background:
-                "var(--console-resize-separator-grip-background, transparent)",
-              color: "var(--console-resize-separator-foreground, currentColor)",
+                hoveredAxis === "both" || activeAxis === "both"
+                  ? "var(--console-resize-separator-grip-background, transparent)"
+                  : "transparent",
+              boxShadow:
+                hoveredAxis === "both" || activeAxis === "both"
+                  ? "var(--console-resize-separator-grip-shadow, none)"
+                  : "none",
+              color:
+                activeAxis === "both"
+                  ? "var(--console-resize-separator-active, currentColor)"
+                  : "var(--console-resize-separator-foreground, currentColor)",
               cursor: "nwse-resize",
+              opacity:
+                hoveredAxis === "both" || activeAxis === "both" ? 1 : 0.65,
+              outline: "none",
               touchAction: "none",
+              transition:
+                "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
             }}
           >
             <MoveDiagonal2 size={15} aria-hidden="true" />
