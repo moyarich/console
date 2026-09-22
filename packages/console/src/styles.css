@@ -300,10 +300,7 @@
     1px solid #303030
   );
 
-  --_console-warning-border-color: var(
-    --console-warning-border-color,
-    #5e4d00
-  );
+  --_console-warning-border-color: var(--console-warning-border-color, #5e4d00);
   --_console-warning-background-color: var(
     --console-warning-background-color,
     #332b00
@@ -347,10 +344,7 @@
     1px solid #3a3a3a
   );
 
-  --_console-table-border: var(
-    --console-table-border,
-    1px solid #4a4a4a
-  );
+  --_console-table-border: var(--console-table-border, 1px solid #4a4a4a);
   --_console-table-header-background-color: var(
     --console-table-header-background-color,
     #292929
