@@ -103,7 +103,6 @@ packages/console/src/console/
 packages/console/src/cliOutput/
 packages/console/src/components/
 packages/console/src/links/
-packages/console/src/renderers/
 packages/console/src/utils/ansi/
 packages/console/src/utils/browser/
 packages/console/src/utils/contextMenu/
@@ -121,7 +120,6 @@ First-class domains live directly under `src/`:
 - `console/` implements browser-console API/runtime semantics such as capture, proxying, and supported console methods
 - `cliOutput/` owns stdout/stderr processing, processor plugins, structured-output parsers, and CLI-output types
 - `links/` owns shared link detection, target validation, provider contracts, and range resolution
-- `renderers/` owns public third-party renderer contracts and dispatch behavior
 - `components/` owns React presentation, including `ConsoleLinkedText`
 
 Low-level reusable helpers live under `utils/`:
@@ -169,7 +167,7 @@ Structured rendering should not need to know whether a message came from page ca
 
 ### Custom renderer dispatch
 
-Custom message and value renderer contracts live in `packages/console/src/renderers/types.ts`. Matching and invocation stay next to the components that consume those contracts so one-use dispatch helpers do not become unnecessary abstractions.
+Custom message and value renderer contracts live in the shared `packages/console/src/types.ts`. Matching and invocation stay next to the components that consume those contracts so one-use dispatch helpers do not become unnecessary abstractions.
 
 - message entries can dispatch by `method`, `match`, or both
 - value entries can dispatch by normalized `type`, `match`, or both
