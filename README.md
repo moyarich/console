@@ -605,12 +605,19 @@ while `--console-warning-border-color` changes only the warning message's
 | Token | CSS property | Applies to |
 | --- | --- | --- |
 | `--console-panel-color-scheme` | `color-scheme` | Panel chrome and header actions |
-| `--console-color-scheme` | `color-scheme` | Structured/ANSI output surface |
+| `--console-color-scheme` | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
 | `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu |
 
-The default panel scheme is light while the output surface and context menu are
-dark. `color-scheme` affects browser-rendered UI such as native scrollbars and
-controls; it does not recolor the custom console surfaces.
+The panel chrome defaults to light when no scheme is supplied. If
+`--console-color-scheme` is set, the panel inherits that scheme unless
+`--console-panel-color-scheme` overrides it. Header, control, border, muted,
+and heading-icon fallback colors use `light-dark()`, so the header visibly
+tracks the selected light/dark scheme without requiring every panel color token
+to be overridden.
+
+`color-scheme` also affects browser-rendered UI such as native scrollbars and
+controls. Explicit public color tokens still take precedence over the
+scheme-derived fallbacks.
 
 ### Panel chrome
 
