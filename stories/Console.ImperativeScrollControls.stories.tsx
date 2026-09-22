@@ -40,7 +40,7 @@ function ImperativeScrollControlsStory() {
   const addons = useMemo<ConsoleAddon[]>(
     () => [
       {
-        id: "storybook-viewport-navigation",
+        id: "@moyarich/console-storybook:viewport-navigation",
         activate(host) {
           const viewport = host.services.require(consoleServices.viewport);
 
