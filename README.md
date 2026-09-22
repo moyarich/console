@@ -144,6 +144,14 @@ ANSI rendering uses `anser` and supports standard and bright colors, 256-color, 
 
 ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
 
+#### Carriage-return and progress output
+
+ANSI mode normalizes common process-output redraw behavior before rendering. A standalone `\\r` updates the current logical line instead of creating another permanent row, while `\\n` completes the current line. `\\r\\n` remains a normal newline. Supported ANSI clear-line sequences apply to the current logical line as well.
+
+This keeps spinner/progress output from build tools, package managers, test runners, and downloads readable without turning the component into a terminal emulator. Completed lines stay stable, and `stdout` / `stderr` metadata remains attached to the visible logical line.
+
+Normalization happens before process-output processors and structured-output parsers, so extensions receive the text that is actually visible instead of stale intermediate progress frames. Ordinary adjacent entries still remain separate rows unless a carriage return, newline boundary, or clear-line control explicitly connects them. Arbitrary cursor positioning and terminal screen/buffer emulation remain intentionally out of scope.
+
 ### Process output with ordered processors
 
 Use `processors` when process output needs runtime-specific normalization or enrichment before rendering. A processor receives immutable output state plus ANSI-stripped text and returns only the fields it wants to change:
