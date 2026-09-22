@@ -1,7 +1,11 @@
 import type { ConsoleContextMenuAction, ConsoleMessageAction } from "./actions";
 import type { ConsoleLinkProvider } from "./links";
 import type { ConsoleProcessOutputProcessor } from "./processOutput";
-import type { ConsoleMessageRenderer, ConsoleValueRenderer } from "./renderers";
+import type {
+  ConsoleMessageRenderer,
+  ConsoleOutputRenderer,
+  ConsoleValueRenderer,
+} from "./renderers";
 import type { ConsoleStructuredOutputParser } from "./utils/terminal/types";
 
 /** Version of the public addon-host contract. */
@@ -418,6 +422,9 @@ export const consoleExtensionPoints = Object.freeze({
     ),
   linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
     "console.linkProvider",
+  ),
+  outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
+    "console.render.output",
   ),
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
