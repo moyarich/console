@@ -1,0 +1,4 @@
+{
+  "label": "Pyodide + tqdm progress",
+  "description": "Run the real Python tqdm package inside browser-based Pyodide and feed its carriage-return stderr progress directly into the ANSI console."
+}
