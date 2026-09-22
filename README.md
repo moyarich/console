@@ -530,7 +530,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 | Prop                  | Purpose                                                                        |
 | --------------------- | ------------------------------------------------------------------------------ |
-| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation              |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation               |
 | `onClear`             | Callback used by the clear action                                              |
 | `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
 | `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
@@ -1407,7 +1407,7 @@ Available helpers:
 | Export           | Purpose                                  |
 | ---------------- | ---------------------------------------- |
 | `Console`        | Complete structured-console / ANSI panel |
-| `ConsoleHandle`  | Supported imperative viewport navigation  |
+| `ConsoleHandle`  | Supported imperative viewport navigation |
 | `ConsoleMessage` | Render one structured message            |
 | `ConsoleValue`   | Render one JavaScript value              |
 | `ConsoleTable`   | Render normalized `console.table()` data |
