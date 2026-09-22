@@ -4,16 +4,17 @@ import type { CSSProperties } from "react";
 export type ContextMenuThemeProperty =
   | "--console-color-scheme"
   | "--console-context-menu-color-scheme"
-  | "--console-context-menu-background"
+  | "--console-context-menu-background-color"
   | "--console-context-menu-border"
-  | "--console-context-menu-foreground"
-  | "--console-context-menu-muted"
-  | "--console-context-menu-hover"
-  | "--console-context-menu-hover-foreground"
-  | "--console-context-menu-icon"
-  | "--console-context-menu-danger"
-  | "--console-context-menu-radius"
-  | "--console-context-menu-shadow";
+  | "--console-context-menu-color"
+  | "--console-context-menu-muted-color"
+  | "--console-context-menu-hover-background-color"
+  | "--console-context-menu-hover-color"
+  | "--console-context-menu-icon-color"
+  | "--console-context-menu-danger-color"
+  | "--console-context-menu-border-radius"
+  | "--console-context-menu-box-shadow"
+  | "--console-context-menu-separator-background-color";
 
 /** Inline style used to preserve console theme variables on a portaled context menu. */
 export type ContextMenuThemeStyle = CSSProperties &
