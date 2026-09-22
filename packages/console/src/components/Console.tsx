@@ -26,13 +26,13 @@ import type {
 import type {
   ConsoleMessageRenderer,
   ConsoleValueRenderer,
-} from "../renderers";
+} from "../renderers/types";
 import type {
   ConsoleContextMenuAction,
   ConsoleMessageAction,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
-import type { ConsoleLinkProvider } from "../links";
+import type { ConsoleLinkProvider } from "../links/types";
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
