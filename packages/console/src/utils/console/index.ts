@@ -24,7 +24,4 @@ export { objectLabel } from "./objectLabel";
 export { preview } from "./preview";
 export { typeClass } from "./typeClass";
 export * from "./table";
-export type {
-  ContextMenuThemeProperty,
-  ContextMenuThemeStyle,
-} from "./types";
+export type { ContextMenuThemeProperty, ContextMenuThemeStyle } from "./types";
