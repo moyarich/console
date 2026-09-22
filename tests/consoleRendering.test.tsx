@@ -765,6 +765,49 @@ describe("Console rendering", () => {
     expect(html).toContain("ISSUE-42");
   });
 
+  it("renders link providers for completed stdout and stderr entries", () => {
+    const provider: ConsoleLinkProvider = {
+      id: "source-location",
+      provideLinks(text) {
+        const match = /src\/cli\/run\.ts:91:12/.exec(text);
+
+        return match?.index === undefined
+          ? undefined
+          : [
+              {
+                text: match[0],
+                start: match.index,
+                end: match.index + match[0].length,
+                action: () => undefined,
+              },
+            ];
+      },
+    };
+
+    const html = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[
+          {
+            id: "docs",
+            stream: "stdout",
+            data: "Docs: https://example.com/cli\n",
+          },
+          {
+            id: "source-error",
+            stream: "stderr",
+            data: "Error: src/cli/run.ts:91:12\n",
+          },
+        ]}
+        linkProviders={[provider]}
+      />,
+    );
+
+    expect(html).toContain('href="https://example.com/cli"');
+    expect(html).toContain("console-link-button");
+    expect(html).toContain("src/cli/run.ts:91:12");
+  });
+
   it("detects one ANSI link across style-token boundaries", () => {
     const html = renderToStaticMarkup(
       <Console
