@@ -107,8 +107,4 @@ export type {
   ConsoleWebSocketLike,
   ListenForConsoleWebSocketOptions,
 } from "./utils/transport/websocket";
-export type {
-  ConsoleMethod,
-  ConsoleMessageData,
-  ConsoleEvent,
-} from "./types";
+export type { ConsoleMethod, ConsoleMessageData, ConsoleEvent } from "./types";
