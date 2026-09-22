@@ -408,6 +408,8 @@ function EditorShell() {
           borderRadius: 10,
           background: "#0d1117",
           boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
+          "--console-color-scheme": "dark",
+          "--console-context-menu-color-scheme": "dark",
           "--console-resize-separator-line-background-color": "#30363d",
           "--console-resize-separator-hover-line-background-color": "#6e7681",
           "--console-resize-separator-active-line-background-color": "#58a6ff",
