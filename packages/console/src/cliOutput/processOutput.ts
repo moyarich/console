@@ -2,6 +2,7 @@ import Anser from "anser";
 import { ANSI_CLEAR_LINE_PREFIX_PATTERN } from "../utils/ansi/constants";
 import type {
   ConsoleProcessOutputProcessor,
+  ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
 } from "./processors/types";
 import type {
