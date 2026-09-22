@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  CONSOLE_CORE_ADDON_ID_PREFIX,
   consoleCapabilities,
-  consoleServices,
   createConsoleAddonManager,
+  createConsoleViewportAddon,
   type ConsoleAddon,
   type ConsoleAddonManager,
   type ConsoleDisposable,
@@ -13,7 +14,10 @@ import type { ConsoleViewportService } from "../viewport";
 
 const EMPTY_ADDONS: readonly ConsoleAddon[] = [];
 
-function validateAddons(addons: readonly ConsoleAddon[]): void {
+function validateAddons(
+  addons: readonly ConsoleAddon[],
+  coreAddonIds: ReadonlySet<string>,
+): void {
   const ids = new Set<string>();
 
   for (const addon of addons) {
@@ -25,6 +29,15 @@ function validateAddons(addons: readonly ConsoleAddon[]): void {
 
     if (ids.has(id)) {
       throw new Error(`Console addon "${id}" appears more than once.`);
+    }
+
+    if (
+      id.startsWith(CONSOLE_CORE_ADDON_ID_PREFIX) &&
+      !coreAddonIds.has(id)
+    ) {
+      throw new Error(
+        `Console addon ID "${id}" uses the reserved core namespace "${CONSOLE_CORE_ADDON_ID_PREFIX}".`,
+      );
     }
 
     ids.add(id);
@@ -50,8 +63,6 @@ function createManager(
           ],
   });
 
-  manager.services.provide(consoleServices.viewport, viewport);
-
   return manager;
 }
 
@@ -62,11 +73,44 @@ function createManager(
  */
 export function useConsoleAddons(
   addons: readonly ConsoleAddon[] | undefined,
+  disabledAddonIds: readonly string[] | undefined,
   mode: ConsoleMode,
   viewport: ConsoleViewportService,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
-  validateAddons(addonList);
+  const coreAddons = useMemo(
+    () => [createConsoleViewportAddon(viewport)] satisfies readonly ConsoleAddon[],
+    [viewport],
+  );
+  const coreAddonIds = useMemo(
+    () => new Set(coreAddons.map((addon) => addon.id)),
+    [coreAddons],
+  );
+  const allAddons = useMemo(
+    () => [...coreAddons, ...addonList],
+    [addonList, coreAddons],
+  );
+  const disabledIds = useMemo(
+    () =>
+      new Set(
+        (disabledAddonIds ?? []).map((id) => {
+          const normalized = id.trim();
+
+          if (!normalized) {
+            throw new Error("Disabled addon id must not be empty.");
+          }
+
+          return normalized;
+        }),
+      ),
+    [disabledAddonIds],
+  );
+  const activeAddons = useMemo(
+    () => allAddons.filter((addon) => !disabledIds.has(addon.id.trim())),
+    [allAddons, disabledIds],
+  );
+
+  validateAddons(allAddons, coreAddonIds);
 
   const manager = useMemo(
     () => createManager(mode, viewport),
@@ -93,7 +137,7 @@ export function useConsoleAddons(
 
   useEffect(() => {
     const nextById = new Map(
-      addonList.map((addon) => [addon.id.trim(), addon]),
+      activeAddons.map((addon) => [addon.id.trim(), addon]),
     );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
 
@@ -104,7 +148,7 @@ export function useConsoleAddons(
       loadedRef.current.delete(id);
     }
 
-    for (const addon of addonList) {
+    for (const addon of activeAddons) {
       const id = addon.id.trim();
       const current = loadedRef.current.get(id);
 
@@ -115,7 +159,7 @@ export function useConsoleAddons(
         registration: manager.load(addon),
       });
     }
-  }, [addonList, manager]);
+  }, [activeAddons, manager]);
 
   useEffect(
     () => () => {
