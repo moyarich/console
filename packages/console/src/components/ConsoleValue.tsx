@@ -13,7 +13,7 @@ import type {
   ConsoleLinkProvider,
   ConsoleLinkProviderContext,
 } from "../links/types";
-import type { ConsoleValueRenderer } from "../renderers/types";
+import type { ConsoleValueRenderer } from "../types";
 
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
