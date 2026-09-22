@@ -51,7 +51,9 @@ export const StructuredAndAnsi: Story = {
     sourceLink.click();
     await new Promise((resolve) => window.setTimeout(resolve, 0));
 
-    if (!canvasElement.textContent?.includes("src/cli/run.ts:91:12")) {
+    const result = canvasElement.querySelector("[data-link-provider-result]");
+
+    if (result?.textContent?.trim() !== "src/cli/run.ts:91:12") {
       throw new Error("Expected the custom ANSI provider action to run.");
     }
   },
