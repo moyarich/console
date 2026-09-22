@@ -1,7 +1,6 @@
 import { Copy } from "lucide-react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
-import { ConsoleValue } from "./ConsoleValue";
-import type { ConsoleValueRenderer } from "../types";
+import { ConsoleValue, type ConsoleValueRenderer } from "./ConsoleValue";
 import type { ConsoleLinkProvider } from "../links/types";
 import { collectColumns } from "../utils/table/collectColumns";
 import { toRows } from "../utils/table/toRows";
