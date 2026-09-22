@@ -449,14 +449,6 @@ function EditorShell() {
           Run
         </button>
 
-        <span
-          style={{
-            color: "#8b949e",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Console controls are in the console menu
-        </span>
       </div>
 
       <div
