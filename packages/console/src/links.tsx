@@ -233,7 +233,7 @@ export interface ConsoleLinkedTextProps {
   detectLinks?: boolean;
   providers?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
-  renderText?: (text: string, key: string) => ReactNode;
+  renderText?: (text: string, key: string, start: number, end: number) => ReactNode;
 }
 
 function isExternalWebTarget(target: string): boolean {
@@ -256,7 +256,7 @@ export function ConsoleLinkedText({
   });
 
   if (!resolved.length) {
-    return <>{renderText(text, "text")}</>;
+    return <>{renderText(text, "text", 0, text.length)}</>;
   }
 
   const parts: ReactNode[] = [];
@@ -264,7 +264,7 @@ export function ConsoleLinkedText({
 
   resolved.forEach((link, index) => {
     if (offset < link.start) {
-      parts.push(renderText(text.slice(offset, link.start), `text-${index}`));
+      parts.push(\n        renderText(\n          text.slice(offset, link.start),\n          `text-${index}`,\n          offset,\n          link.start,\n        ),\n      );
     }
 
     const linkContext: ConsoleLinkActionContext = {
@@ -273,7 +273,7 @@ export function ConsoleLinkedText({
       sourceText: text,
       ...(link.providerId ? { providerId: link.providerId } : {}),
     };
-    const content = renderText(link.text, `link-text-${index}`);
+    const content = renderText(\n      link.text,\n      `link-text-${index}`,\n      link.start,\n      link.end,\n    );
 
     if (link.target) {
       const external = isExternalWebTarget(link.target);
@@ -309,7 +309,7 @@ export function ConsoleLinkedText({
   });
 
   if (offset < text.length) {
-    parts.push(renderText(text.slice(offset), "text-end"));
+    parts.push(renderText(text.slice(offset), "text-end", offset, text.length));
   }
 
   return <>{parts}</>;
