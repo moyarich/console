@@ -65,6 +65,9 @@ export interface ConsoleAction<TContext> {
   onSelect: (context: TContext) => void | Promise<void>;
 }
 
+/** Host-defined action rendered in the console panel actions menu. */
+export type ConsolePanelAction = ConsoleAction<ConsoleSurfaceActionContext>;
+
 /** Host-defined action available from console, object, or message context menus. */
 export type ConsoleContextMenuAction =
   ConsoleAction<ConsoleContextMenuActionContext>;
