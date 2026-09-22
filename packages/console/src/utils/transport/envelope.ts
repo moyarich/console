@@ -1,5 +1,13 @@
 import { isConsoleMethod } from "../../console/consoleMethods";
-import type { ConsoleTransportEnvelope } from "../../types";
+import type { ConsoleEvent } from "../../types";
+
+/** Versioned envelope used to move console events across transport boundaries. */
+export interface ConsoleTransportEnvelope {
+  type: "CONSOLE_PANEL";
+  version: 1;
+  channel: string;
+  event: ConsoleEvent;
+}
 
 /** Stable envelope type used by package transport adapters. */
 export const CONSOLE_TRANSPORT_TYPE = "CONSOLE_PANEL" as const;
