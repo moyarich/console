@@ -58,12 +58,6 @@ export type {
 export type { ConsoleLinkedTextProps } from "./components/ConsoleLinkedText";
 export { ConsoleValue } from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
-export type {
-  ConsoleMessageRenderer,
-  ConsoleMessageRendererContext,
-  ConsoleValueRenderer,
-  ConsoleValueRendererContext,
-} from "./renderers/types";
 export { CONSOLE_METHODS } from "./console/consoleMethods";
 export { normalizeConsoleTableData } from "./utils/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/values/formatConsoleObjectForCopy";
@@ -103,6 +97,10 @@ export type {
 export type {
   ConsoleMethod,
   ConsoleMessageData,
+  ConsoleMessageRenderer,
+  ConsoleMessageRendererContext,
+  ConsoleValueRenderer,
+  ConsoleValueRendererContext,
   RunOutput,
   DirOptions,
   ConsoleEvent,
