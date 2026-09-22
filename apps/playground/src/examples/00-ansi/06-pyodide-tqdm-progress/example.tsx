@@ -70,10 +70,7 @@ export default function PyodideTqdmProgressExample() {
     const runId = ++runIdRef.current;
     let sequence = 0;
 
-    const append = (
-      data: string,
-      stream: ConsoleStdoutEntry["stream"],
-    ) => {
+    const append = (data: string, stream: ConsoleStdoutEntry["stream"]) => {
       if (!data) {
         return;
       }
