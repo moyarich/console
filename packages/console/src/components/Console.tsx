@@ -3,12 +3,14 @@ import {
   useCallback,
   useEffect,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
   type CSSProperties,
   type ReactNode,
-  type UIEvent,
+  type Ref,
+  type RefObject,
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
@@ -44,12 +46,20 @@ import {
   type ConsoleExtensionRegistry,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
+import {
+  createConsoleViewportController,
+  type ConsoleViewportController,
+  type ConsoleViewportService,
+} from "../viewport";
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
 /** CSS resize direction supported by the console shell. */
 export type ConsoleResizeDirection =
   "vertical" | "horizontal" | "both" | "block" | "inline";
+
+/** Supported imperative surface exposed through the top-level Console ref. */
+export interface ConsoleHandle extends ConsoleViewportService {}
 
 /**
  * Predicate used to decide whether a structured message should be visible.
@@ -62,6 +72,8 @@ export type ConsoleMessageFilter = (
 
 /** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
+  /** Imperative navigation ref for the mounted console viewport. */
+  ref?: Ref<ConsoleHandle>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Keep the output pinned to the bottom while the user remains near it. @default true */
@@ -144,6 +156,8 @@ export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
 
 interface ConsoleFrameProps extends ConsoleSharedProps {
   mode: ConsoleMode;
+  surfaceRef: RefObject<HTMLDivElement | null>;
+  viewport: ConsoleViewportController;
   hasMessages: boolean;
   isEmpty: boolean;
   scrollKey: unknown;
@@ -153,10 +167,10 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
 const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
-const AUTO_SCROLL_THRESHOLD = 24;
-
 interface ConsoleResolvedAddonProps {
   addonExtensions: ConsoleExtensionRegistry;
+  surfaceRef: RefObject<HTMLDivElement | null>;
+  viewport: ConsoleViewportController;
 }
 
 function mergeContributions<T>(
@@ -174,6 +188,8 @@ function mergeContributions<T>(
  */
 function ConsoleFrame({
   mode,
+  surfaceRef,
+  viewport,
   onClear,
   autoScroll = true,
   resizable,
@@ -193,8 +209,6 @@ function ConsoleFrame({
   children,
   messageActions,
 }: ConsoleFrameProps) {
-  const surfaceRef = useRef<HTMLDivElement>(null);
-  const shouldAutoScrollRef = useRef(true);
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
     onClear?.();
@@ -209,22 +223,10 @@ function ConsoleFrame({
   }, []);
 
   useEffect(() => {
-    const surface = surfaceRef.current;
+    if (!autoScroll) return;
 
-    if (!autoScroll || !surface || !shouldAutoScrollRef.current) {
-      return;
-    }
-
-    surface.scrollTop = surface.scrollHeight;
-  }, [autoScroll, scrollKey]);
-
-  const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    const surface = event.currentTarget;
-    const distanceFromBottom =
-      surface.scrollHeight - surface.scrollTop - surface.clientHeight;
-
-    shouldAutoScrollRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
-  };
+    viewport.scrollToBottomIfPinned();
+  }, [autoScroll, scrollKey, viewport]);
 
   const panelActionContext = useMemo<ConsoleSurfaceActionContext>(
     () => ({
@@ -376,7 +378,8 @@ function ConsoleFrame({
           className="console-surface"
           role="log"
           aria-live="polite"
-          onScroll={handleScroll}
+          tabIndex={-1}
+          onScroll={viewport.updateFromScroll}
         >
           {isEmpty ? (
             <div className="console-empty">
@@ -614,13 +617,22 @@ function ConsoleAnsiMode({
  * Set `mode="ansi"` for terminal-style entries; omit `mode` (or use
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
-export function Console(props: ConsoleProps) {
+export function Console({ ref, ...props }: ConsoleProps) {
   const mode: ConsoleMode = props.mode === "ansi" ? "ansi" : "console";
-  const addonExtensions = useConsoleAddons(props.addons, mode);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const viewport = useMemo(
+    () => createConsoleViewportController(() => surfaceRef.current),
+    [],
+  );
+
+  useImperativeHandle(ref, () => viewport, [viewport]);
+
+  const addonExtensions = useConsoleAddons(props.addons, mode, viewport);
+  const resolvedProps = { addonExtensions, surfaceRef, viewport };
 
   if (props.mode === "ansi") {
-    return <ConsoleAnsiMode {...props} addonExtensions={addonExtensions} />;
+    return <ConsoleAnsiMode {...props} {...resolvedProps} />;
   }
 
-  return <ConsoleMessageMode {...props} addonExtensions={addonExtensions} />;
+  return <ConsoleMessageMode {...props} {...resolvedProps} />;
 }
