@@ -29,6 +29,7 @@ import type {
   ConsoleMessageAction,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
+import { isInspectableObject } from "../utils/values/isInspectableObject";
 import type { ConsoleLinkProvider } from "../links/types";
 
 /** Rendering mode selected by the top-level console component. */
@@ -347,25 +348,28 @@ function ConsoleMessageMode({
         : messages,
     [filter, messages],
   );
-  const [expandedMessages, setExpandedMessages] = useState<
-    Map<ConsoleMessageData, number>
+  const [messageExpansion, setMessageExpansion] = useState<
+    Map<ConsoleMessageData, { version: number; expanded: boolean }>
   >(() => new Map());
 
   useEffect(() => {
     onMessagesChange?.(sourceMessages);
   }, [onMessagesChange, sourceMessages]);
 
-  const hasExpandableValues = visibleMessages.some(
-    (message) =>
-      message.method !== "table" &&
-      message.data.some((value) => typeof value === "object" && value !== null),
-  );
+  const hasExpandableValues = (message: ConsoleMessageData) =>
+    message.method !== "table" && message.data.some(isInspectableObject);
 
-  const expandAllCollapsed = () => {
-    setExpandedMessages((current) => {
-      const version = Math.max(0, ...Array.from(current.values())) + 1;
+  const toggleMessageExpansion = (message: ConsoleMessageData) => {
+    setMessageExpansion((current) => {
+      const next = new Map(current);
+      const previous = current.get(message);
 
-      return new Map(visibleMessages.map((message) => [message, version]));
+      next.set(message, {
+        version: (previous?.version ?? 0) + 1,
+        expanded: !(previous?.expanded ?? false),
+      });
+
+      return next;
     });
   };
 
@@ -389,8 +393,12 @@ function ConsoleMessageMode({
           message={message}
           index={index}
           messages={visibleMessages}
-          expandAllVersion={expandedMessages.get(message)}
-          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+          expansion={messageExpansion.get(message)}
+          onToggleExpansion={
+            hasExpandableValues(message)
+              ? () => toggleMessageExpansion(message)
+              : undefined
+          }
           renderers={messageRenderers}
           valueRenderers={valueRenderers}
           detectLinks={detectLinks}
