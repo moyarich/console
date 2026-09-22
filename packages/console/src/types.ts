@@ -27,6 +27,12 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
+/** Standard run result shape shared by console state and rendering. */
+export interface RunOutput {
+  messages: ConsoleMessageData[];
+  error?: string;
+}
+
 /** Event emitted by console capture/proxy utilities and transports. */
 export type ConsoleEvent =
   { type: "message"; message: ConsoleMessageData } | { type: "clear" };
