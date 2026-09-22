@@ -47,10 +47,11 @@ function ImperativeScrollControlsStory() {
           host.extensions.register(consoleExtensionPoints.panelAction, {
             id: "jump-to-warning",
             label: "Jump to warning target",
-            onSelect: () =>
+            onSelect: () => {
               viewport.scrollToMessage("story-message-30", {
                 block: "center",
-              }),
+              });
+            },
           });
         },
       },
