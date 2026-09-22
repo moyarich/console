@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   consoleCapabilities,
+  consoleServices,
   createConsoleAddonManager,
   type ConsoleAddon,
   type ConsoleAddonManager,
@@ -8,6 +9,7 @@ import {
   type ConsoleExtensionRegistry,
 } from "../addons";
 import type { ConsoleMode } from "../types";
+import type { ConsoleViewportService } from "../viewport";
 
 const EMPTY_ADDONS: readonly ConsoleAddon[] = [];
 
@@ -29,8 +31,11 @@ function validateAddons(addons: readonly ConsoleAddon[]): void {
   }
 }
 
-function createManager(mode: ConsoleMode): ConsoleAddonManager {
-  return createConsoleAddonManager({
+function createManager(
+  mode: ConsoleMode,
+  viewport: ConsoleViewportService,
+): ConsoleAddonManager {
+  const manager = createConsoleAddonManager({
     capabilities:
       mode === "ansi"
         ? [
@@ -44,6 +49,10 @@ function createManager(mode: ConsoleMode): ConsoleAddonManager {
             consoleCapabilities.structuredMessages,
           ],
   });
+
+  manager.services.provide(consoleServices.viewport, viewport);
+
+  return manager;
 }
 
 /**
@@ -54,11 +63,15 @@ function createManager(mode: ConsoleMode): ConsoleAddonManager {
 export function useConsoleAddons(
   addons: readonly ConsoleAddon[] | undefined,
   mode: ConsoleMode,
+  viewport: ConsoleViewportService,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   validateAddons(addonList);
 
-  const manager = useMemo(() => createManager(mode), [mode]);
+  const manager = useMemo(
+    () => createManager(mode, viewport),
+    [mode, viewport],
+  );
   const loadedRef = useRef(
     new Map<
       string,
