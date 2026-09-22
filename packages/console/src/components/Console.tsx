@@ -349,7 +349,7 @@ function ConsoleMessageMode({
     [filter, messages],
   );
   const [messageExpansion, setMessageExpansion] = useState<
-    Map<ConsoleMessageData, { version: number; expanded: boolean }>
+    Map<ConsoleMessageData, boolean>
   >(() => new Map());
 
   useEffect(() => {
@@ -362,12 +362,7 @@ function ConsoleMessageMode({
   const toggleMessageExpansion = (message: ConsoleMessageData) => {
     setMessageExpansion((current) => {
       const next = new Map(current);
-      const previous = current.get(message);
-
-      next.set(message, {
-        version: (previous?.version ?? 0) + 1,
-        expanded: !(previous?.expanded ?? false),
-      });
+      next.set(message, !(current.get(message) ?? false));
 
       return next;
     });
@@ -393,7 +388,7 @@ function ConsoleMessageMode({
           message={message}
           index={index}
           messages={visibleMessages}
-          expansion={messageExpansion.get(message)}
+          allValuesExpanded={messageExpansion.get(message)}
           onToggleExpansion={
             hasExpandableValues(message)
               ? () => toggleMessageExpansion(message)
