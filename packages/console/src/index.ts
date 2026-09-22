@@ -13,8 +13,13 @@ export type {
   ConsoleMessageModeProps,
   ConsoleMode,
   ConsoleProps,
+  RunOutput,
 } from "./components/Console";
 export { ConsoleMessage } from "./components/ConsoleMessage";
+export type {
+  ConsoleMessageRenderer,
+  ConsoleMessageRendererContext,
+} from "./components/ConsoleMessage";
 export type {
   ConsoleAction,
   ConsoleActionContextBase,
@@ -57,12 +62,19 @@ export type {
 } from "./links/types";
 export type { ConsoleLinkedTextProps } from "./components/ConsoleLinkedText";
 export { ConsoleValue } from "./components/ConsoleValue";
+export type {
+  ConsoleValueRenderer,
+  ConsoleValueRendererContext,
+} from "./components/ConsoleValue";
 export { ConsoleTable } from "./components/ConsoleTable";
 export { CONSOLE_METHODS } from "./console/consoleMethods";
 export { normalizeConsoleTableData } from "./utils/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/values/formatConsoleObjectForCopy";
 export { createConsoleProxy } from "./console/createConsoleProxy";
-export type { CreateConsoleProxyOptions } from "./console/createConsoleProxy";
+export type {
+  CreateConsoleProxyOptions,
+  DirOptions,
+} from "./console/createConsoleProxy";
 export { captureConsole } from "./console/captureConsole";
 export { createConsoleEventEmitter } from "./utils/events/createConsoleEventEmitter";
 export type {
@@ -87,6 +99,7 @@ export {
   DEFAULT_CONSOLE_CHANNEL,
   isConsoleEnvelope,
 } from "./utils/transport/envelope";
+export type { ConsoleTransportEnvelope } from "./utils/transport/envelope";
 export { listenForConsolePostMessages } from "./utils/transport/postMessage";
 export type { ListenForConsolePostMessagesOptions } from "./utils/transport/postMessage";
 export { listenForConsoleWebSocket } from "./utils/transport/websocket";
@@ -97,12 +110,5 @@ export type {
 export type {
   ConsoleMethod,
   ConsoleMessageData,
-  ConsoleMessageRenderer,
-  ConsoleMessageRendererContext,
-  ConsoleValueRenderer,
-  ConsoleValueRendererContext,
-  RunOutput,
-  DirOptions,
   ConsoleEvent,
-  ConsoleTransportEnvelope,
 } from "./types";
