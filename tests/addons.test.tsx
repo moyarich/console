@@ -207,6 +207,65 @@ describe("console addon API", () => {
     ).toEqual([provider]);
   });
 
+  it("allows an output renderer to replace the built-in ANSI surface", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={[]}
+        showHeader={false}
+        outputRenderers={[
+          {
+            mode: "ansi",
+            render: ({ entries }) => (
+              <div data-testid="custom-terminal">
+                terminal:{entries.length}
+              </div>
+            ),
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain('data-testid="custom-terminal"');
+    expect(markup).toContain("terminal:0");
+    expect(markup).not.toContain("No process output yet.");
+  });
+
+  it("falls back to the built-in ANSI surface when output renderers delegate", () => {
+    const markup = renderToStaticMarkup(
+      <Console
+        mode="ansi"
+        messages={["hello from stdout"]}
+        showHeader={false}
+        outputRenderers={[
+          {
+            mode: "ansi",
+            render: () => undefined,
+          },
+        ]}
+      />,
+    );
+
+    expect(markup).toContain("hello from stdout");
+  });
+
+  it("exposes the output renderer as an addon extension point", () => {
+    const manager = createConsoleAddonManager();
+    const renderer = {
+      mode: "ansi" as const,
+      render: () => <div>terminal surface</div>,
+    };
+
+    manager.extensions.register(
+      consoleExtensionPoints.outputRenderer,
+      renderer,
+    );
+
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.outputRenderer),
+    ).toEqual([renderer]);
+  });
+
   it("rejects duplicate addon IDs through the React Console API", () => {
     const addons: ConsoleAddon[] = [
       { id: "duplicate", activate: () => undefined },
