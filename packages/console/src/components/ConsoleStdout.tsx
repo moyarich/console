@@ -62,9 +62,7 @@ export interface ConsoleStdoutProps {
 type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
 
 const ANSI_ESCAPE = String.fromCharCode(27);
-const ANSI_CLEAR_LINE_PATTERN = new RegExp(
-  `${ANSI_ESCAPE}\\[[012]?K`,
-);
+const ANSI_CLEAR_LINE_PATTERN = new RegExp(`${ANSI_ESCAPE}\\[[012]?K`);
 
 /** Converts an Anser token into React inline styles. */
 function getAnsiTokenStyle(token: AnserToken): CSSProperties {
