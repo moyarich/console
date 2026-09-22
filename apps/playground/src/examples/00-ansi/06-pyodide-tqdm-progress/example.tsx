@@ -16,9 +16,7 @@ interface PyodideRuntime {
   runPythonAsync(code: string): Promise<unknown>;
 }
 
-type LoadPyodide = (options: {
-  indexURL: string;
-}) => Promise<PyodideRuntime>;
+type LoadPyodide = (options: { indexURL: string }) => Promise<PyodideRuntime>;
 
 type PyodideGlobalScope = typeof globalThis & {
   loadPyodide?: LoadPyodide;
