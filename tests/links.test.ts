@@ -8,7 +8,8 @@ import {
 
 describe("console links", () => {
   it("detects safe HTTP and HTTPS URLs with exact ranges", () => {
-    const text = "Docs: https://example.com/docs, then http://localhost:3000/test.";
+    const text =
+      "Docs: https://example.com/docs, then http://localhost:3000/test.";
     const links = detectWebLinks(text);
 
     expect(links).toEqual([
