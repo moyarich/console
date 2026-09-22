@@ -53,6 +53,7 @@ export type {
   ConsoleContextMenuActionContext,
   ConsoleMessageAction,
   ConsoleMessageActionContext,
+  ConsolePanelAction,
   ConsoleObjectActionContext,
   ConsoleSurfaceActionContext,
 } from "./actions";
