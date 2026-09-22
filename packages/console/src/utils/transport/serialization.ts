@@ -1,5 +1,5 @@
 import type { ConsoleEvent, ConsoleMessageData } from "../../types";
-import { isElementLike } from "../console/isElementLike";
+import { isElementLike } from "../values/isElementLike";
 
 /** Limits applied while serializing rich console values for transport. */
 export interface SerializeConsoleValueOptions {
