@@ -264,7 +264,14 @@ export function ConsoleLinkedText({
 
   resolved.forEach((link, index) => {
     if (offset < link.start) {
-      parts.push(\n        renderText(\n          text.slice(offset, link.start),\n          `text-${index}`,\n          offset,\n          link.start,\n        ),\n      );
+      parts.push(
+        renderText(
+          text.slice(offset, link.start),
+          `text-${index}`,
+          offset,
+          link.start,
+        ),
+      );
     }
 
     const linkContext: ConsoleLinkActionContext = {
@@ -273,7 +280,12 @@ export function ConsoleLinkedText({
       sourceText: text,
       ...(link.providerId ? { providerId: link.providerId } : {}),
     };
-    const content = renderText(\n      link.text,\n      `link-text-${index}`,\n      link.start,\n      link.end,\n    );
+    const content = renderText(
+      link.text,
+      `link-text-${index}`,
+      link.start,
+      link.end,
+    );
 
     if (link.target) {
       const external = isExternalWebTarget(link.target);
