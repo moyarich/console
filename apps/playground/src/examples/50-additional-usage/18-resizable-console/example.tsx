@@ -124,14 +124,14 @@ export default function ResizableConsoleExample() {
         {
           width: "100%",
           minWidth: 0,
-          "--console-resize-separator-line": "#d0d5dd",
-          "--console-resize-separator-hover": "#98a2b3",
-          "--console-resize-separator-active": "#475467",
-          "--console-resize-separator-foreground": "#667085",
-          "--console-resize-separator-border": "#d0d5dd",
-          "--console-resize-separator-grip-background": "#ffffff",
-          "--console-resize-separator-grip-radius": "999px",
-          "--console-resize-separator-grip-shadow":
+          "--console-resize-separator-line-background-color": "#d0d5dd",
+          "--console-resize-separator-hover-line-background-color": "#98a2b3",
+          "--console-resize-separator-active-line-background-color": "#475467",
+          "--console-resize-separator-grip-color": "#667085",
+          "--console-resize-separator-grip-border": "1px solid #d0d5dd",
+          "--console-resize-separator-grip-background-color": "#ffffff",
+          "--console-resize-separator-grip-border-radius": "999px",
+          "--console-resize-separator-grip-box-shadow":
             "0 2px 8px rgb(16 24 40 / 0.14)",
         } as CSSProperties
       }
@@ -218,7 +218,7 @@ export default function ResizableConsoleExample() {
               height: "100%",
               alignItems: "center",
               justifyContent: "center",
-              color: "var(--console-resize-separator-foreground, currentColor)",
+              color: "var(--console-resize-separator-grip-color, currentColor)",
               cursor: "col-resize",
               outline: "none",
               touchAction: "none",
@@ -232,10 +232,10 @@ export default function ResizableConsoleExample() {
                 height: "100%",
                 background:
                   activeAxis === "horizontal"
-                    ? "var(--console-resize-separator-active, currentColor)"
+                    ? "var(--console-resize-separator-active-grip-color, currentColor)"
                     : hoveredAxis === "horizontal"
-                      ? "var(--console-resize-separator-hover, currentColor)"
-                      : "var(--console-resize-separator-line, currentColor)",
+                      ? "var(--console-resize-separator-hover-line-background-color, currentColor)"
+                      : "var(--console-resize-separator-line-background-color, currentColor)",
                 pointerEvents: "none",
                 transition: "background 120ms ease",
               }}
@@ -250,21 +250,21 @@ export default function ResizableConsoleExample() {
                 justifyContent: "center",
                 border:
                   hoveredAxis === "horizontal" || activeAxis === "horizontal"
-                    ? "1px solid var(--console-resize-separator-border, currentColor)"
+                    ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
                     : "1px solid transparent",
                 borderRadius:
-                  "var(--console-resize-separator-grip-radius, 999px)",
+                  "var(--console-resize-separator-grip-border-radius, 999px)",
                 background:
                   hoveredAxis === "horizontal" || activeAxis === "horizontal"
-                    ? "var(--console-resize-separator-grip-background, transparent)"
+                    ? "var(--console-resize-separator-grip-background-color, transparent)"
                     : "transparent",
                 boxShadow:
                   hoveredAxis === "horizontal" || activeAxis === "horizontal"
-                    ? "var(--console-resize-separator-grip-shadow, none)"
+                    ? "var(--console-resize-separator-grip-box-shadow, none)"
                     : "none",
                 color:
                   activeAxis === "horizontal"
-                    ? "var(--console-resize-separator-active, currentColor)"
+                    ? "var(--console-resize-separator-active-grip-color, currentColor)"
                     : "inherit",
                 opacity:
                   hoveredAxis === "horizontal" || activeAxis === "horizontal"
@@ -302,7 +302,7 @@ export default function ResizableConsoleExample() {
               height: 10,
               alignItems: "center",
               justifyContent: "center",
-              color: "var(--console-resize-separator-foreground, currentColor)",
+              color: "var(--console-resize-separator-grip-color, currentColor)",
               cursor: "row-resize",
               outline: "none",
               touchAction: "none",
@@ -316,10 +316,10 @@ export default function ResizableConsoleExample() {
                 height: 1,
                 background:
                   activeAxis === "vertical"
-                    ? "var(--console-resize-separator-active, currentColor)"
+                    ? "var(--console-resize-separator-active-grip-color, currentColor)"
                     : hoveredAxis === "vertical"
-                      ? "var(--console-resize-separator-hover, currentColor)"
-                      : "var(--console-resize-separator-line, currentColor)",
+                      ? "var(--console-resize-separator-hover-line-background-color, currentColor)"
+                      : "var(--console-resize-separator-line-background-color, currentColor)",
                 pointerEvents: "none",
                 transition: "background 120ms ease",
               }}
@@ -334,21 +334,21 @@ export default function ResizableConsoleExample() {
                 justifyContent: "center",
                 border:
                   hoveredAxis === "vertical" || activeAxis === "vertical"
-                    ? "1px solid var(--console-resize-separator-border, currentColor)"
+                    ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
                     : "1px solid transparent",
                 borderRadius:
-                  "var(--console-resize-separator-grip-radius, 999px)",
+                  "var(--console-resize-separator-grip-border-radius, 999px)",
                 background:
                   hoveredAxis === "vertical" || activeAxis === "vertical"
-                    ? "var(--console-resize-separator-grip-background, transparent)"
+                    ? "var(--console-resize-separator-grip-background-color, transparent)"
                     : "transparent",
                 boxShadow:
                   hoveredAxis === "vertical" || activeAxis === "vertical"
-                    ? "var(--console-resize-separator-grip-shadow, none)"
+                    ? "var(--console-resize-separator-grip-box-shadow, none)"
                     : "none",
                 color:
                   activeAxis === "vertical"
-                    ? "var(--console-resize-separator-active, currentColor)"
+                    ? "var(--console-resize-separator-active-grip-color, currentColor)"
                     : "inherit",
                 opacity:
                   hoveredAxis === "vertical" || activeAxis === "vertical"
@@ -387,21 +387,21 @@ export default function ResizableConsoleExample() {
               justifyContent: "center",
               border:
                 hoveredAxis === "both" || activeAxis === "both"
-                  ? "1px solid var(--console-resize-separator-border, currentColor)"
+                  ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
                   : "1px solid transparent",
               borderRadius: 8,
               background:
                 hoveredAxis === "both" || activeAxis === "both"
-                  ? "var(--console-resize-separator-grip-background, transparent)"
+                  ? "var(--console-resize-separator-grip-background-color, transparent)"
                   : "transparent",
               boxShadow:
                 hoveredAxis === "both" || activeAxis === "both"
-                  ? "var(--console-resize-separator-grip-shadow, none)"
+                  ? "var(--console-resize-separator-grip-box-shadow, none)"
                   : "none",
               color:
                 activeAxis === "both"
-                  ? "var(--console-resize-separator-active, currentColor)"
-                  : "var(--console-resize-separator-foreground, currentColor)",
+                  ? "var(--console-resize-separator-active-grip-color, currentColor)"
+                  : "var(--console-resize-separator-grip-color, currentColor)",
               cursor: "nwse-resize",
               opacity:
                 hoveredAxis === "both" || activeAxis === "both" ? 1 : 0.65,
