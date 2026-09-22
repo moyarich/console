@@ -1,3 +1,11 @@
+import {
+  GripHorizontal,
+  GripVertical,
+  PanelBottom,
+  PanelLeft,
+  PanelRight,
+  PanelTop,
+} from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { useRef, useState, type PointerEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -10,13 +18,14 @@ import {
 type DockPosition = "top" | "right" | "bottom" | "left";
 
 const DOCK_OPTIONS = [
-  { position: "top", label: "Top" },
-  { position: "right", label: "Right" },
-  { position: "bottom", label: "Bottom" },
-  { position: "left", label: "Left" },
+  { position: "top", label: "Top", icon: PanelTop },
+  { position: "right", label: "Right", icon: PanelRight },
+  { position: "bottom", label: "Bottom", icon: PanelBottom },
+  { position: "left", label: "Left", icon: PanelLeft },
 ] as const satisfies readonly {
   position: DockPosition;
   label: string;
+  icon: typeof PanelTop;
 }[];
 
 const initialMessages: ConsoleMessageData[] = [
@@ -74,69 +83,6 @@ function isHorizontalDock(dock: DockPosition) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), Math.max(min, max));
-}
-
-function GripIcon({ horizontal }: { horizontal: boolean }) {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      aria-hidden="true"
-    >
-      {horizontal ? (
-        <>
-          <circle cx="5" cy="3" r="1" fill="currentColor" />
-          <circle cx="9" cy="3" r="1" fill="currentColor" />
-          <circle cx="5" cy="7" r="1" fill="currentColor" />
-          <circle cx="9" cy="7" r="1" fill="currentColor" />
-          <circle cx="5" cy="11" r="1" fill="currentColor" />
-          <circle cx="9" cy="11" r="1" fill="currentColor" />
-        </>
-      ) : (
-        <>
-          <circle cx="3" cy="5" r="1" fill="currentColor" />
-          <circle cx="7" cy="5" r="1" fill="currentColor" />
-          <circle cx="11" cy="5" r="1" fill="currentColor" />
-          <circle cx="3" cy="9" r="1" fill="currentColor" />
-          <circle cx="7" cy="9" r="1" fill="currentColor" />
-          <circle cx="11" cy="9" r="1" fill="currentColor" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-function DockIcon({ position }: { position: DockPosition }) {
-  const panel =
-    position === "top"
-      ? { x: 2, y: 2, width: 12, height: 4 }
-      : position === "bottom"
-        ? { x: 2, y: 10, width: 12, height: 4 }
-        : position === "left"
-          ? { x: 2, y: 2, width: 4, height: 12 }
-          : { x: 10, y: 2, width: 4, height: 12 };
-
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-    >
-      <rect
-        x="1.5"
-        y="1.5"
-        width="13"
-        height="13"
-        rx="1.5"
-        stroke="currentColor"
-      />
-      <rect {...panel} fill="currentColor" opacity="0.75" />
-    </svg>
-  );
 }
 
 function EditorShell() {
@@ -274,8 +220,10 @@ function EditorShell() {
         alignItems: "center",
         justifyContent: "center",
         flex: "0 0 auto",
-        background: "#161b22",
-        color: "#8b949e",
+        background:
+          "var(--console-resize-separator-background, #161b22)",
+        color:
+          "var(--console-resize-separator-foreground, #8b949e)",
         cursor: horizontalDock ? "col-resize" : "row-resize",
         touchAction: "none",
       }}
@@ -285,14 +233,21 @@ function EditorShell() {
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          border: "1px solid #3d444d",
-          borderRadius: 4,
+          border:
+            "1px solid var(--console-resize-separator-border, #3d444d)",
+          borderRadius:
+            "var(--console-resize-separator-grip-radius, 4px)",
           padding: 1,
-          background: "#21262d",
+          background:
+            "var(--console-resize-separator-grip-background, #21262d)",
           pointerEvents: "none",
         }}
       >
-        <GripIcon horizontal={horizontalDock} />
+        {horizontalDock ? (
+          <GripVertical size={14} aria-hidden="true" />
+        ) : (
+          <GripHorizontal size={14} aria-hidden="true" />
+        )}
       </span>
     </div>
   );
@@ -401,7 +356,12 @@ function EditorShell() {
         borderRadius: 10,
         background: "#0d1117",
         boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
-      }}
+        "--console-resize-separator-background": "#161b22",
+        "--console-resize-separator-foreground": "#8b949e",
+        "--console-resize-separator-border": "#3d444d",
+        "--console-resize-separator-grip-background": "#21262d",
+        "--console-resize-separator-grip-radius": "4px",
+      } as React.CSSProperties}
     >
       <div
         style={{
@@ -436,7 +396,7 @@ function EditorShell() {
           Dock:
         </span>
 
-        {DOCK_OPTIONS.map(({ position, label }) => (
+        {DOCK_OPTIONS.map(({ position, label, icon: Icon }) => (
           <button
             key={position}
             type="button"
@@ -454,7 +414,7 @@ function EditorShell() {
               whiteSpace: "nowrap",
             }}
           >
-            <DockIcon position={position} />
+            <Icon size={14} aria-hidden="true" />
             {label}
           </button>
         ))}
