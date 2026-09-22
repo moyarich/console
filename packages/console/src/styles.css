@@ -498,6 +498,33 @@
   gap: 6px;
 }
 
+.console-panel .console-link {
+  color: var(--_console-info);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.console-panel .console-link:hover,
+.console-panel .console-link:focus-visible {
+  outline: none;
+  text-decoration-thickness: 2px;
+}
+
+.console-panel button.console-link-button {
+  all: unset;
+  color: var(--_console-info);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.console-panel button.console-link-button:hover,
+.console-panel button.console-link-button:focus-visible {
+  outline: none;
+  text-decoration-thickness: 2px;
+}
+
 .console-panel .console-string {
   color: var(--_console-string);
 }
