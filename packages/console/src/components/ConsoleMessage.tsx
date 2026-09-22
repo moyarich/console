@@ -22,6 +22,7 @@ import {
   type ConsoleValueRenderer,
 } from "../renderers";
 import type { ConsoleMessageData } from "../types";
+import type { ConsoleLinkProvider } from "../links";
 
 type MessageIconMap = {
   [Method in ConsoleMessageData["method"]]?: LucideIcon;
@@ -58,6 +59,10 @@ export interface ConsoleMessageProps {
   renderers?: readonly ConsoleMessageRenderer[];
   /** Ordered custom renderers for values inside the message. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Whether built-in HTTP/HTTPS detection is enabled. @default true */
+  detectLinks?: boolean;
+  /** Ordered application-specific link providers. */
+  linkProviders?: readonly ConsoleLinkProvider[];
 }
 
 function DefaultConsoleMessage({
@@ -65,6 +70,8 @@ function DefaultConsoleMessage({
   expandAllVersion,
   onExpandAll,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
 }: ConsoleMessageProps) {
   const style = { paddingLeft: 14 + message.depth * 16 };
   const MessageIcon = MESSAGE_ICONS[message.method] ?? Terminal;
@@ -96,6 +103,8 @@ function DefaultConsoleMessage({
           data={message.data[0]}
           columns={message.columns}
           valueRenderers={valueRenderers}
+          detectLinks={detectLinks}
+          linkProviders={linkProviders}
         />
       </div>
     );
@@ -114,6 +123,9 @@ function DefaultConsoleMessage({
           expandLevel={message.expandLevel ?? 1}
           expandAllVersion={expandAllVersion}
           renderers={valueRenderers}
+          detectLinks={detectLinks}
+          linkProviders={linkProviders}
+          linkContext={{ mode: "console" }}
         />
       </div>
     );
@@ -129,6 +141,9 @@ function DefaultConsoleMessage({
             value={value}
             expandAllVersion={expandAllVersion}
             renderers={valueRenderers}
+            detectLinks={detectLinks}
+            linkProviders={linkProviders}
+            linkContext={{ mode: "console" }}
           />
         ))}
       </div>
@@ -148,6 +163,8 @@ export function ConsoleMessage({
   onExpandAll,
   renderers,
   valueRenderers,
+  detectLinks = true,
+  linkProviders,
 }: ConsoleMessageProps) {
   const sourceMessages = messages ?? [message];
   const contextMenu = useContext(ConsoleContextMenuContext);
@@ -159,6 +176,8 @@ export function ConsoleMessage({
       expandAllVersion={expandAllVersion}
       onExpandAll={onExpandAll}
       valueRenderers={valueRenderers}
+      detectLinks={detectLinks}
+      linkProviders={linkProviders}
     />
   );
 
