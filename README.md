@@ -603,13 +603,13 @@ color variables when creating a light or dark theme.
 
 | Area              | Variables                                                                                                                                                                                                                                                                                                              |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Panel chrome      | `--console-panel-background`, `--console-panel-foreground`, `--console-panel-muted`, `--console-panel-border`, `--console-panel-header-background`, `--console-panel-header-border`                                                                                                                                    |
-| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border`, `--console-panel-control-foreground`, `--console-panel-control-hover-background`, `--console-panel-control-hover-foreground`, `--console-panel-control-hover-border`                                                                           |
-| Output surface    | `--console-background`, `--console-foreground`, `--console-border`, `--console-muted`, `--console-subtle`                                                                                                                                                                                                              |
-| Message states    | `--console-info`, `--console-debug`, `--console-warning-background`, `--console-warning-foreground`, `--console-error-background`, `--console-error-foreground`                                                                                                                                                        |
-| Values            | `--console-string`, `--console-number`, `--console-null`, `--console-symbol`, `--console-circular`, `--console-property-key`, `--console-object-property-key`                                                                                                                                                          |
+| Panel chrome      | `--console-panel-background`, `--console-panel-color`, `--console-panel-muted-color`, `--console-panel-border-color`, `--console-panel-header-background`, `--console-panel-header-border-color`                                                                                                                                    |
+| Panel controls    | `--console-panel-control-background`, `--console-panel-control-border-color`, `--console-panel-control-color`, `--console-panel-control-hover-background`, `--console-panel-control-hover-color`, `--console-panel-control-hover-border-color`                                                                           |
+| Output surface    | `--console-background`, `--console-color`, `--console-border-color`, `--console-muted-color`, `--console-subtle-color`                                                                                                                                                                                                              |
+| Message states    | `--console-info-color`, `--console-debug-color`, `--console-warning-background`, `--console-warning-color`, `--console-error-background`, `--console-error-color`                                                                                                                                                        |
+| Values            | `--console-string-color`, `--console-number-color`, `--console-null-color`, `--console-symbol-color`, `--console-circular-color`, `--console-property-key-color`, `--console-object-property-key-color`                                                                                                                                                          |
 | Icons             | `--console-icon-color`, `--console-icon-hover-color`, `--console-icon-hover-background`, `--console-message-icon-color`, `--console-message-icon-hover-color`, `--console-message-icon-hover-background`                                                                                                               |
-| Context menu      | `--console-context-menu-background`, `--console-context-menu-foreground`, `--console-context-menu-border`, `--console-context-menu-hover`, `--console-context-menu-hover-foreground`, `--console-context-menu-icon`, `--console-context-menu-danger`, `--console-context-menu-radius`, `--console-context-menu-shadow` |
+| Context menu      | `--console-context-menu-background`, `--console-context-menu-color`, `--console-context-menu-border-color`, `--console-context-menu-hover-background`, `--console-context-menu-hover-background-foreground`, `--console-context-menu-icon-color`, `--console-context-menu-danger-color`, `--console-context-menu-border-radius`, `--console-context-menu-box-shadow` |
 | Typography/layout | `--console-font-family`, `--console-font-size`, `--console-line-height`, `--console-min-height`, `--console-mobile-min-height`                                                                                                                                                                                         |
 
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
@@ -625,23 +625,23 @@ do not create circular custom-property dependencies.
   --console-context-menu-color-scheme: light;
 
   --console-panel-background: #ffffff;
-  --console-panel-foreground: #172033;
-  --console-panel-border: #d8dee8;
+  --console-panel-color: #172033;
+  --console-panel-border-color: #d8dee8;
 
   --console-background: #f8fafc;
-  --console-foreground: #172033;
-  --console-border: #e2e8f0;
-  --console-muted: #667085;
-  --console-subtle: #98a2b3;
+  --console-color: #172033;
+  --console-border-color: #e2e8f0;
+  --console-muted-color: #667085;
+  --console-subtle-color: #98a2b3;
 
-  --console-string: #b42318;
-  --console-number: #175cd3;
-  --console-null: #7a5af8;
-  --console-symbol: #027a48;
+  --console-string-color: #b42318;
+  --console-number-color: #175cd3;
+  --console-null-color: #7a5af8;
+  --console-symbol-color: #027a48;
 
   --console-context-menu-background: #ffffff;
-  --console-context-menu-foreground: #172033;
-  --console-context-menu-border: #d8dee8;
+  --console-context-menu-color: #172033;
+  --console-context-menu-border-color: #d8dee8;
 }
 ```
 
