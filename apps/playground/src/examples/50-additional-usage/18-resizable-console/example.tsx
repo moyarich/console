@@ -1,8 +1,3 @@
-import {
-  GripHorizontal,
-  GripVertical,
-  MoveDiagonal2,
-} from "lucide-react";
 import { useRef, useState, type PointerEvent } from "react";
 import {
   Console,
@@ -44,6 +39,47 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), Math.max(min, max));
 }
 
+function GripIcon({
+  direction,
+}: {
+  direction: "horizontal" | "vertical" | "both";
+}) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 15 15"
+      fill="none"
+      aria-hidden="true"
+    >
+      {direction === "horizontal" ? (
+        <>
+          <circle cx="5" cy="4" r="1" fill="currentColor" />
+          <circle cx="10" cy="4" r="1" fill="currentColor" />
+          <circle cx="5" cy="8" r="1" fill="currentColor" />
+          <circle cx="10" cy="8" r="1" fill="currentColor" />
+          <circle cx="5" cy="12" r="1" fill="currentColor" />
+          <circle cx="10" cy="12" r="1" fill="currentColor" />
+        </>
+      ) : direction === "vertical" ? (
+        <>
+          <circle cx="4" cy="5" r="1" fill="currentColor" />
+          <circle cx="8" cy="5" r="1" fill="currentColor" />
+          <circle cx="12" cy="5" r="1" fill="currentColor" />
+          <circle cx="4" cy="10" r="1" fill="currentColor" />
+          <circle cx="8" cy="10" r="1" fill="currentColor" />
+          <circle cx="12" cy="10" r="1" fill="currentColor" />
+        </>
+      ) : (
+        <>
+          <path d="M5 10 10 5" stroke="currentColor" strokeWidth="1.4" />
+          <path d="M7 12 12 7" stroke="currentColor" strokeWidth="1.4" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export default function ResizableConsoleExample() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [resizable, setResizable] = useState<ResizeDirection>("both");
@@ -55,9 +91,7 @@ export default function ResizableConsoleExample() {
     resizable === "both" ||
     resizable === "inline";
   const allowsVertical =
-    resizable === "vertical" ||
-    resizable === "both" ||
-    resizable === "block";
+    resizable === "vertical" || resizable === "both" || resizable === "block";
 
   const startResize = (
     event: PointerEvent<HTMLDivElement>,
@@ -209,7 +243,7 @@ export default function ResizableConsoleExample() {
                 pointerEvents: "none",
               }}
             >
-              <GripVertical size={14} aria-hidden="true" />
+              <GripIcon direction="horizontal" />
             </span>
           </div>
         )}
@@ -246,7 +280,7 @@ export default function ResizableConsoleExample() {
                 pointerEvents: "none",
               }}
             >
-              <GripHorizontal size={14} aria-hidden="true" />
+              <GripIcon direction="vertical" />
             </span>
           </div>
         )}
@@ -274,7 +308,7 @@ export default function ResizableConsoleExample() {
               touchAction: "none",
             }}
           >
-            <MoveDiagonal2 size={15} aria-hidden="true" />
+            <GripIcon direction="both" />
           </div>
         )}
       </div>
