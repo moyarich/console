@@ -326,8 +326,11 @@ export function createConsoleExportAddon(
 
         registerPanelAction(host, action);
         registerContextMenuAction(host, {
-          ...action,
+          id: actionIds.copyJson,
+          label: "Copy as JSON",
           visible: (context) => context.kind === "console",
+          disabled,
+          onSelect: () => service.copy({ format: "json", scope }),
         });
       }
 
