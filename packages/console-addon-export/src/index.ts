@@ -83,8 +83,7 @@ export interface ConsoleProcessExportRecord {
 }
 
 export type ConsoleExportRecord =
-  | ConsoleStructuredExportRecord
-  | ConsoleProcessExportRecord;
+  ConsoleStructuredExportRecord | ConsoleProcessExportRecord;
 
 export interface ConsoleExportEnvelope {
   readonly type: typeof CONSOLE_EXPORT_TYPE;
