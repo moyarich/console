@@ -558,3 +558,599 @@ export function createConsoleAddonManager(
 
   return manager;
 }
+
+
+/** Structured console message method understood by console hosts. */
+export type ConsoleMethod =
+  | "log"
+  | "debug"
+  | "info"
+  | "warn"
+  | "error"
+  | "assert"
+  | "dir"
+  | "table"
+  | "count"
+  | "timeEnd"
+  | "trace"
+  | "group"
+  | "groupCollapsed";
+
+/** Rendering/data mode understood by console hosts. */
+export type ConsoleMode = "console" | "ansi";
+
+/** Structured message shared by hosts, transports, and addons. */
+export interface ConsoleMessageData {
+  id?: string;
+  method: ConsoleMethod;
+  data: unknown[];
+  depth: number;
+  timestamp?: number;
+  source?: string;
+  columns?: string[];
+  expandLevel?: number;
+  showNonenumerable?: boolean;
+}
+
+export interface RunOutput {
+  messages: ConsoleMessageData[];
+  error?: string;
+}
+
+export interface DirOptions {
+  depth?: number | null;
+  showHidden?: boolean;
+}
+
+export type ConsoleEvent =
+  | { type: "message"; message: ConsoleMessageData }
+  | { type: "clear" };
+
+export interface ConsoleTransportEnvelope {
+  type: "CONSOLE_PANEL";
+  version: 1;
+  channel: string;
+  event: ConsoleEvent;
+}
+
+export type ConsoleOutputStream = "stdout" | "stderr";
+export type ConsoleProcessOutputMetadata = Readonly<Record<string, unknown>>;
+
+export interface ConsoleStdoutEntry {
+  id?: string;
+  data: string;
+  stream?: ConsoleOutputStream;
+  metadata?: ConsoleProcessOutputMetadata;
+}
+
+export interface ConsoleLink {
+  text: string;
+  start: number;
+  end: number;
+  target?: string;
+  title?: string;
+  action?: (context: ConsoleLinkActionContext) => void;
+}
+
+export interface ConsoleLinkProviderContext {
+  mode: ConsoleMode;
+  value?: unknown;
+  propertyKey?: string;
+  index?: number;
+  id?: string;
+  stream?: ConsoleOutputStream;
+  metadata?: Readonly<Record<string, unknown>>;
+}
+
+export interface ConsoleLinkActionContext extends ConsoleLinkProviderContext {
+  link: ConsoleLink;
+  sourceText: string;
+  providerId?: string;
+}
+
+export interface ConsoleLinkProvider {
+  readonly id?: string;
+  provideLinks(
+    text: string,
+    context: ConsoleLinkProviderContext,
+  ): readonly ConsoleLink[] | undefined | void;
+}
+
+export interface ConsoleProcessOutput {
+  readonly data: string;
+  readonly structuredValue?: unknown;
+  readonly links?: readonly ConsoleLink[];
+  readonly metadata: ConsoleProcessOutputMetadata;
+}
+
+export interface ConsoleProcessOutputProcessorContext {
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly text: string;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+}
+
+export interface ConsoleProcessOutputProcessorResult {
+  data?: string;
+  structuredValue?: unknown;
+  links?: readonly ConsoleLink[];
+  metadata?: Readonly<Record<string, unknown>>;
+}
+
+export interface ConsoleProcessOutputProcessor {
+  readonly id?: string;
+  process(
+    output: ConsoleProcessOutput,
+    context: ConsoleProcessOutputProcessorContext,
+  ): ConsoleProcessOutputProcessorResult | undefined | void;
+}
+
+export interface ConsoleResolvedProcessOutputEntry {
+  readonly entry: ConsoleStdoutEntry;
+  readonly output: ConsoleProcessOutput;
+}
+
+export type ConsoleProcessViewEntry = ConsoleResolvedProcessOutputEntry;
+
+export interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: ConsoleOutputStream;
+  metadata?: ConsoleProcessOutputMetadata;
+}
+
+export type ConsoleStructuredOutputParser = (
+  text: string,
+  context: ConsoleStructuredOutputParserContext,
+) => unknown | undefined;
+
+export interface ConsoleStructuredDataSnapshot {
+  readonly mode: "console";
+  readonly all: readonly ConsoleMessageData[];
+  readonly visible: readonly ConsoleMessageData[];
+}
+
+export interface ConsoleProcessDataSnapshot {
+  readonly mode: "ansi";
+  readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
+  readonly all: readonly ConsoleProcessViewEntry[];
+  readonly visible: readonly ConsoleProcessViewEntry[];
+}
+
+export type ConsoleDataSnapshot =
+  | ConsoleStructuredDataSnapshot
+  | ConsoleProcessDataSnapshot;
+
+export interface ConsoleDataService {
+  getSnapshot(): ConsoleDataSnapshot;
+  subscribe(listener: () => void): ConsoleDisposable;
+}
+
+export interface ConsoleScrollOptions {
+  behavior?: ScrollBehavior;
+  block?: ScrollLogicalPosition;
+  inline?: ScrollLogicalPosition;
+}
+
+export interface ConsoleViewportService {
+  scrollToTop(): void;
+  scrollToBottom(): void;
+  scrollToMessage(id: string, options?: ConsoleScrollOptions): boolean;
+  isAtBottom(): boolean;
+  isAtTop(): boolean;
+  focus(): void;
+}
+
+export interface ConsoleActionContextBase {
+  mode: ConsoleMode;
+  hasMessages: boolean;
+}
+
+export interface ConsoleSurfaceActionContext extends ConsoleActionContextBase {
+  kind: "console";
+}
+
+export interface ConsoleObjectActionContext extends ConsoleActionContextBase {
+  kind: "object";
+  value: object;
+}
+
+export interface ConsoleMessageActionContext extends ConsoleActionContextBase {
+  kind: "message";
+  message: ConsoleMessageData;
+  index: number;
+  messages: readonly ConsoleMessageData[];
+}
+
+export type ConsoleContextMenuActionContext =
+  | ConsoleSurfaceActionContext
+  | ConsoleObjectActionContext
+  | ConsoleMessageActionContext;
+
+export type ConsoleActionPredicate<TContext> =
+  | boolean
+  | ((context: TContext) => boolean);
+
+export type ConsoleActionVariant = "default" | "danger";
+
+/**
+ * UI payloads are generic so the core addon SDK does not depend on React.
+ * React hosts specialize this type to ReactNode.
+ */
+export interface ConsoleAction<TContext, TUi = unknown> {
+  id: string;
+  label: TUi;
+  ariaLabel?: string;
+  icon?: TUi;
+  variant?: ConsoleActionVariant;
+  separatorBefore?: boolean;
+  visible?: ConsoleActionPredicate<TContext>;
+  disabled?: ConsoleActionPredicate<TContext>;
+  onSelect: (context: TContext) => void | Promise<void>;
+}
+
+export type ConsolePanelAction<TUi = unknown> = ConsoleAction<
+  ConsoleSurfaceActionContext,
+  TUi
+>;
+
+export type ConsoleContextMenuAction<TUi = unknown> = ConsoleAction<
+  ConsoleContextMenuActionContext,
+  TUi
+>;
+
+export type ConsoleMessageAction<TUi = unknown> = ConsoleAction<
+  ConsoleMessageActionContext,
+  TUi
+>;
+
+export type ConsoleOutputRendererContext<TUi = unknown> =
+  | {
+      mode: "console";
+      messages: readonly ConsoleMessageData[];
+      renderDefault: () => TUi;
+    }
+  | {
+      mode: "ansi";
+      entries: readonly (ConsoleStdoutEntry | string)[];
+      renderDefault: () => TUi;
+    };
+
+export interface ConsoleOutputRenderer<TUi = unknown> {
+  mode?: ConsoleMode;
+  match?: (context: ConsoleOutputRendererContext<TUi>) => boolean;
+  render: (context: ConsoleOutputRendererContext<TUi>) => TUi | undefined;
+}
+
+export interface ConsoleMessageRendererContext<TUi = unknown> {
+  index: number;
+  messages: readonly ConsoleMessageData[];
+  renderDefault: () => TUi;
+}
+
+export interface ConsoleMessageRenderer<TUi = unknown> {
+  method?: ConsoleMethod;
+  match?: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext<TUi>,
+  ) => boolean;
+  render: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageRendererContext<TUi>,
+  ) => TUi | undefined;
+}
+
+export interface ConsoleValueRendererContext<TUi = unknown> {
+  propertyKey?: string;
+  depth: number;
+  type: string;
+  renderDefault: () => TUi;
+}
+
+export interface ConsoleValueRenderer<TUi = unknown> {
+  type?: string;
+  match?: (value: unknown, context: ConsoleValueRendererContext<TUi>) => boolean;
+  render: (
+    value: unknown,
+    context: ConsoleValueRendererContext<TUi>,
+  ) => TUi | undefined;
+}
+
+/** Built-in capabilities understood by the standard console host. */
+export const consoleCapabilities = Object.freeze({
+  react: createConsoleCapability("console.react"),
+  dom: createConsoleCapability("console.dom"),
+  structuredMessages: createConsoleCapability("console.structuredMessages"),
+  processOutput: createConsoleCapability("console.processOutput"),
+});
+
+/** Shared service tokens used by console hosts and addons. */
+export const consoleServices = Object.freeze({
+  viewport:
+    createConsoleServiceToken<ConsoleViewportService>("console.viewport"),
+  data: createConsoleServiceToken<ConsoleDataService>("console.data"),
+});
+
+/** Shared extension-point tokens used by console hosts and addons. */
+export const consoleExtensionPoints = Object.freeze({
+  processOutputProcessor:
+    createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
+      "console.process.output",
+    ),
+  structuredOutputParser:
+    createConsoleExtensionPoint<ConsoleStructuredOutputParser>(
+      "console.process.structuredOutputParser",
+    ),
+  linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
+    "console.linkProvider",
+  ),
+  outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
+    "console.render.output",
+  ),
+  messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
+    "console.render.message",
+  ),
+  valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
+    "console.render.value",
+  ),
+  panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
+    "console.action.panel",
+  ),
+  contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
+    "console.action.contextMenu",
+  ),
+  messageAction: createConsoleExtensionPoint<ConsoleMessageAction>(
+    "console.action.message",
+  ),
+});
+
+/** Converts rich JavaScript values into a stable JSON-safe representation. */
+export function serializeConsoleValue(
+  value: unknown,
+  options: { maxDepth?: number; maxEntries?: number } = {},
+): unknown {
+  const { maxDepth = 8, maxEntries = 100 } = options;
+  const seen = new WeakSet<object>();
+
+  const normalize = (input: unknown, depth: number): unknown => {
+    if (typeof input === "undefined") {
+      return { __moyarichConsoleType: "undefined" };
+    }
+    if (typeof input === "bigint") {
+      return {
+        __moyarichConsoleType: "bigint",
+        value: input.toString(),
+      };
+    }
+    if (typeof input === "symbol") {
+      return {
+        __moyarichConsoleType: "symbol",
+        description: input.description,
+      };
+    }
+    if (typeof input === "function") {
+      return {
+        __moyarichConsoleType: "function",
+        name: input.name || "anonymous",
+      };
+    }
+    if (typeof input === "number") {
+      if (Number.isNaN(input)) return { __moyarichConsoleType: "nan" };
+      if (input === Infinity) {
+        return { __moyarichConsoleType: "infinity" };
+      }
+      if (input === -Infinity) {
+        return { __moyarichConsoleType: "negative-infinity" };
+      }
+      if (Object.is(input, -0)) {
+        return { __moyarichConsoleType: "negative-zero" };
+      }
+    }
+
+    if (input === null || typeof input !== "object") {
+      return input;
+    }
+
+    if (seen.has(input)) return "[Circular]";
+    if (depth >= maxDepth) {
+      return "[" + (input.constructor?.name || "Object") + "]";
+    }
+
+    seen.add(input);
+
+    try {
+      if (input instanceof Error) {
+        return {
+          __moyarichConsoleType: "error",
+          name: input.name,
+          message: input.message,
+          stack: input.stack,
+        };
+      }
+      if (input instanceof Date) {
+        return {
+          __moyarichConsoleType: "date",
+          value: Number.isNaN(input.getTime()) ? null : input.toISOString(),
+        };
+      }
+      if (input instanceof RegExp) {
+        return {
+          __moyarichConsoleType: "regexp",
+          source: input.source,
+          flags: input.flags,
+        };
+      }
+      if (input instanceof Map) {
+        return {
+          __moyarichConsoleType: "map",
+          entries: Array.from(input.entries())
+            .slice(0, maxEntries)
+            .map(([key, item]) => [normalize(key, depth + 1), normalize(item, depth + 1)]),
+        };
+      }
+      if (input instanceof Set) {
+        return {
+          __moyarichConsoleType: "set",
+          values: Array.from(input.values())
+            .slice(0, maxEntries)
+            .map((item) => normalize(item, depth + 1)),
+        };
+      }
+      if (input instanceof ArrayBuffer) {
+        return {
+          __moyarichConsoleType: "array-buffer",
+          bytes: Array.from(new Uint8Array(input)).slice(0, maxEntries),
+        };
+      }
+      if (ArrayBuffer.isView(input)) {
+        const bytes = Array.from(
+          new Uint8Array(input.buffer, input.byteOffset, input.byteLength),
+        ).slice(0, maxEntries);
+
+        if (input instanceof DataView) {
+          return {
+            __moyarichConsoleType: "data-view",
+            bytes,
+          };
+        }
+
+        return {
+          __moyarichConsoleType: "typed-array",
+          name: input.constructor.name,
+          values: Array.from(input as unknown as ArrayLike<unknown>)
+            .slice(0, maxEntries)
+            .map((item) => normalize(item, depth + 1)),
+        };
+      }
+
+      const elementCandidate = input as {
+        nodeType?: unknown;
+        outerHTML?: unknown;
+        tagName?: unknown;
+      };
+      if (
+        elementCandidate.nodeType === 1 &&
+        typeof elementCandidate.outerHTML === "string"
+      ) {
+        return {
+          __moyarichConsoleType: "html-element",
+          tagName: elementCandidate.tagName,
+          outerHTML: elementCandidate.outerHTML,
+        };
+      }
+
+      if (
+        input.constructor?.name === "NodeList" &&
+        typeof (input as { length?: unknown }).length === "number"
+      ) {
+        return {
+          __moyarichConsoleType: "node-list",
+          values: Array.from(input as unknown as ArrayLike<unknown>)
+            .slice(0, maxEntries)
+            .map((item) => normalize(item, depth + 1)),
+        };
+      }
+
+      if (Array.isArray(input)) {
+        const items = input
+          .slice(0, maxEntries)
+          .map((item) => normalize(item, depth + 1));
+
+        if (input.length > maxEntries) {
+          items.push("[+" + (input.length - maxEntries) + " more]");
+        }
+
+        return items;
+      }
+
+      const entries = Object.entries(input).slice(0, maxEntries);
+      const result = Object.fromEntries(
+        entries.map(([key, item]) => [key, normalize(item, depth + 1)]),
+      );
+      const total = Object.keys(input).length;
+
+      if (total > maxEntries) {
+        result["…"] = "[+" + (total - maxEntries) + " more]";
+      }
+
+      return result;
+    } catch {
+      try {
+        return String(input);
+      } catch {
+        return "[Unserializable]";
+      }
+    } finally {
+      seen.delete(input);
+    }
+  };
+
+  return normalize(value, 0);
+}
+
+/** Normalizes a value for readable object-copy output. */
+export function normalizeConsoleValue(
+  value: unknown,
+  seen: WeakSet<object> = new WeakSet<object>(),
+): unknown {
+  if (typeof value === "bigint") return String(value) + "n";
+  if (typeof value === "function") {
+    return "[Function " + (value.name || "anonymous") + "]";
+  }
+  if (typeof value === "symbol") return String(value);
+  if (typeof value === "undefined") return "[undefined]";
+  if (value === null || typeof value !== "object") return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value instanceof RegExp) return String(value);
+  if (value instanceof Error) return value.stack || value.message;
+  if (seen.has(value)) return "[Circular]";
+
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeConsoleValue(item, seen));
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [
+      key,
+      normalizeConsoleValue(item, seen),
+    ]),
+  );
+}
+
+/** Formats an inspectable object as readable JSON. */
+export function formatConsoleObjectForCopy(value: object): string {
+  try {
+    return JSON.stringify(normalizeConsoleValue(value), null, 2);
+  } catch {
+    return String(value);
+  }
+}
+
+/** Clipboard helper shared by browser-hosted addons and the React host. */
+export async function writeClipboardText(value: string): Promise<void> {
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.clipboard?.writeText
+  ) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  if (typeof document === "undefined") {
+    throw new Error("Clipboard access requires a browser environment.");
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
