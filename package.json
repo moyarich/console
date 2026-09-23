@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @moyarich/console-playground",
-    "build": "npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-playground",
+    "build": "npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-playground",
     "build:package": "npm run build --workspace @moyarich/console",
     "build:playground": "npm run build --workspace @moyarich/console-playground",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
@@ -20,7 +20,8 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "hooks:install": "git config core.hooksPath .githooks"
+    "hooks:install": "git config core.hooksPath .githooks",
+    "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
