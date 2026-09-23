@@ -30,8 +30,7 @@ export interface ConsoleProcessDataSnapshot {
 
 /** Current logical console data exposed through the addon service registry. */
 export type ConsoleDataSnapshot =
-  | ConsoleStructuredDataSnapshot
-  | ConsoleProcessDataSnapshot;
+  ConsoleStructuredDataSnapshot | ConsoleProcessDataSnapshot;
 
 /**
  * Read-only logical data service.
