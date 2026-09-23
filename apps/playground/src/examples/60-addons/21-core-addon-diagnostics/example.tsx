@@ -45,12 +45,6 @@ export default function DiagnosticsExample() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <p style={{ margin: 0, fontSize: 13 }}>
-        Use the action menu to copy/download a diagnostics report. In ANSI mode
-        the report keeps the original raw chunks separate from normalized and
-        processor-resolved output.
-      </p>
-
       <Console
         messages={structuredMessages}
         addons={addons}

@@ -98,9 +98,7 @@ export default function ImperativeScrollControlsExample() {
       </div>
 
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>
-        Position: <strong>{position}</strong>. The console action menu contains
-        top, latest-output, and focus actions from the imperative-scrolling
-        workspace addon.
+        Position: <strong>{position}</strong>
       </p>
 
       <Console

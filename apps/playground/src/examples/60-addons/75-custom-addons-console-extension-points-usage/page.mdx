@@ -2,3 +2,17 @@
 label: "Usage Of Console Extension Points"
 description: "Demonstrate every built-in consoleExtensionPoints.* contract across structured and ANSI hosts, including shared services and capability checks."
 ---
+
+This example exercises the built-in extension system across both structured and ANSI hosts. It registers:
+
+- `consoleExtensionPoints.processOutputProcessor`
+- `consoleExtensionPoints.structuredOutputParser`
+- `consoleExtensionPoints.linkProvider`
+- `consoleExtensionPoints.outputRenderer`
+- `consoleExtensionPoints.messageRenderer`
+- `consoleExtensionPoints.valueRenderer`
+- `consoleExtensionPoints.panelAction`
+- `consoleExtensionPoints.contextMenuAction`
+- `consoleExtensionPoints.messageAction`
+
+It also demonstrates shared addon services and capability checks so one addon can adapt to the host mode without duplicating contracts.
