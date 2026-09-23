@@ -61,7 +61,7 @@ export interface ConsoleStructuredExportRecord {
   readonly id?: string;
   readonly method: ConsoleMessageData["method"];
   readonly text: string;
-  readonly args: readonly unknown[];
+  readonly data: readonly unknown[];
   readonly depth: number;
   readonly timestamp?: number;
   readonly time?: string;
@@ -168,7 +168,7 @@ function createStructuredExportRecord(
     ...(message.id !== undefined ? { id: message.id } : {}),
     method: message.method,
     text: formatStructuredMessageBody(message),
-    args: message.data.map((value) => serializeConsoleValue(value)),
+    data: message.data.map((value) => serializeConsoleValue(value)),
     depth: message.depth,
     ...(message.timestamp !== undefined
       ? { timestamp: message.timestamp }

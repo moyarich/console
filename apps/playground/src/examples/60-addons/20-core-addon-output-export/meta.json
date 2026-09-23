@@ -1,4 +1,4 @@
 {
-  "label": "Data-level output export",
+  "label": "Core Addon - Data-level output export",
   "description": "Add Copy as JSON and text/JSON downloads without replacing the console's existing Copy output behavior. Demonstrates structured and ANSI process output."
 }
