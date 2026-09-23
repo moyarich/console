@@ -83,7 +83,10 @@ const CSI_PATTERN = new RegExp(
   "g",
 );
 
-function getScopedItems(snapshot: ConsoleDataSnapshot, scope: ConsoleExportScope) {
+function getScopedItems(
+  snapshot: ConsoleDataSnapshot,
+  scope: ConsoleExportScope,
+) {
   return scope === "all" ? snapshot.all : snapshot.visible;
 }
 
@@ -224,7 +227,9 @@ export function downloadConsoleExport(
   const value = formatConsoleExport(snapshot, { format, scope });
   const extension = format === "json" ? "json" : "txt";
   const mimeType =
-    format === "json" ? "application/json;charset=utf-8" : "text/plain;charset=utf-8";
+    format === "json"
+      ? "application/json;charset=utf-8"
+      : "text/plain;charset=utf-8";
   const resolvedFileName = fileName.endsWith(`.${extension}`)
     ? fileName
     : `${fileName}.${extension}`;
