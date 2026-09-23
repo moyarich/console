@@ -53,11 +53,7 @@ function parseMetric(text: string): Metric | undefined {
   if (!match) return undefined;
 
   const [, label, numericValue, unit] = match;
-  if (
-    label === undefined ||
-    numericValue === undefined ||
-    unit === undefined
-  ) {
+  if (label === undefined || numericValue === undefined || unit === undefined) {
     return undefined;
   }
 
