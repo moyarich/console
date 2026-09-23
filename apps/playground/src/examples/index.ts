@@ -23,15 +23,19 @@ export interface ConsoleExample extends ConsoleExampleMeta {
   order: number;
   exampleSource: string;
   Component: ComponentType;
-  Page: ComponentType;
+  Page: ComponentType<ConsoleExamplePageProps>;
 }
 
 interface ConsoleExampleModule {
   default: ComponentType;
 }
 
+interface ConsoleExamplePageProps {
+  components?: Record<string, ComponentType>;
+}
+
 interface ConsoleExamplePageModule {
-  default: ComponentType;
+  default: ComponentType<ConsoleExamplePageProps>;
   meta?: unknown;
 }
 
