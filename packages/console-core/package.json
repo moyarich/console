@@ -1,7 +1,7 @@
 {
   "name": "@moyarich/console-core",
   "version": "0.1.0",
-  "description": "Headless addon runtime and extension infrastructure for @moyarich/console.",
+  "description": "Core addon SDK and runtime contracts for @moyarich/console hosts and addons.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
