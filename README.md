@@ -655,6 +655,44 @@ Export reads the logical console data exposed by `consoleServices.data` rather
 than rendered DOM text. That makes export independent from object expansion,
 custom renderer markup, scroll position, and future virtualization.
 
+JSON export is intentionally **record-oriented**, not a transport-shaped copy of
+`ConsoleMessageData`. Each structured record includes a readable `text`
+field for diagnostics plus lossless serialized `args`, the original console
+`method`, group `depth`, and optional timestamp/source/method options.
+
+For example:
+
+```json
+{
+  "type": "MOYARICH_CONSOLE_EXPORT",
+  "version": 1,
+  "mode": "console",
+  "scope": "visible",
+  "count": 2,
+  "records": [
+    {
+      "kind": "console",
+      "id": "request",
+      "method": "log",
+      "text": "Request complete {\n  \"status\": 200,\n  \"durationMs\": 84\n}",
+      "args": [
+        "Request complete",
+        {
+          "status": 200,
+          "durationMs": 84
+        }
+      ],
+      "depth": 0
+    }
+  ]
+}
+```
+
+ANSI/process records use the same idea: a normalized printable `text` field
+plus stable ID/stream, optional structured value, and processor metadata. A
+consumer should not need to rerun console formatting just to understand an
+exported record.
+
 Two scopes are supported:
 
 | Scope     | Meaning                                                                                                                                                                                   |
