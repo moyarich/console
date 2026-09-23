@@ -6,9 +6,7 @@ import {
   type ConsoleMessageData,
   type ConsoleMessageModeProps,
 } from "@moyarich/console";
-import {
-  createImperativeScrollingAddon,
-} from "@moyarich/console-addon-imperative-scrolling";
+import { createImperativeScrollingAddon } from "@moyarich/console-addon-imperative-scrolling";
 
 const messages: ConsoleMessageData[] = Array.from(
   { length: 60 },
