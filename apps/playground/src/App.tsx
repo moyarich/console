@@ -69,10 +69,12 @@ export function App() {
             className="example-documentation"
             aria-label={`${example.label} documentation`}
           >
-            <ExamplePage />
+            <ExamplePage
+              components={{
+                RunnableExample: () => <RunnableExample example={example} />,
+              }}
+            />
           </section>
-
-          <RunnableExample example={example} />
 
           <footer className="site-footer">
             <span>@moyarich/console</span>
