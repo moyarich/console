@@ -3,7 +3,6 @@ import {
   consoleExtensionPoints,
   consoleServices,
   formatConsoleObjectForCopy,
-  serializeConsoleMessage,
   serializeConsoleValue,
   writeClipboardText,
   type ConsoleAddon,
@@ -57,12 +56,43 @@ export interface ConsoleExportAddonOptions {
   fileName?: string;
 }
 
+export interface ConsoleStructuredExportRecord {
+  readonly kind: "console";
+  readonly id?: string;
+  readonly method: ConsoleMessageData["method"];
+  readonly text: string;
+  readonly args: readonly unknown[];
+  readonly depth: number;
+  readonly timestamp?: number;
+  readonly time?: string;
+  readonly source?: string;
+  readonly options?: {
+    readonly columns?: readonly string[];
+    readonly expandLevel?: number;
+    readonly showNonenumerable?: boolean;
+  };
+}
+
+export interface ConsoleProcessExportRecord {
+  readonly kind: "process";
+  readonly id?: string;
+  readonly stream?: string;
+  readonly text: string;
+  readonly structuredValue?: unknown;
+  readonly metadata?: unknown;
+}
+
+export type ConsoleExportRecord =
+  | ConsoleStructuredExportRecord
+  | ConsoleProcessExportRecord;
+
 export interface ConsoleExportEnvelope {
   readonly type: typeof CONSOLE_EXPORT_TYPE;
   readonly version: typeof CONSOLE_EXPORT_VERSION;
   readonly mode: ConsoleDataSnapshot["mode"];
   readonly scope: ConsoleExportScope;
-  readonly items: readonly unknown[];
+  readonly count: number;
+  readonly records: readonly ConsoleExportRecord[];
 }
 
 export interface ConsoleExportService {
@@ -108,6 +138,10 @@ function formatValue(value: unknown): string {
   }
 }
 
+function formatStructuredMessageBody(message: ConsoleMessageData): string {
+  return message.data.map(formatValue).join(" ").trimEnd();
+}
+
 function formatStructuredMessage(message: ConsoleMessageData): string {
   const indentation = "  ".repeat(Math.max(0, message.depth));
   const methodPrefix = message.method === "log" ? "" : `[${message.method}] `;
@@ -116,6 +150,48 @@ function formatStructuredMessage(message: ConsoleMessageData): string {
     .join(" ");
 
   return `${indentation}${methodPrefix}${formattedData}`.trimEnd();
+}
+
+function createStructuredExportRecord(
+  message: ConsoleMessageData,
+): ConsoleStructuredExportRecord {
+  const hasOptions =
+    message.columns !== undefined ||
+    message.expandLevel !== undefined ||
+    message.showNonenumerable !== undefined;
+  const time =
+    message.timestamp !== undefined && Number.isFinite(message.timestamp)
+      ? new Date(message.timestamp).toISOString()
+      : undefined;
+
+  return {
+    kind: "console",
+    ...(message.id !== undefined ? { id: message.id } : {}),
+    method: message.method,
+    text: formatStructuredMessageBody(message),
+    args: message.data.map((value) => serializeConsoleValue(value)),
+    depth: message.depth,
+    ...(message.timestamp !== undefined
+      ? { timestamp: message.timestamp }
+      : {}),
+    ...(time !== undefined ? { time } : {}),
+    ...(message.source !== undefined ? { source: message.source } : {}),
+    ...(hasOptions
+      ? {
+          options: {
+            ...(message.columns !== undefined
+              ? { columns: [...message.columns] }
+              : {}),
+            ...(message.expandLevel !== undefined
+              ? { expandLevel: message.expandLevel }
+              : {}),
+            ...(message.showNonenumerable !== undefined
+              ? { showNonenumerable: message.showNonenumerable }
+              : {}),
+          },
+        }
+      : {}),
+  };
 }
 
 function stripProcessFormatting(value: string): string {
@@ -147,17 +223,23 @@ export function formatConsoleExportText(
     .join("\n");
 }
 
-function serializeProcessEntry(view: ConsoleProcessViewEntry) {
+function createProcessExportRecord(
+  view: ConsoleProcessViewEntry,
+): ConsoleProcessExportRecord {
   const { entry, output } = view;
+  const hasMetadata = Object.keys(output.metadata).length > 0;
 
   return {
+    kind: "process",
     ...(entry.id !== undefined ? { id: entry.id } : {}),
     ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
-    data: stripProcessFormatting(output.data),
+    text: stripProcessFormatting(output.data),
     ...(output.structuredValue !== undefined
       ? { structuredValue: serializeConsoleValue(output.structuredValue) }
       : {}),
-    metadata: serializeConsoleValue(output.metadata),
+    ...(hasMetadata
+      ? { metadata: serializeConsoleValue(output.metadata) }
+      : {}),
   };
 }
 
@@ -168,17 +250,22 @@ export function createConsoleExportEnvelope(
 ): ConsoleExportEnvelope {
   const items = getScopedItems(snapshot, scope);
 
+  const records =
+    snapshot.mode === "console"
+      ? (items as readonly ConsoleMessageData[]).map(
+          createStructuredExportRecord,
+        )
+      : (items as readonly ConsoleProcessViewEntry[]).map(
+          createProcessExportRecord,
+        );
+
   return {
     type: CONSOLE_EXPORT_TYPE,
     version: CONSOLE_EXPORT_VERSION,
     mode: snapshot.mode,
     scope,
-    items:
-      snapshot.mode === "console"
-        ? (items as readonly ConsoleMessageData[]).map(serializeConsoleMessage)
-        : (items as readonly ConsoleProcessViewEntry[]).map(
-            serializeProcessEntry,
-          ),
+    count: records.length,
+    records,
   };
 }
 
