@@ -9,7 +9,10 @@ export default defineConfig({
         new URL("./packages/console/src/index.ts", import.meta.url),
       ),
       "@moyarich/console-addon-export": fileURLToPath(
-        new URL("./packages/console-addon-export/src/index.ts", import.meta.url),
+        new URL(
+          "./packages/console-addon-export/src/index.ts",
+          import.meta.url,
+        ),
       ),
       "@moyarich/console-addon-imperative-scrolling": fileURLToPath(
         new URL(
