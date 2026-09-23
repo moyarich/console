@@ -12,13 +12,13 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@moyarich/console": "*",
+    "@moyarich/console-addon-data-export": "*",
     "@moyarich/console-addon-imperative-scrolling": "*",
     "change-case": "^5.4.4",
     "lucide-react": "^1.47.0",
     "monaco-editor": "^0.52.2",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "@moyarich/console-addon-export": "*"
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@types/react": "^19.1.12",

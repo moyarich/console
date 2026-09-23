@@ -2,13 +2,10 @@
   "name": "moyarich-console-workspace",
   "private": true,
   "version": "0.0.0",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "dev": "npm run dev --workspace @moyarich/console-playground",
-    "build": "npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-export && npm run build --workspace @moyarich/console-playground",
+    "build": "npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-playground",
     "build:package": "npm run build --workspace @moyarich/console",
     "build:playground": "npm run build --workspace @moyarich/console-playground",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
@@ -21,7 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hooks:install": "git config core.hooksPath .githooks",
-    "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-export"
+    "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
@@ -39,7 +36,7 @@
     "@types/react-dom": "^19.1.9",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-hooks": "^10.0.1",
     "globals": "^17.12.0",
     "lint-staged": "^17.5.1",
     "prettier": "^3.9.8",
@@ -52,29 +49,9 @@
     "vitest": "^4.1.11"
   },
   "lint-staged": {
-    "*.{js,jsx,mjs,cjs,ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,css,md,html,yml,yaml}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,mjs,cjs,ts,tsx}": ["prettier --write", "eslint --fix"],
+    "*.{json,css,md,html,yml,yaml}": ["prettier --write"]
   },
   "description": "Workspace for @moyarich/console, a React console and ANSI process-output UI for embedded developer tools.",
-  "keywords": [
-    "react",
-    "console",
-    "console-ui",
-    "developer-tools",
-    "devtools",
-    "ansi",
-    "stdout",
-    "stderr",
-    "log-viewer",
-    "code-playground",
-    "code-runner",
-    "iframe",
-    "websocket",
-    "typescript"
-  ]
+  "keywords": ["react", "console", "console-ui", "developer-tools", "devtools", "ansi", "stdout", "stderr", "log-viewer", "code-playground", "code-runner", "iframe", "websocket", "typescript"]
 }

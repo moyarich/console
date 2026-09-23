@@ -630,16 +630,16 @@ Install the first-party export addon separately when an application needs
 machine-readable or downloadable console output:
 
 ```bash
-npm install @moyarich/console-addon-export
+npm install @moyarich/console-addon-data-export
 ```
 
 Create the addon explicitly and pass it through the normal `addons` prop:
 
 ```tsx
 import { Console } from "@moyarich/console";
-import { createConsoleExportAddon } from "@moyarich/console-addon-export";
+import { createConsoleDataExportAddon } from "@moyarich/console-addon-data-export";
 
-const exportAddon = createConsoleExportAddon({
+const exportAddon = createConsoleDataExportAddon({
   fileName: "runtime-output",
 });
 
@@ -664,7 +664,7 @@ For example:
 
 ```json
 {
-  "type": "MOYARICH_CONSOLE_EXPORT",
+  "type": "MOYARICH_CONSOLE_DATA_EXPORT",
   "version": 1,
   "mode": "console",
   "scope": "visible",
@@ -713,12 +713,12 @@ The addon also exposes headless helpers:
 
 ```ts
 import {
-  createConsoleExportEnvelope,
-  createConsoleExportService,
-  formatConsoleExport,
-  formatConsoleExportJson,
-  formatConsoleExportText,
-} from "@moyarich/console-addon-export";
+  createConsoleDataExportEnvelope,
+  createConsoleDataExportService,
+  formatConsoleDataExport,
+  formatConsoleDataExportJson,
+  formatConsoleDataExportText,
+} from "@moyarich/console-addon-data-export";
 ```
 
 Pure formatters do not require a mounted React component or DOM. Browser

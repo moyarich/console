@@ -1,15 +1,15 @@
 import { useMemo } from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
-import { createConsoleExportAddon } from "@moyarich/console-addon-export";
-import "@moyarich/console/styles.css";
+import { createConsoleDataExportAddon } from "@moyarich/console-addon-data-export";
 
 const structuredMessages: ConsoleMessageData[] = [
   {
-    id: "request",
+    id: "story-request",
     method: "log",
     depth: 0,
     data: ["Request complete", { status: 200, durationMs: 84 }],
@@ -17,7 +17,7 @@ const structuredMessages: ConsoleMessageData[] = [
     source: "preview:api-client",
   },
   {
-    id: "warning",
+    id: "story-warning",
     method: "warn",
     depth: 0,
     data: ["Cache nearing capacity", { usage: "86%" }],
@@ -36,7 +36,7 @@ const processMessages = [
 
 const processors: ConsoleProcessOutputProcessor[] = [
   {
-    id: "export-example-build-status",
+    id: "storybook-build-status",
     process(output) {
       if (!output.data.includes("Progress 100%")) return;
 
@@ -48,30 +48,42 @@ const processors: ConsoleProcessOutputProcessor[] = [
   },
 ];
 
-export default function OutputExportExample() {
+const meta = {
+  title: "Console/Addons/Data export",
+  component: Console,
+  parameters: {
+    layout: "centered",
+  },
+} satisfies Meta<typeof Console>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+function DataExportAddonStory() {
   const structuredAddons = useMemo(
-    () => [createConsoleExportAddon({ fileName: "structured-console" })],
+    () => [createConsoleDataExportAddon({ fileName: "structured-console" })],
     [],
   );
   const ansiAddons = useMemo(
-    () => [createConsoleExportAddon({ fileName: "process-output" })],
+    () => [createConsoleDataExportAddon({ fileName: "process-output" })],
     [],
   );
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
-      <p style={{ margin: 0, fontSize: 13 }}>
-        Open each console&apos;s action menu to copy the logical view as JSON or
-        download text/JSON. The addon is additive; existing core actions stay
-        available.
-      </p>
-
+    <div
+      style={{
+        display: "grid",
+        gap: 16,
+        width: 760,
+        maxWidth: "90vw",
+      }}
+    >
       <Console
         messages={structuredMessages}
         addons={structuredAddons}
-        title="Structured export"
-        subtitle="Exports underlying ConsoleMessageData rather than renderer text."
-        style={{ minHeight: 220 }}
+        title="Structured output export"
+        subtitle="Use the action menu for JSON copy and text/JSON downloads."
+        style={{ height: 240 }}
       />
 
       <Console
@@ -79,10 +91,14 @@ export default function OutputExportExample() {
         messages={processMessages}
         processors={processors}
         addons={ansiAddons}
-        title="ANSI export"
-        subtitle="Exports the resolved logical process view after CR normalization and processors."
-        style={{ minHeight: 220 }}
+        title="ANSI output export"
+        subtitle="Exports the resolved process view rather than DOM text."
+        style={{ height: 240 }}
       />
     </div>
   );
 }
+
+export const StructuredAndAnsi: Story = {
+  render: () => <DataExportAddonStory />,
+};
