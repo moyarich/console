@@ -90,8 +90,7 @@ export interface ConsoleProcessDiagnosticsReport {
 }
 
 export type ConsoleDiagnosticsReport =
-  | ConsoleStructuredDiagnosticsReport
-  | ConsoleProcessDiagnosticsReport;
+  ConsoleStructuredDiagnosticsReport | ConsoleProcessDiagnosticsReport;
 
 export interface ConsoleDiagnosticsDownloadOptions {
   /** Download filename. @default "console-diagnostics.json" */
