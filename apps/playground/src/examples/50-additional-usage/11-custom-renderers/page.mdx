@@ -3,7 +3,7 @@ label: "Custom renderers"
 description: "Dispatch custom message and value renderers by method, type, or predicate with built-in fallback."
 ---
 
-<Playground />
+<RunnableExample />
 
 Renderers are tried in order and may opt out by returning `undefined`. In this example, the metric renderer handles the bundle-size badge but deliberately returns `undefined` for the modules metric, so that value falls back to the built-in inspector.
 
