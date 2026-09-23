@@ -5,7 +5,7 @@ import {
   DEFAULT_CONSOLE_EXAMPLE,
 } from "../../examples";
 import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
-import { RunnableExample } from "../RunnableExample";
+import { RunnableExample, type RunnableExampleProps } from "../RunnableExample";
 
 export function Playground() {
   const [exampleId, setExampleId] = useState(DEFAULT_CONSOLE_EXAMPLE.id);
@@ -49,7 +49,9 @@ export function Playground() {
         >
           <ExamplePage
             components={{
-              RunnableExample: () => <RunnableExample example={example} />,
+              RunnableExample: (props: RunnableExampleProps) => (
+                <RunnableExample title={example.label} {...props} />
+              ),
             }}
           />
         </section>

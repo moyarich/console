@@ -1,13 +1,15 @@
 import { Maximize2, X } from "lucide-react";
-import { Component, useEffect, useRef, useState } from "react";
+import { Component, useEffect, useId, useRef, useState } from "react";
 import type { ComponentType, ErrorInfo, ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { ConsoleExample } from "../../examples";
 import { MonacoEditor } from "../MonacoEditor";
 import { compileExampleSource } from "./compileExampleSource";
 
-interface RunnableExampleProps {
-  example: ConsoleExample;
+export interface RunnableExampleProps {
+  component: ComponentType;
+  source: string;
+  sourcePath?: string;
+  title?: string;
 }
 
 interface RuntimeErrorBoundaryProps {
@@ -48,10 +50,19 @@ class RuntimeErrorBoundary extends Component<
   }
 }
 
-export function RunnableExample({ example }: RunnableExampleProps) {
-  const [draftSource, setDraftSource] = useState(example.exampleSource);
+export function RunnableExample({
+  component,
+  source,
+  sourcePath = "example.tsx",
+  title = sourcePath,
+}: RunnableExampleProps) {
+  const reactId = useId();
+  const instanceId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
+  const previewDialogTitleId = `${instanceId}-preview-dialog-title`;
+  const editorPath = `${instanceId}/${sourcePath}`;
+  const [draftSource, setDraftSource] = useState(source);
   const [RuntimeComponent, setRuntimeComponent] = useState<ComponentType>(
-    () => example.Component,
+    () => component,
   );
   const [runVersion, setRunVersion] = useState(0);
   const [compileError, setCompileError] = useState("");
@@ -60,17 +71,18 @@ export function RunnableExample({ example }: RunnableExampleProps) {
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     runTokenRef.current += 1;
-    setDraftSource(example.exampleSource);
-    setRuntimeComponent(() => example.Component);
+    setDraftSource(source);
+    setRuntimeComponent(() => component);
     setRunVersion((current) => current + 1);
     setCompileError("");
     setIsCompiling(false);
     setHasCustomRuntime(false);
     setPreviewFullscreen(false);
-  }, [example]);
+  }, [component, source]);
 
   useEffect(() => {
     if (!previewFullscreen) {
@@ -92,14 +104,12 @@ export function RunnableExample({ example }: RunnableExampleProps) {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleEscape);
       requestAnimationFrame(() => {
-        document
-          .querySelector<HTMLButtonElement>("[data-preview-expand]")
-          ?.focus();
+        expandButtonRef.current?.focus();
       });
     };
   }, [previewFullscreen]);
 
-  const dirty = draftSource !== example.exampleSource;
+  const dirty = draftSource !== source;
 
   const runSource = async () => {
     const runToken = ++runTokenRef.current;
@@ -109,7 +119,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
     try {
       const ComponentFromSource = await compileExampleSource(
         draftSource,
-        `${example.id}/example.tsx`,
+        sourcePath,
       );
 
       if (runToken !== runTokenRef.current) {
@@ -136,8 +146,8 @@ export function RunnableExample({ example }: RunnableExampleProps) {
 
   const resetSource = () => {
     runTokenRef.current += 1;
-    setDraftSource(example.exampleSource);
-    setRuntimeComponent(() => example.Component);
+    setDraftSource(source);
+    setRuntimeComponent(() => component);
     setRunVersion((current) => current + 1);
     setCompileError("");
     setIsCompiling(false);
@@ -152,7 +162,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
       <div className="panel-toolbar preview-toolbar">
         <div>
           <span className="panel-kicker">Preview</span>
-          <strong id="preview-dialog-title">{example.label}</strong>
+          <strong id={previewDialogTitleId}>{title}</strong>
         </div>
 
         <div className="preview-toolbar-actions">
@@ -161,8 +171,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
             Runnable
           </span>
           <button
-            ref={previewFullscreen ? closeButtonRef : undefined}
-            data-preview-expand={previewFullscreen ? undefined : ""}
+            ref={previewFullscreen ? closeButtonRef : expandButtonRef}
             type="button"
             className="panel-icon-button"
             aria-label={
@@ -190,7 +199,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
           </div>
         )}
 
-        <RuntimeErrorBoundary key={`${example.id}-${runVersion}`}>
+        <RuntimeErrorBoundary key={`${instanceId}-${runVersion}`}>
           <RuntimeComponent />
         </RuntimeErrorBoundary>
       </div>
@@ -207,7 +216,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
           <div className="panel-toolbar source-toolbar">
             <div>
               <span className="panel-kicker">Source</span>
-              <strong>example.tsx</strong>
+              <strong>{sourcePath}</strong>
             </div>
 
             <div className="source-toolbar-actions">
@@ -233,7 +242,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
 
           <div className="example-source-editor">
             <MonacoEditor
-              path={example.id + "/example.tsx"}
+              path={editorPath}
               language="typescript"
               value={draftSource}
               onChange={(value) => setDraftSource(value ?? "")}
@@ -266,7 +275,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
               className="preview-modal"
               role="dialog"
               aria-modal="true"
-              aria-labelledby="preview-dialog-title"
+              aria-labelledby={previewDialogTitleId}
             >
               {previewPanel}
             </div>

@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import type { ComponentType } from "react";
+import type { ComponentType, ElementType } from "react";
 import {
   parseConsoleExampleMeta,
   type ConsoleExampleMeta,
@@ -21,17 +21,11 @@ export interface ConsoleExample extends ConsoleExampleMeta {
   groupId: ConsoleExampleGroupId;
   groupOrder: number;
   order: number;
-  exampleSource: string;
-  Component: ComponentType;
   Page: ComponentType<ConsoleExamplePageProps>;
 }
 
-interface ConsoleExampleModule {
-  default: ComponentType;
-}
-
 interface ConsoleExamplePageProps {
-  components?: Record<string, ComponentType>;
+  components?: Record<string, ElementType>;
 }
 
 interface ConsoleExamplePageModule {
@@ -83,16 +77,6 @@ function parseExamplePath(path: string) {
   };
 }
 
-const playgroundModules = import.meta.glob("./*/*/index.tsx", {
-  eager: true,
-}) as Record<string, ConsoleExampleModule>;
-
-const exampleSourceModules = import.meta.glob("./*/*/example.tsx", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
-
 const pageModules = import.meta.glob("./*/*/page.mdx", {
   eager: true,
 }) as Record<string, ConsoleExamplePageModule>;
@@ -132,35 +116,14 @@ export const CONSOLE_EXAMPLE_GROUPS: readonly ConsoleExampleGroup[] =
   );
 
 export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
-  .map(({ metadata, Page, group, example }) => {
-    const playgroundPath = `./${group.directory}/${example.directory}/index.tsx`;
-    const examplePath = `./${group.directory}/${example.directory}/example.tsx`;
-    const playgroundModule = playgroundModules[playgroundPath];
-    const exampleSource = exampleSourceModules[examplePath];
-
-    if (!playgroundModule) {
-      throw new Error(
-        `Missing index.tsx playground harness: ${group.directory}/${example.directory}`,
-      );
-    }
-
-    if (!exampleSource) {
-      throw new Error(
-        `Missing example.tsx consumer example: ${group.directory}/${example.directory}`,
-      );
-    }
-
-    return {
-      ...metadata,
-      id: example.id,
-      groupId: group.id,
-      groupOrder: group.order,
-      order: example.order,
-      exampleSource,
-      Component: playgroundModule.default,
-      Page,
-    };
-  })
+  .map(({ metadata, Page, group, example }) => ({
+    ...metadata,
+    id: example.id,
+    groupId: group.id,
+    groupOrder: group.order,
+    order: example.order,
+    Page,
+  }))
   .sort(
     (left, right) =>
       left.groupOrder - right.groupOrder ||
