@@ -72,8 +72,16 @@ export interface ConsoleExportService {
   download(options?: Partial<ConsoleExportDownloadOptions>): void;
 }
 
-const OSC_PATTERN = /\u001b\][\s\S]*?(?:\u0007|\u001b\\)/g;
-const CSI_PATTERN = /\u001b\[[0-?]*[ -/]*[@-~]/g;
+const ANSI_ESCAPE = String.fromCharCode(27);
+const BELL = String.fromCharCode(7);
+const OSC_PATTERN = new RegExp(
+  `${ANSI_ESCAPE}\\][\\s\\S]*?(?:${BELL}|${ANSI_ESCAPE}\\\\)`,
+  "g",
+);
+const CSI_PATTERN = new RegExp(
+  `${ANSI_ESCAPE}\\[[0-?]*[ -/]*[@-~]`,
+  "g",
+);
 
 function getScopedItems(snapshot: ConsoleDataSnapshot, scope: ConsoleExportScope) {
   return scope === "all" ? snapshot.all : snapshot.visible;
