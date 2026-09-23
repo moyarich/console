@@ -657,9 +657,9 @@ custom renderer markup, scroll position, and future virtualization.
 
 Two scopes are supported:
 
-| Scope     | Meaning |
-| --------- | ------- |
-| `visible` | Current logical view after host filtering/view rules. This does not mean rows currently mounted or inside the scroll viewport. |
+| Scope     | Meaning                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `visible` | Current logical view after host filtering/view rules. This does not mean rows currently mounted or inside the scroll viewport.                                                            |
 | `all`     | All retained logical output currently owned by the console, including structured messages hidden by the current filter. It cannot include history already discarded by a retention limit. |
 
 There is intentionally no `selected` scope in the export addon. Selection is a
