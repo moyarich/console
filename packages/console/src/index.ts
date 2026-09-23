@@ -75,13 +75,17 @@ export type {
   ConsoleStructuredOutputParser,
   ConsoleStructuredOutputParserContext,
 } from "./components/ConsoleStdout";
-export { processConsoleOutputEntry } from "./processOutput";
+export {
+  processConsoleOutputEntry,
+  resolveConsoleProcessOutputEntries,
+} from "./processOutput";
 export type {
   ConsoleProcessOutput,
   ConsoleProcessOutputMetadata,
   ConsoleProcessOutputProcessor,
   ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
+  ConsoleResolvedProcessOutputEntry,
 } from "./processOutput";
 export {
   ConsoleLinkedText,
@@ -110,6 +114,7 @@ export type {
 export { CONSOLE_METHODS } from "./consoleMethods";
 export { normalizeConsoleTableData } from "./utils/console/table/normalizeConsoleTableData";
 export { formatConsoleObjectForCopy } from "./utils/console/formatConsoleObjectForCopy";
+export { writeClipboardText } from "./utils/browser/clipboard";
 export { createConsoleProxy } from "./utils/console/runtime/createConsoleProxy";
 export type { CreateConsoleProxyOptions } from "./utils/console/runtime/createConsoleProxy";
 export { captureConsole } from "./utils/console/runtime/captureConsole";
