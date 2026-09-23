@@ -30,9 +30,7 @@ function createDataService(snapshot: ConsoleDataSnapshot): ConsoleDataService {
 describe("@moyarich/console-addon-export", () => {
   it("uses the package-qualified addon id", () => {
     expect(createConsoleExportAddon().id).toBe(CONSOLE_EXPORT_ADDON_ID);
-    expect(CONSOLE_EXPORT_ADDON_ID).toBe(
-      "@moyarich/console-addon-export",
-    );
+    expect(CONSOLE_EXPORT_ADDON_ID).toBe("@moyarich/console-addon-export");
   });
 
   it("formats retained and visible structured output independently", () => {
@@ -172,9 +170,7 @@ describe("@moyarich/console-addon-export", () => {
     expect(panelActions.map((action) => action.label)).not.toContain(
       "Copy output",
     );
-    expect(contextActions.map((action) => action.label)).toEqual([
-      "Copy as JSON",
-    ]);
+    expect(contextActions.map((action) => action.label)).toEqual(["Copy as JSON"]);
 
     expect(manager.unload(CONSOLE_EXPORT_ADDON_ID)).toBe(true);
     expect(
