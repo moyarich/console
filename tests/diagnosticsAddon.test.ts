@@ -92,7 +92,9 @@ describe("@moyarich/console-addon-diagnostics", () => {
       },
     };
     const rawEntries = ["Progress 10%\r", "Progress 20%\n"];
-    const resolved = resolveConsoleProcessOutputEntries(rawEntries, [processor]);
+    const resolved = resolveConsoleProcessOutputEntries(rawEntries, [
+      processor,
+    ]);
     const snapshot: ConsoleDataSnapshot = {
       mode: "ansi",
       rawEntries,
