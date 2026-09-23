@@ -70,6 +70,7 @@ describe("playground example MDX metadata", () => {
       expect(source).toContain("\ndescription:");
       expect(source).toContain("\n---");
       expect(source).not.toContain("export const meta");
+      expect(source).toContain("<RunnableExample />");
     }
   });
 });
