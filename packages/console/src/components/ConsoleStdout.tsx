@@ -50,8 +50,10 @@ export interface ConsoleStdoutProps {
   linkProviders?: readonly ConsoleLinkProvider[];
 }
 
-interface ConsoleResolvedStdoutProps
-  extends Omit<ConsoleStdoutProps, "entries" | "processors"> {
+interface ConsoleResolvedStdoutProps extends Omit<
+  ConsoleStdoutProps,
+  "entries" | "processors"
+> {
   resolvedEntries: readonly ConsoleResolvedProcessOutputEntry[];
 }
 
