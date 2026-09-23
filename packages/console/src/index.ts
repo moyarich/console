@@ -13,7 +13,7 @@ export {
   consoleCoreAddonIds,
   consoleExtensionPoints,
   consoleServices,
-  createConsoleViewportAddon,
+  createConsoleImperativeScrollControlsAddon,
   isCoreConsoleAddonId,
   createConsoleAddonManager,
   createConsoleCapability,
