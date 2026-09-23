@@ -9,7 +9,7 @@ import {
 } from "@moyarich/console-core";
 
 describe("@moyarich/console-core", () => {
-  it("provides the headless addon runtime without console UI contracts", () => {
+  it("provides the shared addon SDK runtime and registries", () => {
     expect(CONSOLE_ADDON_API_VERSION).toBe("1");
 
     const manager = createConsoleAddonManager({
