@@ -8,13 +8,13 @@
       "@moyarich/console": ["../../packages/console/src/index.ts"],
       "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
       "@moyarich/console-addon-imperative-scrolling": [
-        "../../packages/console-addon-imperative-scrolling/src/index.ts"
+        "../../packages/addons/imperative-scrolling/src/index.ts"
       ],
       "@moyarich/console-addon-data-export": [
-        "../../packages/console-addon-data-export/src/index.ts"
+        "../../packages/addons/data-export/src/index.ts"
       ],
       "@moyarich/console-addon-diagnostics": [
-        "../../packages/console-addon-diagnostics/src/index.ts"
+        "../../packages/addons/diagnostics/src/index.ts"
       ],
       "@moyarich/console-core": ["../../packages/console-core/src/index.ts"]
     }

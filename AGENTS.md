@@ -57,7 +57,7 @@ Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
 
 ## Addon dependency boundary
 
-All `console-addon-*` packages depend on `@moyarich/console-core`, never on `@moyarich/console`.
+All first-party packages under `packages/addons/*` depend on `@moyarich/console-core`, never on `@moyarich/console`.
 
 - import `ConsoleAddon`, `consoleServices`, `consoleExtensionPoints`, and addon-facing contracts from `@moyarich/console-core`
 - do not add `@moyarich/console` to an addon's dependencies, peerDependencies, or devDependencies
@@ -74,7 +74,7 @@ A common symptom is:
 failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
 ```
 
-When a first-party addon exists under `packages/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
+When a first-party addon exists under `packages/addons/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
 
 For every first-party workspace addon used by the playground or Storybook:
 
@@ -92,7 +92,7 @@ Example playground alias:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),

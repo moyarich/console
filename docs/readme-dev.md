@@ -397,7 +397,7 @@ Dependency direction:
 ```text
 console-core
 ├─ console
-└─ console-addon-*
+└─ addons/*
 ```
 
 Rules:
@@ -435,7 +435,7 @@ Example:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),
@@ -449,7 +449,7 @@ The Storybook alias uses the equivalent path relative to `.storybook/main.ts`:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),

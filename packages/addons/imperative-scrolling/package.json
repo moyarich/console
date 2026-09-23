@@ -1,7 +1,7 @@
 {
-  "name": "@moyarich/console-addon-diagnostics",
+  "name": "@moyarich/console-addon-imperative-scrolling",
   "version": "0.1.0",
-  "description": "First-party console pipeline diagnostics addon for @moyarich/console hosts.",
+  "description": "First-party imperative scrolling addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -35,7 +35,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/moyarich/console.git",
-    "directory": "packages/console-addon-diagnostics"
+    "directory": "packages/addons/imperative-scrolling"
   },
   "bugs": {
     "url": "https://github.com/moyarich/console/issues"

@@ -3,15 +3,20 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const addonDirectories = [
-  "console-addon-data-export",
-  "console-addon-diagnostics",
-  "console-addon-imperative-scrolling",
+  "data-export",
+  "diagnostics",
+  "imperative-scrolling",
 ] as const;
 
 describe("addon dependency boundary", () => {
   for (const directory of addonDirectories) {
     it(`${directory} depends on console-core, not console`, () => {
-      const packageRoot = resolve(process.cwd(), "packages", directory);
+      const packageRoot = resolve(
+        process.cwd(),
+        "packages",
+        "addons",
+        directory,
+      );
       const packageJson = JSON.parse(
         readFileSync(resolve(packageRoot, "package.json"), "utf8"),
       ) as Record<string, Record<string, string> | undefined>;

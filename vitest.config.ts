@@ -13,19 +13,19 @@ export default defineConfig({
       ),
       "@moyarich/console-addon-diagnostics": fileURLToPath(
         new URL(
-          "./packages/console-addon-diagnostics/src/index.ts",
+          "./packages/addons/diagnostics/src/index.ts",
           import.meta.url,
         ),
       ),
       "@moyarich/console-addon-data-export": fileURLToPath(
         new URL(
-          "./packages/console-addon-data-export/src/index.ts",
+          "./packages/addons/data-export/src/index.ts",
           import.meta.url,
         ),
       ),
       "@moyarich/console-addon-imperative-scrolling": fileURLToPath(
         new URL(
-          "./packages/console-addon-imperative-scrolling/src/index.ts",
+          "./packages/addons/imperative-scrolling/src/index.ts",
           import.meta.url,
         ),
       ),
