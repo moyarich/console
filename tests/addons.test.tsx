@@ -57,7 +57,9 @@ describe("console addon API", () => {
   });
 
   it("differentiates core and external addons by reserved namespace", () => {
-    expect(isCoreConsoleAddonId(consoleCoreAddonIds.imperativeScrollControls)).toBe(true);
+    expect(
+      isCoreConsoleAddonId(consoleCoreAddonIds.imperativeScrollControls),
+    ).toBe(true);
     expect(isCoreConsoleAddonId("@moyarich/console:search")).toBe(true);
     expect(isCoreConsoleAddonId("@acme/console-addon-search")).toBe(false);
     expect(isCoreConsoleAddonId("@acme/console-tools:search")).toBe(false);
@@ -73,7 +75,8 @@ describe("console addon API", () => {
       isAtTop: () => false,
       focus: () => undefined,
     };
-    const addon: ConsoleAddon = createConsoleImperativeScrollControlsAddon(viewport);
+    const addon: ConsoleAddon =
+      createConsoleImperativeScrollControlsAddon(viewport);
 
     expect(addon.id).toBe(consoleCoreAddonIds.imperativeScrollControls);
     expect(addon.id).toBe("@moyarich/console:imperative-scroll-controls");
