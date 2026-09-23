@@ -15,7 +15,8 @@ import {
 } from "@moyarich/console";
 
 /** Stable package-qualified identity for the data-export addon. */
-export const CONSOLE_DATA_EXPORT_ADDON_ID = "@moyarich/console-addon-data-export";
+export const CONSOLE_DATA_EXPORT_ADDON_ID =
+  "@moyarich/console-addon-data-export";
 
 /** Stable marker written into structured export files. */
 export const CONSOLE_DATA_EXPORT_TYPE = "MOYARICH_CONSOLE_DATA_EXPORT";
@@ -273,7 +274,11 @@ export function formatConsoleDataExportJson(
   snapshot: ConsoleDataSnapshot,
   scope: ConsoleDataExportScope = "visible",
 ): string {
-  return JSON.stringify(createConsoleDataExportEnvelope(snapshot, scope), null, 2);
+  return JSON.stringify(
+    createConsoleDataExportEnvelope(snapshot, scope),
+    null,
+    2,
+  );
 }
 
 /** Formats a logical console snapshot without requiring React or the DOM. */
@@ -289,9 +294,14 @@ export function formatConsoleDataExport(
 /** Copies formatted export data using the existing core clipboard helper. */
 export async function copyConsoleDataExport(
   snapshot: ConsoleDataSnapshot,
-  { format = "text", scope = "visible" }: Partial<ConsoleDataExportOptions> = {},
+  {
+    format = "text",
+    scope = "visible",
+  }: Partial<ConsoleDataExportOptions> = {},
 ): Promise<void> {
-  await writeClipboardText(formatConsoleDataExport(snapshot, { format, scope }));
+  await writeClipboardText(
+    formatConsoleDataExport(snapshot, { format, scope }),
+  );
 }
 
 /** Downloads formatted export data in browser environments. */
