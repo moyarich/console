@@ -2,13 +2,13 @@ import { useMemo, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
-  consoleExtensionPoints,
-  consoleServices,
-  type ConsoleAddon,
   type ConsoleHandle,
   type ConsoleMessageData,
   type ConsoleMessageModeProps,
 } from "@moyarich/console";
+import {
+  createImperativeScrollingAddon,
+} from "@moyarich/console-addon-imperative-scrolling";
 
 const messages: ConsoleMessageData[] = Array.from(
   { length: 60 },
@@ -37,27 +37,7 @@ type Story = StoryObj<typeof meta>;
 function ImperativeScrollControlsStory() {
   const consoleRef = useRef<ConsoleHandle>(null);
   const [position, setPosition] = useState("Ready");
-  const addons = useMemo<ConsoleAddon[]>(
-    () => [
-      {
-        id: "@moyarich/console-storybook:viewport-navigation",
-        activate(host) {
-          const viewport = host.services.require(consoleServices.viewport);
-
-          host.extensions.register(consoleExtensionPoints.panelAction, {
-            id: "jump-to-warning",
-            label: "Jump to warning target",
-            onSelect: () => {
-              viewport.scrollToMessage("story-message-30", {
-                block: "center",
-              });
-            },
-          });
-        },
-      },
-    ],
-    [],
-  );
+  const addons = useMemo(() => [createImperativeScrollingAddon()], []);
 
   const run = (action: (handle: ConsoleHandle) => void) => {
     const handle = consoleRef.current;
@@ -119,7 +99,7 @@ function ImperativeScrollControlsStory() {
         addons={addons}
         autoScroll
         title="Imperative scroll controls"
-        subtitle="Ref controls and addon service share one viewport implementation."
+        subtitle="Core ConsoleHandle and workspace addon share one viewport implementation."
         style={{ width: "100%", height: 320 }}
       />
     </div>
