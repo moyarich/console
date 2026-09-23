@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { ExamplePicker } from "./components/ExamplePicker/ExamplePicker";
+import { ExampleSidebar } from "./components/ExampleSidebar/ExampleSidebar";
 import { RunnableExample } from "./components/RunnableExample";
-import { CONSOLE_EXAMPLES, DEFAULT_CONSOLE_EXAMPLE } from "./examples";
+import {
+  CONSOLE_EXAMPLES,
+  CONSOLE_EXAMPLE_GROUPS,
+  DEFAULT_CONSOLE_EXAMPLE,
+} from "./examples";
 
 export function App() {
   const [exampleId, setExampleId] = useState(DEFAULT_CONSOLE_EXAMPLE.id);
   const example =
     CONSOLE_EXAMPLES.find((candidate) => candidate.id === exampleId) ??
     DEFAULT_CONSOLE_EXAMPLE;
+  const exampleGroup =
+    CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === example.groupId) ??
+    CONSOLE_EXAMPLE_GROUPS[0];
 
   return (
     <div className="site-shell">
@@ -32,48 +39,39 @@ export function App() {
         </a>
       </header>
 
-      <main className="playground-shell">
-        <section className="hero">
-          <span className="eyebrow">Interactive playground</span>
-          <h1>Inspect console output without leaving your app.</h1>
-          <p>
-            Edit and run copy-paste React examples for page capture, iframe
-            transport, WebSocket transport, and migration from console-feed.
-          </p>
-        </section>
+      <div className="documentation-layout">
+        <aside className="documentation-sidebar">
+          <ExampleSidebar
+            examples={CONSOLE_EXAMPLES}
+            value={example.id}
+            onChange={setExampleId}
+          />
+        </aside>
 
-        <div className="playground-grid">
-          <aside className="example-sidebar">
-            <div className="sidebar-heading">
-              <div>
-                <span className="panel-kicker">Examples</span>
-                <strong>Choose a pattern</strong>
-              </div>
-              <span className="example-count">{CONSOLE_EXAMPLES.length}</span>
+        <main className="playground-main">
+          <section className="hero">
+            <span className="eyebrow">Interactive playground</span>
+            <h1>Edit, run, and inspect console examples.</h1>
+            <p>
+              Browse the library by capability, edit the source in Monaco, and
+              run each example against the live preview.
+            </p>
+
+            <div className="hero-example-path" aria-label="Selected example">
+              <span>{exampleGroup?.label ?? example.groupId}</span>
+              <span aria-hidden="true">/</span>
+              <strong>{example.label}</strong>
             </div>
-
-            <ExamplePicker
-              examples={CONSOLE_EXAMPLES}
-              value={example.id}
-              onChange={setExampleId}
-            />
-
-            <div className="selected-example">
-              <span className="selected-example-label">Selected</span>
-              <h2>{example.label}</h2>
-              <p>{example.description}</p>
-              <code>{example.id}</code>
-            </div>
-          </aside>
+          </section>
 
           <RunnableExample example={example} />
-        </div>
-      </main>
 
-      <footer className="site-footer">
-        <span>@moyarich/console</span>
-        <span>React console UI and transport adapters</span>
-      </footer>
+          <footer className="site-footer">
+            <span>@moyarich/console</span>
+            <span>React console UI and transport adapters</span>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }
