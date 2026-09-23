@@ -615,14 +615,9 @@ const navigationAddon: ConsoleAddon = {
 The first-party imperative-scrolling addon is a separate workspace package:
 
 ```tsx
-import {
-  createImperativeScrollingAddon,
-} from "@moyarich/console-addon-imperative-scrolling";
+import { createImperativeScrollingAddon } from "@moyarich/console-addon-imperative-scrolling";
 
-<Console
-  messages={messages}
-  addons={[createImperativeScrollingAddon()]}
-/>
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
 ```
 
 It contributes standard **Scroll to top**, **Latest output**, and **Focus output** panel actions while delegating all behavior to the same core viewport service.
@@ -1077,10 +1072,7 @@ import {
   IMPERATIVE_SCROLLING_ADDON_ID,
 } from "@moyarich/console-addon-imperative-scrolling";
 
-<Console
-  messages={messages}
-  addons={[createImperativeScrollingAddon()]}
-/>
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
 ```
 
 Use `disabledAddonIds` to keep a supplied addon inactive:
