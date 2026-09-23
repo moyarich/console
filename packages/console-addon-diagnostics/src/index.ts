@@ -233,7 +233,11 @@ export function createConsoleDiagnosticsReport(
 export function formatConsoleDiagnosticsJson(
   snapshot: ConsoleDataSnapshot,
 ): string {
-  return JSON.stringify(createConsoleDiagnosticsReport(snapshot), null, 2);
+  return JSON.stringify(
+    createConsoleDiagnosticsReport(snapshot),
+    null,
+    2,
+  );
 }
 
 /** Copies a diagnostics report as JSON. */
@@ -246,7 +250,9 @@ export async function copyConsoleDiagnostics(
 /** Downloads a diagnostics report as JSON in browser environments. */
 export function downloadConsoleDiagnostics(
   snapshot: ConsoleDataSnapshot,
-  { fileName = "console-diagnostics.json" }: ConsoleDiagnosticsDownloadOptions = {},
+  {
+    fileName = "console-diagnostics.json",
+  }: ConsoleDiagnosticsDownloadOptions = {},
 ): void {
   if (typeof document === "undefined" || typeof URL === "undefined") {
     throw new Error(
