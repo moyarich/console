@@ -440,27 +440,39 @@ function ConsoleMessageMode({
 }: ConsoleMessageModeProps & ConsoleResolvedAddonProps) {
   const resolvedMessageRenderers = mergeContributions(
     messageRenderers,
-    (addonExtensions.getAll(consoleExtensionPoints.messageRenderer) as readonly ConsoleMessageRenderer[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.messageRenderer,
+    ) as readonly ConsoleMessageRenderer[],
   );
   const resolvedMessageActions = mergeContributions(
     messageActions,
-    (addonExtensions.getAll(consoleExtensionPoints.messageAction) as readonly ConsoleMessageAction[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.messageAction,
+    ) as readonly ConsoleMessageAction[],
   );
   const resolvedPanelActions = mergeContributions(
     panelActions,
-    (addonExtensions.getAll(consoleExtensionPoints.panelAction) as readonly ConsolePanelAction[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.panelAction,
+    ) as readonly ConsolePanelAction[],
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
-    (addonExtensions.getAll(consoleExtensionPoints.contextMenuAction) as readonly ConsoleContextMenuAction[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.contextMenuAction,
+    ) as readonly ConsoleContextMenuAction[],
   );
   const resolvedOutputRenderers = mergeContributions(
     outputRenderers,
-    (addonExtensions.getAll(consoleExtensionPoints.outputRenderer) as readonly ConsoleOutputRenderer[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.outputRenderer,
+    ) as readonly ConsoleOutputRenderer[],
   );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
-    (addonExtensions.getAll(consoleExtensionPoints.valueRenderer) as readonly ConsoleValueRenderer[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.valueRenderer,
+    ) as readonly ConsoleValueRenderer[],
   );
   const resolvedLinkProviders = mergeContributions(
     linkProviders,
@@ -604,19 +616,27 @@ function ConsoleAnsiMode({
   }, [data, messages, resolvedEntries]);
   const resolvedPanelActions = mergeContributions(
     panelActions,
-    (addonExtensions.getAll(consoleExtensionPoints.panelAction) as readonly ConsolePanelAction[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.panelAction,
+    ) as readonly ConsolePanelAction[],
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
-    (addonExtensions.getAll(consoleExtensionPoints.contextMenuAction) as readonly ConsoleContextMenuAction[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.contextMenuAction,
+    ) as readonly ConsoleContextMenuAction[],
   );
   const resolvedOutputRenderers = mergeContributions(
     outputRenderers,
-    (addonExtensions.getAll(consoleExtensionPoints.outputRenderer) as readonly ConsoleOutputRenderer[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.outputRenderer,
+    ) as readonly ConsoleOutputRenderer[],
   );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
-    (addonExtensions.getAll(consoleExtensionPoints.valueRenderer) as readonly ConsoleValueRenderer[]),
+    addonExtensions.getAll(
+      consoleExtensionPoints.valueRenderer,
+    ) as readonly ConsoleValueRenderer[],
   );
   const resolvedLinkProviders = mergeContributions(
     linkProviders,
