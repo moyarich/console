@@ -1,13 +1,31 @@
 ---
 label: "Core Addon - Data export"
-description: "Export logical console data as text or structured JSON, similar to copying an object, without turning export into a diagnostics feature."
+description: "Export structured messages or resolved ANSI process output as logical data."
 ---
 
-import Example from "./example.tsx";
-import source from "./example.tsx?raw";
+import Structured from "./structured.tsx";
+import structuredSource from "./structured.tsx?raw";
+import Ansi from "./ansi.tsx";
+import ansiSource from "./ansi.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+## Structured messages
 
-Open each console's action menu to copy the logical view as JSON or download text/JSON. The addon is additive, so existing core actions remain available.
+Structured mode exports the underlying `ConsoleMessageData`, including message metadata and values.
 
-Structured mode exports the underlying `ConsoleMessageData`. ANSI mode exports the resolved logical process view after carriage-return normalization and process-output processors.
+<RunnableExample
+  component={Structured}
+  source={structuredSource}
+  sourcePath="structured.tsx"
+  title="Structured data export"
+/>
+
+## ANSI process output
+
+ANSI mode exports the resolved logical process view after carriage-return normalization and process-output processors.
+
+<RunnableExample
+  component={Ansi}
+  source={ansiSource}
+  sourcePath="ansi.tsx"
+  title="ANSI data export"
+/>
