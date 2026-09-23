@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  CONSOLE_CORE_ADDON_ID_PREFIX,
   consoleCapabilities,
+  consoleServices,
   createConsoleAddonManager,
-  createConsoleImperativeScrollControlsAddon,
-  isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleAddonManager,
   type ConsoleExtensionRegistry,
@@ -14,10 +12,7 @@ import type { ConsoleViewportService } from "../viewport";
 
 const EMPTY_ADDONS: readonly ConsoleAddon[] = [];
 
-function validateAddons(
-  addons: readonly ConsoleAddon[],
-  coreAddonIds: ReadonlySet<string>,
-): void {
+function validateAddons(addons: readonly ConsoleAddon[]): void {
   const ids = new Set<string>();
 
   for (const addon of addons) {
@@ -29,12 +24,6 @@ function validateAddons(
 
     if (ids.has(id)) {
       throw new Error(`Console addon "${id}" appears more than once.`);
-    }
-
-    if (isCoreConsoleAddonId(id) && !coreAddonIds.has(id)) {
-      throw new Error(
-        `Console addon ID "${id}" uses the reserved core namespace "${CONSOLE_CORE_ADDON_ID_PREFIX}".`,
-      );
     }
 
     ids.add(id);
@@ -72,21 +61,6 @@ export function useConsoleAddons(
   viewport: ConsoleViewportService,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
-  const coreAddons = useMemo(
-    () =>
-      [
-        createConsoleImperativeScrollControlsAddon(viewport),
-      ] satisfies readonly ConsoleAddon[],
-    [viewport],
-  );
-  const coreAddonIds = useMemo(
-    () => new Set(coreAddons.map((addon) => addon.id)),
-    [coreAddons],
-  );
-  const allAddons = useMemo(
-    () => [...coreAddons, ...addonList],
-    [addonList, coreAddons],
-  );
   const disabledIds = useMemo(
     () =>
       new Set(
@@ -107,7 +81,7 @@ export function useConsoleAddons(
     [allAddons, disabledIds],
   );
 
-  validateAddons(allAddons, coreAddonIds);
+  validateAddons(addonList);
 
   const manager = useMemo(() => createManager(mode), [mode]);
   const loadedRef = useRef(new Map<string, ConsoleAddon>());
@@ -120,6 +94,15 @@ export function useConsoleAddons(
 
     return () => subscription.dispose();
   }, [manager]);
+
+  useEffect(() => {
+    const registration = manager.services.provide(
+      consoleServices.viewport,
+      viewport,
+    );
+
+    return () => registration.dispose();
+  }, [manager, viewport]);
 
   useEffect(() => {
     const nextById = new Map(
