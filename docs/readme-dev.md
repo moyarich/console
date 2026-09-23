@@ -386,7 +386,21 @@ When adding or reordering an example:
 
 Renaming only a numeric prefix changes order without changing the example `id`. Changing the suffix changes the derived `id`, so suffixes should remain stable unless an ID change is intentional.
 
-### Workspace addon imports in development
+### Core package boundary
+
+`packages/console-core` contains the headless addon runtime. Keep this package free of React, React DOM, console UI components, renderer contracts, and sibling addon dependencies.
+
+`packages/console` depends on core and re-exports the core addon API. Console-specific extension points and host services stay in `packages/console` unless they can be made genuinely UI-independent.
+
+Dependency direction:
+
+```text
+console-core <- console <- console-addon-*
+```
+
+Never add a dependency from `console-core` back to `console`.
+
+## Workspace addon imports in development
 
 Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require contributors to prebuild every addon before starting Vite.
 
