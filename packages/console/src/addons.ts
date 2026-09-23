@@ -16,9 +16,6 @@ import type { ConsoleViewportService } from "./viewport";
 /** Version of the public addon-host contract. */
 export const CONSOLE_ADDON_API_VERSION = "1";
 
-/** Reserved package namespace for built-in console addon IDs. */
-export const CONSOLE_CORE_ADDON_ID_PREFIX = "@moyarich/console:";
-
 /** Resource that can be released deterministically. */
 export interface ConsoleDisposable {
   dispose(): void;
@@ -428,41 +425,6 @@ export const consoleServices = Object.freeze({
   viewport:
     createConsoleServiceToken<ConsoleViewportService>("console.viewport"),
 });
-
-/**
- * Stable IDs for core addons that are auto-registered by the React host.
- *
- * Addon IDs are package-qualified to avoid collisions. Third-party packages
- * should use their npm package name as the ID, or `<package>:<feature>` when
- * one package provides multiple addons.
- */
-export const consoleCoreAddonIds = Object.freeze({
-  imperativeScrollControls: `${CONSOLE_CORE_ADDON_ID_PREFIX}imperative-scroll-controls`,
-});
-
-/** Returns whether an addon ID belongs to the reserved core namespace. */
-export function isCoreConsoleAddonId(id: string): boolean {
-  return validateIdentifier(id, "Addon").startsWith(
-    CONSOLE_CORE_ADDON_ID_PREFIX,
-  );
-}
-
-/**
- * Creates the auto-registered core addon backing imperative console navigation.
- *
- * The addon owns the public viewport service registration. Disabling or
- * unloading this addon removes that service from the addon host.
- */
-export function createConsoleImperativeScrollControlsAddon(
-  viewport: ConsoleViewportService,
-): ConsoleAddon {
-  return {
-    id: consoleCoreAddonIds.imperativeScrollControls,
-    activate(host) {
-      host.services.provide(consoleServices.viewport, viewport);
-    },
-  };
-}
 
 /** Built-in extension points backed by the console's existing hook contracts. */
 export const consoleExtensionPoints = Object.freeze({
