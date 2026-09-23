@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExampleSidebar } from "./components/ExampleSidebar/ExampleSidebar";
-import { RunnableExample } from "./components/RunnableExample";
+import { Playground } from "./components/Playground";
 import {
   CONSOLE_EXAMPLES,
   CONSOLE_EXAMPLE_GROUPS,
@@ -71,7 +71,7 @@ export function App() {
           >
             <ExamplePage
               components={{
-                RunnableExample: () => <RunnableExample example={example} />,
+                Playground: () => <Playground example={example} />,
               }}
             />
           </section>
