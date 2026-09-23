@@ -77,5 +77,4 @@ describe("runnable example browser ESM compilation", () => {
       ).rejects.toThrow(/Unsupported bare import|Relative import/);
     },
   );
-
 });
