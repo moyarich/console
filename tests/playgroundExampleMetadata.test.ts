@@ -64,7 +64,12 @@ describe("playground example MDX metadata", () => {
     expect(legacyMetadataFiles).toEqual([]);
 
     for (const pageFile of pageFiles) {
-      expect(readFileSync(pageFile, "utf8")).toContain("export const meta =");
+      const source = readFileSync(pageFile, "utf8");
+      expect(source).toMatch(/^---\n/);
+      expect(source).toContain("\nlabel:");
+      expect(source).toContain("\ndescription:");
+      expect(source).toContain("\n---");
+      expect(source).not.toContain("export const meta");
     }
   });
 });
