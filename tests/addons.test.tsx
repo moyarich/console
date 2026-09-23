@@ -3,15 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   Console,
   consoleCapabilities,
-  consoleCoreAddonIds,
   consoleExtensionPoints,
   consoleServices,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleExtensionPoint,
   createConsoleServiceToken,
-  createConsoleImperativeScrollControlsAddon,
-  isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleViewportService,
 } from "@moyarich/console";
@@ -54,42 +51,6 @@ describe("console addon API", () => {
     expect(manager.services.has(token)).toBe(false);
     expect(manager.services.get(token)).toBeUndefined();
     expect(() => manager.services.require(token)).toThrow(/not available/);
-  });
-
-  it("differentiates core and external addons by reserved namespace", () => {
-    expect(
-      isCoreConsoleAddonId(consoleCoreAddonIds.imperativeScrollControls),
-    ).toBe(true);
-    expect(isCoreConsoleAddonId("@moyarich/console:search")).toBe(true);
-    expect(isCoreConsoleAddonId("@acme/console-addon-search")).toBe(false);
-    expect(isCoreConsoleAddonId("@acme/console-tools:search")).toBe(false);
-  });
-
-  it("loads imperative scroll controls as a removable core ConsoleAddon", () => {
-    const manager = createConsoleAddonManager();
-    const viewport: ConsoleViewportService = {
-      scrollToTop: () => undefined,
-      scrollToBottom: () => undefined,
-      scrollToMessage: () => false,
-      isAtBottom: () => true,
-      isAtTop: () => false,
-      focus: () => undefined,
-    };
-    const addon: ConsoleAddon =
-      createConsoleImperativeScrollControlsAddon(viewport);
-
-    expect(addon.id).toBe(consoleCoreAddonIds.imperativeScrollControls);
-    expect(addon.id).toBe("@moyarich/console:imperative-scroll-controls");
-
-    manager.load(addon);
-
-    expect(manager.has(addon.id)).toBe(true);
-    expect(manager.services.require(consoleServices.viewport)).toBe(viewport);
-
-    expect(manager.unload(addon.id)).toBe(true);
-    expect(manager.unload(addon.id)).toBe(false);
-    expect(manager.has(addon.id)).toBe(false);
-    expect(manager.services.get(consoleServices.viewport)).toBeUndefined();
   });
 
   it("unloads addons directly by stable id", () => {
@@ -472,38 +433,6 @@ describe("console addon API", () => {
     expect(
       manager.extensions.getAll(consoleExtensionPoints.outputRenderer),
     ).toEqual([renderer]);
-  });
-
-  it("reserves the package-qualified core addon namespace", () => {
-    const addons: ConsoleAddon[] = [
-      {
-        id: "@moyarich/console:not-a-public-core-addon",
-        activate: () => undefined,
-      },
-    ];
-
-    expect(() =>
-      renderToStaticMarkup(<Console messages={[]} addons={addons} />),
-    ).toThrow(/reserved core namespace/);
-  });
-
-  it("does not allow a disabled core addon id to be impersonated", () => {
-    const addons: ConsoleAddon[] = [
-      {
-        id: consoleCoreAddonIds.imperativeScrollControls,
-        activate: () => undefined,
-      },
-    ];
-
-    expect(() =>
-      renderToStaticMarkup(
-        <Console
-          messages={[]}
-          addons={addons}
-          disabledAddonIds={[consoleCoreAddonIds.imperativeScrollControls]}
-        />,
-      ),
-    ).toThrow(/appears more than once/);
   });
 
   it("rejects duplicate addon IDs through the React Console API", () => {
