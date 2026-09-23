@@ -15,7 +15,7 @@ import {
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import {
-  ConsoleStdout,
+  ConsoleResolvedStdout,
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
@@ -623,11 +623,9 @@ function ConsoleAnsiMode({
     addonExtensions.getAll(consoleExtensionPoints.linkProvider),
   );
   const renderDefaultOutput = () => (
-    <ConsoleStdout
-      entries={messages}
-      parseStructuredOutput={parseStructuredOutput}
-      processors={resolvedProcessors}
+    <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
+      parseStructuredOutput={parseStructuredOutput}
       structuredOutputParsers={resolvedStructuredOutputParsers}
       valueRenderers={resolvedValueRenderers}
       detectLinks={detectLinks}
