@@ -386,6 +386,64 @@ When adding or reordering an example:
 
 Renaming only a numeric prefix changes order without changing the example `id`. Changing the suffix changes the derived `id`, so suffixes should remain stable unless an ID change is intentional.
 
+### Workspace addon imports in development
+
+Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require contributors to prebuild every addon before starting Vite.
+
+A common symptom is:
+
+```text
+failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
+```
+
+If the addon already exists in `packages/` and is listed as a workspace dependency, this usually means Vite is resolving the package's `exports` field to `dist/`, but that addon has not been built yet. Do **not** fix this by weakening runnable-example import validation or by requiring a manual addon build before `npm run dev`.
+
+For every first-party workspace addon that is imported by the playground or Storybook:
+
+1. keep the published package `exports` pointed at `dist/`
+2. add the addon to the consuming workspace's dependencies
+3. alias the package name to its source entry point in `apps/playground/vite.config.ts`
+4. add the same source alias in `.storybook/main.ts`
+5. if runnable examples can import the addon, also register it in `compileExampleSource.ts` as a supported runtime module
+6. keep test/type-resolution aliases in sync when the test configuration needs them
+
+Example:
+
+```ts
+{
+  find: "@moyarich/console-addon-imperative-scrolling",
+  replacement: fileURLToPath(
+    new URL(
+      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      import.meta.url,
+    ),
+  ),
+}
+```
+
+The Storybook alias uses the equivalent path relative to `.storybook/main.ts`:
+
+```ts
+{
+  find: "@moyarich/console-addon-imperative-scrolling",
+  replacement: fileURLToPath(
+    new URL(
+      "../packages/console-addon-imperative-scrolling/src/index.ts",
+      import.meta.url,
+    ),
+  ),
+}
+```
+
+Place the more specific addon alias before the general `@moyarich/console` alias in alias arrays. This keeps local development pointed at workspace source while production/package consumers continue to use the built package exports.
+
+For runnable examples, source resolution and runtime-module support are separate concerns:
+
+- **Vite source alias**: lets the playground application itself import the workspace addon without a prebuilt `dist/`
+- **Runnable runtime registry**: lets user-edited example source import that addon inside the browser-ESM compiler
+
+If the runtime registry already contains the addon but Vite reports `failed to resolve import` from `compileExampleSource.ts`, fix the Vite workspace alias rather than the runtime whitelist.
+
 ## Storybook
 
 Use Storybook for isolated component states:
