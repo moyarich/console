@@ -402,10 +402,7 @@ function ConsoleFrame({
           ) : (
             <>
               {children}
-              <div
-                className="console-scroll-end-spacer"
-                aria-hidden="true"
-              />
+              <div className="console-scroll-end-spacer" aria-hidden="true" />
             </>
           )}
         </div>
