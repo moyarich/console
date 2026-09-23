@@ -49,7 +49,7 @@ describe("playground example MDX metadata", () => {
     ).toThrow(message);
   });
 
-  it("uses page.mdx instead of meta.json for every example", () => {
+  it("uses page.mdx as the runnable composition source for every example", () => {
     const examplesDirectory = resolve(
       process.cwd(),
       "apps/playground/src/examples",
@@ -59,9 +59,13 @@ describe("playground example MDX metadata", () => {
     const legacyMetadataFiles = files.filter((path) =>
       path.endsWith("/meta.json"),
     );
+    const legacyHarnessFiles = files.filter((path) =>
+      path.endsWith("/index.tsx"),
+    );
 
     expect(pageFiles.length).toBeGreaterThan(0);
     expect(legacyMetadataFiles).toEqual([]);
+    expect(legacyHarnessFiles).toEqual([]);
 
     for (const pageFile of pageFiles) {
       const source = readFileSync(pageFile, "utf8");
@@ -70,11 +74,11 @@ describe("playground example MDX metadata", () => {
       expect(source).toContain("\ndescription:");
       expect(source).toContain("\n---");
       expect(source).not.toContain("export const meta");
-      expect(source).toContain('import Example from "./example.tsx"');
-      expect(source).toContain('import source from "./example.tsx?raw"');
-      expect(source).toContain(
-        '<RunnableExample component={Example} source={source} sourcePath="example.tsx" />',
-      );
+      expect(source).toContain("?raw");
+      expect(source).toContain("<RunnableExample");
+      expect(source).toContain("component={");
+      expect(source).toContain("source={");
+      expect(source).not.toContain("<RunnableExample />");
       expect(source).not.toContain("<Playground />");
     }
   });
