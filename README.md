@@ -624,6 +624,68 @@ It contributes standard **Scroll to top**, **Latest output**, and **Focus output
 
 The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.
 
+## Data-level output export addon
+
+Install the first-party export addon separately when an application needs
+machine-readable or downloadable console output:
+
+```bash
+npm install @moyarich/console-addon-export
+```
+
+Create the addon explicitly and pass it through the normal `addons` prop:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleExportAddon } from "@moyarich/console-addon-export";
+
+const exportAddon = createConsoleExportAddon({
+  fileName: "runtime-output",
+});
+
+<Console messages={messages} addons={[exportAddon]} />;
+```
+
+The addon is additive. It does not replace the core **Copy output** command,
+object/table copy behavior, renderers, serializers, or process-output pipeline.
+By default it contributes **Copy as JSON**, **Download text**, and **Download
+JSON** through the existing action extension points.
+
+Export reads the logical console data exposed by `consoleServices.data` rather
+than rendered DOM text. That makes export independent from object expansion,
+custom renderer markup, scroll position, and future virtualization.
+
+Two scopes are supported:
+
+| Scope     | Meaning |
+| --------- | ------- |
+| `visible` | Current logical view after host filtering/view rules. This does not mean rows currently mounted or inside the scroll viewport. |
+| `all`     | All retained logical output currently owned by the console, including structured messages hidden by the current filter. It cannot include history already discarded by a retention limit. |
+
+There is intentionally no `selected` scope in the export addon. Selection is a
+separate addon concern; first-party addons do not depend on one another.
+
+For ANSI/process output, export uses the same resolved logical process view as
+rendering: carriage-return/newline normalization and process-output processors
+run once, then both rendering and export consume that result. Plain-text export
+removes ANSI styling/control sequences, while JSON export preserves stable IDs,
+stream metadata, processor metadata, and structured values where available.
+
+The addon also exposes headless helpers:
+
+```ts
+import {
+  createConsoleExportEnvelope,
+  createConsoleExportService,
+  formatConsoleExport,
+  formatConsoleExportJson,
+  formatConsoleExportText,
+} from "@moyarich/console-addon-export";
+```
+
+Pure formatters do not require a mounted React component or DOM. Browser
+copy/download helpers are separate convenience APIs.
+
 ## Theming with CSS custom properties
 
 The package styles expose `--console-*` custom properties as **theme inputs**.
