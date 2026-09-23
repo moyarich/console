@@ -4,9 +4,7 @@ import {
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
-import {
-  createConsoleDiagnosticsAddon,
-} from "@moyarich/console-addon-diagnostics";
+import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
 import "@moyarich/console/styles.css";
 
 const structuredMessages: ConsoleMessageData[] = [
