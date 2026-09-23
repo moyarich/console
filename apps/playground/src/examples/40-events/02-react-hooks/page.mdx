@@ -3,10 +3,14 @@ label: "React hooks, no console hook"
 description: "Use standard React hooks with ConsoleEventEmitter directly, without useConsoleMessages."
 ---
 
-import Example from "./example.tsx"
-import source from "./example.tsx?raw"
+import Example from "./example.tsx";
+import source from "./example.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+<RunnableExample
+  component={Example}
+  source={source}
+  sourcePath="example.tsx"
+/>
 
 This example intentionally does not use `useConsoleMessages`. Standard React state subscribes directly to a `ConsoleEventEmitter`, while `createConsoleProxy` writes normal console-style events into that emitter.
 
