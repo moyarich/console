@@ -14,6 +14,15 @@ export default defineConfig({
         ),
       },
       {
+        find: "@moyarich/console-addon-imperative-scrolling",
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/console-addon-imperative-scrolling/src/index.ts",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
         find: "@moyarich/console",
         replacement: fileURLToPath(
           new URL("../../packages/console/src/index.ts", import.meta.url),

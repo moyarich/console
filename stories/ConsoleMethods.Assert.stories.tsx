@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "assert" as const;
-const description = "Only failed assertions produce output; the passing assertion stays silent.";
+const description =
+  "Only failed assertions produce output; the passing assertion stays silent.";
 const expected = "Expected an authenticated user";
 
 function runExample(console: globalThis.Console) {

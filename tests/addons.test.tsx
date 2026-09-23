@@ -4,11 +4,13 @@ import {
   Console,
   consoleCapabilities,
   consoleExtensionPoints,
+  consoleServices,
   createConsoleAddonManager,
   createConsoleCapability,
   createConsoleExtensionPoint,
   createConsoleServiceToken,
   type ConsoleAddon,
+  type ConsoleViewportService,
 } from "@moyarich/console";
 
 describe("console addon API", () => {
@@ -49,6 +51,40 @@ describe("console addon API", () => {
     expect(manager.services.has(token)).toBe(false);
     expect(manager.services.get(token)).toBeUndefined();
     expect(() => manager.services.require(token)).toThrow(/not available/);
+  });
+
+  it("unloads addons directly by stable id", () => {
+    const manager = createConsoleAddonManager();
+    const point = createConsoleExtensionPoint<string>("test.unload");
+    const addon: ConsoleAddon = {
+      id: "@example/console-addon-unload",
+      activate(host) {
+        host.extensions.register(point, "loaded");
+      },
+    };
+
+    manager.load(addon);
+
+    expect(manager.extensions.getAll(point)).toEqual(["loaded"]);
+    expect(manager.unload(addon.id)).toBe(true);
+    expect(manager.extensions.getAll(point)).toEqual([]);
+    expect(manager.unload(addon.id)).toBe(false);
+  });
+
+  it("exposes a typed built-in viewport service token", () => {
+    const manager = createConsoleAddonManager();
+    const viewport: ConsoleViewportService = {
+      scrollToTop: () => undefined,
+      scrollToBottom: () => undefined,
+      scrollToMessage: () => false,
+      isAtBottom: () => true,
+      isAtTop: () => false,
+      focus: () => undefined,
+    };
+
+    manager.services.provide(consoleServices.viewport, viewport);
+
+    expect(manager.services.require(consoleServices.viewport)).toBe(viewport);
   });
 
   it("exposes declared capabilities without coupling addons to mode internals", () => {

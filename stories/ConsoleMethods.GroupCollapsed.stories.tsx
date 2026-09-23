@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "groupCollapsed" as const;
-const description = "Emit a groupCollapsed entry and nested output using the proxy's group depth.";
+const description =
+  "Emit a groupCollapsed entry and nested output using the proxy's group depth.";
 const expected = "Request details";
 
 function runExample(console: globalThis.Console) {

@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "groupEnd" as const;
-const description = "End the current group so subsequent messages return to the parent depth.";
+const description =
+  "End the current group so subsequent messages return to the parent depth.";
 const expected = "Back at root";
 
 function runExample(console: globalThis.Console) {

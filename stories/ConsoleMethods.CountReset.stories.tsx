@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "countReset" as const;
-const description = "Reset a named counter; its next count starts at one again.";
+const description =
+  "Reset a named counter; its next count starts at one again.";
 const expected = "requests: 1";
 
 function runExample(console: globalThis.Console) {

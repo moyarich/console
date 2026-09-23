@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "timeEnd" as const;
-const description = "Finish a timer and show its duration. Ending it again produces a missing-timer warning.";
+const description =
+  "Finish a timer and show its duration. Ending it again produces a missing-timer warning.";
 const expected = "Timer load does not exist";
 
 function runExample(console: globalThis.Console) {

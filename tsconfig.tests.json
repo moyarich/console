@@ -6,8 +6,16 @@
     "baseUrl": ".",
     "paths": {
       "@moyarich/console": ["./packages/console/src/index.ts"],
-      "@moyarich/console/*": ["./packages/console/src/*"]
+      "@moyarich/console/*": ["./packages/console/src/*"],
+      "@moyarich/console-addon-imperative-scrolling": [
+        "./packages/console-addon-imperative-scrolling/src/index.ts"
+      ]
     }
   },
-  "include": ["tests", "stories", ".storybook"]
+  "include": [
+    "tests",
+    "stories",
+    ".storybook",
+    "packages/console-addon-imperative-scrolling/src"
+  ]
 }

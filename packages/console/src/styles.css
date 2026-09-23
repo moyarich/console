@@ -543,12 +543,19 @@
   min-height: var(--_console-min-height);
   flex: 1;
   overflow: auto;
+  scroll-padding-bottom: 16px;
   background-color: var(--_console-background-color);
   color: var(--_console-color);
   color-scheme: var(--_console-color-scheme);
   font-family: var(--_console-font-family);
   font-size: var(--_console-font-size);
   line-height: var(--_console-line-height);
+}
+
+.console-panel .console-scroll-end-spacer {
+  width: 100%;
+  height: 16px;
+  pointer-events: none;
 }
 /* ==========================================================================
    Process output

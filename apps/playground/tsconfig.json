@@ -6,7 +6,10 @@
     "baseUrl": ".",
     "paths": {
       "@moyarich/console": ["../../packages/console/src/index.ts"],
-      "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"]
+      "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
+      "@moyarich/console-addon-imperative-scrolling": [
+        "../../packages/console-addon-imperative-scrolling/src/index.ts"
+      ]
     }
   },
   "include": ["src", "vite.config.ts"]
