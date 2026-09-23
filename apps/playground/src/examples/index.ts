@@ -16,11 +16,14 @@ export interface ConsoleExampleGroup {
   directory: string;
 }
 
-export interface ConsoleExample extends ConsoleExampleMeta {
+export interface ConsoleExample {
   id: string;
   groupId: ConsoleExampleGroupId;
   groupOrder: number;
   order: number;
+  label: string;
+  description?: string;
+  meta: ConsoleExampleMeta;
   Page: ComponentType<ConsoleExamplePageProps>;
 }
 
@@ -117,11 +120,13 @@ export const CONSOLE_EXAMPLE_GROUPS: readonly ConsoleExampleGroup[] =
 
 export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
   .map(({ metadata, Page, group, example }) => ({
-    ...metadata,
     id: example.id,
     groupId: group.id,
     groupOrder: group.order,
     order: example.order,
+    label: metadata.label,
+    description: metadata.description,
+    meta: metadata,
     Page,
   }))
   .sort(
