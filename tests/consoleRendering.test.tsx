@@ -48,6 +48,20 @@ describe("Console rendering", () => {
     expect(html).toContain('data-console-message-id="stdout-42"');
   });
 
+  it("renders scroll-end breathing room after non-empty output", () => {
+    const html = renderConsole([
+      { method: "log", data: ["last message"], depth: 0 },
+    ]);
+    const emptyHtml = renderConsole([]);
+
+    expect(html.indexOf("console-scroll-end-spacer")).toBeGreaterThan(
+      html.indexOf("last message"),
+    );
+    expect(html).toContain('class="console-scroll-end-spacer"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(emptyHtml).not.toContain("console-scroll-end-spacer");
+  });
+
   it("accepts a ConsoleHandle ref across the server render lifecycle", () => {
     const ref = createRef<ConsoleHandle>();
 

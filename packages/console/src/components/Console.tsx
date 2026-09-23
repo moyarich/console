@@ -400,7 +400,13 @@ function ConsoleFrame({
               <span>{emptyMessage}</span>
             </div>
           ) : (
-            children
+            <>
+              {children}
+              <div
+                className="console-scroll-end-spacer"
+                aria-hidden="true"
+              />
+            </>
           )}
         </div>
       </ConsoleContextMenu>
