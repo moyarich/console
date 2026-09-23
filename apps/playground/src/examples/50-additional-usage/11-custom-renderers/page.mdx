@@ -1,13 +1,31 @@
 ---
 label: "Custom renderers"
-description: "Dispatch custom message and value renderers by method, type, or predicate with built-in fallback."
+description: "Customize values and whole message rows independently while preserving built-in fallback behavior."
 ---
 
-import Example from "./example.tsx";
-import source from "./example.tsx?raw";
+import ValueRenderer from "./value-renderer.tsx";
+import valueRendererSource from "./value-renderer.tsx?raw";
+import MessageRenderer from "./message-renderer.tsx";
+import messageRendererSource from "./message-renderer.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+## Value renderer
 
-Renderers are tried in order and may opt out by returning `undefined`. In this example, the metric renderer handles the bundle-size badge but deliberately returns `undefined` for the modules metric, so that value falls back to the built-in inspector.
+Use a value renderer when only a particular value needs custom presentation. Returning `undefined` keeps the built-in inspector as the fallback.
 
-Messages that do not match the custom message renderer also continue through the built-in renderer.
+<RunnableExample
+  component={ValueRenderer}
+  source={valueRendererSource}
+  sourcePath="value-renderer.tsx"
+  title="Value renderer"
+/>
+
+## Message renderer
+
+Use a message renderer when the whole console row needs custom presentation. `renderDefault()` lets a wrapper preserve the standard message UI.
+
+<RunnableExample
+  component={MessageRenderer}
+  source={messageRendererSource}
+  sourcePath="message-renderer.tsx"
+  title="Message renderer"
+/>

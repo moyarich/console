@@ -1,12 +1,11 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
   type ConsoleMessageModeProps,
-  type ConsoleMessageRenderer,
   type ConsoleValueRenderer,
 } from "@moyarich/console";
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
-const customValueRenderers: ConsoleValueRenderer[] = [
+const valueRenderers: ConsoleValueRenderer[] = [
   {
     type: "Object",
     match: (value) =>
@@ -34,42 +33,23 @@ const customValueRenderers: ConsoleValueRenderer[] = [
   },
 ];
 
-const customMessageRenderers: ConsoleMessageRenderer[] = [
-  {
-    method: "info",
-    render: (_message, { renderDefault }) => (
-      <div style={{ borderLeft: "3px solid currentColor", paddingLeft: 4 }}>
-        {renderDefault()}
-      </div>
-    ),
-  },
-];
-
 const meta = {
-  title: "Console/Console",
+  title: "Console/Renderers/Value renderer",
   component: Console,
   args: {
     onClear: () => undefined,
   },
-  decorators: [
-    (Story) => (
-      <div style={{ maxWidth: 960, margin: "0 auto" }}>
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<ConsoleMessageModeProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const CustomRenderers: Story = {
+export const StatusValue: Story = {
   args: {
-    messageRenderers: customMessageRenderers,
-    valueRenderers: customValueRenderers,
+    valueRenderers,
     messages: [
       {
-        method: "info",
+        method: "log",
         data: [
           "Deployment",
           { kind: "status", label: "API", state: "healthy" },

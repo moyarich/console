@@ -1,11 +1,31 @@
 ---
 label: "Core Addon - Diagnostics"
-description: "Inspect structured console data and compare raw ANSI/process chunks with normalized and processor-resolved output."
+description: "Inspect structured data or each stage of the ANSI/process-output pipeline."
 ---
 
-import Example from "./example.tsx";
-import source from "./example.tsx?raw";
+import Structured from "./structured.tsx";
+import structuredSource from "./structured.tsx?raw";
+import Ansi from "./ansi.tsx";
+import ansiSource from "./ansi.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+## Structured diagnostics
 
-Use the action menu to copy or download a diagnostics report. In ANSI mode, the report keeps the original raw chunks separate from normalized and processor-resolved output, making it easier to inspect each stage of the process-output pipeline.
+Use structured diagnostics when you need retained and visible logical message data.
+
+<RunnableExample
+  component={Structured}
+  source={structuredSource}
+  sourcePath="structured.tsx"
+  title="Structured diagnostics"
+/>
+
+## ANSI pipeline diagnostics
+
+ANSI diagnostics preserve raw chunks separately from normalized and processor-resolved output so each stage can be inspected independently.
+
+<RunnableExample
+  component={Ansi}
+  source={ansiSource}
+  sourcePath="ansi.tsx"
+  title="ANSI pipeline diagnostics"
+/>

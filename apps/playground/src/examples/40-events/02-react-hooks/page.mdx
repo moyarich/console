@@ -1,13 +1,31 @@
 ---
-label: "React hooks, no console hook"
-description: "Use standard React hooks with ConsoleEventEmitter directly, without useConsoleMessages."
+label: "React hooks"
+description: "Choose the convenience hook or subscribe to ConsoleEventEmitter directly when the host needs to own state."
 ---
 
-import Example from "./example.tsx";
-import source from "./example.tsx?raw";
+import UseConsoleMessages from "./use-console-messages.tsx";
+import useConsoleMessagesSource from "./use-console-messages.tsx?raw";
+import EventEmitter from "./event-emitter.tsx";
+import eventEmitterSource from "./event-emitter.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+## Convenience hook
 
-This example intentionally does not use `useConsoleMessages`. Standard React state subscribes directly to a `ConsoleEventEmitter`, while `createConsoleProxy` writes normal console-style events into that emitter.
+`useConsoleMessages` owns message state, retention, the console proxy, and clear behavior for the common React case.
 
-The component also applies its own bounded-history rule, showing how a host can own message retention when it needs custom state management.
+<RunnableExample
+  component={UseConsoleMessages}
+  source={useConsoleMessagesSource}
+  sourcePath="use-console-messages.tsx"
+  title="useConsoleMessages"
+/>
+
+## Host-owned state
+
+Subscribe to `ConsoleEventEmitter` directly when the application needs its own reducer, retention policy, persistence, or message store.
+
+<RunnableExample
+  component={EventEmitter}
+  source={eventEmitterSource}
+  sourcePath="event-emitter.tsx"
+  title="ConsoleEventEmitter with React state"
+/>

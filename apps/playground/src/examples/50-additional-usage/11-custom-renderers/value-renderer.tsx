@@ -1,6 +1,5 @@
 import {
   Console,
-  type ConsoleMessageRenderer,
   type ConsoleMessageData,
   type ConsoleValueRenderer,
 } from "@moyarich/console";
@@ -57,30 +56,12 @@ const valueRenderers: ConsoleValueRenderer[] = [
   },
 ];
 
-const messageRenderers: ConsoleMessageRenderer[] = [
-  {
-    method: "info",
-    match: (message) => message.source === "build",
-    render: (_message, { renderDefault }) => (
-      <div
-        style={{
-          borderLeft: "3px solid currentColor",
-          paddingLeft: 4,
-        }}
-      >
-        {renderDefault()}
-      </div>
-    ),
-  },
-];
-
 const messages: ConsoleMessageData[] = [
   {
-    id: "build-summary",
-    method: "info",
-    source: "build",
+    id: "bundle-size",
+    method: "log",
     data: [
-      "Build summary",
+      "Bundle size",
       {
         kind: "metric",
         label: "Bundle",
@@ -95,7 +76,7 @@ const messages: ConsoleMessageData[] = [
     id: "fallback-value",
     method: "log",
     data: [
-      "Compilation result",
+      "Module count",
       {
         kind: "metric",
         label: "Modules",
@@ -106,21 +87,15 @@ const messages: ConsoleMessageData[] = [
     ],
     depth: 0,
   },
-  {
-    id: "default-message",
-    method: "log",
-    data: ["Deployment ready", { ready: true }],
-    depth: 0,
-  },
 ];
 
-export default function CustomRenderersExample() {
+export default function ValueRendererExample() {
   return (
     <Console
       messages={messages}
-      messageRenderers={messageRenderers}
       valueRenderers={valueRenderers}
-      subtitle="Ordered renderer dispatch with built-in fallback"
+      title="Custom value renderer"
+      subtitle="Return undefined to fall back to the built-in inspector."
     />
   );
 }

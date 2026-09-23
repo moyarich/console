@@ -1,13 +1,31 @@
 ---
 label: "Theming"
-description: "Theme the panel, output surface, icons, native color-scheme, and portaled context menu with inheritable --console-* CSS variables."
+description: "Use inherited color-scheme variables for broad theming or override individual --console-* tokens."
 ---
 
-import Example from "./example.tsx";
-import source from "./example.tsx?raw";
+import ColorScheme from "./color-scheme.tsx";
+import colorSchemeSource from "./color-scheme.tsx?raw";
+import CustomTokens from "./custom-tokens.tsx";
+import customTokensSource from "./custom-tokens.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+## Inherited color scheme
 
-Token suffixes match the CSS property they control. Border tokens such as `--console-panel-border` accept a complete border shorthand, while color-only overrides end in `-color`.
+Place theme variables on a host container when multiple console surfaces should inherit the same appearance. Color-scheme tokens also affect native UI and the portaled context menu.
 
-The `--console-color-scheme` and `--console-context-menu-color-scheme` tokens also let native scrollbars and the portaled context menu follow the selected theme.
+<RunnableExample
+  component={ColorScheme}
+  source={colorSchemeSource}
+  sourcePath="color-scheme.tsx"
+  title="Inherited color scheme"
+/>
+
+## Individual theme tokens
+
+Override individual `--console-*` variables when the console needs to match an existing design system. Border tokens accept complete border shorthands; color-only values end in `-color`.
+
+<RunnableExample
+  component={CustomTokens}
+  source={customTokensSource}
+  sourcePath="custom-tokens.tsx"
+  title="Custom theme tokens"
+/>
