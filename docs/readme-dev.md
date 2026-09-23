@@ -388,17 +388,24 @@ Renaming only a numeric prefix changes order without changing the example `id`. 
 
 ### Core package boundary
 
-`packages/console-core` contains the headless addon runtime. Keep this package free of React, React DOM, console UI components, renderer contracts, and sibling addon dependencies.
+`packages/console-core` is the addon SDK and owns every contract an addon needs: lifecycle, registries, capabilities, shared service tokens, shared extension-point tokens, and addon-facing message/process/data/link/action/renderer contracts.
 
-`packages/console` depends on core and re-exports the core addon API. Console-specific extension points and host services stay in `packages/console` unless they can be made genuinely UI-independent.
+`packages/console` is a host implementation. It may depend on core and re-export core APIs, but addon packages must not import, peer-depend on, or dev-depend on `@moyarich/console`.
 
 Dependency direction:
 
 ```text
-console-core <- console <- console-addon-*
+console-core
+├─ console
+└─ console-addon-*
 ```
 
-Never add a dependency from `console-core` back to `console`.
+Rules:
+
+- never add a dependency from `console-core` back to `console`
+- every `console-addon-*` package depends on `@moyarich/console-core`, not `@moyarich/console`
+- shared `consoleServices` and `consoleExtensionPoints` tokens are created in core and consumed by hosts
+- keep core free of React/React DOM runtime dependencies; UI contribution contracts stay generic
 
 ## Workspace addon imports in development
 
