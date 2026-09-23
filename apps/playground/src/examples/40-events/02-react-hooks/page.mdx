@@ -2,3 +2,7 @@
 label: "React hooks, no console hook"
 description: "Use standard React hooks with ConsoleEventEmitter directly, without useConsoleMessages."
 ---
+
+This example intentionally does not use `useConsoleMessages`. Standard React state subscribes directly to a `ConsoleEventEmitter`, while `createConsoleProxy` writes normal console-style events into that emitter.
+
+The component also applies its own bounded-history rule, showing how a host can own message retention when it needs custom state management.

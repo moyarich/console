@@ -95,7 +95,7 @@ const messages: ConsoleMessageData[] = [
     id: "fallback-value",
     method: "log",
     data: [
-      "Renderer returned undefined, so this uses the default inspector:",
+      "Compilation result",
       {
         kind: "metric",
         label: "Modules",
@@ -109,7 +109,7 @@ const messages: ConsoleMessageData[] = [
   {
     id: "default-message",
     method: "log",
-    data: ["Unmatched messages keep the default renderer.", { ready: true }],
+    data: ["Deployment ready", { ready: true }],
     depth: 0,
   },
 ];

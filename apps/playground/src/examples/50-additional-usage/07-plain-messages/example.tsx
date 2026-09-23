@@ -4,17 +4,17 @@ import "@moyarich/console/styles.css";
 const messages: ConsoleMessageData[] = [
   {
     method: "log",
-    data: ["Hello from plain messages", { package: "@moyarich/console" }],
+    data: ["Request complete", { status: 200, durationMs: 84 }],
     depth: 0,
   },
   {
     method: "info",
-    data: ["No events or useConsoleMessages required."],
+    data: ["Cache hit", { key: "users:list" }],
     depth: 0,
   },
   {
     method: "warn",
-    data: ["Pass ConsoleMessageData[] directly to Console."],
+    data: ["Cache nearing capacity", { usage: "86%" }],
     depth: 0,
   },
 ];
