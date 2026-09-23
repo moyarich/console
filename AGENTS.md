@@ -100,4 +100,3 @@ Remember that these are separate concerns:
 - **Runnable-example runtime registration** lets browser-compiled example source import that addon.
 
 If the runtime registry already supports the addon but Vite reports `failed to resolve import` from `compileExampleSource.ts`, fix the workspace source alias rather than the runtime whitelist.
-
