@@ -2,11 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@moyarich/console": ["../../packages/console/src/index.ts"],
-      "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
+      "@moyarich/console": [
+        "../../packages/console/src/index.ts"
+      ],
+      "@moyarich/console/styles.css": [
+        "../../packages/console/src/styles.css"
+      ],
       "@moyarich/console-addon-imperative-scrolling": [
         "../../packages/console-addon-imperative-scrolling/src/index.ts"
       ],
@@ -15,8 +21,14 @@
       ],
       "@moyarich/console-addon-diagnostics": [
         "../../packages/console-addon-diagnostics/src/index.ts"
+      ],
+      "@moyarich/console-core": [
+        "../../packages/console-core/src/index.ts"
       ]
     }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
 }
