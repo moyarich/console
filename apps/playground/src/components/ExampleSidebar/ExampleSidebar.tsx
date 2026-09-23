@@ -12,10 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  CONSOLE_EXAMPLE_GROUPS,
-  type ConsoleExample,
-} from "../../examples";
+import { CONSOLE_EXAMPLE_GROUPS, type ConsoleExample } from "../../examples";
 import { buildExampleNavigation } from "./exampleNavigation";
 
 interface ExampleSidebarProps {
