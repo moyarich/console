@@ -326,7 +326,6 @@ export function processConsoleOutputEntry(
   return output;
 }
 
-
 /** One logical process-output entry after normalization and processors. */
 export interface ConsoleResolvedProcessOutputEntry {
   readonly entry: ConsoleStdoutEntry;
