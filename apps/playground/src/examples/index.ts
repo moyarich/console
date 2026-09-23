@@ -1,5 +1,11 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
+import {
+  parseConsoleExampleMeta,
+  type ConsoleExampleMeta,
+} from "./exampleMetadata";
+
+export type { ConsoleExampleMeta } from "./exampleMetadata";
 
 export type ConsoleExampleGroupId = string;
 
@@ -10,11 +16,6 @@ export interface ConsoleExampleGroup {
   directory: string;
 }
 
-export interface ConsoleExampleMeta {
-  label: string;
-  description: string;
-}
-
 export interface ConsoleExample extends ConsoleExampleMeta {
   id: string;
   groupId: ConsoleExampleGroupId;
@@ -22,10 +23,16 @@ export interface ConsoleExample extends ConsoleExampleMeta {
   order: number;
   exampleSource: string;
   Component: ComponentType;
+  Page: ComponentType;
 }
 
 interface ConsoleExampleModule {
   default: ComponentType;
+}
+
+interface ConsoleExamplePageModule {
+  default: ComponentType;
+  meta?: unknown;
 }
 
 interface OrderedDirectory {
@@ -60,7 +67,7 @@ function parseExamplePath(path: string) {
 
   if (parts.length !== 3) {
     throw new Error(
-      `Invalid example path "${path}". Expected ./NN-group/NN-example/meta.json.`,
+      `Invalid example path "${path}". Expected ./NN-group/NN-example/page.mdx.`,
     );
   }
 
@@ -82,15 +89,15 @@ const exampleSourceModules = import.meta.glob("./*/*/example.tsx", {
   eager: true,
 }) as Record<string, string>;
 
-const metadataModules = import.meta.glob("./*/*/meta.json", {
-  import: "default",
+const pageModules = import.meta.glob("./*/*/page.mdx", {
   eager: true,
-}) as Record<string, ConsoleExampleMeta>;
+}) as Record<string, ConsoleExamplePageModule>;
 
-const discoveredExamples = Object.entries(metadataModules).map(
-  ([path, metadata]) => ({
+const discoveredExamples = Object.entries(pageModules).map(
+  ([path, pageModule]) => ({
     path,
-    metadata,
+    metadata: parseConsoleExampleMeta(pageModule.meta, path),
+    Page: pageModule.default,
     ...parseExamplePath(path),
   }),
 );
@@ -121,7 +128,7 @@ export const CONSOLE_EXAMPLE_GROUPS: readonly ConsoleExampleGroup[] =
   );
 
 export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
-  .map(({ metadata, group, example }) => {
+  .map(({ metadata, Page, group, example }) => {
     const playgroundPath = `./${group.directory}/${example.directory}/index.tsx`;
     const examplePath = `./${group.directory}/${example.directory}/example.tsx`;
     const playgroundModule = playgroundModules[playgroundPath];
@@ -147,6 +154,7 @@ export const CONSOLE_EXAMPLES: readonly ConsoleExample[] = discoveredExamples
       order: example.order,
       exampleSource,
       Component: playgroundModule.default,
+      Page,
     };
   })
   .sort(

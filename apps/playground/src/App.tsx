@@ -15,6 +15,7 @@ export function App() {
   const exampleGroup =
     CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === example.groupId) ??
     CONSOLE_EXAMPLE_GROUPS[0];
+  const ExamplePage = example.Page;
 
   return (
     <div className="site-shell">
@@ -62,6 +63,13 @@ export function App() {
               <span aria-hidden="true">/</span>
               <strong>{example.label}</strong>
             </div>
+          </section>
+
+          <section
+            className="example-documentation"
+            aria-label={`${example.label} documentation`}
+          >
+            <ExamplePage />
           </section>
 
           <RunnableExample example={example} />

@@ -1024,6 +1024,61 @@ body {
   font-weight: 750;
 }
 
+.example-documentation {
+  max-width: 900px;
+  margin: 0 0 22px;
+  color: #475467;
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.example-documentation:empty {
+  display: none;
+}
+
+.example-documentation > :first-child {
+  margin-top: 0;
+}
+
+.example-documentation > :last-child {
+  margin-bottom: 0;
+}
+
+.example-documentation h1,
+.example-documentation h2,
+.example-documentation h3 {
+  color: #101828;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.example-documentation h1 {
+  font-size: 1.7rem;
+}
+
+.example-documentation h2 {
+  margin-top: 28px;
+  font-size: 1.3rem;
+}
+
+.example-documentation h3 {
+  margin-top: 22px;
+  font-size: 1.05rem;
+}
+
+.example-documentation code {
+  border-radius: 5px;
+  padding: 2px 5px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.88em;
+}
+
+.example-documentation a {
+  color: #4f46e5;
+  text-underline-offset: 3px;
+}
+
 .content-stack {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
