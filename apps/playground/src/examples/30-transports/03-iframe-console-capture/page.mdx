@@ -3,9 +3,13 @@ label: "Iframe console.log capture"
 description: "Capture ordinary console.log calls directly from a same-origin iframe."
 ---
 
-import Example from "./example.tsx"
-import source from "./example.tsx?raw"
+import Example from "./example.tsx";
+import source from "./example.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+<RunnableExample
+  component={Example}
+  source={source}
+  sourcePath="example.tsx"
+/>
 
 The iframe calls `console.log()` normally. The host captures `iframe.contentWindow.console` directly, so the iframe does not need to emit a transport event or know about the console package.

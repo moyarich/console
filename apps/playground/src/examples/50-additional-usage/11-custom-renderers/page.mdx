@@ -3,10 +3,14 @@ label: "Custom renderers"
 description: "Dispatch custom message and value renderers by method, type, or predicate with built-in fallback."
 ---
 
-import Example from "./example.tsx"
-import source from "./example.tsx?raw"
+import Example from "./example.tsx";
+import source from "./example.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+<RunnableExample
+  component={Example}
+  source={source}
+  sourcePath="example.tsx"
+/>
 
 Renderers are tried in order and may opt out by returning `undefined`. In this example, the metric renderer handles the bundle-size badge but deliberately returns `undefined` for the modules metric, so that value falls back to the built-in inspector.
 

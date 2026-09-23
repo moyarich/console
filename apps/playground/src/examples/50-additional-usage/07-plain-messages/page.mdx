@@ -3,9 +3,13 @@ label: "Plain messages"
 description: "Render ConsoleMessageData objects directly with no events or useConsoleMessages."
 ---
 
-import Example from "./example.tsx"
-import source from "./example.tsx?raw"
+import Example from "./example.tsx";
+import source from "./example.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+<RunnableExample
+  component={Example}
+  source={source}
+  sourcePath="example.tsx"
+/>
 
 Pass `ConsoleMessageData[]` directly to `Console` when the host already owns the message data. No event emitter, proxy, or `useConsoleMessages` hook is required.
