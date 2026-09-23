@@ -45,6 +45,13 @@ export type {
   ConsoleMode,
   ConsoleProps,
 } from "./components/Console";
+export type {
+  ConsoleDataService,
+  ConsoleDataSnapshot,
+  ConsoleProcessDataSnapshot,
+  ConsoleProcessViewEntry,
+  ConsoleStructuredDataSnapshot,
+} from "./data";
 export type { ConsoleScrollOptions, ConsoleViewportService } from "./viewport";
 export { ConsoleMessage } from "./components/ConsoleMessage";
 export type {
