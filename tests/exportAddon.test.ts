@@ -110,7 +110,9 @@ describe("@moyarich/console-addon-export", () => {
       `${escape}[31mDownloading 10%${escape}[0m\r`,
       `${escape}[32mDownloading 20%${escape}[0m\n`,
     ];
-    const resolved = resolveConsoleProcessOutputEntries(rawEntries, [processor]);
+    const resolved = resolveConsoleProcessOutputEntries(rawEntries, [
+      processor,
+    ]);
     const snapshot: ConsoleDataSnapshot = {
       mode: "ansi",
       rawEntries,
@@ -170,7 +172,9 @@ describe("@moyarich/console-addon-export", () => {
     expect(panelActions.map((action) => action.label)).not.toContain(
       "Copy output",
     );
-    expect(contextActions.map((action) => action.label)).toEqual(["Copy as JSON"]);
+    expect(contextActions.map((action) => action.label)).toEqual([
+      "Copy as JSON",
+    ]);
 
     expect(manager.unload(CONSOLE_EXPORT_ADDON_ID)).toBe(true);
     expect(
