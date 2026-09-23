@@ -1053,8 +1053,8 @@ Core addons use the same `ConsoleAddon` interface and lifecycle as user addons. 
 The viewport provider is currently a core addon:
 
 ```ts
-consoleCoreAddonIds.viewport;
-// "@moyarich/console:viewport"
+consoleCoreAddonIds.imperativeScrollControls;
+// "@moyarich/console:imperative-scroll-controls"
 ```
 
 Disable any addon, including an auto-registered core addon, with `disabledAddonIds`:
@@ -1062,7 +1062,7 @@ Disable any addon, including an auto-registered core addon, with `disabledAddonI
 ```tsx
 <Console
   messages={messages}
-  disabledAddonIds={[consoleCoreAddonIds.viewport]}
+  disabledAddonIds={[consoleCoreAddonIds.imperativeScrollControls]}
 />
 ```
 
@@ -1276,7 +1276,7 @@ const consumer: ConsoleAddon = {
 
 A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
 
-The auto-registered `consoleCoreAddonIds.viewport` addon provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. It is the addon-facing form of the same viewport implementation exposed to host applications through `ConsoleHandle`.
+The auto-registered `consoleCoreAddonIds.imperativeScrollControls` addon provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. It is the addon-facing form of the same viewport implementation exposed to host applications through `ConsoleHandle`.
 
 ### Capabilities
 
@@ -1505,7 +1505,7 @@ Available helpers:
 | `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
 | `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts  |
 | `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons            |
-| `createConsoleViewportAddon`                      | Create the core viewport-service addon                                  |
+| `createConsoleImperativeScrollControlsAddon`                      | Create the core imperative-scroll-controls addon                                  |
 | `isCoreConsoleAddonId`                            | Distinguish reserved core addon IDs from external addon IDs             |
 | `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
 | `consoleServices`                                 | Built-in typed services, including the shared viewport service          |
