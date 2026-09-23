@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import type { ComponentType, ElementType } from "react";
+import type { ComponentType } from "react";
 import {
   parseConsoleExampleMeta,
   type ConsoleExampleMeta,
@@ -24,15 +24,11 @@ export interface ConsoleExample {
   label: string;
   description?: string;
   meta: ConsoleExampleMeta;
-  Page: ComponentType<ConsoleExamplePageProps>;
-}
-
-interface ConsoleExamplePageProps {
-  components?: Record<string, ElementType>;
+  Page: ComponentType;
 }
 
 interface ConsoleExamplePageModule {
-  default: ComponentType<ConsoleExamplePageProps>;
+  default: ComponentType;
   meta?: unknown;
 }
 
