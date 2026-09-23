@@ -4,9 +4,7 @@ import {
   type ConsoleHandle,
   type ConsoleMessageData,
 } from "@moyarich/console";
-import {
-  createImperativeScrollingAddon,
-} from "@moyarich/console-addon-imperative-scrolling";
+import { createImperativeScrollingAddon } from "@moyarich/console-addon-imperative-scrolling";
 import "@moyarich/console/styles.css";
 
 const TARGET_ID = "message-24";
