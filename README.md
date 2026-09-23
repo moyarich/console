@@ -1139,11 +1139,13 @@ Value renderers propagate through top-level values, nested inspectors, `console.
 `@moyarich/console-core` is the shared addon SDK and runtime contract package.
 
 ```text
-@moyarich/console-core
-   ├─ @moyarich/console
-   ├─ @moyarich/console-addon-data-export
-   ├─ @moyarich/console-addon-diagnostics
-   └─ @moyarich/console-addon-imperative-scrolling
+packages/
+├─ console-core/  → @moyarich/console-core
+├─ console/       → @moyarich/console
+└─ addons/
+   ├─ data-export/          → @moyarich/console-addon-data-export
+   ├─ diagnostics/          → @moyarich/console-addon-diagnostics
+   └─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
 ```
 
 Addon packages depend on **core, not `@moyarich/console`**. Core owns addon lifecycle, registries, capabilities, `consoleServices`, `consoleExtensionPoints`, and the shared message/process/data/link/action/renderer contracts used between hosts and addons. It has no React or React DOM runtime dependency.

@@ -1,7 +1,7 @@
 {
-  "name": "@moyarich/console-addon-data-export",
+  "name": "@moyarich/console-addon-diagnostics",
   "version": "0.1.0",
-  "description": "First-party data-level export addon for @moyarich/console hosts.",
+  "description": "First-party console pipeline diagnostics addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -24,9 +24,6 @@
     "build": "tsup src/index.ts --format esm,cjs --dts --clean --external @moyarich/console-core",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "anser": "^2.3.5"
-  },
   "peerDependencies": {
     "@moyarich/console-core": "^0.1.0"
   },
@@ -38,7 +35,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/moyarich/console.git",
-    "directory": "packages/console-addon-data-export"
+    "directory": "packages/addons/diagnostics"
   },
   "bugs": {
     "url": "https://github.com/moyarich/console/issues"

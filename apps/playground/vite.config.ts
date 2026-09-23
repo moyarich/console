@@ -23,7 +23,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-imperative-scrolling",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/console-addon-imperative-scrolling/src/index.ts",
+            "../../packages/addons/imperative-scrolling/src/index.ts",
             import.meta.url,
           ),
         ),
@@ -32,7 +32,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-diagnostics",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/console-addon-diagnostics/src/index.ts",
+            "../../packages/addons/diagnostics/src/index.ts",
             import.meta.url,
           ),
         ),
@@ -41,7 +41,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-data-export",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/console-addon-data-export/src/index.ts",
+            "../../packages/addons/data-export/src/index.ts",
             import.meta.url,
           ),
         ),
