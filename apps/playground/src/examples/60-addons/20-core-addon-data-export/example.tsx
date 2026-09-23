@@ -60,12 +60,6 @@ export default function DataExportExample() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <p style={{ margin: 0, fontSize: 13 }}>
-        Open each console&apos;s action menu to copy the logical view as JSON or
-        download text/JSON. The addon is additive; existing core actions stay
-        available.
-      </p>
-
       <Console
         messages={structuredMessages}
         addons={structuredAddons}

@@ -9,34 +9,27 @@ type ConsoleThemeStyle = CSSProperties &
 
 const messages: ConsoleMessageData[] = [
   {
-    id: "theme-info",
+    id: "app-started",
     method: "info",
-    data: ["Theme tokens name the CSS property they affect."],
+    data: ["Application started", { mode: "preview" }],
     depth: 0,
   },
   {
-    id: "theme-object",
+    id: "preferences",
     method: "log",
-    data: [
-      "Hover the object actions:",
-      {
-        themeable: true,
-        naming: "property-specific",
-        contextMenu: "ported theme variables",
-      },
-    ],
+    data: ["User preferences loaded", { theme: "system", locale: "en-US" }],
     depth: 0,
   },
   {
-    id: "theme-warning",
+    id: "cache-warning",
     method: "warn",
-    data: ["Native scrollbars follow color-scheme."],
+    data: ["Cache nearing capacity", { usage: "86%" }],
     depth: 0,
   },
   {
-    id: "theme-error",
+    id: "request-error",
     method: "error",
-    data: ["Right-click the console to inspect the themed context menu."],
+    data: ["Request failed", { status: 503, retryable: true }],
     depth: 0,
   },
 ];
@@ -155,12 +148,6 @@ export default function ThemingExample() {
           subtitle="Public --console-* inputs map to explicit CSS properties"
         />
       </div>
-
-      <small style={{ minWidth: 0, overflowWrap: "anywhere" }}>
-        Token suffixes match the CSS property they control. Border tokens such
-        as --console-panel-border accept a complete border shorthand; color-only
-        overrides end in -color.
-      </small>
     </div>
   );
 }

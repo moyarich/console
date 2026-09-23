@@ -24,18 +24,6 @@ interface Metric {
 const addonInfoService =
   createConsoleServiceToken<AddonInfoService>("example.addon-info");
 
-const extensionPointNames = [
-  "processOutputProcessor",
-  "structuredOutputParser",
-  "linkProvider",
-  "outputRenderer",
-  "messageRenderer",
-  "valueRenderer",
-  "panelAction",
-  "contextMenuAction",
-  "messageAction",
-] as const;
-
 function isMetric(value: unknown): value is Metric {
   if (typeof value !== "object" || value === null) return false;
 
@@ -290,15 +278,6 @@ export default function ConsoleExtensionPointsUsageExample() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-        <strong>Built-in extension points used by this example</strong>
-        <code style={{ whiteSpace: "normal" }}>
-          {extensionPointNames
-            .map((name) => `consoleExtensionPoints.${name}`)
-            .join(" · ")}
-        </code>
-      </div>
-
       <Console
         messages={structuredMessages}
         addons={addons}
