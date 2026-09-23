@@ -1,4 +1,4 @@
 {
   "label": "Usage Of Console Extension Points",
-  "description": "Compose addons targeting multiple addon API console extension points and shared services."
+  "description": "Demonstrate every built-in consoleExtensionPoints.* contract across structured and ANSI hosts, including shared services and capability checks."
 }
