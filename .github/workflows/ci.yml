@@ -23,9 +23,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Check formatting
-        run: |
-          npx prettier --write packages/console-addon-export/src/index.ts
-          git diff --exit-code
+        run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test
