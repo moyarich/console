@@ -7,6 +7,7 @@ import {
   type ConsoleAddonManager,
   type ConsoleExtensionRegistry,
 } from "../addons";
+import type { ConsoleDataService } from "../data";
 import type { ConsoleMode } from "../types";
 import type { ConsoleViewportService } from "../viewport";
 
@@ -59,6 +60,7 @@ export function useConsoleAddons(
   disabledAddonIds: readonly string[] | undefined,
   mode: ConsoleMode,
   viewport: ConsoleViewportService,
+  data: ConsoleDataService,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   const disabledIds = useMemo(
@@ -103,6 +105,12 @@ export function useConsoleAddons(
 
     return () => registration.dispose();
   }, [manager, viewport]);
+
+  useEffect(() => {
+    const registration = manager.services.provide(consoleServices.data, data);
+
+    return () => registration.dispose();
+  }, [data, manager]);
 
   useEffect(() => {
     const nextById = new Map(
