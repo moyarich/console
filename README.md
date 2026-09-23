@@ -546,7 +546,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
 | `linkProviders`       | Add ordered application-specific link providers                                |
 | `addons`              | Add reusable `ConsoleAddon` instances                                          |
-| `disabledAddonIds`    | Keep selected user or auto-registered core addons unloaded by stable ID        |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID            |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
@@ -611,6 +611,21 @@ const navigationAddon: ConsoleAddon = {
   },
 };
 ```
+
+The first-party imperative-scrolling addon is a separate workspace package:
+
+```tsx
+import {
+  createImperativeScrollingAddon,
+} from "@moyarich/console-addon-imperative-scrolling";
+
+<Console
+  messages={messages}
+  addons={[createImperativeScrollingAddon()]}
+/>
+```
+
+It contributes standard **Scroll to top**, **Latest output**, and **Focus output** panel actions while delegating all behavior to the same core viewport service.
 
 The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.
 
@@ -1044,31 +1059,41 @@ Every addon has a required stable ID. Use a package-qualified ID to avoid collis
 - multiple addons from one package: `@acme/console-tools:search`
 - application-local addons: use an application namespace such as `my-app:build-tools`
 
-The `@moyarich/console:` namespace is reserved for built-in core addons. Core IDs are exported through `consoleCoreAddonIds` so hosts do not need to hard-code them. Use `isCoreConsoleAddonId(id)` when runtime code needs to distinguish a core addon ID from an external addon ID.
+First-party core addons are normal workspace packages with package-qualified IDs, for example:
 
-### Core addons and opt-out
-
-Core addons use the same `ConsoleAddon` interface and lifecycle as user addons. The React host auto-registers them before user addons so dependent addons can consume their services.
-
-The viewport provider is currently a core addon:
-
-```ts
-consoleCoreAddonIds.imperativeScrollControls;
-// "@moyarich/console:imperative-scroll-controls"
+```text
+@moyarich/console-addon-imperative-scrolling
+@moyarich/console-addon-search
+@moyarich/console-addon-links
 ```
 
-Disable any addon, including an auto-registered core addon, with `disabledAddonIds`:
+They use the same `ConsoleAddon` interface and lifecycle as external addons. The `core` distinction describes first-party ownership; it does not create a second runtime addon type.
+
+`@moyarich/console` does not import or auto-register sibling `console-addon-*` packages. Add the packages you want explicitly:
+
+```tsx
+import {
+  createImperativeScrollingAddon,
+  IMPERATIVE_SCROLLING_ADDON_ID,
+} from "@moyarich/console-addon-imperative-scrolling";
+
+<Console
+  messages={messages}
+  addons={[createImperativeScrollingAddon()]}
+/>
+```
+
+Use `disabledAddonIds` to keep a supplied addon inactive:
 
 ```tsx
 <Console
   messages={messages}
-  disabledAddonIds={[consoleCoreAddonIds.imperativeScrollControls]}
+  addons={[createImperativeScrollingAddon()]}
+  disabledAddonIds={[IMPERATIVE_SCROLLING_ADDON_ID]}
 />
 ```
 
-`disabledAddonIds` is controlled state. Adding an ID unloads the addon and runs its normal cleanup; removing the ID allows it to load again. This works for both core and user-provided addons.
-
-If another addon requires an optional core service, either keep that core addon enabled or treat the dependency as optional with `host.services.get(...)` instead of `require(...)`.
+`disabledAddonIds` is controlled state. Adding an ID unloads the supplied addon and runs its normal cleanup; removing the ID allows it to load again.
 
 For headless hosts, addons can also be removed directly by ID:
 
@@ -1276,7 +1301,7 @@ const consumer: ConsoleAddon = {
 
 A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
 
-The auto-registered `consoleCoreAddonIds.imperativeScrollControls` addon provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. It is the addon-facing form of the same viewport implementation exposed to host applications through `ConsoleHandle`.
+`@moyarich/console` provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. Workspace addons such as `@moyarich/console-addon-imperative-scrolling`, search, and navigation consume this shared service rather than implementing their own viewport logic.
 
 ### Capabilities
 
@@ -1327,7 +1352,7 @@ const addons = useMemo(() => [createBuildAddon()], []);
 return <Console messages={messages} addons={addons} />;
 ```
 
-Duplicate addon IDs are rejected deterministically, including collisions with core addon IDs. The reserved `@moyarich/console:` namespace cannot be used for undeclared user addons.
+Duplicate addon IDs are rejected deterministically. Prefer the npm package name as the addon ID, or `<package>:<feature>` when one package exposes multiple addons.
 
 ### Headless and advanced hosts
 
@@ -1504,9 +1529,6 @@ Available helpers:
 | ------------------------------------------------- | ---------------------------------------------------------------------- |
 | `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                          |
 | `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts |
-| `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons           |
-| `createConsoleImperativeScrollControlsAddon`      | Create the core imperative-scroll-controls addon                       |
-| `isCoreConsoleAddonId`                            | Distinguish reserved core addon IDs from external addon IDs            |
 | `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points        |
 | `consoleServices`                                 | Built-in typed services, including the shared viewport service         |
 | `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point              |
