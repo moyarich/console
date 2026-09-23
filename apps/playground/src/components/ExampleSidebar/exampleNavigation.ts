@@ -35,7 +35,7 @@ export function buildExampleNavigation<
 
         return [
           example.label,
-          example.description,
+          example.description ?? "",
           example.id,
           group?.label ?? example.groupId,
         ]
