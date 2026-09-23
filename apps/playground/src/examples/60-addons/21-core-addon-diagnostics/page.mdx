@@ -3,9 +3,13 @@ label: "Core Addon - Diagnostics"
 description: "Inspect structured console data and compare raw ANSI/process chunks with normalized and processor-resolved output."
 ---
 
-import Example from "./example.tsx"
-import source from "./example.tsx?raw"
+import Example from "./example.tsx";
+import source from "./example.tsx?raw";
 
-<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
+<RunnableExample
+  component={Example}
+  source={source}
+  sourcePath="example.tsx"
+/>
 
 Use the action menu to copy or download a diagnostics report. In ANSI mode, the report keeps the original raw chunks separate from normalized and processor-resolved output, making it easier to inspect each stage of the process-output pipeline.
