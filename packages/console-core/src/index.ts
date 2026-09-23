@@ -559,7 +559,6 @@ export function createConsoleAddonManager(
   return manager;
 }
 
-
 /** Structured console message method understood by console hosts. */
 export type ConsoleMethod =
   | "log"
@@ -851,7 +850,10 @@ export interface ConsoleValueRendererContext<TUi = unknown> {
 
 export interface ConsoleValueRenderer<TUi = unknown> {
   type?: string;
-  match?: (value: unknown, context: ConsoleValueRendererContext<TUi>) => boolean;
+  match?: (
+    value: unknown,
+    context: ConsoleValueRendererContext<TUi>,
+  ) => boolean;
   render: (
     value: unknown,
     context: ConsoleValueRendererContext<TUi>,
@@ -987,7 +989,10 @@ export function serializeConsoleValue(
           __moyarichConsoleType: "map",
           entries: Array.from(input.entries())
             .slice(0, maxEntries)
-            .map(([key, item]) => [normalize(key, depth + 1), normalize(item, depth + 1)]),
+            .map(([key, item]) => [
+              normalize(key, depth + 1),
+              normalize(item, depth + 1),
+            ]),
         };
       }
       if (input instanceof Set) {
@@ -1132,10 +1137,7 @@ export function formatConsoleObjectForCopy(value: object): string {
 
 /** Clipboard helper shared by browser-hosted addons and the React host. */
 export async function writeClipboardText(value: string): Promise<void> {
-  if (
-    typeof navigator !== "undefined" &&
-    navigator.clipboard?.writeText
-  ) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(value);
     return;
   }
