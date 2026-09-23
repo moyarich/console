@@ -28,9 +28,15 @@ jobs:
         run: npm install --include=optional
       - name: Validate
         run: npm run typecheck && npm test && npm run build:package
-      - name: Show version
-        run: node -p "'Publishing @moyarich/console@' + require('./packages/console/package.json').version"
-      - name: Publish
+      - name: Show versions
+        run: |
+          node -p "'Publishing @moyarich/console-core@' + require('./packages/console-core/package.json').version"
+          node -p "'Publishing @moyarich/console@' + require('./packages/console/package.json').version"
+      - name: Publish core
+        run: npm publish --workspace @moyarich/console-core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish console
         run: npm publish --workspace @moyarich/console
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
