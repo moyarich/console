@@ -282,8 +282,7 @@ class ServiceRegistry implements ConsoleServiceRegistry {
 
   get<T>(token: ConsoleServiceToken<T>): T | undefined {
     return this.services.get(validateIdentifier(token.id, "Service")) as
-      | T
-      | undefined;
+      T | undefined;
   }
 
   require<T>(token: ConsoleServiceToken<T>): T {
@@ -602,8 +601,7 @@ export interface DirOptions {
 }
 
 export type ConsoleEvent =
-  | { type: "message"; message: ConsoleMessageData }
-  | { type: "clear" };
+  { type: "message"; message: ConsoleMessageData } | { type: "clear" };
 
 export interface ConsoleTransportEnvelope {
   type: "CONSOLE_PANEL";
@@ -719,8 +717,7 @@ export interface ConsoleProcessDataSnapshot {
 }
 
 export type ConsoleDataSnapshot =
-  | ConsoleStructuredDataSnapshot
-  | ConsoleProcessDataSnapshot;
+  ConsoleStructuredDataSnapshot | ConsoleProcessDataSnapshot;
 
 export interface ConsoleDataService {
   getSnapshot(): ConsoleDataSnapshot;
@@ -769,8 +766,7 @@ export type ConsoleContextMenuActionContext =
   | ConsoleMessageActionContext;
 
 export type ConsoleActionPredicate<TContext> =
-  | boolean
-  | ((context: TContext) => boolean);
+  boolean | ((context: TContext) => boolean);
 
 export type ConsoleActionVariant = "default" | "danger";
 
