@@ -70,7 +70,11 @@ describe("playground example MDX metadata", () => {
       expect(source).toContain("\ndescription:");
       expect(source).toContain("\n---");
       expect(source).not.toContain("export const meta");
-      expect(source).toContain("<RunnableExample />");
+      expect(source).toContain('import Example from "./example.tsx"');
+      expect(source).toContain('import source from "./example.tsx?raw"');
+      expect(source).toContain(
+        '<RunnableExample component={Example} source={source} sourcePath="example.tsx" />',
+      );
       expect(source).not.toContain("<Playground />");
     }
   });
