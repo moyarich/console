@@ -59,7 +59,6 @@ export function RunnableExample({ example }: RunnableExampleProps) {
   const [hasCustomRuntime, setHasCustomRuntime] = useState(false);
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
-  const expandButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -92,7 +91,11 @@ export function RunnableExample({ example }: RunnableExampleProps) {
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleEscape);
-      requestAnimationFrame(() => expandButtonRef.current?.focus());
+      requestAnimationFrame(() => {
+        document
+          .querySelector<HTMLButtonElement>("[data-preview-expand]")
+          ?.focus();
+      });
     };
   }, [previewFullscreen]);
 
@@ -158,7 +161,8 @@ export function RunnableExample({ example }: RunnableExampleProps) {
             Runnable
           </span>
           <button
-            ref={previewFullscreen ? closeButtonRef : expandButtonRef}
+            ref={previewFullscreen ? closeButtonRef : undefined}
+            data-preview-expand={previewFullscreen ? undefined : ""}
             type="button"
             className="panel-icon-button"
             aria-label={
