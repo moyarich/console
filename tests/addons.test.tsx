@@ -10,7 +10,7 @@ import {
   createConsoleCapability,
   createConsoleExtensionPoint,
   createConsoleServiceToken,
-  createConsoleViewportAddon,
+  createConsoleImperativeScrollControlsAddon,
   isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleViewportService,
@@ -57,13 +57,13 @@ describe("console addon API", () => {
   });
 
   it("differentiates core and external addons by reserved namespace", () => {
-    expect(isCoreConsoleAddonId(consoleCoreAddonIds.viewport)).toBe(true);
+    expect(isCoreConsoleAddonId(consoleCoreAddonIds.imperativeScrollControls)).toBe(true);
     expect(isCoreConsoleAddonId("@moyarich/console:search")).toBe(true);
     expect(isCoreConsoleAddonId("@acme/console-addon-search")).toBe(false);
     expect(isCoreConsoleAddonId("@acme/console-tools:search")).toBe(false);
   });
 
-  it("loads the core viewport provider as a removable ConsoleAddon", () => {
+  it("loads imperative scroll controls as a removable core ConsoleAddon", () => {
     const manager = createConsoleAddonManager();
     const viewport: ConsoleViewportService = {
       scrollToTop: () => undefined,
@@ -73,10 +73,10 @@ describe("console addon API", () => {
       isAtTop: () => false,
       focus: () => undefined,
     };
-    const addon: ConsoleAddon = createConsoleViewportAddon(viewport);
+    const addon: ConsoleAddon = createConsoleImperativeScrollControlsAddon(viewport);
 
-    expect(addon.id).toBe(consoleCoreAddonIds.viewport);
-    expect(addon.id).toBe("@moyarich/console:viewport");
+    expect(addon.id).toBe(consoleCoreAddonIds.imperativeScrollControls);
+    expect(addon.id).toBe("@moyarich/console:imperative-scroll-controls");
 
     manager.load(addon);
 
@@ -487,7 +487,7 @@ describe("console addon API", () => {
   it("does not allow a disabled core addon id to be impersonated", () => {
     const addons: ConsoleAddon[] = [
       {
-        id: consoleCoreAddonIds.viewport,
+        id: consoleCoreAddonIds.imperativeScrollControls,
         activate: () => undefined,
       },
     ];
@@ -497,7 +497,7 @@ describe("console addon API", () => {
         <Console
           messages={[]}
           addons={addons}
-          disabledAddonIds={[consoleCoreAddonIds.viewport]}
+          disabledAddonIds={[consoleCoreAddonIds.imperativeScrollControls]}
         />,
       ),
     ).toThrow(/appears more than once/);
