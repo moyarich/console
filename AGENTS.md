@@ -55,14 +55,14 @@ A task is not complete while Prettier or ESLint reports errors.
 
 Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
 
-## Addon dependency boundary
+## Addon dependency guidance
 
-All first-party packages under `packages/addons/*` depend on `@moyarich/console-core`, never on `@moyarich/console`.
+Use the narrowest package surface that fits the addon.
 
-- import `ConsoleAddon`, `consoleServices`, `consoleExtensionPoints`, and addon-facing contracts from `@moyarich/console-core`
-- do not add `@moyarich/console` to an addon's dependencies, peerDependencies, or devDependencies
-- `@moyarich/console` is a host/UI package that consumes and re-exports core contracts
-- shared service/extension tokens must remain singletons created by core
+- prefer `@moyarich/console-core` for portable/headless addon contracts
+- addons may depend on `@moyarich/console` when they intentionally use React-host-specific APIs
+- do not duplicate core contracts merely to avoid a legitimate host dependency
+- keep `@moyarich/console-core` independent of `@moyarich/console`
 
 ## Workspace addon imports in development
 
