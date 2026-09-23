@@ -8,14 +8,24 @@
       "@moyarich/console": ["./packages/console/src/index.ts"],
       "@moyarich/console/*": ["./packages/console/src/*"],
       "@moyarich/console-addon-imperative-scrolling": [
-        "./packages/console-addon-imperative-scrolling/src/index.ts"
-      ]
+        "./packages/addons/imperative-scrolling/src/index.ts"
+      ],
+      "@moyarich/console-addon-data-export": [
+        "./packages/addons/data-export/src/index.ts"
+      ],
+      "@moyarich/console-addon-diagnostics": [
+        "./packages/addons/diagnostics/src/index.ts"
+      ],
+      "@moyarich/console-core": ["./packages/console-core/src/index.ts"]
     }
   },
   "include": [
     "tests",
     "stories",
     ".storybook",
-    "packages/console-addon-imperative-scrolling/src"
+    "packages/addons/imperative-scrolling/src",
+    "packages/addons/data-export/src",
+    "packages/addons/diagnostics/src",
+    "packages/console-core/src"
   ]
 }

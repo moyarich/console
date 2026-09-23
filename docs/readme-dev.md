@@ -386,7 +386,21 @@ When adding or reordering an example:
 
 Renaming only a numeric prefix changes order without changing the example `id`. Changing the suffix changes the derived `id`, so suffixes should remain stable unless an ID change is intentional.
 
-### Workspace addon imports in development
+### Core package boundary
+
+`packages/console-core` provides the portable addon SDK: lifecycle, registries, capabilities, shared service and extension-point tokens, and addon-facing contracts.
+
+`packages/console` is the React host implementation and may re-export core APIs.
+
+Dependency guidance:
+
+- keep `console-core` independent of `console`
+- prefer `@moyarich/console-core` when an addon only needs portable contracts
+- an addon may depend on `@moyarich/console` when it intentionally uses React-host-specific APIs
+- choose dependencies from the addon's actual requirements rather than enforcing one dependency shape for every addon
+- keep core free of React/React DOM runtime dependencies
+
+## Workspace addon imports in development
 
 Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require contributors to prebuild every addon before starting Vite.
 
@@ -414,7 +428,7 @@ Example:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),
@@ -428,7 +442,7 @@ The Storybook alias uses the equivalent path relative to `.storybook/main.ts`:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),

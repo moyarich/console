@@ -8,6 +8,12 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: "@moyarich/console-core",
+        replacement: fileURLToPath(
+          new URL("../../packages/console-core/src/index.ts", import.meta.url),
+        ),
+      },
+      {
         find: "@moyarich/console/styles.css",
         replacement: fileURLToPath(
           new URL("../../packages/console/src/styles.css", import.meta.url),
@@ -17,7 +23,25 @@ export default defineConfig({
         find: "@moyarich/console-addon-imperative-scrolling",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/console-addon-imperative-scrolling/src/index.ts",
+            "../../packages/addons/imperative-scrolling/src/index.ts",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
+        find: "@moyarich/console-addon-diagnostics",
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/addons/diagnostics/src/index.ts",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
+        find: "@moyarich/console-addon-data-export",
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/addons/data-export/src/index.ts",
             import.meta.url,
           ),
         ),
