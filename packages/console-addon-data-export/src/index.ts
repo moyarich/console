@@ -15,7 +15,8 @@ import {
 } from "@moyarich/console";
 
 /** Stable package-qualified identity for the data-export addon. */
-export const CONSOLE_DATA_EXPORT_ADDON_ID = "@moyarich/console-addon-data-export";
+export const CONSOLE_DATA_EXPORT_ADDON_ID =
+  "@moyarich/console-addon-data-export";
 
 /** Stable marker written into structured export files. */
 export const CONSOLE_DATA_EXPORT_TYPE = "MOYARICH_CONSOLE_DATA_EXPORT";
@@ -33,7 +34,8 @@ export interface ConsoleDataExportOptions {
   scope?: ConsoleDataExportScope;
 }
 
-export interface ConsoleDataExportDownloadOptions extends ConsoleDataExportOptions {
+export interface ConsoleDataExportDownloadOptions
+  extends ConsoleDataExportOptions {
   /** Download filename without an inferred extension requirement. */
   fileName?: string;
 }
@@ -273,7 +275,11 @@ export function formatConsoleDataExportJson(
   snapshot: ConsoleDataSnapshot,
   scope: ConsoleDataExportScope = "visible",
 ): string {
-  return JSON.stringify(createConsoleDataExportEnvelope(snapshot, scope), null, 2);
+  return JSON.stringify(
+    createConsoleDataExportEnvelope(snapshot, scope),
+    null,
+    2,
+  );
 }
 
 /** Formats a logical console snapshot without requiring React or the DOM. */
@@ -289,7 +295,10 @@ export function formatConsoleDataExport(
 /** Copies formatted export data using the existing core clipboard helper. */
 export async function copyConsoleDataExport(
   snapshot: ConsoleDataSnapshot,
-  { format = "text", scope = "visible" }: Partial<ConsoleDataExportOptions> = {},
+  {
+    format = "text",
+    scope = "visible",
+  }: Partial<ConsoleDataExportOptions> = {},
 ): Promise<void> {
   await writeClipboardText(formatConsoleDataExport(snapshot, { format, scope }));
 }
@@ -435,7 +444,8 @@ export function createConsoleDataExportAddon(
           id: actionIds.downloadText,
           label: "Download text",
           disabled,
-          onSelect: () => service.download({ format: "text", scope, fileName }),
+          onSelect: () =>
+            service.download({ format: "text", scope, fileName }),
         });
       }
 
@@ -444,7 +454,8 @@ export function createConsoleDataExportAddon(
           id: actionIds.downloadJson,
           label: "Download JSON",
           disabled,
-          onSelect: () => service.download({ format: "json", scope, fileName }),
+          onSelect: () =>
+            service.download({ format: "json", scope, fileName }),
         });
       }
     },
