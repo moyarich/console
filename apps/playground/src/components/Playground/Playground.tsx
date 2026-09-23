@@ -4,8 +4,8 @@ import {
   CONSOLE_EXAMPLE_GROUPS,
   DEFAULT_CONSOLE_EXAMPLE,
 } from "../../examples";
+import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
-import { RunnableExample, type RunnableExampleProps } from "../RunnableExample";
 
 export function Playground() {
   const [exampleId, setExampleId] = useState(DEFAULT_CONSOLE_EXAMPLE.id);
@@ -47,13 +47,9 @@ export function Playground() {
           className="example-documentation"
           aria-label={`${example.label} documentation`}
         >
-          <ExamplePage
-            components={{
-              RunnableExample: (props: RunnableExampleProps) => (
-                <RunnableExample title={example.label} {...props} />
-              ),
-            }}
-          />
+          <PlaygroundMDXProvider exampleTitle={example.label}>
+            <ExamplePage />
+          </PlaygroundMDXProvider>
         </section>
 
         <footer className="site-footer">
