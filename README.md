@@ -530,6 +530,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 | Prop                  | Purpose                                                                        |
 | --------------------- | ------------------------------------------------------------------------------ |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation               |
 | `onClear`             | Callback used by the clear action                                              |
 | `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
 | `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
@@ -544,6 +545,8 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `valueRenderers`      | Override rendering for matching values                                         |
 | `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
 | `linkProviders`       | Add ordered application-specific link providers                                |
+| `addons`              | Add reusable `ConsoleAddon` instances                                          |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID          |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
@@ -569,6 +572,57 @@ The host application owns min/max dimensions. The library only applies the reque
 | `valueRenderers`          | Customize promoted structured values                          |
 
 ANSI mode also adds **Copy output** to the actions menu.
+
+## Imperative viewport controls
+
+Use a `ConsoleHandle` ref when surrounding application UI needs to navigate the console without reaching into its DOM:
+
+```tsx
+import { useRef } from "react";
+import { Console, type ConsoleHandle } from "@moyarich/console";
+
+const consoleRef = useRef<ConsoleHandle>(null);
+
+<Console ref={consoleRef} messages={messages} />;
+
+consoleRef.current?.scrollToTop();
+consoleRef.current?.scrollToBottom();
+consoleRef.current?.scrollToMessage("message-42", {
+  block: "center",
+});
+consoleRef.current?.focus();
+```
+
+The handle also exposes `isAtTop()` and `isAtBottom()`. `isAtBottom()` uses the same near-bottom threshold as smart auto-scroll. Calling `scrollToBottom()` restores pinned-to-latest behavior; scrolling to the top or an older logical message leaves the viewport unpinned so new output does not immediately snap it back down.
+
+`scrollToMessage(id)` targets stable logical message IDs and returns `false` when the requested ID is not rendered. Structured messages use `ConsoleMessageData.id`; ANSI/process entries use `ConsoleStdoutEntry.id`.
+
+Addons consume the same implementation through `consoleServices.viewport`:
+
+```ts
+import { consoleServices, type ConsoleAddon } from "@moyarich/console";
+
+const navigationAddon: ConsoleAddon = {
+  id: "@acme/console-navigation",
+  activate(host) {
+    const viewport = host.services.require(consoleServices.viewport);
+
+    viewport.scrollToMessage("message-42");
+  },
+};
+```
+
+The first-party imperative-scrolling addon is a separate workspace package:
+
+```tsx
+import { createImperativeScrollingAddon } from "@moyarich/console-addon-imperative-scrolling";
+
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
+```
+
+It contributes standard **Scroll to top**, **Latest output**, and **Focus output** panel actions while delegating all behavior to the same core viewport service.
+
+The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.
 
 ## Theming with CSS custom properties
 
@@ -955,7 +1009,7 @@ import {
 
 function createBuildAddon(): ConsoleAddon {
   return {
-    id: "build-tools",
+    id: "@acme/console-build-tools",
     activate(host) {
       host.extensions.register(consoleExtensionPoints.linkProvider, {
         id: "build-task-links",
@@ -993,6 +1047,56 @@ interface ConsoleAddon {
   activate(host: ConsoleAddonHost): ConsoleAddonCleanup;
 }
 ```
+
+Every addon has a required stable ID. Use a package-qualified ID to avoid collisions:
+
+- one addon per package: `@acme/console-addon-search`
+- multiple addons from one package: `@acme/console-tools:search`
+- application-local addons: use an application namespace such as `my-app:build-tools`
+
+First-party core addons are normal workspace packages with package-qualified IDs, for example:
+
+```text
+@moyarich/console-addon-imperative-scrolling
+@moyarich/console-addon-search
+@moyarich/console-addon-links
+```
+
+They use the same `ConsoleAddon` interface and lifecycle as external addons. The `core` distinction describes first-party ownership; it does not create a second runtime addon type.
+
+`@moyarich/console` does not import or auto-register sibling `console-addon-*` packages. Add the packages you want explicitly:
+
+```tsx
+import {
+  createImperativeScrollingAddon,
+  IMPERATIVE_SCROLLING_ADDON_ID,
+} from "@moyarich/console-addon-imperative-scrolling";
+
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
+```
+
+Use `disabledAddonIds` to keep a supplied addon inactive:
+
+```tsx
+<Console
+  messages={messages}
+  addons={[createImperativeScrollingAddon()]}
+  disabledAddonIds={[IMPERATIVE_SCROLLING_ADDON_ID]}
+/>
+```
+
+`disabledAddonIds` is controlled state. Adding an ID unloads the supplied addon and runs its normal cleanup; removing the ID allows it to load again.
+
+For headless hosts, addons can also be removed directly by ID:
+
+```ts
+const manager = createConsoleAddonManager();
+
+manager.load(addon);
+manager.unload(addon.id);
+```
+
+`unload(id)` returns `true` when an active addon was removed and `false` when no addon with that ID was loaded.
 
 The host exposes four generic concepts:
 
@@ -1052,7 +1156,7 @@ This means a console-feed-style addon can replace the structured/browser-console
 ```tsx
 function createTerminalSurfaceAddon(): ConsoleAddon {
   return {
-    id: "terminal-surface",
+    id: "@acme/console-terminal-surface",
     activate(host) {
       host.extensions.register(consoleExtensionPoints.outputRenderer, {
         mode: "ansi",
@@ -1074,7 +1178,7 @@ The same extension point can replace structured console rendering:
 ```tsx
 function createConsoleFeedAddon(): ConsoleAddon {
   return {
-    id: "console-feed",
+    id: "@acme/console-feed",
     activate(host) {
       host.extensions.register(consoleExtensionPoints.outputRenderer, {
         mode: "console",
@@ -1133,7 +1237,7 @@ export const diagnosticProvider =
 
 export function createDiagnosticAddon(): ConsoleAddon {
   return {
-    id: "acme.diagnostics",
+    id: "@acme/console-diagnostics",
     activate(host) {
       host.extensions.register(
         diagnosticProvider,
@@ -1169,7 +1273,7 @@ interface BuildService {
 const buildService = createConsoleServiceToken<BuildService>("acme.build");
 
 const provider: ConsoleAddon = {
-  id: "build-provider",
+  id: "@acme/console-build-tools:provider",
   activate(host) {
     host.services.provide(buildService, {
       rerun: () => runBuild(),
@@ -1178,7 +1282,7 @@ const provider: ConsoleAddon = {
 };
 
 const consumer: ConsoleAddon = {
-  id: "build-actions",
+  id: "@acme/console-build-tools:actions",
   activate(host) {
     const build = host.services.require(buildService);
 
@@ -1188,6 +1292,8 @@ const consumer: ConsoleAddon = {
 ```
 
 A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
+
+`@moyarich/console` provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. Workspace addons such as `@moyarich/console-addon-imperative-scrolling`, search, and navigation consume this shared service rather than implementing their own viewport logic.
 
 ### Capabilities
 
@@ -1238,7 +1344,7 @@ const addons = useMemo(() => [createBuildAddon()], []);
 return <Console messages={messages} addons={addons} />;
 ```
 
-Duplicate addon IDs are rejected deterministically.
+Duplicate addon IDs are rejected deterministically. Prefer the npm package name as the addon ID, or `<package>:<feature>` when one package exposes multiple addons.
 
 ### Headless and advanced hosts
 
@@ -1363,6 +1469,7 @@ Available helpers:
 | Export           | Purpose                                  |
 | ---------------- | ---------------------------------------- |
 | `Console`        | Complete structured-console / ANSI panel |
+| `ConsoleHandle`  | Supported imperative viewport navigation |
 | `ConsoleMessage` | Render one structured message            |
 | `ConsoleValue`   | Render one JavaScript value              |
 | `ConsoleTable`   | Render normalized `console.table()` data |
@@ -1410,15 +1517,16 @@ Available helpers:
 
 ### Addons and extension infrastructure
 
-| Export                                            | Purpose                                                                 |
-| ------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
-| `createConsoleAddonManager`                       | Load/dispose addons against shared registries, including headless hosts |
-| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
-| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
-| `createConsoleServiceToken`                       | Define a typed single-provider service                                  |
-| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                    |
-| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                      |
+| Export                                            | Purpose                                                                |
+| ------------------------------------------------- | ---------------------------------------------------------------------- |
+| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                          |
+| `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts |
+| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points        |
+| `consoleServices`                                 | Built-in typed services, including the shared viewport service         |
+| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point              |
+| `createConsoleServiceToken`                       | Define a typed single-provider service                                 |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                   |
+| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                     |
 
 ### Transport and serialization
 

@@ -1,0 +1,4 @@
+{
+  "label": "Imperative scroll controls",
+  "description": "Drive top, bottom, focus, and logical message navigation from a ConsoleHandle ref while an addon consumes the same consoleServices.viewport service."
+}

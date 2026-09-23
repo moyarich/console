@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "dirxml" as const;
-const description = "The console proxy maps dirxml to the object inspector (dir).";
+const description =
+  "The console proxy maps dirxml to the object inspector (dir).";
 const expected = "tagName";
 
 function runExample(console: globalThis.Console) {

@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "dir" as const;
-const description = "Inspect nested object properties with an initial expansion depth.";
+const description =
+  "Inspect nested object properties with an initial expansion depth.";
 const expected = "profile";
 
 function runExample(console: globalThis.Console) {

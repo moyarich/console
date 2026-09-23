@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "timeLog" as const;
-const description = "Log elapsed time and extra data while keeping the timer active.";
+const description =
+  "Log elapsed time and extra data while keeping the timer active.";
 const expected = "Checkpoint reached";
 
 function runExample(console: globalThis.Console) {

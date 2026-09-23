@@ -140,6 +140,7 @@ export function ConsoleStdout({
         );
         const data = processedOutput.data;
         const stream = typeof entry === "string" ? undefined : entry.stream;
+        const id = typeof entry === "string" ? undefined : entry.id;
         const key =
           typeof entry === "string"
             ? `stdout-${index}`
@@ -178,6 +179,7 @@ export function ConsoleStdout({
             <div
               className="console-stdout-line console-stdout-structured"
               data-stream={stream}
+              data-console-message-id={id}
               data-clear-line={clearLine || undefined}
               key={key}
             >
@@ -196,6 +198,7 @@ export function ConsoleStdout({
           <pre
             className="console-stdout-line"
             data-stream={stream}
+            data-console-message-id={id}
             data-clear-line={clearLine || undefined}
             key={key}
           >

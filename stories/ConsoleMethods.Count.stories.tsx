@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 
 const method = "count" as const;
-const description = "Named counters increment independently. Run again to continue counting.";
+const description =
+  "Named counters increment independently. Run again to continue counting.";
 const expected = "requests:";
 
 function runExample(console: globalThis.Console) {

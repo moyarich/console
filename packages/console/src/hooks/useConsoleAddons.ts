@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   consoleCapabilities,
+  consoleServices,
   createConsoleAddonManager,
   type ConsoleAddon,
   type ConsoleAddonManager,
-  type ConsoleDisposable,
   type ConsoleExtensionRegistry,
 } from "../addons";
 import type { ConsoleMode } from "../types";
+import type { ConsoleViewportService } from "../viewport";
 
 const EMPTY_ADDONS: readonly ConsoleAddon[] = [];
 
@@ -30,7 +31,7 @@ function validateAddons(addons: readonly ConsoleAddon[]): void {
 }
 
 function createManager(mode: ConsoleMode): ConsoleAddonManager {
-  return createConsoleAddonManager({
+  const manager = createConsoleAddonManager({
     capabilities:
       mode === "ansi"
         ? [
@@ -44,6 +45,8 @@ function createManager(mode: ConsoleMode): ConsoleAddonManager {
             consoleCapabilities.structuredMessages,
           ],
   });
+
+  return manager;
 }
 
 /**
@@ -53,21 +56,35 @@ function createManager(mode: ConsoleMode): ConsoleAddonManager {
  */
 export function useConsoleAddons(
   addons: readonly ConsoleAddon[] | undefined,
+  disabledAddonIds: readonly string[] | undefined,
   mode: ConsoleMode,
+  viewport: ConsoleViewportService,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
+  const disabledIds = useMemo(
+    () =>
+      new Set(
+        (disabledAddonIds ?? []).map((id) => {
+          const normalized = id.trim();
+
+          if (!normalized) {
+            throw new Error("Disabled addon id must not be empty.");
+          }
+
+          return normalized;
+        }),
+      ),
+    [disabledAddonIds],
+  );
+  const activeAddons = useMemo(
+    () => addonList.filter((addon) => !disabledIds.has(addon.id.trim())),
+    [addonList, disabledIds],
+  );
+
   validateAddons(addonList);
 
   const manager = useMemo(() => createManager(mode), [mode]);
-  const loadedRef = useRef(
-    new Map<
-      string,
-      {
-        addon: ConsoleAddon;
-        registration: ConsoleDisposable;
-      }
-    >(),
-  );
+  const loadedRef = useRef(new Map<string, ConsoleAddon>());
   const [, setRevision] = useState(0);
 
   useEffect(() => {
@@ -79,38 +96,45 @@ export function useConsoleAddons(
   }, [manager]);
 
   useEffect(() => {
+    const registration = manager.services.provide(
+      consoleServices.viewport,
+      viewport,
+    );
+
+    return () => registration.dispose();
+  }, [manager, viewport]);
+
+  useEffect(() => {
     const nextById = new Map(
-      addonList.map((addon) => [addon.id.trim(), addon]),
+      activeAddons.map((addon) => [addon.id.trim(), addon]),
     );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
 
     for (const [id, current] of currentEntries) {
-      if (nextById.get(id) === current.addon) continue;
+      if (nextById.get(id) === current) continue;
 
-      current.registration.dispose();
+      manager.unload(id);
       loadedRef.current.delete(id);
     }
 
-    for (const addon of addonList) {
+    for (const addon of activeAddons) {
       const id = addon.id.trim();
       const current = loadedRef.current.get(id);
 
-      if (current?.addon === addon) continue;
+      if (current === addon) continue;
 
-      loadedRef.current.set(id, {
-        addon,
-        registration: manager.load(addon),
-      });
+      manager.load(addon);
+      loadedRef.current.set(id, addon);
     }
-  }, [addonList, manager]);
+  }, [activeAddons, manager]);
 
   useEffect(
     () => () => {
-      const loaded = Array.from(loadedRef.current.values()).reverse();
+      const loadedIds = Array.from(loadedRef.current.keys()).reverse();
       loadedRef.current.clear();
 
-      for (const current of loaded) {
-        current.registration.dispose();
+      for (const id of loadedIds) {
+        manager.unload(id);
       }
     },
     [manager],
