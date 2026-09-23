@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildExampleNavigation } from "../apps/playground/src/components/ExampleSidebar/exampleNavigation";
-import type {
-  ConsoleExample,
-  ConsoleExampleGroup,
-} from "../apps/playground/src/examples";
 
-const groups: readonly ConsoleExampleGroup[] = [
+const groups = [
   {
     id: "console-methods",
     label: "Console methods",
@@ -18,7 +14,7 @@ const groups: readonly ConsoleExampleGroup[] = [
     order: 10,
     directory: "10-ansi",
   },
-];
+] as const;
 
 const examples = [
   {
@@ -37,7 +33,7 @@ const examples = [
     label: "Terminal output",
     description: "Render ANSI process output.",
   },
-] as unknown as readonly ConsoleExample[];
+] as const;
 
 describe("buildExampleNavigation", () => {
   it("keeps generated group ordering and groups matching examples", () => {
