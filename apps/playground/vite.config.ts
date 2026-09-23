@@ -8,6 +8,12 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: "@moyarich/console-core",
+        replacement: fileURLToPath(
+          new URL("../../packages/console-core/src/index.ts", import.meta.url),
+        ),
+      },
+      {
         find: "@moyarich/console/styles.css",
         replacement: fileURLToPath(
           new URL("../../packages/console/src/styles.css", import.meta.url),

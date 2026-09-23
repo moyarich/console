@@ -4,8 +4,15 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@moyarich/console": ["../console/src/index.ts"]
+      "@moyarich/console": [
+        "../console/src/index.ts"
+      ],
+      "@moyarich/console-core": [
+        "../console-core/src/index.ts"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
