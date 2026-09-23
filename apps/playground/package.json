@@ -17,7 +17,8 @@
     "lucide-react": "^1.47.0",
     "monaco-editor": "^0.52.2",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "@moyarich/console-addon-export": "*"
   },
   "devDependencies": {
     "@types/react": "^19.1.12",
