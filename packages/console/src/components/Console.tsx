@@ -41,7 +41,6 @@ import {
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
 import {
-  consoleCoreAddonIds,
   consoleExtensionPoints,
   type ConsoleAddon,
   type ConsoleExtensionRegistry,
@@ -118,7 +117,7 @@ interface ConsoleSharedProps {
   linkProviders?: readonly ConsoleLinkProvider[];
   /** Addons activated for this mounted console. */
   addons?: readonly ConsoleAddon[];
-  /** Addon IDs to keep unloaded, including auto-registered core addons. */
+  /** IDs of supplied addons to keep unloaded. */
   disabledAddonIds?: readonly string[];
 }
 
@@ -639,16 +638,7 @@ export function Console({ ref, ...props }: ConsoleProps) {
     [],
   );
 
-  const imperativeScrollControlsDisabled =
-    props.disabledAddonIds?.some(
-      (id) => id.trim() === consoleCoreAddonIds.imperativeScrollControls,
-    ) ?? false;
-
-  useImperativeHandle<ConsoleHandle | null, ConsoleHandle | null>(
-    ref,
-    () => (imperativeScrollControlsDisabled ? null : viewport),
-    [imperativeScrollControlsDisabled, viewport],
-  );
+  useImperativeHandle(ref, () => viewport, [viewport]);
 
   const addonExtensions = useConsoleAddons(
     props.addons,
