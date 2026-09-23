@@ -29,8 +29,12 @@ function createDataService(snapshot: ConsoleDataSnapshot): ConsoleDataService {
 
 describe("@moyarich/console-addon-data-export", () => {
   it("uses the package-qualified addon id", () => {
-    expect(createConsoleDataExportAddon().id).toBe(CONSOLE_DATA_EXPORT_ADDON_ID);
-    expect(CONSOLE_DATA_EXPORT_ADDON_ID).toBe("@moyarich/console-addon-data-export");
+    expect(createConsoleDataExportAddon().id).toBe(
+      CONSOLE_DATA_EXPORT_ADDON_ID,
+    );
+    expect(CONSOLE_DATA_EXPORT_ADDON_ID).toBe(
+      "@moyarich/console-addon-data-export",
+    );
   });
 
   it("formats retained and visible structured output independently", () => {
@@ -52,11 +56,15 @@ describe("@moyarich/console-addon-data-export", () => {
       visible: [visible],
     };
 
-    expect(formatConsoleDataExportText(snapshot, "visible")).toContain("visible");
+    expect(formatConsoleDataExportText(snapshot, "visible")).toContain(
+      "visible",
+    );
     expect(formatConsoleDataExportText(snapshot, "visible")).not.toContain(
       "hidden",
     );
-    expect(formatConsoleDataExportText(snapshot, "all")).toContain("[warn] hidden");
+    expect(formatConsoleDataExportText(snapshot, "all")).toContain(
+      "[warn] hidden",
+    );
   });
 
   it("serializes rich and circular structured values safely", () => {
@@ -95,7 +103,7 @@ describe("@moyarich/console-addon-data-export", () => {
     });
     expect(() => JSON.parse(json)).not.toThrow();
     expect(json).toContain('"text"');
-    expect(json).toContain('"args"');
+    expect(json).toContain('"data"');
     expect(json).toContain("[Circular]");
     expect(json).toContain('"bigint"');
     expect(json).toContain('"nan"');
@@ -140,7 +148,7 @@ describe("@moyarich/console-addon-data-export", () => {
     expect(json).not.toContain("Downloading 10%");
   });
 
-  it("includes useful message text, args, time, source, and console options", () => {
+  it("includes useful message text, data, time, source, and console options", () => {
     const snapshot: ConsoleDataSnapshot = {
       mode: "console",
       all: [
