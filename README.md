@@ -1136,7 +1136,7 @@ Value renderers propagate through top-level values, nested inspectors, `console.
 
 ## Core addon SDK
 
-`@moyarich/console-core` is the shared addon SDK and runtime contract package.
+`@moyarich/console-core` provides the shared addon SDK and runtime contracts.
 
 ```text
 packages/
@@ -1148,21 +1148,7 @@ packages/
    └─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
 ```
 
-Addon packages depend on **core, not `@moyarich/console`**. Core owns addon lifecycle, registries, capabilities, `consoleServices`, `consoleExtensionPoints`, and the shared message/process/data/link/action/renderer contracts used between hosts and addons. It has no React or React DOM runtime dependency.
-
-`@moyarich/console` is the React host implementation. It provides the UI, hooks, rendering, DOM viewport implementation, and CSS, and it consumes the same tokens exported by core.
-
-Most application code can continue importing from the main package because `@moyarich/console` re-exports the core contracts:
-
-```ts
-import {
-  Console,
-  type ConsoleAddon,
-  consoleExtensionPoints,
-} from "@moyarich/console";
-```
-
-Addon packages should import directly from core:
+Portable or headless addons can depend only on core:
 
 ```ts
 import {
@@ -1172,7 +1158,9 @@ import {
 } from "@moyarich/console-core";
 ```
 
-This ensures an addon can be built, tested, and published without a dependency on the React console package while still registering against the exact same service and extension-point tokens used by `<Console />`.
+`@moyarich/console` is the React host implementation and re-exports core contracts for application convenience.
+
+Core is a capability boundary, not a restriction on addon design. Addons that only need shared contracts should prefer `@moyarich/console-core`; addons that intentionally use React-host-specific APIs may also depend on `@moyarich/console`.
 
 ## Addons
 
