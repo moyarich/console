@@ -16,9 +16,8 @@ describe("@moyarich/console-core", () => {
       capabilities: [createConsoleCapability("test.capability")],
     });
     const serviceToken = createConsoleServiceToken<string>("test.service");
-    const extensionPoint = createConsoleExtensionPoint<string>(
-      "test.extension",
-    );
+    const extensionPoint =
+      createConsoleExtensionPoint<string>("test.extension");
     const addon: ConsoleAddon = {
       id: "test.addon",
       activate(host) {
