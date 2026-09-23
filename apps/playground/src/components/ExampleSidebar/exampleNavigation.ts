@@ -1,15 +1,31 @@
-import type { ConsoleExample, ConsoleExampleGroup } from "../../examples";
-
-export interface ExampleNavigationGroup {
-  group: ConsoleExampleGroup;
-  examples: readonly ConsoleExample[];
+export interface NavigableExample {
+  id: string;
+  groupId: string;
+  label: string;
+  description: string;
 }
 
-export function buildExampleNavigation(
-  examples: readonly ConsoleExample[],
-  groups: readonly ConsoleExampleGroup[],
+export interface NavigableExampleGroup {
+  id: string;
+  label: string;
+}
+
+export interface ExampleNavigationGroup<
+  TExample extends NavigableExample,
+  TGroup extends NavigableExampleGroup,
+> {
+  group: TGroup;
+  examples: readonly TExample[];
+}
+
+export function buildExampleNavigation<
+  TExample extends NavigableExample,
+  TGroup extends NavigableExampleGroup,
+>(
+  examples: readonly TExample[],
+  groups: readonly TGroup[],
   query: string,
-): ExampleNavigationGroup[] {
+): ExampleNavigationGroup<TExample, TGroup>[] {
   const normalizedQuery = query.trim().toLowerCase();
   const groupsById = new Map(groups.map((group) => [group.id, group]));
 
