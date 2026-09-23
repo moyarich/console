@@ -42,6 +42,7 @@
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
   },
   "dependencies": {
+    "@moyarich/console-core": "0.1.0",
     "anser": "^2.3.5",
     "lucide-react": "^1.47.0"
   },
