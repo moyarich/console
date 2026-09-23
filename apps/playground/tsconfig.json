@@ -16,9 +16,7 @@
       "@moyarich/console-addon-diagnostics": [
         "../../packages/console-addon-diagnostics/src/index.ts"
       ],
-      "@moyarich/console-core": [
-        "../../packages/console-core/src/index.ts"
-      ]
+      "@moyarich/console-core": ["../../packages/console-core/src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]
