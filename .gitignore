@@ -64,6 +64,7 @@ web_modules/
 
 # Generated package README (source of truth is /README.md)
 packages/console/README.md
+packages/console-core/README.md
 
 # Yarn Integrity file
 .yarn-integrity
