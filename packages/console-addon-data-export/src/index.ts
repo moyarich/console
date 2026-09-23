@@ -300,7 +300,9 @@ export async function copyConsoleDataExport(
     scope = "visible",
   }: Partial<ConsoleDataExportOptions> = {},
 ): Promise<void> {
-  await writeClipboardText(formatConsoleDataExport(snapshot, { format, scope }));
+  await writeClipboardText(
+    formatConsoleDataExport(snapshot, { format, scope }),
+  );
 }
 
 /** Downloads formatted export data in browser environments. */
@@ -444,8 +446,7 @@ export function createConsoleDataExportAddon(
           id: actionIds.downloadText,
           label: "Download text",
           disabled,
-          onSelect: () =>
-            service.download({ format: "text", scope, fileName }),
+          onSelect: () => service.download({ format: "text", scope, fileName }),
         });
       }
 
@@ -454,8 +455,7 @@ export function createConsoleDataExportAddon(
           id: actionIds.downloadJson,
           label: "Download JSON",
           disabled,
-          onSelect: () =>
-            service.download({ format: "json", scope, fileName }),
+          onSelect: () => service.download({ format: "json", scope, fileName }),
         });
       }
     },
