@@ -437,7 +437,7 @@ export const consoleServices = Object.freeze({
  * one package provides multiple addons.
  */
 export const consoleCoreAddonIds = Object.freeze({
-  viewport: `${CONSOLE_CORE_ADDON_ID_PREFIX}viewport`,
+  imperativeScrollControls: `${CONSOLE_CORE_ADDON_ID_PREFIX}imperative-scroll-controls`,
 });
 
 /** Returns whether an addon ID belongs to the reserved core namespace. */
@@ -447,12 +447,17 @@ export function isCoreConsoleAddonId(id: string): boolean {
   );
 }
 
-/** Creates the core addon that provides the shared viewport service. */
-export function createConsoleViewportAddon(
+/**
+ * Creates the auto-registered core addon backing imperative console navigation.
+ *
+ * The addon owns the public viewport service registration. Disabling or
+ * unloading this addon removes that service from the addon host.
+ */
+export function createConsoleImperativeScrollControlsAddon(
   viewport: ConsoleViewportService,
 ): ConsoleAddon {
   return {
-    id: consoleCoreAddonIds.viewport,
+    id: consoleCoreAddonIds.imperativeScrollControls,
     activate(host) {
       host.services.provide(consoleServices.viewport, viewport);
     },
