@@ -1,3 +1,4 @@
+import { Maximize2, Minimize2 } from "lucide-react";
 import { Component, useEffect, useRef, useState } from "react";
 import type { ComponentType, ErrorInfo, ReactNode } from "react";
 import type { ConsoleExample } from "../../examples";
@@ -55,6 +56,7 @@ export function RunnableExample({ example }: RunnableExampleProps) {
   const [compileError, setCompileError] = useState("");
   const [isCompiling, setIsCompiling] = useState(false);
   const [hasCustomRuntime, setHasCustomRuntime] = useState(false);
+  const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
 
   useEffect(() => {
@@ -65,7 +67,29 @@ export function RunnableExample({ example }: RunnableExampleProps) {
     setCompileError("");
     setIsCompiling(false);
     setHasCustomRuntime(false);
+    setPreviewFullscreen(false);
   }, [example]);
+
+  useEffect(() => {
+    if (!previewFullscreen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPreviewFullscreen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [previewFullscreen]);
 
   const dirty = draftSource !== example.exampleSource;
 
@@ -159,16 +183,46 @@ export function RunnableExample({ example }: RunnableExampleProps) {
         </div>
       </section>
 
-      <section className="playground-panel preview-panel">
-        <div className="panel-toolbar">
+      <section
+        className={[
+          "playground-panel",
+          "preview-panel",
+          previewFullscreen ? "preview-panel-fullscreen" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        aria-label="Runnable example preview"
+      >
+        <div className="panel-toolbar preview-toolbar">
           <div>
             <span className="panel-kicker">Preview</span>
             <strong>{example.label}</strong>
           </div>
-          <span className="live-badge">
-            <span className="live-dot" aria-hidden="true" />
-            Runnable
-          </span>
+
+          <div className="preview-toolbar-actions">
+            <span className="live-badge">
+              <span className="live-dot" aria-hidden="true" />
+              Runnable
+            </span>
+            <button
+              type="button"
+              className="panel-icon-button"
+              aria-label={
+                previewFullscreen
+                  ? "Exit fullscreen preview"
+                  : "Open fullscreen preview"
+              }
+              aria-pressed={previewFullscreen}
+              title={previewFullscreen ? "Exit fullscreen" : "Fullscreen"}
+              onClick={() => setPreviewFullscreen((current) => !current)}
+            >
+              {previewFullscreen ? (
+                <Minimize2 aria-hidden="true" />
+              ) : (
+                <Maximize2 aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="preview-stage">
