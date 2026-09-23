@@ -2,7 +2,7 @@ export interface NavigableExample {
   id: string;
   groupId: string;
   label: string;
-  description: string;
+  description?: string;
 }
 
 export interface NavigableExampleGroup {
