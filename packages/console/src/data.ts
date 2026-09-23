@@ -1,17 +1,12 @@
 import type { ConsoleDisposable } from "./addons";
 import type {
-  ConsoleProcessOutput,
+  ConsoleResolvedProcessOutputEntry,
   ConsoleStdoutEntry,
 } from "./processOutput";
 import type { ConsoleMessageData, ConsoleMode } from "./types";
 
 /** One resolved logical process-output entry shared by rendering and addons. */
-export interface ConsoleProcessViewEntry {
-  /** Logical entry after core CR/newline normalization. */
-  readonly entry: ConsoleStdoutEntry;
-  /** Output after the configured process-output processor pipeline. */
-  readonly output: ConsoleProcessOutput;
-}
+export type ConsoleProcessViewEntry = ConsoleResolvedProcessOutputEntry;
 
 /** Read-only structured-console data exposed to addons. */
 export interface ConsoleStructuredDataSnapshot {
