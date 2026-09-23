@@ -1134,6 +1134,46 @@ Each renderer context exposes `renderDefault()`, which is useful for wrapping or
 
 Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
 
+## Core addon runtime
+
+The repository separates the generic addon runtime from the React console UI:
+
+```text
+@moyarich/console-core
+        ↑
+        │
+@moyarich/console
+        ↑
+        │
+console-addon-* packages
+```
+
+`@moyarich/console-core` is intentionally headless. It owns addon lifecycle, extension/service registries, capability tokens, scoped cleanup, and the addon manager. It does **not** depend on React or `@moyarich/console`.
+
+Most applications should continue importing from the main package:
+
+```ts
+import {
+  type ConsoleAddon,
+  createConsoleAddonManager,
+} from "@moyarich/console";
+```
+
+`@moyarich/console` re-exports the core runtime API for compatibility and convenience.
+
+Addon/framework authors that only need the generic runtime can depend directly on core:
+
+```ts
+import {
+  createConsoleAddonManager,
+  createConsoleExtensionPoint,
+  createConsoleServiceToken,
+  type ConsoleAddon,
+} from "@moyarich/console-core";
+```
+
+Console-specific capabilities, services, renderer extension points, actions, and React components remain in `@moyarich/console`. This keeps the lowest package UI-independent instead of moving React contracts into core.
+
 ## Addons
 
 Use `addons` when a reusable feature needs to combine several console extension points, shared APIs, or lifecycle resources behind one package-level abstraction.
