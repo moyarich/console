@@ -11,7 +11,7 @@ import {
   type ConsolePanelAction,
   type ConsoleProcessViewEntry,
   type ConsoleStdoutEntry,
-} from "@moyarich/console";
+} from "@moyarich/console-core";
 
 /** Stable package-qualified identity for the diagnostics addon. */
 export const CONSOLE_DIAGNOSTICS_ADDON_ID =

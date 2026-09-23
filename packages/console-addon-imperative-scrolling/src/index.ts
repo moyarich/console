@@ -3,7 +3,7 @@ import {
   consoleServices,
   type ConsoleAddon,
   type ConsolePanelAction,
-} from "@moyarich/console";
+} from "@moyarich/console-core";
 
 /** Stable package-qualified identity for the imperative scrolling addon. */
 export const IMPERATIVE_SCROLLING_ADDON_ID =

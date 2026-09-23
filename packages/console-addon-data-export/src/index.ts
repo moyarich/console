@@ -12,7 +12,7 @@ import {
   type ConsoleMessageData,
   type ConsolePanelAction,
   type ConsoleProcessViewEntry,
-} from "@moyarich/console";
+} from "@moyarich/console-core";
 
 /** Stable package-qualified identity for the data-export addon. */
 export const CONSOLE_DATA_EXPORT_ADDON_ID =
@@ -398,7 +398,7 @@ function registerContextMenuAction(
  * Creates the first-party data-export addon.
  *
  * Existing core Copy output, object/table copy, serializers, process-output
- * handling, and renderers remain owned by @moyarich/console.
+ * handling and rendering remain owned by the host.
  */
 export function createConsoleDataExportAddon(
   options: ConsoleDataExportAddonOptions = {},

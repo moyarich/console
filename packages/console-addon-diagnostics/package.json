@@ -1,7 +1,7 @@
 {
   "name": "@moyarich/console-addon-diagnostics",
   "version": "0.1.0",
-  "description": "First-party console pipeline diagnostics addon for @moyarich/console.",
+  "description": "First-party console pipeline diagnostics addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -21,14 +21,14 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external @moyarich/console",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external @moyarich/console-core",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@moyarich/console": "^0.1.0"
+    "@moyarich/console-core": "^0.1.0"
   },
   "devDependencies": {
-    "@moyarich/console": "0.1.0",
+    "@moyarich/console-core": "0.1.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },
@@ -42,11 +42,8 @@
   },
   "homepage": "https://github.com/moyarich/console#readme",
   "keywords": [
-    "react",
     "console",
     "addon",
-    "diagnostics",
-    "debugging",
     "developer-tools"
   ]
 }
