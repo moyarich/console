@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from "react";
 import {
   Console,
-  consoleExtensionPoints,
-  consoleServices,
-  type ConsoleAddon,
   type ConsoleHandle,
   type ConsoleMessageData,
 } from "@moyarich/console";
+import {
+  createImperativeScrollingAddon,
+} from "@moyarich/console-addon-imperative-scrolling";
 import "@moyarich/console/styles.css";
 
 const TARGET_ID = "message-24";
@@ -36,25 +36,7 @@ export default function ImperativeScrollControlsExample() {
   const [messages, setMessages] = useState(initialMessages);
   const [position, setPosition] = useState("Use a navigation control");
 
-  const addons = useMemo<ConsoleAddon[]>(
-    () => [
-      {
-        id: "@moyarich/console-playground:viewport-navigation",
-        activate(host) {
-          const viewport = host.services.require(consoleServices.viewport);
-
-          host.extensions.register(consoleExtensionPoints.panelAction, {
-            id: "jump-to-warning",
-            label: "Jump to warning",
-            onSelect: () => {
-              viewport.scrollToMessage(TARGET_ID, { block: "center" });
-            },
-          });
-        },
-      },
-    ],
-    [],
-  );
+  const addons = useMemo(() => [createImperativeScrollingAddon()], []);
 
   const run = (action: (handle: ConsoleHandle) => void) => {
     const handle = consoleRef.current;
@@ -118,9 +100,9 @@ export default function ImperativeScrollControlsExample() {
       </div>
 
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>
-        Position: <strong>{position}</strong>. The console action menu also
-        contains an addon-provided “Jump to warning” command using the same
-        viewport service as the ref.
+        Position: <strong>{position}</strong>. The console action menu contains
+        top, latest-output, and focus actions from the imperative-scrolling
+        workspace addon.
       </p>
 
       <Console
@@ -128,7 +110,7 @@ export default function ImperativeScrollControlsExample() {
         messages={messages}
         addons={addons}
         title="Imperative navigation"
-        subtitle="Host controls use ConsoleHandle; addons use consoleServices.viewport."
+        subtitle="ConsoleHandle and the imperative-scrolling addon share the core viewport service."
         style={{ height: 320 }}
       />
     </div>
