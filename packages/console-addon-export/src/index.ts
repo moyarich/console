@@ -78,10 +78,7 @@ const OSC_PATTERN = new RegExp(
   `${ANSI_ESCAPE}\\][\\s\\S]*?(?:${BELL}|${ANSI_ESCAPE}\\\\)`,
   "g",
 );
-const CSI_PATTERN = new RegExp(
-  `${ANSI_ESCAPE}\\[[0-?]*[ -/]*[@-~]`,
-  "g",
-);
+const CSI_PATTERN = new RegExp(`${ANSI_ESCAPE}\\[[0-?]*[ -/]*[@-~]`, "g");
 
 function getScopedItems(
   snapshot: ConsoleDataSnapshot,
@@ -352,8 +349,7 @@ export function createConsoleExportAddon(
           id: actionIds.downloadText,
           label: "Download text",
           disabled,
-          onSelect: () =>
-            service.download({ format: "text", scope, fileName }),
+          onSelect: () => service.download({ format: "text", scope, fileName }),
         });
       }
 
@@ -362,8 +358,7 @@ export function createConsoleExportAddon(
           id: actionIds.downloadJson,
           label: "Download JSON",
           disabled,
-          onSelect: () =>
-            service.download({ format: "json", scope, fileName }),
+          onSelect: () => service.download({ format: "json", scope, fileName }),
         });
       }
     },
