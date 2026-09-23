@@ -41,6 +41,7 @@ import {
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
 import {
+  consoleCoreAddonIds,
   consoleExtensionPoints,
   type ConsoleAddon,
   type ConsoleExtensionRegistry,
@@ -80,7 +81,7 @@ export type ConsoleMessageFilter = (
 /** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
   /** Imperative navigation ref for the mounted console viewport. */
-  ref?: Ref<ConsoleHandle>;
+  ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Keep the output pinned to the bottom while the user remains near it. @default true */
@@ -638,7 +639,16 @@ export function Console({ ref, ...props }: ConsoleProps) {
     [],
   );
 
-  useImperativeHandle(ref, () => viewport, [viewport]);
+  const imperativeScrollControlsDisabled =
+    props.disabledAddonIds?.some(
+      (id) => id.trim() === consoleCoreAddonIds.imperativeScrollControls,
+    ) ?? false;
+
+  useImperativeHandle<ConsoleHandle | null, ConsoleHandle | null>(
+    ref,
+    () => (imperativeScrollControlsDisabled ? null : viewport),
+    [imperativeScrollControlsDisabled, viewport],
+  );
 
   const addonExtensions = useConsoleAddons(
     props.addons,
