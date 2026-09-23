@@ -2,13 +2,23 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node", "vitest/globals"],
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@moyarich/console": ["./packages/console/src/index.ts"],
-      "@moyarich/console/*": ["./packages/console/src/*"],
+      "@moyarich/console": [
+        "./packages/console/src/index.ts"
+      ],
+      "@moyarich/console/*": [
+        "./packages/console/src/*"
+      ],
       "@moyarich/console-addon-imperative-scrolling": [
         "./packages/console-addon-imperative-scrolling/src/index.ts"
+      ],
+      "@moyarich/console-addon-export": [
+        "./packages/console-addon-export/src/index.ts"
       ]
     }
   },
@@ -16,6 +26,7 @@
     "tests",
     "stories",
     ".storybook",
-    "packages/console-addon-imperative-scrolling/src"
+    "packages/console-addon-imperative-scrolling/src",
+    "packages/console-addon-export/src"
   ]
 }
