@@ -1134,45 +1134,43 @@ Each renderer context exposes `renderDefault()`, which is useful for wrapping or
 
 Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
 
-## Core addon runtime
+## Core addon SDK
 
-The repository separates the generic addon runtime from the React console UI:
+`@moyarich/console-core` is the shared addon SDK and runtime contract package.
 
 ```text
 @moyarich/console-core
-        ↑
-        │
-@moyarich/console
-        ↑
-        │
-console-addon-* packages
+   ├─ @moyarich/console
+   ├─ @moyarich/console-addon-data-export
+   ├─ @moyarich/console-addon-diagnostics
+   └─ @moyarich/console-addon-imperative-scrolling
 ```
 
-`@moyarich/console-core` is intentionally headless. It owns addon lifecycle, extension/service registries, capability tokens, scoped cleanup, and the addon manager. It does **not** depend on React or `@moyarich/console`.
+Addon packages depend on **core, not `@moyarich/console`**. Core owns addon lifecycle, registries, capabilities, `consoleServices`, `consoleExtensionPoints`, and the shared message/process/data/link/action/renderer contracts used between hosts and addons. It has no React or React DOM runtime dependency.
 
-Most applications should continue importing from the main package:
+`@moyarich/console` is the React host implementation. It provides the UI, hooks, rendering, DOM viewport implementation, and CSS, and it consumes the same tokens exported by core.
+
+Most application code can continue importing from the main package because `@moyarich/console` re-exports the core contracts:
 
 ```ts
 import {
+  Console,
   type ConsoleAddon,
-  createConsoleAddonManager,
+  consoleExtensionPoints,
 } from "@moyarich/console";
 ```
 
-`@moyarich/console` re-exports the core runtime API for compatibility and convenience.
-
-Addon/framework authors that only need the generic runtime can depend directly on core:
+Addon packages should import directly from core:
 
 ```ts
 import {
-  createConsoleAddonManager,
-  createConsoleExtensionPoint,
-  createConsoleServiceToken,
+  consoleExtensionPoints,
+  consoleServices,
   type ConsoleAddon,
 } from "@moyarich/console-core";
 ```
 
-Console-specific capabilities, services, renderer extension points, actions, and React components remain in `@moyarich/console`. This keeps the lowest package UI-independent instead of moving React contracts into core.
+This ensures an addon can be built, tested, and published without a dependency on the React console package while still registering against the exact same service and extension-point tokens used by `<Console />`.
 
 ## Addons
 
