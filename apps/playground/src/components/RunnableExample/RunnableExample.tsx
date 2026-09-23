@@ -71,7 +71,7 @@ export function RunnableExample({
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     runTokenRef.current += 1;
@@ -90,6 +90,7 @@ export function RunnableExample({
     }
 
     const previousOverflow = document.body.style.overflow;
+    const rootElement = rootRef.current;
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setPreviewFullscreen(false);
@@ -104,7 +105,9 @@ export function RunnableExample({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleEscape);
       requestAnimationFrame(() => {
-        expandButtonRef.current?.focus();
+        rootElement
+          ?.querySelector<HTMLButtonElement>("[data-preview-expand]")
+          ?.focus();
       });
     };
   }, [previewFullscreen]);
@@ -171,7 +174,8 @@ export function RunnableExample({
             Runnable
           </span>
           <button
-            ref={previewFullscreen ? closeButtonRef : expandButtonRef}
+            ref={previewFullscreen ? closeButtonRef : undefined}
+            data-preview-expand={previewFullscreen ? undefined : ""}
             type="button"
             className="panel-icon-button"
             aria-label={
@@ -208,7 +212,7 @@ export function RunnableExample({
 
   return (
     <>
-      <div className="content-stack">
+      <div ref={rootRef} className="content-stack">
         <section
           className="playground-panel source-panel"
           aria-label="Runnable example source"
