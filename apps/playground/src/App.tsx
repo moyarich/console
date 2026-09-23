@@ -25,6 +25,11 @@ export function App() {
       </header>
 
       <Playground />
+
+      <footer className="site-footer">
+        <span>@moyarich/console</span>
+        <span>React console UI and transport adapters</span>
+      </footer>
     </div>
   );
 }
