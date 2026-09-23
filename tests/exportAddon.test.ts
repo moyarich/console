@@ -87,7 +87,15 @@ describe("@moyarich/console-addon-export", () => {
     expect(envelope.type).toBe(CONSOLE_EXPORT_TYPE);
     expect(envelope.version).toBe(CONSOLE_EXPORT_VERSION);
     expect(envelope.scope).toBe("all");
+    expect(envelope.count).toBe(1);
+    expect(envelope.records[0]).toMatchObject({
+      kind: "console",
+      method: "log",
+      depth: 0,
+    });
     expect(() => JSON.parse(json)).not.toThrow();
+    expect(json).toContain('"text"');
+    expect(json).toContain('"args"');
     expect(json).toContain("[Circular]");
     expect(json).toContain('"bigint"');
     expect(json).toContain('"nan"');
@@ -126,8 +134,45 @@ describe("@moyarich/console-addon-export", () => {
     expect(resolved).toHaveLength(1);
     expect(text).toBe("Downloading complete");
     expect(text).not.toContain(escape);
+    expect(json).toContain('"kind": "process"');
+    expect(json).toContain('"text": "Downloading complete"');
     expect(json).toContain('"transformed": true');
     expect(json).not.toContain("Downloading 10%");
+  });
+
+  it("includes useful message text, args, time, source, and console options", () => {
+    const snapshot: ConsoleDataSnapshot = {
+      mode: "console",
+      all: [
+        {
+          id: "table-1",
+          method: "table",
+          depth: 1,
+          data: ["Users", [{ id: 1, name: "Ada" }]],
+          timestamp: Date.UTC(2026, 8, 23, 4, 0, 0),
+          source: "worker:preview",
+          columns: ["id", "name"],
+        },
+      ],
+      visible: [],
+    };
+
+    const envelope = createConsoleExportEnvelope(snapshot, "all");
+
+    expect(envelope.records[0]).toEqual({
+      kind: "console",
+      id: "table-1",
+      method: "table",
+      text: expect.stringContaining("Users"),
+      args: ["Users", [{ id: 1, name: "Ada" }]],
+      depth: 1,
+      timestamp: Date.UTC(2026, 8, 23, 4, 0, 0),
+      time: "2026-09-23T04:00:00.000Z",
+      source: "worker:preview",
+      options: {
+        columns: ["id", "name"],
+      },
+    });
   });
 
   it("provides a headless service over the core data contract", () => {
