@@ -1,6 +1,7 @@
 export interface ConsoleExampleMeta {
   label: string;
-  description: string;
+  description?: string;
+  [key: string]: unknown;
 }
 
 export function parseConsoleExampleMeta(
@@ -9,7 +10,7 @@ export function parseConsoleExampleMeta(
 ): ConsoleExampleMeta {
   if (!value || typeof value !== "object") {
     throw new Error(
-      `Missing meta export in ${sourcePath}. Expected export const meta = { label, description }.`,
+      `Missing frontmatter metadata in ${sourcePath}. Expected at least a non-empty "label".`,
     );
   }
 
@@ -17,18 +18,18 @@ export function parseConsoleExampleMeta(
 
   if (typeof metadata.label !== "string" || metadata.label.trim() === "") {
     throw new Error(
-      `Invalid meta export in ${sourcePath}: "label" must be a non-empty string.`,
+      `Invalid frontmatter metadata in ${sourcePath}: "label" must be a non-empty string.`,
     );
   }
 
   if (
-    typeof metadata.description !== "string" ||
-    metadata.description.trim() === ""
+    metadata.description !== undefined &&
+    typeof metadata.description !== "string"
   ) {
     throw new Error(
-      `Invalid meta export in ${sourcePath}: "description" must be a non-empty string.`,
+      `Invalid frontmatter metadata in ${sourcePath}: "description" must be a string when provided.`,
     );
   }
 
-  return value as ConsoleExampleMeta;
+  return metadata as ConsoleExampleMeta;
 }
