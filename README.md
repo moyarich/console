@@ -546,7 +546,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
 | `linkProviders`       | Add ordered application-specific link providers                                |
 | `addons`              | Add reusable `ConsoleAddon` instances                                          |
-| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID            |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID          |
 
 The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
 
