@@ -34,8 +34,7 @@ export interface ConsoleDataExportOptions {
   scope?: ConsoleDataExportScope;
 }
 
-export interface ConsoleDataExportDownloadOptions
-  extends ConsoleDataExportOptions {
+export interface ConsoleDataExportDownloadOptions extends ConsoleDataExportOptions {
   /** Download filename without an inferred extension requirement. */
   fileName?: string;
 }
