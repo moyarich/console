@@ -3,7 +3,7 @@ import {
   CONSOLE_CORE_ADDON_ID_PREFIX,
   consoleCapabilities,
   createConsoleAddonManager,
-  createConsoleViewportAddon,
+  createConsoleImperativeScrollControlsAddon,
   isCoreConsoleAddonId,
   type ConsoleAddon,
   type ConsoleAddonManager,
@@ -74,7 +74,9 @@ export function useConsoleAddons(
   const addonList = addons ?? EMPTY_ADDONS;
   const coreAddons = useMemo(
     () =>
-      [createConsoleViewportAddon(viewport)] satisfies readonly ConsoleAddon[],
+      [
+        createConsoleImperativeScrollControlsAddon(viewport),
+      ] satisfies readonly ConsoleAddon[],
     [viewport],
   );
   const coreAddonIds = useMemo(
