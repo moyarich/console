@@ -54,3 +54,50 @@ A task is not complete while Prettier or ESLint reports errors.
 6. Fix failures before declaring the work complete.
 
 Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
+
+## Workspace addon imports in development
+
+Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require a prebuild before Vite can start.
+
+A common symptom is:
+
+```text
+failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
+```
+
+When a first-party addon exists under `packages/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
+
+For every first-party workspace addon used by the playground or Storybook:
+
+1. Keep published package `exports` pointed at `dist/`.
+2. Add the addon to the consuming workspace dependencies.
+3. Alias the addon package name to its source entry point in `apps/playground/vite.config.ts`.
+4. Add the equivalent source alias in `.storybook/main.ts`.
+5. If runnable examples may import the addon, also register it in `compileExampleSource.ts` as a supported runtime module.
+6. Keep test and TypeScript path aliases in sync when required.
+
+Example playground alias:
+
+```ts
+{
+  find: "@moyarich/console-addon-imperative-scrolling",
+  replacement: fileURLToPath(
+    new URL(
+      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      import.meta.url,
+    ),
+  ),
+}
+```
+
+Use the equivalent path relative to `.storybook/main.ts` for Storybook. Put specific addon aliases before the general `@moyarich/console` alias.
+
+Do not fix this class of error by weakening runnable-example import validation or by requiring contributors to manually build the addon before `npm run dev`.
+
+Remember that these are separate concerns:
+
+- **Vite source aliasing** lets the playground or Storybook application import an unbuilt workspace addon.
+- **Runnable-example runtime registration** lets browser-compiled example source import that addon.
+
+If the runtime registry already supports the addon but Vite reports `failed to resolve import` from `compileExampleSource.ts`, fix the workspace source alias rather than the runtime whitelist.
+
