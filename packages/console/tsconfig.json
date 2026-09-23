@@ -1,5 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "noEmit": true, "jsx": "react-jsx" },
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@moyarich/console-core": ["../console-core/src/index.ts"]
+    }
+  },
   "include": ["src"]
 }

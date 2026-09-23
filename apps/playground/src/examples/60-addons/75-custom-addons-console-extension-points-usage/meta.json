@@ -1,0 +1,4 @@
+{
+  "label": "Usage Of Console Extension Points",
+  "description": "Demonstrate every built-in consoleExtensionPoints.* contract across structured and ANSI hosts, including shared services and capability checks."
+}

@@ -624,6 +624,144 @@ It contributes standard **Scroll to top**, **Latest output**, and **Focus output
 
 The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.
 
+## Data-level output export addon
+
+Install the first-party export addon separately when an application needs
+machine-readable or downloadable console output:
+
+```bash
+npm install @moyarich/console-addon-data-export
+```
+
+Create the addon explicitly and pass it through the normal `addons` prop:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDataExportAddon } from "@moyarich/console-addon-data-export";
+
+const exportAddon = createConsoleDataExportAddon({
+  fileName: "runtime-output",
+});
+
+<Console messages={messages} addons={[exportAddon]} />;
+```
+
+The addon is additive. It does not replace the core **Copy output** command,
+object/table copy behavior, renderers, serializers, or process-output pipeline.
+By default it contributes **Copy as JSON**, **Download text**, and **Download
+JSON** through the existing action extension points.
+
+Export reads the logical console data exposed by `consoleServices.data` rather
+than rendered DOM text. That makes export independent from object expansion,
+custom renderer markup, scroll position, and future virtualization.
+
+JSON export is intentionally **record-oriented**, not a transport-shaped copy of
+`ConsoleMessageData`. Each structured record includes a readable `text`
+field for diagnostics plus lossless serialized `args`, the original console
+`method`, group `depth`, and optional timestamp/source/method options.
+
+For example:
+
+```json
+{
+  "type": "MOYARICH_CONSOLE_DATA_EXPORT",
+  "version": 1,
+  "mode": "console",
+  "scope": "visible",
+  "count": 2,
+  "records": [
+    {
+      "kind": "console",
+      "id": "request",
+      "method": "log",
+      "text": "Request complete {\n  \"status\": 200,\n  \"durationMs\": 84\n}",
+      "args": [
+        "Request complete",
+        {
+          "status": 200,
+          "durationMs": 84
+        }
+      ],
+      "depth": 0
+    }
+  ]
+}
+```
+
+ANSI/process records use the same idea: a normalized printable `text` field
+plus stable ID/stream, optional structured value, and processor metadata. A
+consumer should not need to rerun console formatting just to understand an
+exported record.
+
+Two scopes are supported:
+
+| Scope     | Meaning                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `visible` | Current logical view after host filtering/view rules. This does not mean rows currently mounted or inside the scroll viewport.                                                            |
+| `all`     | All retained logical output currently owned by the console, including structured messages hidden by the current filter. It cannot include history already discarded by a retention limit. |
+
+There is intentionally no `selected` scope in the export addon. Selection is a
+separate addon concern; first-party addons do not depend on one another.
+
+For ANSI/process output, export uses the same resolved logical process view as
+rendering: carriage-return/newline normalization and process-output processors
+run once, then both rendering and export consume that result. Plain-text export
+removes ANSI styling/control sequences, while JSON export preserves stable IDs,
+stream metadata, processor metadata, and structured values where available.
+
+The addon also exposes headless helpers:
+
+```ts
+import {
+  createConsoleDataExportEnvelope,
+  createConsoleDataExportService,
+  formatConsoleDataExport,
+  formatConsoleDataExportJson,
+  formatConsoleDataExportText,
+} from "@moyarich/console-addon-data-export";
+```
+
+Pure formatters do not require a mounted React component or DOM. Browser
+copy/download helpers are separate convenience APIs.
+
+## Console diagnostics addon
+
+Install diagnostics separately when you need to inspect what data entered the console and how the process-output pipeline transformed it:
+
+```bash
+npm install @moyarich/console-addon-diagnostics
+```
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
+
+const diagnosticsAddon = createConsoleDiagnosticsAddon();
+
+<Console messages={messages} addons={[diagnosticsAddon]} />;
+```
+
+Diagnostics and data export are intentionally separate addons:
+
+```text
+@moyarich/console-addon-data-export
+  └─ normal logical-data export
+     ├─ text
+     ├─ structured JSON
+     └─ copy/download
+
+@moyarich/console-addon-diagnostics
+  └─ debugging and pipeline inspection
+     ├─ retained vs visible structured messages
+     ├─ original ANSI rawEntries
+     ├─ normalized process entries
+     └─ processor-resolved data and metadata
+```
+
+In structured mode the diagnostics report preserves retained and logically visible `ConsoleMessageData`. In ANSI mode it deliberately keeps `rawEntries` separate from normalized/resolved entries, making carriage-return normalization and process-output processor transformations inspectable.
+
+The diagnostics addon exposes `createConsoleDiagnosticsReport`, `formatConsoleDiagnosticsJson`, `createConsoleDiagnosticsService`, and optional **Copy diagnostics JSON** / **Download diagnostics JSON** actions. It depends only on public `@moyarich/console` contracts and does not depend on the data-export addon.
+
 ## Theming with CSS custom properties
 
 The package styles expose `--console-*` custom properties as **theme inputs**.
@@ -995,6 +1133,34 @@ Each renderer context exposes `renderDefault()`, which is useful for wrapping or
 - objects use their constructor name when available, for example `"Object"`, `"Map"`, or a custom class name
 
 Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
+
+## Core addon SDK
+
+`@moyarich/console-core` provides the shared addon SDK and runtime contracts.
+
+```text
+packages/
+├─ console-core/  → @moyarich/console-core
+├─ console/       → @moyarich/console
+└─ addons/
+   ├─ data-export/          → @moyarich/console-addon-data-export
+   ├─ diagnostics/          → @moyarich/console-addon-diagnostics
+   └─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
+```
+
+Portable or headless addons can depend only on core:
+
+```ts
+import {
+  consoleExtensionPoints,
+  consoleServices,
+  type ConsoleAddon,
+} from "@moyarich/console-core";
+```
+
+`@moyarich/console` is the React host implementation and re-exports core contracts for application convenience.
+
+Core is a capability boundary, not a restriction on addon design. Addons that only need shared contracts should prefer `@moyarich/console-core`; addons that intentionally use React-host-specific APIs may also depend on `@moyarich/console`.
 
 ## Addons
 

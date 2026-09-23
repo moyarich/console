@@ -7,9 +7,9 @@ import {
   type ConsoleLinkProviderContext,
 } from "../links";
 import {
-  normalizeConsoleProcessOutputEntries,
-  processConsoleOutputEntry,
+  resolveConsoleProcessOutputEntries,
   type ConsoleProcessOutputProcessor,
+  type ConsoleResolvedProcessOutputEntry,
   type ConsoleStdoutEntry,
 } from "../processOutput";
 import { getAnsiTokenRanges } from "../utils/terminal/getAnsiTokenRanges";
@@ -48,6 +48,13 @@ export interface ConsoleStdoutProps {
   detectLinks?: boolean;
   /** Ordered application-specific link providers. */
   linkProviders?: readonly ConsoleLinkProvider[];
+}
+
+interface ConsoleResolvedStdoutProps extends Omit<
+  ConsoleStdoutProps,
+  "entries" | "processors"
+> {
+  resolvedEntries: readonly ConsoleResolvedProcessOutputEntry[];
 }
 
 function AnsiText({
@@ -111,40 +118,30 @@ function AnsiText({
 }
 
 /**
- * Renders ANSI-aware process output and optionally promotes matching lines to
- * structured values rendered by {@link ConsoleValue}.
+ * Renders an already-resolved process view without running processors again.
+ * This is internal to the core React host and is not exported from the package
+ * entry point.
  */
-export function ConsoleStdout({
-  entries,
+export function ConsoleResolvedStdout({
+  resolvedEntries,
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
-  processors,
   structuredOutputParsers,
   valueRenderers,
   detectLinks = true,
   linkProviders,
-}: ConsoleStdoutProps) {
-  const normalizedEntries = normalizeConsoleProcessOutputEntries(entries);
-
-  if (!normalizedEntries.length) {
+}: ConsoleResolvedStdoutProps) {
+  if (!resolvedEntries.length) {
     return <div className="console-stdout-empty">{emptyMessage}</div>;
   }
 
   return (
     <div className="console-stdout-list">
-      {normalizedEntries.map((entry, index) => {
-        const processedOutput = processConsoleOutputEntry(
-          entry,
-          index,
-          processors,
-        );
+      {resolvedEntries.map(({ entry, output: processedOutput }, index) => {
         const data = processedOutput.data;
-        const stream = typeof entry === "string" ? undefined : entry.stream;
-        const id = typeof entry === "string" ? undefined : entry.id;
-        const key =
-          typeof entry === "string"
-            ? `stdout-${index}`
-            : (entry.id ?? `stdout-${index}`);
+        const stream = entry.stream;
+        const id = entry.id;
+        const key = entry.id ?? `stdout-${index}`;
         const structuredValue =
           processedOutput.structuredValue !== undefined
             ? processedOutput.structuredValue
@@ -159,20 +156,13 @@ export function ConsoleStdout({
                 )
               : undefined;
         const clearLine = hasAnsiClearLine(data);
-        const linkContext: ConsoleLinkProviderContext =
-          typeof entry === "string"
-            ? {
-                mode: "ansi",
-                index,
-                metadata: processedOutput.metadata,
-              }
-            : {
-                mode: "ansi",
-                index,
-                id: entry.id,
-                stream: entry.stream,
-                metadata: processedOutput.metadata,
-              };
+        const linkContext: ConsoleLinkProviderContext = {
+          mode: "ansi",
+          index,
+          ...(entry.id !== undefined ? { id: entry.id } : {}),
+          ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
+          metadata: processedOutput.metadata,
+        };
 
         if (structuredValue !== undefined) {
           return (
@@ -213,5 +203,22 @@ export function ConsoleStdout({
         );
       })}
     </div>
+  );
+}
+
+/**
+ * Renders ANSI-aware process output and optionally promotes matching lines to
+ * structured values rendered by {@link ConsoleValue}.
+ */
+export function ConsoleStdout({
+  entries,
+  processors,
+  ...props
+}: ConsoleStdoutProps) {
+  return (
+    <ConsoleResolvedStdout
+      {...props}
+      resolvedEntries={resolveConsoleProcessOutputEntries(entries, processors)}
+    />
   );
 }

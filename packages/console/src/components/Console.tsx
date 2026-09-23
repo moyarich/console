@@ -15,11 +15,12 @@ import {
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import {
-  ConsoleStdout,
+  ConsoleResolvedStdout,
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
+import { resolveConsoleProcessOutputEntries } from "../processOutput";
 import type {
   ConsoleMessageData,
   ConsoleMode as ConsoleModeType,
@@ -46,6 +47,10 @@ import {
   type ConsoleExtensionRegistry,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
+import {
+  createConsoleDataController,
+  type ConsoleDataController,
+} from "../data";
 import {
   createConsoleViewportController,
   type ConsoleScrollOptions,
@@ -178,6 +183,7 @@ const EMPTY_MESSAGES: ConsoleMessageData[] = [];
 const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
 interface ConsoleResolvedAddonProps {
   addonExtensions: ConsoleExtensionRegistry;
+  data: ConsoleDataController;
   surfaceRef: RefObject<HTMLDivElement | null>;
   viewport: ConsoleViewportController;
 }
@@ -427,33 +433,46 @@ function ConsoleMessageMode({
   detectLinks = true,
   linkProviders,
   addonExtensions,
+  data,
   subtitle = "Runtime output from console.*()",
   emptyMessage = "No console output yet.",
   ...frameProps
 }: ConsoleMessageModeProps & ConsoleResolvedAddonProps) {
   const resolvedMessageRenderers = mergeContributions(
     messageRenderers,
-    addonExtensions.getAll(consoleExtensionPoints.messageRenderer),
+    addonExtensions.getAll(
+      consoleExtensionPoints.messageRenderer,
+    ) as readonly ConsoleMessageRenderer[],
   );
   const resolvedMessageActions = mergeContributions(
     messageActions,
-    addonExtensions.getAll(consoleExtensionPoints.messageAction),
+    addonExtensions.getAll(
+      consoleExtensionPoints.messageAction,
+    ) as readonly ConsoleMessageAction[],
   );
   const resolvedPanelActions = mergeContributions(
     panelActions,
-    addonExtensions.getAll(consoleExtensionPoints.panelAction),
+    addonExtensions.getAll(
+      consoleExtensionPoints.panelAction,
+    ) as readonly ConsolePanelAction[],
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
-    addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
+    addonExtensions.getAll(
+      consoleExtensionPoints.contextMenuAction,
+    ) as readonly ConsoleContextMenuAction[],
   );
   const resolvedOutputRenderers = mergeContributions(
     outputRenderers,
-    addonExtensions.getAll(consoleExtensionPoints.outputRenderer),
+    addonExtensions.getAll(
+      consoleExtensionPoints.outputRenderer,
+    ) as readonly ConsoleOutputRenderer[],
   );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
-    addonExtensions.getAll(consoleExtensionPoints.valueRenderer),
+    addonExtensions.getAll(
+      consoleExtensionPoints.valueRenderer,
+    ) as readonly ConsoleValueRenderer[],
   );
   const resolvedLinkProviders = mergeContributions(
     linkProviders,
@@ -478,6 +497,15 @@ function ConsoleMessageMode({
         : messages,
     [filter, messages],
   );
+
+  useEffect(() => {
+    data.setSnapshot({
+      mode: "console",
+      all: messages,
+      visible: visibleMessages,
+    });
+  }, [data, messages, visibleMessages]);
+
   const [expandedMessages, setExpandedMessages] = useState<
     Map<ConsoleMessageData, number>
   >(() => new Map());
@@ -560,6 +588,7 @@ function ConsoleAnsiMode({
   detectLinks = true,
   linkProviders,
   addonExtensions,
+  data,
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
@@ -572,31 +601,51 @@ function ConsoleAnsiMode({
     structuredOutputParsers,
     addonExtensions.getAll(consoleExtensionPoints.structuredOutputParser),
   );
+  const resolvedEntries = useMemo(
+    () => resolveConsoleProcessOutputEntries(messages, resolvedProcessors),
+    [messages, resolvedProcessors],
+  );
+
+  useEffect(() => {
+    data.setSnapshot({
+      mode: "ansi",
+      rawEntries: messages,
+      all: resolvedEntries,
+      visible: resolvedEntries,
+    });
+  }, [data, messages, resolvedEntries]);
   const resolvedPanelActions = mergeContributions(
     panelActions,
-    addonExtensions.getAll(consoleExtensionPoints.panelAction),
+    addonExtensions.getAll(
+      consoleExtensionPoints.panelAction,
+    ) as readonly ConsolePanelAction[],
   );
   const resolvedContextMenuActions = mergeContributions(
     contextMenuActions,
-    addonExtensions.getAll(consoleExtensionPoints.contextMenuAction),
+    addonExtensions.getAll(
+      consoleExtensionPoints.contextMenuAction,
+    ) as readonly ConsoleContextMenuAction[],
   );
   const resolvedOutputRenderers = mergeContributions(
     outputRenderers,
-    addonExtensions.getAll(consoleExtensionPoints.outputRenderer),
+    addonExtensions.getAll(
+      consoleExtensionPoints.outputRenderer,
+    ) as readonly ConsoleOutputRenderer[],
   );
   const resolvedValueRenderers = mergeContributions(
     valueRenderers,
-    addonExtensions.getAll(consoleExtensionPoints.valueRenderer),
+    addonExtensions.getAll(
+      consoleExtensionPoints.valueRenderer,
+    ) as readonly ConsoleValueRenderer[],
   );
   const resolvedLinkProviders = mergeContributions(
     linkProviders,
     addonExtensions.getAll(consoleExtensionPoints.linkProvider),
   );
   const renderDefaultOutput = () => (
-    <ConsoleStdout
-      entries={messages}
+    <ConsoleResolvedStdout
+      resolvedEntries={resolvedEntries}
       parseStructuredOutput={parseStructuredOutput}
-      processors={resolvedProcessors}
       structuredOutputParsers={resolvedStructuredOutputParsers}
       valueRenderers={resolvedValueRenderers}
       detectLinks={detectLinks}
@@ -640,6 +689,7 @@ export function Console({ ref, ...props }: ConsoleProps) {
     () => createConsoleViewportController(() => surfaceRef.current),
     [],
   );
+  const data = useMemo(() => createConsoleDataController(mode), [mode]);
 
   useImperativeHandle(ref, () => viewport, [viewport]);
 
@@ -648,8 +698,9 @@ export function Console({ ref, ...props }: ConsoleProps) {
     props.disabledAddonIds,
     mode,
     viewport,
+    data,
   );
-  const resolvedProps = { addonExtensions, surfaceRef, viewport };
+  const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
   if (props.mode === "ansi") {
     return <ConsoleAnsiMode {...props} {...resolvedProps} />;

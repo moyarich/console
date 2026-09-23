@@ -36,12 +36,13 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external react --external react-dom",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external @moyarich/console-core --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
   },
   "dependencies": {
+    "@moyarich/console-core": "0.1.0",
     "anser": "^2.3.5",
     "lucide-react": "^1.47.0"
   },

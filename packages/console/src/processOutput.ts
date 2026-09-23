@@ -325,3 +325,23 @@ export function processConsoleOutputEntry(
 
   return output;
 }
+
+/** One logical process-output entry after normalization and processors. */
+export interface ConsoleResolvedProcessOutputEntry {
+  readonly entry: ConsoleStdoutEntry;
+  readonly output: ConsoleProcessOutput;
+}
+
+/**
+ * Resolves process output once for consumers that need the same logical view
+ * used by rendering and addon data services.
+ */
+export function resolveConsoleProcessOutputEntries(
+  entries: readonly (ConsoleStdoutEntry | string)[],
+  processors: readonly ConsoleProcessOutputProcessor[] = [],
+): ConsoleResolvedProcessOutputEntry[] {
+  return normalizeConsoleProcessOutputEntries(entries).map((entry, index) => ({
+    entry,
+    output: processConsoleOutputEntry(entry, index, processors),
+  }));
+}

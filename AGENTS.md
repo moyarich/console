@@ -55,6 +55,15 @@ A task is not complete while Prettier or ESLint reports errors.
 
 Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
 
+## Addon dependency guidance
+
+Use the narrowest package surface that fits the addon.
+
+- prefer `@moyarich/console-core` for portable/headless addon contracts
+- addons may depend on `@moyarich/console` when they intentionally use React-host-specific APIs
+- do not duplicate core contracts merely to avoid a legitimate host dependency
+- keep `@moyarich/console-core` independent of `@moyarich/console`
+
 ## Workspace addon imports in development
 
 Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require a prebuild before Vite can start.
@@ -65,7 +74,7 @@ A common symptom is:
 failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
 ```
 
-When a first-party addon exists under `packages/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
+When a first-party addon exists under `packages/addons/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
 
 For every first-party workspace addon used by the playground or Storybook:
 
@@ -83,7 +92,7 @@ Example playground alias:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../../packages/console-addon-imperative-scrolling/src/index.ts",
+      "../../packages/addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),
