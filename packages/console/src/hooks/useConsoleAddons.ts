@@ -77,8 +77,8 @@ export function useConsoleAddons(
     [disabledAddonIds],
   );
   const activeAddons = useMemo(
-    () => allAddons.filter((addon) => !disabledIds.has(addon.id.trim())),
-    [allAddons, disabledIds],
+    () => addonList.filter((addon) => !disabledIds.has(addon.id.trim())),
+    [addonList, disabledIds],
   );
 
   validateAddons(addonList);
