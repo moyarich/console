@@ -1,6 +1,7 @@
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
 import { Component, useEffect, useRef, useState } from "react";
 import type { ComponentType, ErrorInfo, ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { ConsoleExample } from "../../examples";
 import { MonacoEditor } from "../MonacoEditor";
 import { compileExampleSource } from "./compileExampleSource";
@@ -58,6 +59,8 @@ export function RunnableExample({ example }: RunnableExampleProps) {
   const [hasCustomRuntime, setHasCustomRuntime] = useState(false);
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     runTokenRef.current += 1;
@@ -84,10 +87,12 @@ export function RunnableExample({ example }: RunnableExampleProps) {
 
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleEscape);
+    requestAnimationFrame(() => closeButtonRef.current?.focus());
 
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleEscape);
+      requestAnimationFrame(() => expandButtonRef.current?.focus());
     };
   }, [previewFullscreen]);
 
@@ -136,108 +141,134 @@ export function RunnableExample({ example }: RunnableExampleProps) {
     setHasCustomRuntime(false);
   };
 
+  const previewPanel = (
+    <section
+      className="playground-panel preview-panel"
+      aria-label="Runnable example preview"
+    >
+      <div className="panel-toolbar preview-toolbar">
+        <div>
+          <span className="panel-kicker">Preview</span>
+          <strong id="preview-dialog-title">{example.label}</strong>
+        </div>
+
+        <div className="preview-toolbar-actions">
+          <span className="live-badge">
+            <span className="live-dot" aria-hidden="true" />
+            Runnable
+          </span>
+          <button
+            ref={previewFullscreen ? closeButtonRef : expandButtonRef}
+            type="button"
+            className="panel-icon-button"
+            aria-label={
+              previewFullscreen
+                ? "Close fullscreen preview"
+                : "Open fullscreen preview"
+            }
+            title={previewFullscreen ? "Close preview" : "Fullscreen"}
+            onClick={() => setPreviewFullscreen((current) => !current)}
+          >
+            {previewFullscreen ? (
+              <X aria-hidden="true" />
+            ) : (
+              <Maximize2 aria-hidden="true" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="preview-stage">
+        {compileError && (
+          <div className="runtime-error compile-error" role="alert">
+            <strong>Compile error</strong>
+            <pre>{compileError}</pre>
+          </div>
+        )}
+
+        <RuntimeErrorBoundary key={`${example.id}-${runVersion}`}>
+          <RuntimeComponent />
+        </RuntimeErrorBoundary>
+      </div>
+    </section>
+  );
+
   return (
-    <div className="content-stack">
-      <section
-        className="playground-panel source-panel"
-        aria-label="Runnable example source"
-      >
-        <div className="panel-toolbar source-toolbar">
-          <div>
-            <span className="panel-kicker">Source</span>
-            <strong>example.tsx</strong>
-          </div>
-
-          <div className="source-toolbar-actions">
-            {dirty && <span className="draft-badge">Edited</span>}
-            <button
-              type="button"
-              className="source-action-button"
-              disabled={!dirty && !hasCustomRuntime}
-              onClick={resetSource}
-            >
-              Reset
-            </button>
-            <button
-              type="button"
-              className="source-action-button run-source-button"
-              disabled={isCompiling}
-              onClick={runSource}
-            >
-              {isCompiling ? "Running…" : "Run"}
-            </button>
-          </div>
-        </div>
-
-        <div className="example-source-editor">
-          <MonacoEditor
-            path={example.id + "/example.tsx"}
-            language="typescript"
-            value={draftSource}
-            onChange={(value) => setDraftSource(value ?? "")}
-            options={{
-              contextmenu: true,
-              renderLineHighlight: "line",
-            }}
-          />
-        </div>
-      </section>
-
-      <section
-        className={[
-          "playground-panel",
-          "preview-panel",
-          previewFullscreen ? "preview-panel-fullscreen" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        aria-label="Runnable example preview"
-      >
-        <div className="panel-toolbar preview-toolbar">
-          <div>
-            <span className="panel-kicker">Preview</span>
-            <strong>{example.label}</strong>
-          </div>
-
-          <div className="preview-toolbar-actions">
-            <span className="live-badge">
-              <span className="live-dot" aria-hidden="true" />
-              Runnable
-            </span>
-            <button
-              type="button"
-              className="panel-icon-button"
-              aria-label={
-                previewFullscreen
-                  ? "Exit fullscreen preview"
-                  : "Open fullscreen preview"
-              }
-              aria-pressed={previewFullscreen}
-              title={previewFullscreen ? "Exit fullscreen" : "Fullscreen"}
-              onClick={() => setPreviewFullscreen((current) => !current)}
-            >
-              {previewFullscreen ? (
-                <Minimize2 aria-hidden="true" />
-              ) : (
-                <Maximize2 aria-hidden="true" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        <div className="preview-stage">
-          {compileError && (
-            <div className="runtime-error compile-error" role="alert">
-              <strong>Compile error</strong>
-              <pre>{compileError}</pre>
+    <>
+      <div className="content-stack">
+        <section
+          className="playground-panel source-panel"
+          aria-label="Runnable example source"
+        >
+          <div className="panel-toolbar source-toolbar">
+            <div>
+              <span className="panel-kicker">Source</span>
+              <strong>example.tsx</strong>
             </div>
-          )}
 
-          <RuntimeErrorBoundary key={`${example.id}-${runVersion}`}>
-            <RuntimeComponent />
-          </RuntimeErrorBoundary>
-        </div>
-      </section>
-    </div>
+            <div className="source-toolbar-actions">
+              {dirty && <span className="draft-badge">Edited</span>}
+              <button
+                type="button"
+                className="source-action-button"
+                disabled={!dirty && !hasCustomRuntime}
+                onClick={resetSource}
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                className="source-action-button run-source-button"
+                disabled={isCompiling}
+                onClick={runSource}
+              >
+                {isCompiling ? "Running…" : "Run"}
+              </button>
+            </div>
+          </div>
+
+          <div className="example-source-editor">
+            <MonacoEditor
+              path={example.id + "/example.tsx"}
+              language="typescript"
+              value={draftSource}
+              onChange={(value) => setDraftSource(value ?? "")}
+              options={{
+                contextmenu: true,
+                renderLineHighlight: "line",
+              }}
+            />
+          </div>
+        </section>
+
+        {previewFullscreen ? (
+          <div className="preview-panel-placeholder" aria-hidden="true" />
+        ) : (
+          previewPanel
+        )}
+      </div>
+
+      {previewFullscreen &&
+        createPortal(
+          <div
+            className="preview-modal-backdrop"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) {
+                setPreviewFullscreen(false);
+              }
+            }}
+          >
+            <div
+              className="preview-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="preview-dialog-title"
+            >
+              {previewPanel}
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 }
