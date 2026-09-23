@@ -19,7 +19,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check . || (prettier --write apps/playground/src/examples/50-additional-usage/19-imperative-scroll-controls/example.tsx README.md stories/Console.ImperativeScrollControls.stories.tsx && git diff -- apps/playground/src/examples/50-additional-usage/19-imperative-scroll-controls/example.tsx README.md stories/Console.ImperativeScrollControls.stories.tsx && exit 1)",
+    "format:check": "prettier --check .",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling"
   },
