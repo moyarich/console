@@ -1,7 +1,7 @@
 {
-  "name": "@moyarich/console-addon-export",
+  "name": "@moyarich/console-addon-data-export",
   "version": "0.1.0",
-  "description": "First-party data-level output export addon for @moyarich/console.",
+  "description": "First-party data-level export addon for @moyarich/console.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -14,9 +14,7 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -38,18 +36,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/moyarich/console.git",
-    "directory": "packages/console-addon-export"
+    "directory": "packages/console-addon-data-export"
   },
   "bugs": {
     "url": "https://github.com/moyarich/console/issues"
   },
   "homepage": "https://github.com/moyarich/console#readme",
-  "keywords": [
-    "react",
-    "console",
-    "addon",
-    "export",
-    "json",
-    "developer-tools"
-  ]
+  "keywords": ["react", "console", "addon", "export", "data-export", "json", "developer-tools"]
 }

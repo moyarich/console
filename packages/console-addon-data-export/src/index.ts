@@ -14,31 +14,31 @@ import {
   type ConsoleProcessViewEntry,
 } from "@moyarich/console";
 
-/** Stable package-qualified identity for the export addon. */
-export const CONSOLE_EXPORT_ADDON_ID = "@moyarich/console-addon-export";
+/** Stable package-qualified identity for the data-export addon. */
+export const CONSOLE_DATA_EXPORT_ADDON_ID = "@moyarich/console-addon-data-export";
 
 /** Stable marker written into structured export files. */
-export const CONSOLE_EXPORT_TYPE = "MOYARICH_CONSOLE_EXPORT";
+export const CONSOLE_DATA_EXPORT_TYPE = "MOYARICH_CONSOLE_DATA_EXPORT";
 
 /** Version of the structured export envelope. */
-export const CONSOLE_EXPORT_VERSION = 1 as const;
+export const CONSOLE_DATA_EXPORT_VERSION = 1 as const;
 
-export type ConsoleExportScope = "all" | "visible";
-export type ConsoleExportFormat = "text" | "json";
+export type ConsoleDataExportScope = "all" | "visible";
+export type ConsoleDataExportFormat = "text" | "json";
 
-export interface ConsoleExportOptions {
+export interface ConsoleDataExportOptions {
   /** Output format. */
-  format: ConsoleExportFormat;
+  format: ConsoleDataExportFormat;
   /** Logical data scope. @default "visible" */
-  scope?: ConsoleExportScope;
+  scope?: ConsoleDataExportScope;
 }
 
-export interface ConsoleExportDownloadOptions extends ConsoleExportOptions {
+export interface ConsoleDataExportDownloadOptions extends ConsoleDataExportOptions {
   /** Download filename without an inferred extension requirement. */
   fileName?: string;
 }
 
-export interface ConsoleExportActionsOptions {
+export interface ConsoleDataExportActionsOptions {
   /** Add Copy as JSON to panel and console-surface context actions. @default true */
   copyJson?: boolean;
   /** Add Download text to the panel actions. @default true */
@@ -46,17 +46,17 @@ export interface ConsoleExportActionsOptions {
   /** Add Download JSON to the panel actions. @default true */
   downloadJson?: boolean;
   /** Scope used by contributed actions. @default "visible" */
-  scope?: ConsoleExportScope;
+  scope?: ConsoleDataExportScope;
 }
 
-export interface ConsoleExportAddonOptions {
+export interface ConsoleDataExportAddonOptions {
   /** Optional action contribution configuration. */
-  actions?: ConsoleExportActionsOptions;
+  actions?: ConsoleDataExportActionsOptions;
   /** Base filename used by download actions. @default "console-export" */
   fileName?: string;
 }
 
-export interface ConsoleStructuredExportRecord {
+export interface ConsoleStructuredDataExportRecord {
   readonly kind: "console";
   readonly id?: string;
   readonly method: ConsoleMessageData["method"];
@@ -73,7 +73,7 @@ export interface ConsoleStructuredExportRecord {
   };
 }
 
-export interface ConsoleProcessExportRecord {
+export interface ConsoleProcessDataExportRecord {
   readonly kind: "process";
   readonly id?: string;
   readonly stream?: string;
@@ -82,23 +82,23 @@ export interface ConsoleProcessExportRecord {
   readonly metadata?: unknown;
 }
 
-export type ConsoleExportRecord =
-  ConsoleStructuredExportRecord | ConsoleProcessExportRecord;
+export type ConsoleDataExportRecord =
+  ConsoleStructuredDataExportRecord | ConsoleProcessDataExportRecord;
 
-export interface ConsoleExportEnvelope {
-  readonly type: typeof CONSOLE_EXPORT_TYPE;
-  readonly version: typeof CONSOLE_EXPORT_VERSION;
+export interface ConsoleDataExportEnvelope {
+  readonly type: typeof CONSOLE_DATA_EXPORT_TYPE;
+  readonly version: typeof CONSOLE_DATA_EXPORT_VERSION;
   readonly mode: ConsoleDataSnapshot["mode"];
-  readonly scope: ConsoleExportScope;
+  readonly scope: ConsoleDataExportScope;
   readonly count: number;
-  readonly records: readonly ConsoleExportRecord[];
+  readonly records: readonly ConsoleDataExportRecord[];
 }
 
-export interface ConsoleExportService {
-  toText(scope?: ConsoleExportScope): string;
-  toJson(scope?: ConsoleExportScope): string;
-  copy(options?: Partial<ConsoleExportOptions>): Promise<void>;
-  download(options?: Partial<ConsoleExportDownloadOptions>): void;
+export interface ConsoleDataExportService {
+  toText(scope?: ConsoleDataExportScope): string;
+  toJson(scope?: ConsoleDataExportScope): string;
+  copy(options?: Partial<ConsoleDataExportOptions>): Promise<void>;
+  download(options?: Partial<ConsoleDataExportDownloadOptions>): void;
 }
 
 const ANSI_ESCAPE = String.fromCharCode(27);
@@ -111,7 +111,7 @@ const CSI_PATTERN = new RegExp(`${ANSI_ESCAPE}\\[[0-?]*[ -/]*[@-~]`, "g");
 
 function getScopedItems(
   snapshot: ConsoleDataSnapshot,
-  scope: ConsoleExportScope,
+  scope: ConsoleDataExportScope,
 ) {
   return scope === "all" ? snapshot.all : snapshot.visible;
 }
@@ -153,7 +153,7 @@ function formatStructuredMessage(message: ConsoleMessageData): string {
 
 function createStructuredExportRecord(
   message: ConsoleMessageData,
-): ConsoleStructuredExportRecord {
+): ConsoleStructuredDataExportRecord {
   const hasOptions =
     message.columns !== undefined ||
     message.expandLevel !== undefined ||
@@ -205,9 +205,9 @@ function formatProcessEntry(entry: ConsoleProcessViewEntry): string {
 }
 
 /** Formats a logical console snapshot as deterministic plain text. */
-export function formatConsoleExportText(
+export function formatConsoleDataExportText(
   snapshot: ConsoleDataSnapshot,
-  scope: ConsoleExportScope = "visible",
+  scope: ConsoleDataExportScope = "visible",
 ): string {
   const items = getScopedItems(snapshot, scope);
 
@@ -224,7 +224,7 @@ export function formatConsoleExportText(
 
 function createProcessExportRecord(
   view: ConsoleProcessViewEntry,
-): ConsoleProcessExportRecord {
+): ConsoleProcessDataExportRecord {
   const { entry, output } = view;
   const hasMetadata = Object.keys(output.metadata).length > 0;
 
@@ -243,10 +243,10 @@ function createProcessExportRecord(
 }
 
 /** Creates the versioned structured export envelope. */
-export function createConsoleExportEnvelope(
+export function createConsoleDataExportEnvelope(
   snapshot: ConsoleDataSnapshot,
-  scope: ConsoleExportScope = "visible",
-): ConsoleExportEnvelope {
+  scope: ConsoleDataExportScope = "visible",
+): ConsoleDataExportEnvelope {
   const items = getScopedItems(snapshot, scope);
 
   const records =
@@ -259,8 +259,8 @@ export function createConsoleExportEnvelope(
         );
 
   return {
-    type: CONSOLE_EXPORT_TYPE,
-    version: CONSOLE_EXPORT_VERSION,
+    type: CONSOLE_DATA_EXPORT_TYPE,
+    version: CONSOLE_DATA_EXPORT_VERSION,
     mode: snapshot.mode,
     scope,
     count: records.length,
@@ -269,45 +269,45 @@ export function createConsoleExportEnvelope(
 }
 
 /** Formats a logical console snapshot as the versioned JSON export format. */
-export function formatConsoleExportJson(
+export function formatConsoleDataExportJson(
   snapshot: ConsoleDataSnapshot,
-  scope: ConsoleExportScope = "visible",
+  scope: ConsoleDataExportScope = "visible",
 ): string {
-  return JSON.stringify(createConsoleExportEnvelope(snapshot, scope), null, 2);
+  return JSON.stringify(createConsoleDataExportEnvelope(snapshot, scope), null, 2);
 }
 
 /** Formats a logical console snapshot without requiring React or the DOM. */
-export function formatConsoleExport(
+export function formatConsoleDataExport(
   snapshot: ConsoleDataSnapshot,
-  { format, scope = "visible" }: ConsoleExportOptions,
+  { format, scope = "visible" }: ConsoleDataExportOptions,
 ): string {
   return format === "json"
-    ? formatConsoleExportJson(snapshot, scope)
-    : formatConsoleExportText(snapshot, scope);
+    ? formatConsoleDataExportJson(snapshot, scope)
+    : formatConsoleDataExportText(snapshot, scope);
 }
 
 /** Copies formatted export data using the existing core clipboard helper. */
-export async function copyConsoleExport(
+export async function copyConsoleDataExport(
   snapshot: ConsoleDataSnapshot,
-  { format = "text", scope = "visible" }: Partial<ConsoleExportOptions> = {},
+  { format = "text", scope = "visible" }: Partial<ConsoleDataExportOptions> = {},
 ): Promise<void> {
-  await writeClipboardText(formatConsoleExport(snapshot, { format, scope }));
+  await writeClipboardText(formatConsoleDataExport(snapshot, { format, scope }));
 }
 
 /** Downloads formatted export data in browser environments. */
-export function downloadConsoleExport(
+export function downloadConsoleDataExport(
   snapshot: ConsoleDataSnapshot,
   {
     format = "text",
     scope = "visible",
     fileName = "console-export",
-  }: Partial<ConsoleExportDownloadOptions> = {},
+  }: Partial<ConsoleDataExportDownloadOptions> = {},
 ): void {
   if (typeof document === "undefined" || typeof URL === "undefined") {
     throw new Error("Console export download requires a browser environment.");
   }
 
-  const value = formatConsoleExport(snapshot, { format, scope });
+  const value = formatConsoleDataExport(snapshot, { format, scope });
   const extension = format === "json" ? "json" : "txt";
   const mimeType =
     format === "json"
@@ -329,21 +329,21 @@ export function downloadConsoleExport(
 }
 
 /** Creates a programmatic export service backed by the core logical-data service. */
-export function createConsoleExportService(
+export function createConsoleDataExportService(
   data: ConsoleDataService,
   defaultFileName = "console-export",
-): ConsoleExportService {
+): ConsoleDataExportService {
   return {
     toText(scope = "visible") {
-      return formatConsoleExportText(data.getSnapshot(), scope);
+      return formatConsoleDataExportText(data.getSnapshot(), scope);
     },
 
     toJson(scope = "visible") {
-      return formatConsoleExportJson(data.getSnapshot(), scope);
+      return formatConsoleDataExportJson(data.getSnapshot(), scope);
     },
 
     async copy({ format = "text", scope = "visible" } = {}) {
-      await copyConsoleExport(data.getSnapshot(), { format, scope });
+      await copyConsoleDataExport(data.getSnapshot(), { format, scope });
     },
 
     download({
@@ -351,7 +351,7 @@ export function createConsoleExportService(
       scope = "visible",
       fileName = defaultFileName,
     } = {}) {
-      downloadConsoleExport(data.getSnapshot(), {
+      downloadConsoleDataExport(data.getSnapshot(), {
         format,
         scope,
         fileName,
@@ -361,9 +361,9 @@ export function createConsoleExportService(
 }
 
 const actionIds = {
-  copyJson: `${CONSOLE_EXPORT_ADDON_ID}:copy-json`,
-  downloadText: `${CONSOLE_EXPORT_ADDON_ID}:download-text`,
-  downloadJson: `${CONSOLE_EXPORT_ADDON_ID}:download-json`,
+  copyJson: `${CONSOLE_DATA_EXPORT_ADDON_ID}:copy-json`,
+  downloadText: `${CONSOLE_DATA_EXPORT_ADDON_ID}:download-text`,
+  downloadJson: `${CONSOLE_DATA_EXPORT_ADDON_ID}:download-json`,
 } as const;
 
 function registerPanelAction(
@@ -385,13 +385,13 @@ function registerContextMenuAction(
 }
 
 /**
- * Creates the first-party data-level output export addon.
+ * Creates the first-party data-export addon.
  *
  * Existing core Copy output, object/table copy, serializers, process-output
  * handling, and renderers remain owned by @moyarich/console.
  */
-export function createConsoleExportAddon(
-  options: ConsoleExportAddonOptions = {},
+export function createConsoleDataExportAddon(
+  options: ConsoleDataExportAddonOptions = {},
 ): ConsoleAddon {
   const {
     actions: {
@@ -404,11 +404,11 @@ export function createConsoleExportAddon(
   } = options;
 
   return {
-    id: CONSOLE_EXPORT_ADDON_ID,
+    id: CONSOLE_DATA_EXPORT_ADDON_ID,
 
     activate(host) {
       const data = host.services.require(consoleServices.data);
-      const service = createConsoleExportService(data, fileName);
+      const service = createConsoleDataExportService(data, fileName);
       const disabled = (context: { hasMessages: boolean }) =>
         !context.hasMessages;
 

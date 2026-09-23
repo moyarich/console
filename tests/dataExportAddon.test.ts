@@ -10,15 +10,15 @@ import {
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
 import {
-  CONSOLE_EXPORT_ADDON_ID,
-  CONSOLE_EXPORT_TYPE,
-  CONSOLE_EXPORT_VERSION,
-  createConsoleExportAddon,
-  createConsoleExportEnvelope,
-  createConsoleExportService,
-  formatConsoleExportJson,
-  formatConsoleExportText,
-} from "@moyarich/console-addon-export";
+  CONSOLE_DATA_EXPORT_ADDON_ID,
+  CONSOLE_DATA_EXPORT_TYPE,
+  CONSOLE_DATA_EXPORT_VERSION,
+  createConsoleDataExportAddon,
+  createConsoleDataExportEnvelope,
+  createConsoleDataExportService,
+  formatConsoleDataExportJson,
+  formatConsoleDataExportText,
+} from "@moyarich/console-addon-data-export";
 
 function createDataService(snapshot: ConsoleDataSnapshot): ConsoleDataService {
   return {
@@ -27,10 +27,10 @@ function createDataService(snapshot: ConsoleDataSnapshot): ConsoleDataService {
   };
 }
 
-describe("@moyarich/console-addon-export", () => {
+describe("@moyarich/console-addon-data-export", () => {
   it("uses the package-qualified addon id", () => {
-    expect(createConsoleExportAddon().id).toBe(CONSOLE_EXPORT_ADDON_ID);
-    expect(CONSOLE_EXPORT_ADDON_ID).toBe("@moyarich/console-addon-export");
+    expect(createConsoleDataExportAddon().id).toBe(CONSOLE_DATA_EXPORT_ADDON_ID);
+    expect(CONSOLE_DATA_EXPORT_ADDON_ID).toBe("@moyarich/console-addon-data-export");
   });
 
   it("formats retained and visible structured output independently", () => {
@@ -52,11 +52,11 @@ describe("@moyarich/console-addon-export", () => {
       visible: [visible],
     };
 
-    expect(formatConsoleExportText(snapshot, "visible")).toContain("visible");
-    expect(formatConsoleExportText(snapshot, "visible")).not.toContain(
+    expect(formatConsoleDataExportText(snapshot, "visible")).toContain("visible");
+    expect(formatConsoleDataExportText(snapshot, "visible")).not.toContain(
       "hidden",
     );
-    expect(formatConsoleExportText(snapshot, "all")).toContain("[warn] hidden");
+    expect(formatConsoleDataExportText(snapshot, "all")).toContain("[warn] hidden");
   });
 
   it("serializes rich and circular structured values safely", () => {
@@ -81,11 +81,11 @@ describe("@moyarich/console-addon-export", () => {
       ],
     };
 
-    const envelope = createConsoleExportEnvelope(snapshot, "all");
-    const json = formatConsoleExportJson(snapshot, "all");
+    const envelope = createConsoleDataExportEnvelope(snapshot, "all");
+    const json = formatConsoleDataExportJson(snapshot, "all");
 
-    expect(envelope.type).toBe(CONSOLE_EXPORT_TYPE);
-    expect(envelope.version).toBe(CONSOLE_EXPORT_VERSION);
+    expect(envelope.type).toBe(CONSOLE_DATA_EXPORT_TYPE);
+    expect(envelope.version).toBe(CONSOLE_DATA_EXPORT_VERSION);
     expect(envelope.scope).toBe("all");
     expect(envelope.count).toBe(1);
     expect(envelope.records[0]).toMatchObject({
@@ -128,8 +128,8 @@ describe("@moyarich/console-addon-export", () => {
       visible: resolved,
     };
 
-    const text = formatConsoleExportText(snapshot);
-    const json = formatConsoleExportJson(snapshot);
+    const text = formatConsoleDataExportText(snapshot);
+    const json = formatConsoleDataExportJson(snapshot);
 
     expect(resolved).toHaveLength(1);
     expect(text).toBe("Downloading complete");
@@ -157,14 +157,14 @@ describe("@moyarich/console-addon-export", () => {
       visible: [],
     };
 
-    const envelope = createConsoleExportEnvelope(snapshot, "all");
+    const envelope = createConsoleDataExportEnvelope(snapshot, "all");
 
     expect(envelope.records[0]).toEqual({
       kind: "console",
       id: "table-1",
       method: "table",
       text: expect.stringContaining("Users"),
-      args: ["Users", [{ id: 1, name: "Ada" }]],
+      data: ["Users", [{ id: 1, name: "Ada" }]],
       depth: 1,
       timestamp: Date.UTC(2026, 8, 23, 4, 0, 0),
       time: "2026-09-23T04:00:00.000Z",
@@ -184,7 +184,7 @@ describe("@moyarich/console-addon-export", () => {
       ],
       visible: [{ method: "log", depth: 0, data: ["all"] }],
     };
-    const service = createConsoleExportService(createDataService(snapshot));
+    const service = createConsoleDataExportService(createDataService(snapshot));
 
     expect(service.toText()).toBe("all");
     expect(service.toText("all")).toContain("[error] hidden");
@@ -200,7 +200,7 @@ describe("@moyarich/console-addon-export", () => {
     };
 
     manager.services.provide(consoleServices.data, createDataService(snapshot));
-    manager.load(createConsoleExportAddon());
+    manager.load(createConsoleDataExportAddon());
 
     const panelActions = manager.extensions.getAll(
       consoleExtensionPoints.panelAction,
@@ -221,7 +221,7 @@ describe("@moyarich/console-addon-export", () => {
       "Copy as JSON",
     ]);
 
-    expect(manager.unload(CONSOLE_EXPORT_ADDON_ID)).toBe(true);
+    expect(manager.unload(CONSOLE_DATA_EXPORT_ADDON_ID)).toBe(true);
     expect(
       manager.extensions.getAll(consoleExtensionPoints.panelAction),
     ).toEqual([]);
@@ -233,9 +233,9 @@ describe("@moyarich/console-addon-export", () => {
   it("requires the generic core data service", () => {
     const manager = createConsoleAddonManager();
 
-    expect(() => manager.load(createConsoleExportAddon())).toThrow(
+    expect(() => manager.load(createConsoleDataExportAddon())).toThrow(
       /console\.data.*not available/,
     );
-    expect(manager.has(CONSOLE_EXPORT_ADDON_ID)).toBe(false);
+    expect(manager.has(CONSOLE_DATA_EXPORT_ADDON_ID)).toBe(false);
   });
 });
