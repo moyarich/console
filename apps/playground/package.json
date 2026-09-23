@@ -12,6 +12,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@moyarich/console": "*",
+    "@moyarich/console-addon-imperative-scrolling": "*",
     "change-case": "^5.4.4",
     "lucide-react": "^1.47.0",
     "monaco-editor": "^0.52.2",
