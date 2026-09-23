@@ -55,6 +55,15 @@ A task is not complete while Prettier or ESLint reports errors.
 
 Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
 
+## Addon dependency boundary
+
+All `console-addon-*` packages depend on `@moyarich/console-core`, never on `@moyarich/console`.
+
+- import `ConsoleAddon`, `consoleServices`, `consoleExtensionPoints`, and addon-facing contracts from `@moyarich/console-core`
+- do not add `@moyarich/console` to an addon's dependencies, peerDependencies, or devDependencies
+- `@moyarich/console` is a host/UI package that consumes and re-exports core contracts
+- shared service/extension tokens must remain singletons created by core
+
 ## Workspace addon imports in development
 
 Workspace addon packages publish from their built `dist/` output, but the playground and Storybook are development surfaces and must not require a prebuild before Vite can start.
