@@ -13,12 +13,16 @@ const structuredMessages: ConsoleMessageData[] = [
     method: "log",
     depth: 0,
     data: ["Request complete", { status: 200, durationMs: 84 }],
+    timestamp: Date.UTC(2026, 8, 23, 4, 0, 0),
+    source: "preview:api-client",
   },
   {
     id: "story-warning",
     method: "warn",
     depth: 0,
     data: ["Cache nearing capacity", { usage: "86%" }],
+    timestamp: Date.UTC(2026, 8, 23, 4, 0, 2),
+    source: "preview:cache",
   },
 ];
 
