@@ -11,6 +11,7 @@ import type {
   ConsoleValueRenderer,
 } from "./renderers";
 import type { ConsoleStructuredOutputParser } from "./utils/terminal/types";
+import type { ConsoleDataService } from "./data";
 import type { ConsoleViewportService } from "./viewport";
 
 /** Version of the public addon-host contract. */
@@ -424,6 +425,7 @@ export const consoleCapabilities = Object.freeze({
 export const consoleServices = Object.freeze({
   viewport:
     createConsoleServiceToken<ConsoleViewportService>("console.viewport"),
+  data: createConsoleServiceToken<ConsoleDataService>("console.data"),
 });
 
 /** Built-in extension points backed by the console's existing hook contracts. */
