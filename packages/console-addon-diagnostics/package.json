@@ -14,7 +14,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -39,5 +41,12 @@
     "url": "https://github.com/moyarich/console/issues"
   },
   "homepage": "https://github.com/moyarich/console#readme",
-  "keywords": ["react", "console", "addon", "diagnostics", "debugging", "developer-tools"]
+  "keywords": [
+    "react",
+    "console",
+    "addon",
+    "diagnostics",
+    "debugging",
+    "developer-tools"
+  ]
 }
