@@ -230,9 +230,7 @@ function createActionsAddon(): ConsoleAddon {
           id: "addon-info",
           label: `Inspect with ${info.label}`,
           onSelect: ({ message }) => {
-            window.alert(
-              `${info.label} handled ${message.id ?? "message"}`,
-            );
+            window.alert(`${info.label} handled ${message.id ?? "message"}`);
           },
         },
         {
