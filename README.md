@@ -724,6 +724,44 @@ import {
 Pure formatters do not require a mounted React component or DOM. Browser
 copy/download helpers are separate convenience APIs.
 
+## Console diagnostics addon
+
+Install diagnostics separately when you need to inspect what data entered the console and how the process-output pipeline transformed it:
+
+```bash
+npm install @moyarich/console-addon-diagnostics
+```
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
+
+const diagnosticsAddon = createConsoleDiagnosticsAddon();
+
+<Console messages={messages} addons={[diagnosticsAddon]} />;
+```
+
+Diagnostics and data export are intentionally separate addons:
+
+```text
+@moyarich/console-addon-data-export
+  └─ normal logical-data export
+     ├─ text
+     ├─ structured JSON
+     └─ copy/download
+
+@moyarich/console-addon-diagnostics
+  └─ debugging and pipeline inspection
+     ├─ retained vs visible structured messages
+     ├─ original ANSI rawEntries
+     ├─ normalized process entries
+     └─ processor-resolved data and metadata
+```
+
+In structured mode the diagnostics report preserves retained and logically visible `ConsoleMessageData`. In ANSI mode it deliberately keeps `rawEntries` separate from normalized/resolved entries, making carriage-return normalization and process-output processor transformations inspectable.
+
+The diagnostics addon exposes `createConsoleDiagnosticsReport`, `formatConsoleDiagnosticsJson`, `createConsoleDiagnosticsService`, and optional **Copy diagnostics JSON** / **Download diagnostics JSON** actions. It depends only on public `@moyarich/console` contracts and does not depend on the data-export addon.
+
 ## Theming with CSS custom properties
 
 The package styles expose `--console-*` custom properties as **theme inputs**.

@@ -27,6 +27,15 @@ const config: StorybookConfig = {
             ),
           },
           {
+            find: "@moyarich/console-addon-diagnostics",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/console-addon-diagnostics/src/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
             find: "@moyarich/console-addon-data-export",
             replacement: fileURLToPath(
               new URL(

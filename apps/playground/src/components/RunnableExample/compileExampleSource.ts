@@ -1,5 +1,6 @@
 import * as ConsolePackage from "@moyarich/console";
 import * as DataExportAddonPackage from "@moyarich/console-addon-data-export";
+import * as DiagnosticsAddonPackage from "@moyarich/console-addon-diagnostics";
 import * as ImperativeScrollingAddonPackage from "@moyarich/console-addon-imperative-scrolling";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
@@ -17,6 +18,7 @@ const SUPPORTED_BARE_IMPORTS = [
   "@moyarich/console",
   "@moyarich/console/styles.css",
   "@moyarich/console-addon-data-export",
+  "@moyarich/console-addon-diagnostics",
   "@moyarich/console-addon-imperative-scrolling",
   "lucide-react",
   "typescript",
@@ -64,6 +66,7 @@ function getRuntimeModules(ts: TypeScriptModule) {
     "@moyarich/console": ConsolePackage,
     "@moyarich/console/styles.css": {},
     "@moyarich/console-addon-data-export": DataExportAddonPackage,
+    "@moyarich/console-addon-diagnostics": DiagnosticsAddonPackage,
     "@moyarich/console-addon-imperative-scrolling":
       ImperativeScrollingAddonPackage,
     "lucide-react": LucideReact,
