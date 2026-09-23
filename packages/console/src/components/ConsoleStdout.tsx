@@ -7,9 +7,9 @@ import {
   type ConsoleLinkProviderContext,
 } from "../links";
 import {
-  normalizeConsoleProcessOutputEntries,
-  processConsoleOutputEntry,
+  resolveConsoleProcessOutputEntries,
   type ConsoleProcessOutputProcessor,
+  type ConsoleResolvedProcessOutputEntry,
   type ConsoleStdoutEntry,
 } from "../processOutput";
 import { getAnsiTokenRanges } from "../utils/terminal/getAnsiTokenRanges";
@@ -40,6 +40,11 @@ export interface ConsoleStdoutProps {
   parseStructuredOutput?: boolean;
   /** Ordered process-output processors applied before structured parsing. */
   processors?: readonly ConsoleProcessOutputProcessor[];
+  /**
+   * Pre-resolved logical process output supplied by the Console host so
+   * processors are not executed again for the same render.
+   */
+  resolvedEntries?: readonly ConsoleResolvedProcessOutputEntry[];
   /** Ordered custom structured-output parsers. */
   structuredOutputParsers?: readonly ConsoleStructuredOutputParser[];
   /** Custom renderers used when a line becomes a structured value. */
@@ -119,25 +124,22 @@ export function ConsoleStdout({
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
   processors,
+  resolvedEntries,
   structuredOutputParsers,
   valueRenderers,
   detectLinks = true,
   linkProviders,
 }: ConsoleStdoutProps) {
-  const normalizedEntries = normalizeConsoleProcessOutputEntries(entries);
+  const resolvedOutputEntries =
+    resolvedEntries ?? resolveConsoleProcessOutputEntries(entries, processors);
 
-  if (!normalizedEntries.length) {
+  if (!resolvedOutputEntries.length) {
     return <div className="console-stdout-empty">{emptyMessage}</div>;
   }
 
   return (
     <div className="console-stdout-list">
-      {normalizedEntries.map((entry, index) => {
-        const processedOutput = processConsoleOutputEntry(
-          entry,
-          index,
-          processors,
-        );
+      {resolvedOutputEntries.map(({ entry, output: processedOutput }, index) => {
         const data = processedOutput.data;
         const stream = typeof entry === "string" ? undefined : entry.stream;
         const id = typeof entry === "string" ? undefined : entry.id;
