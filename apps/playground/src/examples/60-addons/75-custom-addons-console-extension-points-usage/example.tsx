@@ -52,11 +52,20 @@ function parseMetric(text: string): Metric | undefined {
   const match = /^METRIC\s+(.+?)=(\d+(?:\.\d+)?)(\S+)$/.exec(text.trim());
   if (!match) return undefined;
 
+  const [, label, numericValue, unit] = match;
+  if (
+    label === undefined ||
+    numericValue === undefined ||
+    unit === undefined
+  ) {
+    return undefined;
+  }
+
   return {
     kind: "metric",
-    label: match[1],
-    value: Number(match[2]),
-    unit: match[3],
+    label,
+    value: Number(numericValue),
+    unit,
   };
 }
 
