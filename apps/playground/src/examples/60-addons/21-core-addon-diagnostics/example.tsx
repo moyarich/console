@@ -24,11 +24,7 @@ const structuredMessages: ConsoleMessageData[] = [
   },
 ];
 
-const processMessages = [
-  "Progress 10%\r",
-  "Progress 60%\r",
-  "Progress 100%\n",
-];
+const processMessages = ["Progress 10%\r", "Progress 60%\r", "Progress 100%\n"];
 
 const processors: ConsoleProcessOutputProcessor[] = [
   {
