@@ -1,7 +1,4 @@
-import type {
-  ConsoleExample,
-  ConsoleExampleGroup,
-} from "../../examples";
+import type { ConsoleExample, ConsoleExampleGroup } from "../../examples";
 
 export interface ExampleNavigationGroup {
   group: ConsoleExampleGroup;
