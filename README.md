@@ -1500,19 +1500,19 @@ Available helpers:
 
 ### Addons and extension infrastructure
 
-| Export                                            | Purpose                                                                 |
-| ------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                           |
-| `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts  |
-| `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons            |
-| `createConsoleImperativeScrollControlsAddon`      | Create the core imperative-scroll-controls addon                        |
-| `isCoreConsoleAddonId`                            | Distinguish reserved core addon IDs from external addon IDs             |
-| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points         |
-| `consoleServices`                                 | Built-in typed services, including the shared viewport service          |
-| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point               |
-| `createConsoleServiceToken`                       | Define a typed single-provider service                                  |
-| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                    |
-| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                      |
+| Export                                            | Purpose                                                                |
+| ------------------------------------------------- | ---------------------------------------------------------------------- |
+| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                          |
+| `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts |
+| `consoleCoreAddonIds`                             | Stable package-qualified IDs for auto-registered core addons           |
+| `createConsoleImperativeScrollControlsAddon`      | Create the core imperative-scroll-controls addon                       |
+| `isCoreConsoleAddonId`                            | Distinguish reserved core addon IDs from external addon IDs            |
+| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points        |
+| `consoleServices`                                 | Built-in typed services, including the shared viewport service         |
+| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point              |
+| `createConsoleServiceToken`                       | Define a typed single-provider service                                 |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                   |
+| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                     |
 
 ### Transport and serialization
 
