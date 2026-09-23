@@ -10,8 +10,8 @@
       "@moyarich/console-addon-imperative-scrolling": [
         "./packages/console-addon-imperative-scrolling/src/index.ts"
       ],
-      "@moyarich/console-addon-export": [
-        "./packages/console-addon-export/src/index.ts"
+      "@moyarich/console-addon-data-export": [
+        "./packages/console-addon-data-export/src/index.ts"
       ]
     }
   },
@@ -20,6 +20,6 @@
     "stories",
     ".storybook",
     "packages/console-addon-imperative-scrolling/src",
-    "packages/console-addon-export/src"
+    "packages/console-addon-data-export/src"
   ]
 }

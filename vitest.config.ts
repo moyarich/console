@@ -8,9 +8,9 @@ export default defineConfig({
       "@moyarich/console": fileURLToPath(
         new URL("./packages/console/src/index.ts", import.meta.url),
       ),
-      "@moyarich/console-addon-export": fileURLToPath(
+      "@moyarich/console-addon-data-export": fileURLToPath(
         new URL(
-          "./packages/console-addon-export/src/index.ts",
+          "./packages/console-addon-data-export/src/index.ts",
           import.meta.url,
         ),
       ),

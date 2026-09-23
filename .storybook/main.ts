@@ -27,10 +27,10 @@ const config: StorybookConfig = {
             ),
           },
           {
-            find: "@moyarich/console-addon-export",
+            find: "@moyarich/console-addon-data-export",
             replacement: fileURLToPath(
               new URL(
-                "../packages/console-addon-export/src/index.ts",
+                "../packages/console-addon-data-export/src/index.ts",
                 import.meta.url,
               ),
             ),
