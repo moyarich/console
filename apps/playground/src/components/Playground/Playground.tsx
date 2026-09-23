@@ -51,11 +51,6 @@ export function Playground() {
             <ExamplePage />
           </PlaygroundMDXProvider>
         </section>
-
-        <footer className="site-footer">
-          <span>@moyarich/console</span>
-          <span>React console UI and transport adapters</span>
-        </footer>
       </main>
     </div>
   );
