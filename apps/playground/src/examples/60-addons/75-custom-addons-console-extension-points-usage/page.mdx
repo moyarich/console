@@ -3,7 +3,10 @@ label: "Usage Of Console Extension Points"
 description: "Demonstrate every built-in consoleExtensionPoints.* contract across structured and ANSI hosts, including shared services and capability checks."
 ---
 
-<RunnableExample />
+import Example from "./example.tsx"
+import source from "./example.tsx?raw"
+
+<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
 
 This example exercises the built-in extension system across both structured and ANSI hosts. It registers:
 
