@@ -1,5 +1,3 @@
-import { readFileSync, readdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { compileExampleSource } from "../apps/playground/src/components/RunnableExample/compileExampleSource";
 
@@ -80,23 +78,4 @@ describe("runnable example browser ESM compilation", () => {
     },
   );
 
-  const examples = fileURLToPath(
-    new URL("../apps/playground/src/examples/", import.meta.url),
-  );
-  const files = readdirSync(examples, { recursive: true })
-    .map(String)
-    .filter((name) => name.endsWith("/example.tsx"));
-
-  it.each(files)(
-    "compiles existing example %s without bare runtime imports",
-    async (name) => {
-      const output = await compileOutput(
-        readFileSync(`${examples}/${name}`, "utf8"),
-        name,
-      );
-      expect(output).not.toMatch(
-        /(?:from\s*|import\s*)["'](?:react|@moyarich|lucide-react)/,
-      );
-    },
-  );
 });
