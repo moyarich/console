@@ -31,9 +31,18 @@ describe("playground example MDX metadata", () => {
   it.each([
     [undefined, "Missing meta export"],
     [{ description: "Missing label" }, '"label" must be a non-empty string'],
-    [{ label: "Missing description" }, '"description" must be a non-empty string'],
-    [{ label: "", description: "Empty label" }, '"label" must be a non-empty string'],
-    [{ label: "Empty description", description: "" }, '"description" must be a non-empty string'],
+    [
+      { label: "Missing description" },
+      '"description" must be a non-empty string',
+    ],
+    [
+      { label: "", description: "Empty label" },
+      '"label" must be a non-empty string',
+    ],
+    [
+      { label: "Empty description", description: "" },
+      '"description" must be a non-empty string',
+    ],
   ])("rejects invalid metadata %#", (metadata, message) => {
     expect(() =>
       parseConsoleExampleMeta(metadata, "./example/page.mdx"),
