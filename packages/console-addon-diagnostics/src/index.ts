@@ -233,11 +233,7 @@ export function createConsoleDiagnosticsReport(
 export function formatConsoleDiagnosticsJson(
   snapshot: ConsoleDataSnapshot,
 ): string {
-  return JSON.stringify(
-    createConsoleDiagnosticsReport(snapshot),
-    null,
-    2,
-  );
+  return JSON.stringify(createConsoleDiagnosticsReport(snapshot), null, 2);
 }
 
 /** Copies a diagnostics report as JSON. */
