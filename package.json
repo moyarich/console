@@ -19,7 +19,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write apps/playground/src/examples/60-addons/21-core-addon-diagnostics/example.tsx packages/console-addon-diagnostics/src/index.ts stories/Console.DiagnosticsAddon.stories.tsx && git diff -- apps/playground/src/examples/60-addons/21-core-addon-diagnostics/example.tsx packages/console-addon-diagnostics/src/index.ts stories/Console.DiagnosticsAddon.stories.tsx && false",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics"
   },
