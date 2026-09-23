@@ -3,4 +3,7 @@ label: "console.log"
 description: "Render a standard console.log message."
 ---
 
-<RunnableExample />
+import Example from "./example.tsx"
+import source from "./example.tsx?raw"
+
+<RunnableExample component={Example} source={source} sourcePath="example.tsx" />

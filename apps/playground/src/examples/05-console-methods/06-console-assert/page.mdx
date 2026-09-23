@@ -3,4 +3,7 @@ label: "console.assert"
 description: "Render only the failed console.assert call."
 ---
 
-<RunnableExample />
+import Example from "./example.tsx"
+import source from "./example.tsx?raw"
+
+<RunnableExample component={Example} source={source} sourcePath="example.tsx" />
