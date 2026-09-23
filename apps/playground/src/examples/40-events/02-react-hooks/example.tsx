@@ -43,11 +43,9 @@ export default function ConsoleExample() {
   }, [events]);
 
   const runExample = () => {
-    console.log("Hello without useConsoleMessages", {
-      events: "ConsoleEventEmitter",
-    });
-    console.info("Standard React hooks manage the component state.");
-    console.warn("The component listens directly to console events.");
+    console.log("Request complete", { status: 200, durationMs: 84 });
+    console.info("Cache hit", { key: "users:list" });
+    console.warn("Retry budget low", { remaining: 2 });
   };
 
   return (
