@@ -175,6 +175,13 @@ describe("console theme CSS", () => {
     expect(styles.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThan(12);
   });
 
+  it("keeps console typography restrained", () => {
+    expect(styles).not.toContain("font-weight: 820;");
+    expect(styles).not.toContain("font-weight: 700;");
+    expect(styles).toContain("font-weight: 600;");
+    expect(styles).toContain("font-weight: 500;");
+  });
+
   it("keeps the resizable addon on the same neutral accent system", () => {
     expect(resizableAddonStyles).toContain("light-dark(#635bff, #8b83ff)");
     expect(resizableAddonStyles).toContain(
