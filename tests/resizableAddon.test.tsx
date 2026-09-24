@@ -1,4 +1,5 @@
-import { isValidElement } from "react";
+import { isValidElement, type ReactElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   consoleExtensionPoints,
@@ -49,6 +50,13 @@ describe("@moyarich/console-addon-resizable", () => {
     });
 
     expect(isValidElement(decorated)).toBe(true);
+
+    const markup = renderToStaticMarkup(decorated as ReactElement);
+    expect(markup).toContain('data-console-resize-direction="horizontal"');
+    expect(markup).toContain('data-console-resize-axis="horizontal"');
+    expect(markup).not.toContain('data-console-resize-axis="vertical"');
+    expect(markup).toContain("default frame");
+
     expect(manager.unload(RESIZABLE_CONSOLE_ADDON_ID)).toBe(true);
     expect(
       manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
