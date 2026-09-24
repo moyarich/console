@@ -1,0 +1,24 @@
+---
+label: "CSS color decorators"
+description: "Verify native VS Code color swatches and the color picker across supported CSS color syntaxes."
+---
+
+import source from "./example.tsx?raw";
+import styles from "./styles.css?raw";
+
+This example exercises `@moyarich/vscode-visualize-css-colors` through the
+playground's VS Code-compatible Monaco host.
+
+Open **styles.css** in the source tabs. Supported color literals are surfaced through
+the native VS Code `DocumentColorProvider` path, so the editor owns the color
+decorator and color picker rather than the example adding Monaco decorations itself.
+
+The stylesheet includes short and alpha hex, modern RGB, legacy RGBA, HSL with alpha,
+a CSS named color, and `transparent`.
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  files={{ "styles.css": styles }}
+  title="CSS color decorators"
+/>
