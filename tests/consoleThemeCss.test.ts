@@ -144,12 +144,8 @@ describe("console theme CSS", () => {
     expect(styles).toMatch(
       /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, inherit\)\s*\);/,
     );
-    expect(styles).toContain(
-      "--_console-panel-background-color: var(",
-    );
-    expect(styles).toContain(
-      "--_console-header-icon-color: var(",
-    );
+    expect(styles).toContain("--_console-panel-background-color: var(");
+    expect(styles).toContain("--_console-header-icon-color: var(");
     expect(styles).toContain("var(--_console-accent-color)");
     expect(styles).toContain(
       "--_console-panel-control-hover-border-color: var(",
@@ -180,9 +176,7 @@ describe("console theme CSS", () => {
   });
 
   it("keeps the resizable addon on the same neutral accent system", () => {
-    expect(resizableAddonStyles).toContain(
-      "light-dark(#635bff, #8b83ff)",
-    );
+    expect(resizableAddonStyles).toContain("light-dark(#635bff, #8b83ff)");
     expect(resizableAddonStyles).toContain(
       "color-mix(in oklab, currentColor 18%, transparent)",
     );
