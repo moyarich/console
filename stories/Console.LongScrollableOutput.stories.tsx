@@ -23,7 +23,6 @@ export const LongScrollableOutput: Story = {
   args: {
     title: "Batch processing",
     autoScroll: false,
-    resizable: "vertical",
     style: { height: 260, minHeight: 160, maxHeight: 600 },
     messages: Array.from({ length: 100 }, (_, index) => ({
       id: `batch-${index}`,
