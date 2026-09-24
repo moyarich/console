@@ -20,7 +20,7 @@ export default function MessageFilterExample() {
         activate(host) {
           host.extensions.register(
             consoleExtensionPoints.messageFilter,
-            (message) => message.method !== "debug",
+            ({ message }) => message.method !== "debug",
             { id: "hide-debug" },
           );
         },
