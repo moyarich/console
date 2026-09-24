@@ -70,12 +70,8 @@ describe("playground color scheme", () => {
     expect(playgroundStyles).toContain('"-apple-system-body"');
     expect(playgroundStyles).toContain("font-family: var(--font-sans);");
     expect(playgroundStyles).not.toMatch(/\bInter,?/);
-    expect(playgroundStyles).toContain(
-      "-webkit-font-smoothing: antialiased;",
-    );
-    expect(playgroundStyles).toContain(
-      "-moz-osx-font-smoothing: grayscale;",
-    );
+    expect(playgroundStyles).toContain("-webkit-font-smoothing: antialiased;");
+    expect(playgroundStyles).toContain("-moz-osx-font-smoothing: grayscale;");
   });
 
   it("uses lighter typography weights for general playground UI", () => {
