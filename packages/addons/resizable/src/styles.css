@@ -139,11 +139,11 @@
 
 .console-resize-handle[data-console-resize-axis="horizontal"]::before {
   width: 1px;
-  height: 100%;
+  height: 90%;
 }
 
 .console-resize-handle[data-console-resize-axis="vertical"]::before {
-  width: 100%;
+  width: 90%;
   height: 1px;
 }
 
