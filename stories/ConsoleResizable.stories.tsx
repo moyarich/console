@@ -17,7 +17,7 @@ import {
   createResizableConsoleAddon,
   type ConsoleResizeDirection,
 } from "@moyarich/console-addon-resizable";
-import ResizableConsoleExample from "../apps/playground/src/examples/50-additional-usage/18-resizable-console/example";
+import ResizableConsoleExample from "../apps/playground/src/examples/80-additional-usage/18-resizable-console/example";
 
 type DockPosition = "top" | "right" | "bottom" | "left";
 
