@@ -9,6 +9,9 @@ const config: StorybookConfig = {
   viteFinal: (config) =>
     mergeConfig(config, {
       esbuild: { jsx: "automatic" },
+      worker: {
+        format: "es",
+      },
       resolve: {
         dedupe: ["vscode"],
         alias: [
