@@ -808,6 +808,52 @@ export type ConsoleMessageAction<TUi = unknown> = ConsoleAction<
   TUi
 >;
 
+export type ConsolePanelElementPlacement =
+  | "header-start"
+  | "header-end"
+  | "before-output"
+  | "after-output"
+  | "footer";
+
+export interface ConsolePanelElementContext {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly isEmpty: boolean;
+}
+
+export interface ConsolePanelElement<TUi = unknown> {
+  readonly id: string;
+  readonly placement: ConsolePanelElementPlacement;
+  render: (context: ConsolePanelElementContext) => TUi | undefined;
+}
+
+export type ConsoleMessageDecorationPlacement =
+  | "gutter"
+  | "before"
+  | "after"
+  | "badge"
+  | "overlay";
+
+export interface ConsoleMessageDecorationContext<TUi = unknown> {
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+  readonly placement: ConsoleMessageDecorationPlacement;
+  renderDefault: () => TUi;
+}
+
+export interface ConsoleMessageDecoration<TUi = unknown> {
+  readonly id: string;
+  readonly placement: ConsoleMessageDecorationPlacement;
+  match?: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageDecorationContext<TUi>,
+  ) => boolean;
+  render: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageDecorationContext<TUi>,
+  ) => TUi | undefined;
+}
+
 export type ConsoleOutputRendererContext<TUi = unknown> =
   | {
       mode: "console";
@@ -906,11 +952,17 @@ export const consoleExtensionPoints = Object.freeze({
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
   ),
+  panelElement: createConsoleExtensionPoint<ConsolePanelElement>(
+    "console.render.panelElement",
+  ),
   messageFilter: createConsoleExtensionPoint<ConsoleMessageFilter>(
     "console.filter.message",
   ),
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
+  ),
+  messageDecoration: createConsoleExtensionPoint<ConsoleMessageDecoration>(
+    "console.render.messageDecoration",
   ),
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
