@@ -555,7 +555,7 @@ hr {
   gap: 20px;
   width: min(1440px, calc(100% - 40px));
   margin: 0 auto;
-  border-top: 1px solid #e1e6ee;
+  border-top: 1px solid var(--playground-border);
   padding: 22px 0 34px;
   color: #8a94a6;
   font-size: 0.74rem;
