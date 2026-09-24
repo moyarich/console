@@ -26,13 +26,13 @@ function getPreferredMonacoTheme() {
     return "vs-dark";
   }
 
-  const preference = document.documentElement.dataset.theme;
+  const colorScheme = document.documentElement.style.colorScheme;
 
-  if (preference === "light") {
+  if (colorScheme === "light") {
     return "vs";
   }
 
-  if (preference === "dark") {
+  if (colorScheme === "dark") {
     return "vs-dark";
   }
 
@@ -81,7 +81,7 @@ export function MdxCodeBlock({
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["data-theme"],
+      attributeFilter: ["style"],
     });
     media.addEventListener("change", updateTheme);
 
