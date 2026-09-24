@@ -859,17 +859,11 @@ export interface ConsoleKeyboardShortcut {
   readonly preventDefault?: boolean;
   readonly stopPropagation?: boolean;
   when?: (context: ConsoleKeyboardShortcutContext) => boolean;
-  onTrigger: (
-    context: ConsoleKeyboardShortcutContext,
-  ) => void | Promise<void>;
+  onTrigger: (context: ConsoleKeyboardShortcutContext) => void | Promise<void>;
 }
 
 export type ConsolePanelElementPlacement =
-  | "header-start"
-  | "header-end"
-  | "before-output"
-  | "after-output"
-  | "footer";
+  "header-start" | "header-end" | "before-output" | "after-output" | "footer";
 
 export interface ConsolePanelElementContext {
   readonly mode: ConsoleMode;
@@ -884,11 +878,7 @@ export interface ConsolePanelElement<TUi = unknown> {
 }
 
 export type ConsoleMessageDecorationPlacement =
-  | "gutter"
-  | "before"
-  | "after"
-  | "badge"
-  | "overlay";
+  "gutter" | "before" | "after" | "badge" | "overlay";
 
 export interface ConsoleMessageDecorationContext {
   readonly index: number;
@@ -946,9 +936,7 @@ export interface ConsoleEmptyStateRendererContext<TUi = unknown> {
 export interface ConsoleEmptyStateRenderer<TUi = unknown> {
   readonly mode?: ConsoleMode;
   match?: (context: ConsoleEmptyStateRendererContext<TUi>) => boolean;
-  render: (
-    context: ConsoleEmptyStateRendererContext<TUi>,
-  ) => TUi | undefined;
+  render: (context: ConsoleEmptyStateRendererContext<TUi>) => TUi | undefined;
 }
 
 export interface ConsoleMessageTextProviderContext {
@@ -1018,9 +1006,10 @@ export const consoleServices = Object.freeze({
 
 /** Shared extension-point tokens used by console hosts and addons. */
 export const consoleExtensionPoints = Object.freeze({
-  processControlParser: createConsoleExtensionPoint<ConsoleProcessControlParser>(
-    "console.process.control",
-  ),
+  processControlParser:
+    createConsoleExtensionPoint<ConsoleProcessControlParser>(
+      "console.process.control",
+    ),
   processOutputProcessor:
     createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
       "console.process.output",
