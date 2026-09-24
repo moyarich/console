@@ -1,46 +1,98 @@
 .console-filtering-controls {
   --_console-filtering-color-scheme: var(
     --console-filtering-color-scheme,
-    var(--console-panel-color-scheme, var(--console-color-scheme, dark))
+    var(--console-panel-color-scheme, var(--console-color-scheme, inherit))
   );
   --_console-filtering-background-color: var(
     --console-filtering-background-color,
-    var(--console-panel-header-background-color, light-dark(#fff, #161b22))
+    var(--console-panel-header-background-color, light-dark(#ffffff, #111113))
   );
   --_console-filtering-color: var(
     --console-filtering-color,
-    var(--console-panel-header-color, light-dark(#202c40, #e6edf3))
+    var(--console-panel-header-color, light-dark(#18181b, #f4f4f5))
   );
   --_console-filtering-muted-color: var(
     --console-filtering-muted-color,
-    var(--console-panel-header-muted-color, light-dark(#7b8799, #8b949e))
+    color-mix(
+      in oklab,
+      var(--_console-filtering-color) 58%,
+      var(--_console-filtering-background-color) 42%
+    )
   );
   --_console-filtering-border: var(
     --console-filtering-border,
     var(
       --console-panel-header-border-bottom,
-      1px solid light-dark(#e5eaf2, #30363d)
+      1px solid
+        color-mix(
+          in oklab,
+          var(--_console-filtering-color) 10%,
+          var(--_console-filtering-background-color) 90%
+        )
     )
   );
   --_console-filtering-control-background-color: var(
     --console-filtering-control-background-color,
-    var(--console-panel-control-background-color, light-dark(#fff, #21262d))
-  );
-  --_console-filtering-control-border: var(
-    --console-filtering-control-border,
-    var(--console-panel-control-border, 1px solid light-dark(#d6deeb, #3d444d))
+    var(
+      --console-panel-control-background-color,
+      var(--_console-filtering-background-color)
+    )
   );
   --_console-filtering-control-color: var(
     --console-filtering-control-color,
-    var(--console-panel-control-color, light-dark(#42526b, #c9d1d9))
+    var(
+      --console-panel-control-color,
+      color-mix(
+        in oklab,
+        var(--_console-filtering-color) 72%,
+        var(--_console-filtering-control-background-color) 28%
+      )
+    )
+  );
+  --_console-filtering-control-border: var(
+    --console-filtering-control-border,
+    var(
+      --console-panel-control-border,
+      1px solid
+        color-mix(
+          in oklab,
+          var(--_console-filtering-control-color) 14%,
+          var(--_console-filtering-control-background-color) 86%
+        )
+    )
+  );
+  --_console-filtering-accent-color: var(
+    --console-filtering-accent-color,
+    light-dark(#635bff, #8b83ff)
+  );
+  --_console-filtering-hover-background-color: var(
+    --console-filtering-hover-background-color,
+    color-mix(
+      in oklab,
+      var(--_console-filtering-control-background-color) 92%,
+      var(--_console-filtering-control-color) 8%
+    )
   );
   --_console-filtering-active-background-color: var(
     --console-filtering-active-background-color,
-    light-dark(#e8eefc, #263b59)
+    color-mix(
+      in oklab,
+      var(--_console-filtering-accent-color) 14%,
+      var(--_console-filtering-control-background-color) 86%
+    )
   );
   --_console-filtering-active-color: var(
     --console-filtering-active-color,
-    light-dark(#274690, #a5c9ff)
+    var(--_console-filtering-accent-color)
+  );
+  --_console-filtering-focus-ring: var(
+    --console-filtering-focus-ring,
+    0 0 0 3px
+      color-mix(
+        in oklab,
+        var(--_console-filtering-accent-color) 24%,
+        transparent
+      )
   );
 
   color-scheme: var(--_console-filtering-color-scheme);
@@ -80,6 +132,11 @@
   background: var(--_console-filtering-control-background-color);
   color: var(--_console-filtering-control-color);
   font: inherit;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .console-filtering-method,
@@ -88,9 +145,29 @@
   cursor: pointer;
 }
 
+.console-filtering-method:hover,
+.console-filtering-reset:hover,
+.console-filtering-field input:hover,
+.console-filtering-field select:hover {
+  background: var(--_console-filtering-hover-background-color);
+}
+
 .console-filtering-method[aria-pressed="true"] {
+  border-color: color-mix(
+    in oklab,
+    var(--_console-filtering-accent-color) 38%,
+    transparent
+  );
   background: var(--_console-filtering-active-background-color);
   color: var(--_console-filtering-active-color);
+}
+
+.console-filtering-method:focus-visible,
+.console-filtering-reset:focus-visible,
+.console-filtering-field input:focus-visible,
+.console-filtering-field select:focus-visible {
+  outline: none;
+  box-shadow: var(--_console-filtering-focus-ring);
 }
 
 .console-filtering-field {
@@ -112,6 +189,10 @@
 .console-filtering-field select {
   width: 100%;
   padding: 5px 8px;
+}
+
+.console-filtering-field input::placeholder {
+  color: var(--_console-filtering-muted-color);
 }
 
 .console-filtering-field select {

@@ -8,6 +8,7 @@ import {
 import {
   CONSOLE_FILTERING_ADDON_ID,
   ConsoleFilteringControls,
+  consoleFilteringService,
   createConsoleFilteringAddon,
   createConsoleFilteringController,
   createConsoleMessageFilter,
@@ -71,6 +72,7 @@ describe("@moyarich/console-addon-filtering", () => {
     const addon = createConsoleFilteringAddon();
 
     manager.load(addon);
+    expect(manager.services.get(consoleFilteringService)).toBe(addon.controller);
 
     const initial = manager.extensions.getAll(
       consoleExtensionPoints.messageFilter,
@@ -95,6 +97,7 @@ describe("@moyarich/console-addon-filtering", () => {
     ]);
 
     expect(manager.unload(CONSOLE_FILTERING_ADDON_ID)).toBe(true);
+    expect(manager.services.get(consoleFilteringService)).toBeUndefined();
     expect(
       manager.extensions.getAll(consoleExtensionPoints.messageFilter),
     ).toEqual([]);
