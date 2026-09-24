@@ -1,79 +1,39 @@
 import type { ReactNode } from "react";
-import type { ConsoleMessageData, ConsoleMode } from "./types";
+import type {
+  ConsoleAction as CoreConsoleAction,
+  ConsoleActionContextBase,
+  ConsoleActionPredicate,
+  ConsoleActionVariant,
+  ConsoleContextMenuAction as CoreConsoleContextMenuAction,
+  ConsoleContextMenuActionContext,
+  ConsoleMessageAction as CoreConsoleMessageAction,
+  ConsoleMessageActionContext,
+  ConsoleObjectActionContext,
+  ConsolePanelAction as CoreConsolePanelAction,
+  ConsoleSurfaceActionContext,
+} from "./addons";
 
-/** Shared metadata passed to host-defined console actions. */
-export interface ConsoleActionContextBase {
-  mode: ConsoleMode;
-  hasMessages: boolean;
-}
+export type {
+  ConsoleActionContextBase,
+  ConsoleActionPredicate,
+  ConsoleActionVariant,
+  ConsoleContextMenuActionContext,
+  ConsoleMessageActionContext,
+  ConsoleObjectActionContext,
+  ConsoleSurfaceActionContext,
+};
 
-/** Action context for the console surface itself. */
-export interface ConsoleSurfaceActionContext extends ConsoleActionContextBase {
-  kind: "console";
-}
-
-/** Action context for an inspectable object rendered by the console. */
-export interface ConsoleObjectActionContext extends ConsoleActionContextBase {
-  kind: "object";
-  value: object;
-}
-
-/** Action context for a selected structured console message. */
-export interface ConsoleMessageActionContext extends ConsoleActionContextBase {
-  kind: "message";
-  message: ConsoleMessageData;
-  index: number;
-  messages: readonly ConsoleMessageData[];
-}
-
-/** Context union supplied to general context-menu actions. */
-export type ConsoleContextMenuActionContext =
-  | ConsoleSurfaceActionContext
-  | ConsoleObjectActionContext
-  | ConsoleMessageActionContext;
-
-/**
- * Boolean value or predicate used to control action visibility and availability.
- *
- * Predicate failures are handled defensively by {@link resolveConsoleActions}.
- */
-export type ConsoleActionPredicate<TContext> =
-  boolean | ((context: TContext) => boolean);
-
-/** Visual intent for an action rendered by the built-in context menu. */
-export type ConsoleActionVariant = "default" | "danger";
-
-/** Describes a host-defined command that can be rendered by the console UI. */
-export interface ConsoleAction<TContext> {
-  /** Stable identifier used when rendering the action collection. */
-  id: string;
-  /** Visible action label. */
-  label: ReactNode;
-  /** Optional accessible label when the visible label is not sufficient. */
-  ariaLabel?: string;
-  /** Optional icon rendered before the label. */
-  icon?: ReactNode;
-  /** Visual intent for the action. */
-  variant?: ConsoleActionVariant;
-  /** Whether to render a separator immediately before the action. */
-  separatorBefore?: boolean;
-  /** Controls whether the action is rendered for the current context. */
-  visible?: ConsoleActionPredicate<TContext>;
-  /** Controls whether the rendered action is disabled. */
-  disabled?: ConsoleActionPredicate<TContext>;
-  /** Runs when the action is selected. */
-  onSelect: (context: TContext) => void | Promise<void>;
-}
+/** Describes a host-defined command that can be rendered by the React console UI. */
+export type ConsoleAction<TContext> = CoreConsoleAction<TContext, ReactNode>;
 
 /** Host-defined action rendered in the console panel actions menu. */
-export type ConsolePanelAction = ConsoleAction<ConsoleSurfaceActionContext>;
+export type ConsolePanelAction = CoreConsolePanelAction<ReactNode>;
 
 /** Host-defined action available from console, object, or message context menus. */
-export type ConsoleContextMenuAction =
-  ConsoleAction<ConsoleContextMenuActionContext>;
+export type ConsoleContextMenuAction = CoreConsoleContextMenuAction<ReactNode>;
 
 /** Host-defined action that is shown only for structured console messages. */
-export type ConsoleMessageAction = ConsoleAction<ConsoleMessageActionContext>;
+export type ConsoleMessageAction = CoreConsoleMessageAction<ReactNode>;
 
 /** Internal action descriptor after visibility and disabled predicates are evaluated. */
 export interface ResolvedConsoleAction<TContext> {
