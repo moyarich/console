@@ -25,8 +25,17 @@ export interface ConsoleAddon {
 }
 
 /** Typed token identifying a multi-provider extension point. */
+/** How multiple contributions to an extension point compose at runtime. */
+export type ConsoleExtensionComposition =
+  | "pipeline"
+  | "first-result"
+  | "collect"
+  | "all"
+  | "middleware";
+
 export interface ConsoleExtensionPoint<T> {
   readonly id: string;
+  readonly composition: ConsoleExtensionComposition;
   readonly __consoleExtensionType?: T;
 }
 
@@ -34,7 +43,11 @@ export interface ConsoleExtensionPoint<T> {
 export interface ConsoleExtensionRegistrationOptions {
   /** Optional identifier unique within this extension point. */
   readonly id?: string;
-  /** Higher priorities are returned before lower priorities. @default 0 */
+  /**
+   * Higher priorities are resolved before lower priorities.
+   * Equal priorities preserve registration order.
+   * @default 0
+   */
   readonly priority?: number;
 }
 
@@ -359,8 +372,12 @@ class CapabilityRegistry implements ConsoleCapabilityRegistry {
 /** Creates a typed multi-provider extension-point token. */
 export function createConsoleExtensionPoint<T>(
   id: string,
+  composition: ConsoleExtensionComposition = "collect",
 ): ConsoleExtensionPoint<T> {
-  return Object.freeze({ id: validateIdentifier(id, "Extension point") });
+  return Object.freeze({
+    id: validateIdentifier(id, "Extension point"),
+    composition,
+  });
 }
 
 /** Creates an independent extension registry for advanced/headless hosts. */
@@ -998,56 +1015,73 @@ export const consoleExtensionPoints = Object.freeze({
   processControlParser:
     createConsoleExtensionPoint<ConsoleProcessControlParser>(
       "console.process.control",
+      "pipeline",
     ),
   processOutputProcessor:
     createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
       "console.process.output",
+      "pipeline",
     ),
   structuredOutputParser:
     createConsoleExtensionPoint<ConsoleStructuredOutputParser>(
       "console.process.structuredOutputParser",
+      "first-result",
     ),
   linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
     "console.linkProvider",
+    "collect",
   ),
   outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
     "console.render.output",
+    "first-result",
   ),
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
+    "middleware",
   ),
   emptyStateRenderer: createConsoleExtensionPoint<ConsoleEmptyStateRenderer>(
     "console.render.emptyState",
+    "first-result",
   ),
   panelElement: createConsoleExtensionPoint<ConsolePanelElement>(
     "console.render.panelElement",
+    "collect",
   ),
   messageFilter: createConsoleExtensionPoint<ConsoleMessageFilter>(
     "console.filter.message",
+    "all",
   ),
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
+    "first-result",
   ),
   messageDecoration: createConsoleExtensionPoint<ConsoleMessageDecoration>(
     "console.render.messageDecoration",
+    "collect",
   ),
   messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
     "console.message.text",
+    "collect",
   ),
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
+    "first-result",
   ),
   keyboardShortcut: createConsoleExtensionPoint<ConsoleKeyboardShortcut>(
     "console.keyboard.shortcut",
+    "first-result",
   ),
   panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
     "console.action.panel",
+    "collect",
   ),
   contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
     "console.action.contextMenu",
+    "collect",
   ),
   messageAction: createConsoleExtensionPoint<ConsoleMessageAction>(
     "console.action.message",
+    "collect",
   ),
 });
 
