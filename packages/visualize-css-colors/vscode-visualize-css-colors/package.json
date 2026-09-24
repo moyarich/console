@@ -14,7 +14,10 @@
       "require": "./dist/index.cjs"
     },
     "./manifest.json": "./extension.manifest.json",
-    "./extension.js": "./dist/extension.js"
+    "./extension.js": {
+      "types": "./dist/extension.d.ts",
+      "default": "./dist/extension.js"
+    }
   },
   "files": [
     "dist",
