@@ -835,6 +835,10 @@ scheme-derived fallbacks.
 | `--console-panel-border`                  | `border` shorthand         |
 | `--console-panel-border-radius`           | `border-radius`            |
 | `--console-panel-box-shadow`              | `box-shadow`               |
+| `--console-panel-width`                   | `width`                    |
+| `--console-panel-height`                  | `height`                   |
+| `--console-panel-min-width`               | `min-width`                |
+| `--console-panel-min-height`              | `min-height`               |
 | `--console-panel-header-color`            | `color` (header and title) |
 | `--console-panel-header-muted-color`      | `color` (subtitle)         |
 | `--console-panel-header-background-color` | `background-color`         |
