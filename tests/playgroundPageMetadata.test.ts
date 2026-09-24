@@ -18,9 +18,7 @@ describe("playground page metadata", () => {
       description: "Render standard log messages.",
     };
 
-    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(
-      metadata,
-    );
+    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(metadata);
   });
 
   it.each([
