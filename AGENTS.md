@@ -69,6 +69,17 @@ Prefer modern, standards-based browser primitives over custom JavaScript behavio
 
 Do not use `<details>` merely as a substitute for a menu or floating popover when the Popover API expresses the interaction more accurately.
 
+## Addon UI contributions
+
+Addon-owned UI should participate in the same extension system as addon behavior.
+
+- prefer registering UI through an appropriate `consoleExtensionPoints.*` contract instead of requiring the host to mount a sibling component manually
+- an addon may register multiple contributions when the feature needs both behavior and UI; for example, filtering can register both `messageFilter` and `frameDecorator`
+- keep host markup generic: do not add feature-specific branches to `<Console>` when an existing extension point can express the UI
+- use shared services such as `consoleServices.data` when addon UI needs current Console state instead of requiring duplicate host props
+- keep headless usage available when practical, typically with an option that disables the default UI contribution while preserving the behavioral contribution
+- direct React components may remain exported for custom layouts, but first-party default UI should be registerable through the addon lifecycle
+
 ## Addon dependency guidance
 
 Use the narrowest package surface that fits the addon.
