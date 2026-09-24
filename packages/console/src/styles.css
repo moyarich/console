@@ -21,6 +21,11 @@
   --_console-warning-accent-color: light-dark(#b54708, #fbbf24);
   --_console-success-color: light-dark(#067647, #4ade80);
   --_console-shadow-color: light-dark(rgb(17 24 39 / 0.1), rgb(0 0 0 / 0.46));
+  --_console-scrollbar-width: var(--console-scrollbar-width, thin);
+  --_console-scrollbar-color: var(
+    --console-scrollbar-color,
+    rgba(60, 60, 67, 0.32) transparent
+  );
 
   /* Panel */
   --_console-panel-color-scheme: var(
@@ -694,6 +699,8 @@
   min-height: var(--_console-min-height);
   flex: 1;
   overflow: auto;
+  scrollbar-width: var(--_console-scrollbar-width);
+  scrollbar-color: var(--_console-scrollbar-color);
   scroll-padding-bottom: 16px;
   background-color: var(--_console-background-color);
   color: var(--_console-color);
@@ -1111,6 +1118,8 @@
   min-width: 0;
   flex: 1;
   overflow: auto;
+  scrollbar-width: var(--_console-scrollbar-width);
+  scrollbar-color: var(--_console-scrollbar-color);
 }
 .console-panel .console-table {
   width: max-content;
@@ -1187,6 +1196,14 @@
   width: 220px;
   max-height: calc(100vh - 16px);
   overflow-y: auto;
+  scrollbar-width: var(
+    --console-context-menu-scrollbar-width,
+    var(--console-scrollbar-width, thin)
+  );
+  scrollbar-color: var(
+    --console-context-menu-scrollbar-color,
+    var(--console-scrollbar-color, rgba(60, 60, 67, 0.32) transparent)
+  );
   border: var(--_console-context-menu-border);
   border-radius: var(--_console-context-menu-border-radius);
   padding: 5px;
