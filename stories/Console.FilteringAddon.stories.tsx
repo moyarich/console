@@ -1,10 +1,7 @@
 import { useMemo } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Console, type ConsoleMessageData } from "@moyarich/console";
-import {
-  ConsoleFilteringControls,
-  createConsoleFilteringAddon,
-} from "@moyarich/console-addon-filtering";
+import { createConsoleFilteringAddon } from "@moyarich/console-addon-filtering";
 
 const messages: ConsoleMessageData[] = [
   {
@@ -65,19 +62,7 @@ function FilteringAddonStory() {
   const addons = useMemo(() => [filteringAddon], [filteringAddon]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 12,
-        width: 760,
-        maxWidth: "90vw",
-      }}
-    >
-      <ConsoleFilteringControls
-        controller={filteringAddon.controller}
-        messages={messages}
-      />
-
+    <div style={{ width: 760, maxWidth: "90vw" }}>
       <Console
         messages={messages}
         addons={addons}
