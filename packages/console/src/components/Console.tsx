@@ -46,7 +46,12 @@ import {
   type ConsoleAddon,
   type ConsoleExtensionRegistry,
   type ConsoleFrameDecorator,
+  type ConsoleMessageDecoration,
+  type ConsoleMessageDecorationPlacement,
   type ConsoleMessageFilter as CoreConsoleMessageFilter,
+  type ConsolePanelElement,
+  type ConsolePanelElementContext,
+  type ConsolePanelElementPlacement,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
@@ -171,6 +176,7 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   children: ReactNode;
   messageActions?: readonly ConsoleMessageAction[];
   frameDecorators?: readonly ConsoleFrameDecorator<ReactNode>[];
+  panelElements?: readonly ConsolePanelElement<ReactNode>[];
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
@@ -210,6 +216,92 @@ function renderConsoleFrameDecorators(
   return render();
 }
 
+function renderConsolePanelElements(
+  elements: readonly ConsolePanelElement<ReactNode>[] | undefined,
+  placement: ConsolePanelElementPlacement,
+  context: ConsolePanelElementContext,
+): ReactNode {
+  const rendered: ReactNode[] = [];
+
+  for (const element of elements ?? []) {
+    if (element.placement !== placement) continue;
+
+    try {
+      const value = element.render(context);
+
+      if (value !== undefined) {
+        rendered.push(
+          <div
+            key={element.id}
+            className="console-panel-element"
+            data-console-panel-element={element.id}
+          >
+            {value}
+          </div>,
+        );
+      }
+    } catch {
+      // One addon-owned panel element must not break the console frame.
+    }
+  }
+
+  if (rendered.length === 0) return null;
+
+  return (
+    <div
+      className={`console-panel-elements console-panel-elements-${placement}`}
+      data-console-panel-placement={placement}
+    >
+      {rendered}
+    </div>
+  );
+}
+
+function renderConsoleMessageDecorations(
+  decorations: readonly ConsoleMessageDecoration<ReactNode>[],
+  placement: ConsoleMessageDecorationPlacement,
+  message: ConsoleMessageData,
+  index: number,
+  messages: readonly ConsoleMessageData[],
+): ReactNode {
+  const rendered: ReactNode[] = [];
+  const context = { index, messages, placement };
+
+  for (const decoration of decorations) {
+    if (decoration.placement !== placement) continue;
+
+    try {
+      if (decoration.match && !decoration.match(message, context)) continue;
+      const value = decoration.render(message, context);
+
+      if (value !== undefined) {
+        rendered.push(
+          <div
+            key={decoration.id}
+            className="console-message-decoration"
+            data-console-message-decoration={decoration.id}
+          >
+            {value}
+          </div>,
+        );
+      }
+    } catch {
+      // One addon-owned decoration must not break message rendering.
+    }
+  }
+
+  if (rendered.length === 0) return null;
+
+  return (
+    <div
+      className={`console-message-decorations console-message-decorations-${placement}`}
+      data-console-message-decoration-placement={placement}
+    >
+      {rendered}
+    </div>
+  );
+}
+
 /**
  * Shared frame that renders panel chrome, actions, context-menu support, and
  * the scrollable output surface for both console modes.
@@ -236,6 +328,7 @@ function ConsoleFrame({
   children,
   messageActions,
   frameDecorators,
+  panelElements,
 }: ConsoleFrameProps) {
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
@@ -268,6 +361,10 @@ function ConsoleFrame({
     () => resolveConsoleActions(panelActions, panelActionContext),
     [panelActionContext, panelActions],
   );
+  const panelElementContext = useMemo<ConsolePanelElementContext>(
+    () => ({ mode, hasMessages, isEmpty }),
+    [hasMessages, isEmpty, mode],
+  );
   const showCopyButton = mode === "ansi";
   const showActions =
     actions ||
@@ -284,6 +381,11 @@ function ConsoleFrame({
       {showHeader && (
         <div className="console-panel-header">
           <div className="console-panel-header-main">
+            {renderConsolePanelElements(
+              panelElements,
+              "header-start",
+              panelElementContext,
+            )}
             <div className="console-heading">
               <SquareTerminal
                 className="console-heading-icon"
@@ -295,6 +397,12 @@ function ConsoleFrame({
                 {subtitle && <p>{subtitle}</p>}
               </div>
             </div>
+
+            {renderConsolePanelElements(
+              panelElements,
+              "header-end",
+              panelElementContext,
+            )}
 
             {showActions && (
               <div className="console-actions-popover-shell">
@@ -391,6 +499,12 @@ function ConsoleFrame({
         </div>
       )}
 
+      {renderConsolePanelElements(
+        panelElements,
+        "before-output",
+        panelElementContext,
+      )}
+
       <ConsoleContextMenu
         mode={mode}
         hasMessages={hasMessages}
@@ -425,6 +539,13 @@ function ConsoleFrame({
           )}
         </div>
       </ConsoleContextMenu>
+
+      {renderConsolePanelElements(
+        panelElements,
+        "after-output",
+        panelElementContext,
+      )}
+      {renderConsolePanelElements(panelElements, "footer", panelElementContext)}
     </article>
   );
 
@@ -499,6 +620,12 @@ function ConsoleMessageMode({
   const resolvedFrameDecorators = addonExtensions.getAll(
     consoleExtensionPoints.frameDecorator,
   ) as readonly ConsoleFrameDecorator<ReactNode>[];
+  const resolvedPanelElements = addonExtensions.getAll(
+    consoleExtensionPoints.panelElement,
+  ) as readonly ConsolePanelElement<ReactNode>[];
+  const resolvedMessageDecorations = addonExtensions.getAll(
+    consoleExtensionPoints.messageDecoration,
+  ) as readonly ConsoleMessageDecoration<ReactNode>[];
   const addonMessageFilters = addonExtensions.getAll(
     consoleExtensionPoints.messageFilter,
   ) as readonly CoreConsoleMessageFilter[];
@@ -559,14 +686,48 @@ function ConsoleMessageMode({
   };
 
   const renderDefaultOutput = () =>
-    visibleMessages.map((message, index) => (
-      <div
-        key={
-          message.id ??
-          `${message.method}-${message.timestamp ?? "na"}-${index}`
-        }
-        data-console-message-id={message.id}
-      >
+    visibleMessages.map((message, index) => {
+      const key =
+        message.id ??
+        `${message.method}-${message.timestamp ?? "na"}-${index}`;
+      const gutter = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "gutter",
+        message,
+        index,
+        visibleMessages,
+      );
+      const before = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "before",
+        message,
+        index,
+        visibleMessages,
+      );
+      const after = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "after",
+        message,
+        index,
+        visibleMessages,
+      );
+      const badge = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "badge",
+        message,
+        index,
+        visibleMessages,
+      );
+      const overlay = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "overlay",
+        message,
+        index,
+        visibleMessages,
+      );
+      const hasDecorations = Boolean(gutter || before || after || badge || overlay);
+
+      const renderedMessage = (
         <ConsoleMessage
           message={message}
           index={index}
@@ -578,8 +739,31 @@ function ConsoleMessageMode({
           detectLinks={detectLinks}
           linkProviders={resolvedLinkProviders}
         />
-      </div>
-    ));
+      );
+
+      if (!hasDecorations) {
+        return (
+          <div key={key} data-console-message-id={message.id}>
+            {renderedMessage}
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={key}
+          className="console-message-extension-shell"
+          data-console-message-id={message.id}
+        >
+          {gutter}
+          {before}
+          {renderedMessage}
+          {badge}
+          {after}
+          {overlay}
+        </div>
+      );
+    });
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
     messages: visibleMessages,
@@ -600,6 +784,7 @@ function ConsoleMessageMode({
       contextMenuActions={resolvedContextMenuActions}
       messageActions={resolvedMessageActions}
       frameDecorators={resolvedFrameDecorators}
+      panelElements={resolvedPanelElements}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
@@ -676,6 +861,9 @@ function ConsoleAnsiMode({
   const resolvedFrameDecorators = addonExtensions.getAll(
     consoleExtensionPoints.frameDecorator,
   ) as readonly ConsoleFrameDecorator<ReactNode>[];
+  const resolvedPanelElements = addonExtensions.getAll(
+    consoleExtensionPoints.panelElement,
+  ) as readonly ConsolePanelElement<ReactNode>[];
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
@@ -705,6 +893,7 @@ function ConsoleAnsiMode({
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       frameDecorators={resolvedFrameDecorators}
+      panelElements={resolvedPanelElements}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
