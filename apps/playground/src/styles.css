@@ -1504,7 +1504,6 @@ body {
 
 :root {
   color-scheme: light dark;
-  --console-color-scheme: light dark;
   --playground-background: light-dark(#f8fafc, #0d1117);
   --playground-surface: light-dark(#ffffff, #161b22);
   --playground-surface-subtle: light-dark(#f8fafc, #1c2128);
