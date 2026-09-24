@@ -1,8 +1,8 @@
 :root {
   --font-sans:
-    "-apple-system-body", ui-sans-serif, -apple-system, system-ui, "Segoe UI",
-    Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
-    "Segoe UI Symbol";
+    "Inter Variable", "-apple-system-body", ui-sans-serif, -apple-system,
+    system-ui, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif,
+    "Segoe UI Emoji", "Segoe UI Symbol";
 
   font-family: var(--font-sans);
   color: #172033;
