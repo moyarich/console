@@ -1,6 +1,9 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
-import { parseOrderedDirectory } from "../content/mdxSection";
+import {
+  parseOrderedDirectory,
+  type MdxPageModule,
+} from "../content/mdxSection";
 import {
   parseConsoleExampleMeta,
   type ConsoleExampleMeta,
@@ -28,11 +31,6 @@ export interface ConsoleExample {
   Page: ComponentType;
 }
 
-interface ConsoleExamplePageModule {
-  default: ComponentType;
-  meta?: unknown;
-}
-
 function parseExamplePath(path: string) {
   const parts = path.replace(/^\.\//, "").split("/");
 
@@ -52,7 +50,7 @@ function parseExamplePath(path: string) {
 
 const pageModules = import.meta.glob("./*/*/page.mdx", {
   eager: true,
-}) as Record<string, ConsoleExamplePageModule>;
+}) as Record<string, MdxPageModule>;
 
 const discoveredExamples = Object.entries(pageModules).map(
   ([path, pageModule]) => ({
