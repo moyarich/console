@@ -81,10 +81,7 @@ h3 {
 hr {
   --_hr-line-offset: var(--hr-line-offset, 10%);
   --_hr-accent: var(--hr-accent, var(--playground-accent));
-  --_hr-companion: var(
-    --hr-companion,
-    var(--playground-accent-companion)
-  );
+  --_hr-companion: var(--hr-companion, var(--playground-accent-companion));
 
   height: 1px;
   border: 0;
