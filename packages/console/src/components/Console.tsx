@@ -54,6 +54,7 @@ import {
   type ConsoleMessageDecoration,
   type ConsoleMessageDecorationPlacement,
   type ConsoleMessageFilter as CoreConsoleMessageFilter,
+  type ConsoleMessageFilterContext,
   type ConsolePanelElement,
   type ConsolePanelElementContext,
   type ConsolePanelElementPlacement,
@@ -274,14 +275,14 @@ function renderConsoleMessageDecorations(
   messages: readonly ConsoleMessageData[],
 ): ReactNode {
   const rendered: ReactNode[] = [];
-  const context = { index, messages, placement };
+  const context = { message, index, messages, placement };
 
   for (const decoration of decorations) {
     if (decoration.placement !== placement) continue;
 
     try {
-      if (decoration.match && !decoration.match(message, context)) continue;
-      const value = decoration.render(message, context);
+      if (decoration.match && !decoration.match(context)) continue;
+      const value = decoration.render(context);
 
       if (value !== undefined) {
         rendered.push(
@@ -735,13 +736,18 @@ function ConsoleMessageMode({
   const visibleMessages = useMemo(
     () =>
       filter || addonMessageFilters.length > 0
-        ? messages.filter(
-            (message, index) =>
-              (!filter || filter(message, index, messages)) &&
-              addonMessageFilters.every((addonFilter) =>
-                addonFilter(message, index, messages),
-              ),
-          )
+        ? messages.filter((message, index) => {
+            const context: ConsoleMessageFilterContext = {
+              message,
+              index,
+              messages,
+            };
+
+            return (
+              (!filter || filter(context)) &&
+              addonMessageFilters.every((addonFilter) => addonFilter(context))
+            );
+          })
         : messages,
     [addonMessageFilters, filter, messages],
   );
