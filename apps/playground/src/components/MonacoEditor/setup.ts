@@ -12,7 +12,7 @@ import extensionSource from "@moyarich/vscode-visualize-css-colors/extension-sou
 import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
 import {
   defineDefaultWorkerLoaders,
-  useWorkerFactory,
+  useWorkerFactory as configureWorkerFactory,
   Worker,
 } from "monaco-languageclient/workerFactory";
 
@@ -30,7 +30,7 @@ function configurePlaygroundWorkers() {
       { type: "module" },
     );
 
-  useWorkerFactory({
+  configureWorkerFactory({
     workerLoaders: {
       ...defineDefaultWorkerLoaders(),
       css: () =>
