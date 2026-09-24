@@ -376,6 +376,47 @@ a {
   color: #cbd5e1;
 }
 
+.source-panel:has(.source-file-tabs) {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.source-file-tabs {
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid #283142;
+  background: #171e2a;
+  scrollbar-width: thin;
+}
+
+.source-file-tab {
+  flex: 0 0 auto;
+  border: 0;
+  border-right: 1px solid #283142;
+  padding: 8px 12px;
+  background: transparent;
+  color: #8994a6;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.source-file-tab:hover {
+  background: #202938;
+  color: #d6deea;
+}
+
+.source-file-tab.active {
+  background: #1e1e1e;
+  color: #f8fafc;
+}
+
+.source-file-tab:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid #818cf8;
+  outline-offset: -2px;
+}
+
 .example-source-editor {
   min-width: 0;
   min-height: 560px;
@@ -1186,6 +1227,14 @@ body {
 .preview-stage {
   padding: 16px;
   background: #f8fafc;
+}
+
+.preview-loading {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  color: #667085;
+  font-size: 0.84rem;
 }
 
 .preview-panel-placeholder {
