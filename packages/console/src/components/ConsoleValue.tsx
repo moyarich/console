@@ -29,7 +29,10 @@ export interface ConsoleValueProps {
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
-  linkContext?: Omit<ConsoleLinkProviderContext, "text" | "value" | "propertyKey">;
+  linkContext?: Omit<
+    ConsoleLinkProviderContext,
+    "text" | "value" | "propertyKey"
+  >;
 }
 
 interface ConsoleObjectValueProps {
@@ -41,7 +44,10 @@ interface ConsoleObjectValueProps {
   renderers?: readonly ConsoleValueRenderer[];
   detectLinks?: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
-  linkContext?: Omit<ConsoleLinkProviderContext, "text" | "value" | "propertyKey">;
+  linkContext?: Omit<
+    ConsoleLinkProviderContext,
+    "text" | "value" | "propertyKey"
+  >;
 }
 
 function renderPrimitive(
@@ -50,7 +56,8 @@ function renderPrimitive(
   detectLinks: boolean,
   linkProviders: readonly ConsoleLinkProvider[] | undefined,
   linkContext:
-    Omit<ConsoleLinkProviderContext, "text" | "value" | "propertyKey"> | undefined,
+    | Omit<ConsoleLinkProviderContext, "text" | "value" | "propertyKey">
+    | undefined,
 ): ReactNode {
   const context: Omit<ConsoleLinkProviderContext, "text"> = {
     mode: linkContext?.mode ?? "console",
