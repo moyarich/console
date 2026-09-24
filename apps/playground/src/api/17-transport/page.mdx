@@ -1,0 +1,73 @@
+---
+label: "Transport"
+description: "Move validated console events across postMessage and WebSocket boundaries."
+---
+
+The package does not prescribe where code runs. Console events can be moved from an iframe, worker-adjacent bridge, server relay, or remote runtime into the same event channel used by the React UI.
+
+### Envelope
+
+```ts
+{
+  type: "CONSOLE_PANEL",
+  version: 1,
+  channel: "preview",
+  event: {
+    type: "message",
+    message: {
+      method: "log",
+      data: ["hello"],
+      depth: 0
+    }
+  }
+}
+```
+
+`isConsoleEnvelope()` validates the envelope shape before delivery.
+
+### Receive from `postMessage`
+
+```ts
+const events = createConsoleEventEmitter();
+
+const stopListening = listenForConsolePostMessages({
+  events,
+  channel: "preview",
+  source: iframe.contentWindow,
+  origin: "https://preview.example.com",
+});
+```
+
+Use an explicit origin in production. `origin` may also be a `RegExp` or predicate.
+
+### Receive from a WebSocket
+
+```ts
+const events = createConsoleEventEmitter();
+
+const stopListening = listenForConsoleWebSocket({
+  socket,
+  channel: "session-42",
+  events,
+});
+```
+
+The listener accepts JSON text, validates the envelope and channel, deserializes the console event, and publishes it into `events`.
+
+### Send an event
+
+```ts
+const envelope = {
+  type: CONSOLE_TRANSPORT_TYPE,
+  version: CONSOLE_TRANSPORT_VERSION,
+  channel: "preview",
+  event: serializeConsoleEvent(event),
+};
+
+window.parent.postMessage(envelope, "https://host.example.com");
+
+// or
+socket.send(JSON.stringify(envelope));
+```
+
+`DEFAULT_CONSOLE_CHANNEL` is `"default"`.
