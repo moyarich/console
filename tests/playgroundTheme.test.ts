@@ -37,13 +37,16 @@ describe("playground color scheme", () => {
     expect(app).toContain('{ value: "dark", label: "Dark" }');
     expect(app).toContain('themePreference === "system" ? "light dark"');
     expect(app).toContain("root.style.colorScheme = colorScheme");
-    expect(app).toContain(
+    expect(app).not.toContain(
       'root.style.setProperty("--console-color-scheme", colorScheme)',
     );
   });
 
   it("themes the playground with light-dark colors", () => {
     expect(playgroundStyles).toContain("color-scheme: light dark;");
+    expect(playgroundStyles).not.toContain(
+      "--console-color-scheme: light dark;",
+    );
     expect(playgroundStyles).toContain(
       "--playground-background: light-dark(#f8fafc, #0d1117);",
     );
@@ -67,7 +70,7 @@ describe("playground color scheme", () => {
     expect(resizableExample).not.toContain("ThemePreference");
     expect(resizableExample).not.toContain("Playground theme");
     expect(resizableStyles).toContain(
-      "var(--console-panel-color-scheme, var(--console-color-scheme, dark))",
+      "var(--console-color-scheme, inherit)",
     );
     expect(resizableStyles).toContain(
       "color-scheme: var(--_console-resize-color-scheme);",
