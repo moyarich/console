@@ -305,7 +305,7 @@
   box-sizing: border-box;
 }
 /* ==========================================================================
-   Panel shell and resizing
+   Panel shell
    ========================================================================== */
 
 .console-panel {
@@ -321,32 +321,6 @@
   color: var(--_console-panel-color);
   box-shadow: var(--_console-panel-box-shadow);
   color-scheme: var(--_console-panel-color-scheme);
-}
-
-.console-panel[data-resizable="vertical"] {
-  resize: vertical;
-}
-
-.console-panel[data-resizable="horizontal"] {
-  resize: horizontal;
-}
-
-.console-panel[data-resizable="both"] {
-  resize: both;
-}
-
-.console-panel[data-resizable="block"] {
-  resize: block;
-}
-
-.console-panel[data-resizable="inline"] {
-  resize: inline;
-}
-
-.console-panel[data-resizable] .console-surface,
-.console-panel[data-resizable] .console-empty,
-.console-panel[data-resizable] .console-stdout-empty {
-  min-height: 0;
 }
 /* ==========================================================================
    Panel header
