@@ -38,8 +38,7 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
       "js/ts.implicitProjectConfig.module": "ESNext",
       "js/ts.implicitProjectConfig.strict": true,
       "typescript.tsserver.web.projectWideIntellisense.enabled": true,
-      "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors":
-        true,
+      "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": true,
 
       // Make VS Code's built-in formatters the explicit defaults for the
       // languages used by runnable playground projects.
