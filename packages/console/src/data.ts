@@ -28,7 +28,7 @@ export interface ConsoleProcessDataSnapshot {
   /** Current logical process-output view. */
   readonly visible: readonly ConsoleProcessViewEntry[];
   /** Semantic process-control events extracted before line normalization. */
-  readonly controlEvents: readonly ConsoleProcessControlEvent[];
+  readonly controlEvents?: readonly ConsoleProcessControlEvent[];
 }
 
 /** Current logical console data exposed through the addon service registry. */
