@@ -10,6 +10,7 @@ const config: StorybookConfig = {
     mergeConfig(config, {
       esbuild: { jsx: "automatic" },
       resolve: {
+        dedupe: ["vscode"],
         alias: [
           {
             find: "@moyarich/console-core",
