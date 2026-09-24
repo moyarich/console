@@ -14,7 +14,7 @@ const messages = [
 const processors: ConsoleProcessOutputProcessor[] = [
   {
     id: "storybook-build-status",
-    process(output) {
+    process({ output }) {
       if (!output.data.includes("Progress 100%")) return;
       return {
         data: output.data.replace("Progress 100%", "Build complete"),
