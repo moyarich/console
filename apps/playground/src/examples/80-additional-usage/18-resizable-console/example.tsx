@@ -40,8 +40,7 @@ const resizeTheme = {
     "light-dark(#98a2b3, #667085)",
   "--console-resize-separator-active-line-background-color":
     "light-dark(#475467, #d0d5dd)",
-  "--console-resize-separator-grip-color":
-    "light-dark(#667085, #98a2b3)",
+  "--console-resize-separator-grip-color": "light-dark(#667085, #98a2b3)",
   "--console-resize-separator-active-grip-color":
     "light-dark(#344054, #eaecf0)",
   "--console-resize-separator-grip-border":
