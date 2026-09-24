@@ -34,7 +34,7 @@ export default function MessageTextProviderExample() {
           consoleExtensionPoints.messageTextProvider,
           {
             id: "release-search-text",
-            provideText(message) {
+            provideText({ message }) {
               return message.id === "release" ? "deploy-target" : undefined;
             },
           },
