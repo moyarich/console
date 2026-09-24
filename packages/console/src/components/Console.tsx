@@ -431,7 +431,11 @@ function ConsoleFrame({
     </article>
   );
 
-  return renderConsoleFrameDecorators(frameDecorators, mode, renderDefaultFrame);
+  return renderConsoleFrameDecorators(
+    frameDecorators,
+    mode,
+    renderDefaultFrame,
+  );
 }
 
 /** Renders structured console messages and custom message/value renderers. */
