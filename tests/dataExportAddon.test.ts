@@ -113,7 +113,7 @@ describe("@moyarich/console-addon-data-export", () => {
     const escape = String.fromCharCode(27);
     const processor: ConsoleProcessOutputProcessor = {
       id: "test-progress-transform",
-      process(output) {
+      process({ output }) {
         if (!output.data.includes("20%")) return;
 
         return {
