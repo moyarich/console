@@ -53,6 +53,15 @@ export default defineConfig({
         ),
       },
       {
+        find: "@moyarich/console-addon-resizable/styles.css",
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/addons/resizable/src/styles.css",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
         find: "@moyarich/console-addon-resizable",
         replacement: fileURLToPath(
           new URL(
