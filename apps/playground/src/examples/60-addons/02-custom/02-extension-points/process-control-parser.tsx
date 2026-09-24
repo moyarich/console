@@ -82,7 +82,9 @@ export default function ProcessControlParserExample() {
               id: "process-state",
               placement: "before-output",
               render: (context) =>
-                context.mode === "ansi" ? <ProcessState data={data} /> : undefined,
+                context.mode === "ansi" ? (
+                  <ProcessState data={data} />
+                ) : undefined,
             },
             { id: "process-state" },
           );
