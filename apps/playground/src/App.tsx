@@ -8,11 +8,7 @@ const themeOptions = [
   { value: "system", label: "System", Icon: Monitor },
   { value: "light", label: "Light", Icon: Sun },
   { value: "dark", label: "Dark", Icon: Moon },
-] satisfies Array<{
-  value: ThemePreference;
-  label: string;
-  Icon: typeof Monitor;
-}>;
+] as const;
 
 function GitHubIcon() {
   return (
