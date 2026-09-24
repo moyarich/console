@@ -807,52 +807,52 @@ body {
   font-weight: 500;
 }
 
-.example-documentation {
+.documentation-page {
   margin: 0 0 22px;
   color: #475467;
   font-size: 0.94rem;
   line-height: 1.7;
 }
 
-.example-documentation > :not(.content-stack) {
+.documentation-page > :not(.content-stack) {
   max-width: 900px;
 }
 
-.example-documentation:empty {
+.documentation-page:empty {
   display: none;
 }
 
-.example-documentation > :first-child {
+.documentation-page > :first-child {
   margin-top: 0;
 }
 
-.example-documentation > :last-child {
+.documentation-page > :last-child {
   margin-bottom: 0;
 }
 
-.example-documentation h1,
-.example-documentation h2,
-.example-documentation h3 {
+.documentation-page h1,
+.documentation-page h2,
+.documentation-page h3 {
   color: #101828;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
 
-.example-documentation h1 {
+.documentation-page h1 {
   font-size: 1.7rem;
 }
 
-.example-documentation h2 {
+.documentation-page h2 {
   margin-top: 28px;
   font-size: 1.3rem;
 }
 
-.example-documentation h3 {
+.documentation-page h3 {
   margin-top: 22px;
   font-size: 1.05rem;
 }
 
-.example-documentation code {
+.documentation-page code {
   border-radius: 5px;
   padding: 2px 5px;
   background: #eef2ff;
@@ -860,7 +860,7 @@ body {
   font-size: 0.88em;
 }
 
-.example-documentation a {
+.documentation-page a {
   color: #4f46e5;
   text-underline-offset: 3px;
 }
@@ -1266,9 +1266,9 @@ body,
 
 .brand,
 .hero h1,
-.example-documentation h1,
-.example-documentation h2,
-.example-documentation h3,
+.documentation-page h1,
+.documentation-page h2,
+.documentation-page h3,
 .controls-card h2,
 .iframe-demo-heading strong {
   color: var(--playground-text);
@@ -1287,7 +1287,7 @@ body,
 
 .brand-copy small,
 .hero p,
-.example-documentation,
+.documentation-page,
 .preview-loading,
 .site-footer,
 .controls-card p,
@@ -1410,18 +1410,18 @@ body,
 }
 
 .hero-example-path strong,
-.example-documentation a,
+.documentation-page a,
 .eyebrow,
 .panel-kicker,
 .iframe-demo-kicker {
   color: var(--playground-accent);
 }
 
-.example-documentation a:hover {
+.documentation-page a:hover {
   color: var(--playground-accent-strong);
 }
 
-.example-documentation code,
+.documentation-page code,
 .controls-card code {
   background: var(--playground-accent-surface);
   color: var(--playground-accent-strong);
