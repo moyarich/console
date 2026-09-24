@@ -1,0 +1,69 @@
+---
+label: "Custom renderers"
+description: "Replace or extend message, value, and output rendering behavior."
+---
+
+Renderer hooks let an application teach the console about domain-specific values without forking the library.
+
+```tsx
+import {
+  Console,
+  type ConsoleMessageRenderer,
+  type ConsoleValueRenderer,
+} from "@moyarich/console";
+
+const messageRenderers: ConsoleMessageRenderer[] = [
+  {
+    method: "info",
+    match: (message) => message.source === "build",
+    render: (_message, { renderDefault }) => (
+      <div className="build-message">{renderDefault()}</div>
+    ),
+  },
+];
+
+const valueRenderers: ConsoleValueRenderer[] = [
+  {
+    type: "Object",
+    match: (value) =>
+      typeof value === "object" &&
+      value !== null &&
+      "kind" in value &&
+      value.kind === "metric",
+    render: (value) => {
+      const metric = value as { label: string; value: number };
+
+      return (
+        <strong>
+          {metric.label}: {metric.value}
+        </strong>
+      );
+    },
+  },
+];
+
+<Console
+  messages={messages}
+  messageRenderers={messageRenderers}
+  valueRenderers={valueRenderers}
+/>;
+```
+
+Renderer entries form ordered dispatch tables:
+
+1. `method` or `type` can narrow the candidate.
+2. `match` can perform additional matching.
+3. `render` returns a React node to handle the value.
+4. Returning `undefined` continues to the next renderer.
+5. If nothing handles the value, the built-in renderer is used.
+
+Each renderer context exposes `renderDefault()`, which is useful for wrapping or decorating the standard UI. Synchronous matcher/renderer errors are contained so one extension cannot prevent the rest of the console from rendering.
+
+`getConsoleValueType(value)` returns the dispatch type used by value renderers:
+
+- primitives use normal `typeof` names such as `"string"` and `"number"`
+- `null` becomes `"null"`
+- arrays become `"array"`
+- objects use their constructor name when available, for example `"Object"`, `"Map"`, or a custom class name
+
+Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.
