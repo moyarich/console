@@ -74,7 +74,7 @@ Do not use `<details>` merely as a substitute for a menu or floating popover whe
 Addon-owned UI should participate in the same extension system as addon behavior.
 
 - prefer registering UI through an appropriate `consoleExtensionPoints.*` contract instead of requiring the host to mount a sibling component manually
-- an addon may register multiple contributions when the feature needs both behavior and UI; for example, filtering can register both `messageFilter` and `frameDecorator`
+- an addon may register multiple contributions when the feature needs both behavior and UI; for example, filtering can register both `messageFilter` and `panelElement`
 - keep host markup generic: do not add feature-specific branches to `<Console>` when an existing extension point can express the UI
 - use shared services such as `consoleServices.data` when addon UI needs current Console state instead of requiring duplicate host props
 - keep headless usage available when practical, typically with an option that disables the default UI contribution while preserving the behavioral contribution
