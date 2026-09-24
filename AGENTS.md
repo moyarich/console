@@ -125,6 +125,20 @@ host.extensions.register(consoleExtensionPoints.messageRenderer, {
 
 Do not introduce compatibility overloads for new extension contracts merely to preserve an older positional callback shape while the addon API is still being established.
 
+## Extension composition and ordering
+
+Every `ConsoleExtensionPoint` declares a `composition` strategy. Do not assume all multi-provider extension points behave like transform plugins.
+
+- `pipeline`: run every contribution sequentially; each stage receives the result produced by preceding stages
+- `first-result`: try contributions in order and stop at the first one that handles the input
+- `collect`: accumulate all applicable contributions in resolved order
+- `all`: every contribution must accept/pass the input; hosts may short-circuit once the outcome is known
+- `middleware`: contributions wrap the next/default behavior; earlier resolved contributions form outer wrappers
+
+Extension ordering is deterministic. Higher registration `priority` resolves first; equal priorities preserve registration order. Prefer normal registration order. Use `priority` only when a contribution genuinely must run before or after peers, such as a specialized parser before a generic parser.
+
+For `pipeline` extension points, treat ordering as part of the public behavior. If A transforms output and B runs after A, B must receive A's transformed immutable output, not the original input.
+
 ## Addon UI contributions
 
 Addon-owned UI should participate in the same extension system as addon behavior.
