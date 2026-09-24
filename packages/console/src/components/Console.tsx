@@ -46,6 +46,7 @@ import {
   type ConsoleAddon,
   type ConsoleExtensionRegistry,
   type ConsoleFrameDecorator,
+  type ConsoleMessageFilter as CoreConsoleMessageFilter,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
@@ -74,11 +75,7 @@ export interface ConsoleHandle {
 /**
  * Predicate used to decide whether a structured message should be visible.
  */
-export type ConsoleMessageFilter = (
-  message: ConsoleMessageData,
-  index: number,
-  messages: readonly ConsoleMessageData[],
-) => boolean;
+export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
@@ -502,6 +499,9 @@ function ConsoleMessageMode({
   const resolvedFrameDecorators = addonExtensions.getAll(
     consoleExtensionPoints.frameDecorator,
   ) as readonly ConsoleFrameDecorator<ReactNode>[];
+  const addonMessageFilters = addonExtensions.getAll(
+    consoleExtensionPoints.messageFilter,
+  ) as readonly CoreConsoleMessageFilter[];
   const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
   const runtimeError = errorProp ?? output?.error ?? "";
   const messages = useMemo<ConsoleMessageData[]>(
@@ -516,10 +516,16 @@ function ConsoleMessageMode({
   );
   const visibleMessages = useMemo(
     () =>
-      filter
-        ? messages.filter((message, index) => filter(message, index, messages))
+      filter || addonMessageFilters.length > 0
+        ? messages.filter(
+            (message, index) =>
+              (!filter || filter(message, index, messages)) &&
+              addonMessageFilters.every((addonFilter) =>
+                addonFilter(message, index, messages),
+              ),
+          )
         : messages,
-    [filter, messages],
+    [addonMessageFilters, filter, messages],
   );
 
   useEffect(() => {

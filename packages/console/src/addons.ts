@@ -26,6 +26,7 @@ export type {
   ConsoleExtensionRegistry,
   ConsoleFrameDecorator,
   ConsoleFrameDecoratorContext,
+  ConsoleMessageFilter,
   ConsoleServiceRegistry,
   ConsoleServiceToken,
   CreateConsoleAddonManagerOptions,

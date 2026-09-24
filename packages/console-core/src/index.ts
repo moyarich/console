@@ -590,6 +590,13 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
+/** Predicate used to decide whether a structured console message is visible. */
+export type ConsoleMessageFilter = (
+  message: ConsoleMessageData,
+  index: number,
+  messages: readonly ConsoleMessageData[],
+) => boolean;
+
 export interface RunOutput {
   messages: ConsoleMessageData[];
   error?: string;
@@ -898,6 +905,9 @@ export const consoleExtensionPoints = Object.freeze({
   ),
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
+  ),
+  messageFilter: createConsoleExtensionPoint<ConsoleMessageFilter>(
+    "console.filter.message",
   ),
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
