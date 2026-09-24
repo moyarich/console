@@ -3,6 +3,8 @@
     "Inter Variable", "-apple-system-body", ui-sans-serif, -apple-system,
     system-ui, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif,
     "Segoe UI Emoji", "Segoe UI Symbol";
+  --scrollbar-width: thin;
+  --scrollbar-color: rgba(60, 60, 67, 0.32) transparent;
 
   font-family: var(--font-sans);
   color: #172033;
@@ -16,6 +18,8 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: var(--scrollbar-width);
+  scrollbar-color: var(--scrollbar-color);
 }
 
 html,
