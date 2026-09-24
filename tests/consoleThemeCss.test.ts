@@ -94,6 +94,9 @@ describe("console theme CSS", () => {
       "--console-resize-separator-grip-background-color",
     );
     expect(resizableAddonStyles).toContain("--console-resize-handle-size");
+    expect(resizableAddonIndex).not.toContain("console-resize-line");
+    expect(resizableAddonStyles).not.toContain(".console-resize-line");
+    expect(resizableAddonStyles).toContain(".console-resize-handle::before");
   });
 
   it("keeps public console custom properties as inputs only", () => {
