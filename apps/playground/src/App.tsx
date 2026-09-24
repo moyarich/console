@@ -26,8 +26,9 @@ function getSystemColorScheme(): ResolvedColorScheme {
 }
 
 function useSystemColorScheme() {
-  const [colorScheme, setColorScheme] =
-    useState<ResolvedColorScheme>(getSystemColorScheme);
+  const [colorScheme, setColorScheme] = useState<ResolvedColorScheme>(
+    getSystemColorScheme,
+  );
 
   useEffect(() => {
     if (!window.matchMedia) {
