@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { Github } from "lucide-react";
 import { Playground } from "./components/Playground";
 
@@ -17,17 +17,19 @@ export function App() {
   const colorScheme =
     themePreference === "system" ? "light dark" : themePreference;
 
-  const themeStyle = {
-    colorScheme,
-    "--console-color-scheme": colorScheme,
-  } as CSSProperties;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.colorScheme = colorScheme;
+    root.style.setProperty("--console-color-scheme", colorScheme);
+
+    return () => {
+      root.style.removeProperty("color-scheme");
+      root.style.removeProperty("--console-color-scheme");
+    };
+  }, [colorScheme]);
 
   return (
-    <div
-      className="site-shell"
-      data-theme={themePreference}
-      style={themeStyle}
-    >
+    <div className="site-shell" data-theme={themePreference}>
       <header className="topbar">
         <a className="brand" href={import.meta.env.BASE_URL}>
           <span className="brand-mark" aria-hidden="true">
