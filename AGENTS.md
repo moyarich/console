@@ -55,6 +55,20 @@ A task is not complete while Prettier or ESLint reports errors.
 
 Do not rely on pre-commit hooks or CI as the first formatting/linting pass.
 
+## Modern web platform APIs
+
+Prefer modern, standards-based browser primitives over custom JavaScript behavior when they fit the supported browser targets.
+
+- use the native HTML **Popover API** (`popover`, `popovertarget`, and `showPopover()` / `hidePopover()` only when imperative control is actually needed) for transient non-modal overlays
+- prefer declarative popover invokers over manually wiring document click listeners, Escape-key handlers, outside-click detection, or ad hoc visibility state
+- use **CSS Anchor Positioning** for positioning a popover relative to its invoker when appropriate
+- use native `<dialog>` for modal dialogs rather than simulating modal focus/keyboard behavior
+- prefer native semantic controls and browser capabilities before introducing a custom abstraction or dependency
+- preserve accessibility semantics, keyboard behavior, light-dismiss behavior, and focus handling provided by the platform
+- use progressive enhancement when a modern API is optional; do not add a large polyfill or custom framework unless the repository's browser support requires it
+
+Do not use `<details>` merely as a substitute for a menu or floating popover when the Popover API expresses the interaction more accurately.
+
 ## Addon dependency guidance
 
 Use the narrowest package surface that fits the addon.
