@@ -1,64 +1,37 @@
+/* ==========================================================================
+   Filtering addon
+   ========================================================================== */
+
+.console-filtering-controls,
+.console-filtering-controls *,
+.console-filtering-controls *::before,
+.console-filtering-controls *::after {
+  box-sizing: border-box;
+}
+
 .console-filtering-controls {
   --_console-filtering-color-scheme: var(
     --console-filtering-color-scheme,
-    var(--console-panel-color-scheme, var(--console-color-scheme, inherit))
+    var(--console-color-scheme, inherit)
   );
   --_console-filtering-background-color: var(
     --console-filtering-background-color,
-    var(--console-panel-header-background-color, light-dark(#ffffff, #111113))
+    light-dark(#ffffff, #111113)
   );
   --_console-filtering-color: var(
     --console-filtering-color,
-    var(--console-panel-header-color, light-dark(#18181b, #f4f4f5))
+    light-dark(#18181b, #f4f4f5)
   );
   --_console-filtering-muted-color: var(
     --console-filtering-muted-color,
+    light-dark(#71717a, #a1a1aa)
+  );
+  --_console-filtering-border-color: var(
+    --console-filtering-border-color,
     color-mix(
       in oklab,
-      var(--_console-filtering-color) 58%,
-      var(--_console-filtering-background-color) 42%
-    )
-  );
-  --_console-filtering-border: var(
-    --console-filtering-border,
-    var(
-      --console-panel-header-border-bottom,
-      1px solid
-        color-mix(
-          in oklab,
-          var(--_console-filtering-color) 10%,
-          var(--_console-filtering-background-color) 90%
-        )
-    )
-  );
-  --_console-filtering-control-background-color: var(
-    --console-filtering-control-background-color,
-    var(
-      --console-panel-control-background-color,
-      var(--_console-filtering-background-color)
-    )
-  );
-  --_console-filtering-control-color: var(
-    --console-filtering-control-color,
-    var(
-      --console-panel-control-color,
-      color-mix(
-        in oklab,
-        var(--_console-filtering-color) 72%,
-        var(--_console-filtering-control-background-color) 28%
-      )
-    )
-  );
-  --_console-filtering-control-border: var(
-    --console-filtering-control-border,
-    var(
-      --console-panel-control-border,
-      1px solid
-        color-mix(
-          in oklab,
-          var(--_console-filtering-control-color) 14%,
-          var(--_console-filtering-control-background-color) 86%
-        )
+      var(--_console-filtering-color) 12%,
+      var(--_console-filtering-background-color) 88%
     )
   );
   --_console-filtering-accent-color: var(
@@ -69,136 +42,225 @@
     --console-filtering-hover-background-color,
     color-mix(
       in oklab,
-      var(--_console-filtering-control-background-color) 92%,
-      var(--_console-filtering-control-color) 8%
+      var(--_console-filtering-background-color) 92%,
+      var(--_console-filtering-color) 8%
     )
   );
-  --_console-filtering-active-background-color: var(
-    --console-filtering-active-background-color,
-    color-mix(
-      in oklab,
-      var(--_console-filtering-accent-color) 14%,
-      var(--_console-filtering-control-background-color) 86%
-    )
-  );
-  --_console-filtering-active-color: var(
-    --console-filtering-active-color,
-    var(--_console-filtering-accent-color)
-  );
-  --_console-filtering-focus-ring: var(
-    --console-filtering-focus-ring,
-    0 0 0 3px
-      color-mix(
-        in oklab,
-        var(--_console-filtering-accent-color) 24%,
-        transparent
-      )
+  --_console-filtering-shadow-color: var(
+    --console-filtering-shadow-color,
+    light-dark(rgb(17 24 39 / 0.1), rgb(0 0 0 / 0.48))
   );
 
   color-scheme: var(--_console-filtering-color-scheme);
   display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 10px;
-  box-sizing: border-box;
-  padding: 10px 12px;
-  border-bottom: var(--_console-filtering-border);
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  gap: 8px;
+  padding: 6px 8px 6px 18px;
+  border: 1px solid var(--_console-filtering-border-color);
+  border-radius: 999px;
   background: var(--_console-filtering-background-color);
   color: var(--_console-filtering-color);
+  box-shadow: 0 8px 28px var(--_console-filtering-shadow-color);
   font:
-    12px/1.35 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    monospace;
-}
-
-.console-filtering-methods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.console-filtering-method,
-.console-filtering-reset,
-.console-filtering-field input,
-.console-filtering-field select {
-  box-sizing: border-box;
-  min-height: 30px;
-  border: var(--_console-filtering-control-border);
-  border-radius: 7px;
-  background: var(--_console-filtering-control-background-color);
-  color: var(--_console-filtering-control-color);
-  font: inherit;
+    500 13px/1.35 ui-sans-serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   transition:
-    background 120ms ease,
     border-color 120ms ease,
-    color 120ms ease,
     box-shadow 120ms ease;
 }
 
-.console-filtering-method,
+.console-filtering-controls:focus-within {
+  border-color: color-mix(
+    in oklab,
+    var(--_console-filtering-accent-color) 52%,
+    var(--_console-filtering-border-color) 48%
+  );
+  box-shadow:
+    0 8px 28px var(--_console-filtering-shadow-color),
+    0 0 0 3px
+      color-mix(
+        in oklab,
+        var(--_console-filtering-accent-color) 18%,
+        transparent
+      );
+}
+
+.console-filtering-search-input {
+  flex: 1 1 auto;
+  min-width: 120px;
+  width: 100%;
+  padding: 8px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+}
+
+.console-filtering-search-input::placeholder {
+  color: var(--_console-filtering-muted-color);
+  opacity: 1;
+}
+
+.console-filtering-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.console-filtering-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.console-filtering-method-menu {
+  position: relative;
+}
+
+.console-filtering-trigger,
+.console-filtering-source-select,
 .console-filtering-reset {
-  padding: 5px 9px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--_console-filtering-muted-color);
+  font: inherit;
+}
+
+.console-filtering-trigger,
+.console-filtering-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
-.console-filtering-method:hover,
-.console-filtering-reset:hover,
-.console-filtering-field input:hover,
-.console-filtering-field select:hover {
+.console-filtering-trigger {
+  gap: 8px;
+  padding: 7px 10px;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.console-filtering-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.console-filtering-trigger::after {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  content: "";
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 120ms ease;
+}
+
+.console-filtering-method-menu[open] > .console-filtering-trigger::after {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.console-filtering-trigger:hover,
+.console-filtering-source-select:hover,
+.console-filtering-reset:hover {
+  background: var(--_console-filtering-hover-background-color);
+  color: var(--_console-filtering-color);
+}
+
+.console-filtering-trigger:focus-visible,
+.console-filtering-source-select:focus-visible,
+.console-filtering-reset:focus-visible {
+  outline: 2px solid var(--_console-filtering-accent-color);
+  outline-offset: 1px;
+}
+
+.console-filtering-source-select {
+  max-width: 180px;
+  padding: 7px 26px 7px 10px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.console-filtering-method-popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  width: max-content;
+  min-width: 160px;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--_console-filtering-border-color);
+  border-radius: 14px;
+  background: var(--_console-filtering-background-color);
+  box-shadow: 0 14px 36px var(--_console-filtering-shadow-color);
+}
+
+.console-filtering-method-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--_console-filtering-color);
+  text-transform: capitalize;
+}
+
+.console-filtering-method-option:hover {
   background: var(--_console-filtering-hover-background-color);
 }
 
-.console-filtering-method[aria-pressed="true"] {
-  border-color: color-mix(
-    in oklab,
-    var(--_console-filtering-accent-color) 38%,
-    transparent
-  );
-  background: var(--_console-filtering-active-background-color);
-  color: var(--_console-filtering-active-color);
-}
-
-.console-filtering-method:focus-visible,
-.console-filtering-reset:focus-visible,
-.console-filtering-field input:focus-visible,
-.console-filtering-field select:focus-visible {
-  outline: none;
-  box-shadow: var(--_console-filtering-focus-ring);
-}
-
-.console-filtering-field {
-  display: grid;
-  gap: 3px;
-}
-
-.console-filtering-search {
-  flex: 1 1 210px;
-  min-width: min(210px, 100%);
-}
-
-.console-filtering-label {
-  color: var(--_console-filtering-muted-color);
-  font-size: 11px;
-}
-
-.console-filtering-field input,
-.console-filtering-field select {
-  width: 100%;
-  padding: 5px 8px;
-}
-
-.console-filtering-field input::placeholder {
-  color: var(--_console-filtering-muted-color);
-}
-
-.console-filtering-field select {
-  min-width: 130px;
+.console-filtering-method-option input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--_console-filtering-accent-color);
 }
 
 .console-filtering-reset {
-  margin-left: auto;
+  padding: 7px 12px;
+  background: var(--_console-filtering-accent-color);
+  color: light-dark(#ffffff, #111113);
+  font-weight: 600;
+}
+
+.console-filtering-reset:hover {
+  background: color-mix(
+    in oklab,
+    var(--_console-filtering-accent-color) 88%,
+    var(--_console-filtering-color) 12%
+  );
+  color: light-dark(#ffffff, #111113);
+}
+
+@media (max-width: 640px) {
+  .console-filtering-controls {
+    flex-wrap: wrap;
+    border-radius: 22px;
+    padding: 8px 10px 10px 14px;
+  }
+
+  .console-filtering-search-input {
+    flex-basis: calc(100% - 12px);
+  }
+
+  .console-filtering-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .console-filtering-method-menu {
+    margin-right: auto;
+  }
 }
