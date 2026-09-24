@@ -10,6 +10,10 @@
 }
 
 .console-resizable-frame {
+  --_console-resize-color-scheme: var(
+    --console-resize-color-scheme,
+    var(--console-panel-color-scheme, var(--console-color-scheme, dark))
+  );
   --_console-resize-separator-line-background-color: var(
     --console-resize-separator-line-background-color,
     currentColor
@@ -49,6 +53,7 @@
   --_console-resize-handle-size: var(--console-resize-handle-size, 10px);
   --_console-resize-corner-size: var(--console-resize-corner-size, 28px);
 
+  color-scheme: var(--_console-resize-color-scheme);
   position: relative;
   display: flex;
   width: 100%;
