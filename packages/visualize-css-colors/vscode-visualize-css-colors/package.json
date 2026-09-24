@@ -1,7 +1,7 @@
 {
-  "name": "@moyarich/css-color-parser",
+  "name": "@moyarich/vscode-visualize-css-colors",
   "version": "0.1.0",
-  "description": "Framework-agnostic CSS color parsing and extraction utilities.",
+  "description": "VS Code web extension that visualizes CSS color literals with native editor color providers.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -12,36 +12,43 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./manifest.json": "./extension.manifest.json",
+    "./extension.js": "./dist/extension.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "extension.manifest.json"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@moyarich/css-color-parser": "0.1.0"
+  },
   "devDependencies": {
+    "@types/vscode": "^1.138.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/moyarich/console.git",
-    "directory": "packages/css-color-parser"
+    "directory": "packages/visualize-css-colors/vscode-visualize-css-colors"
   },
   "bugs": {
     "url": "https://github.com/moyarich/console/issues"
   },
   "homepage": "https://github.com/moyarich/console#readme",
   "keywords": [
+    "vscode",
+    "monaco",
+    "web-extension",
     "css",
-    "color",
-    "parser",
-    "developer-tools",
-    "typescript"
+    "color"
   ]
 }

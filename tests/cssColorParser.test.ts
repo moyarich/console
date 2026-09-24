@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   extractCssColors,
   parseCssColor,
-} from "../packages/css-color-parser/src/index";
+} from "../packages/visualize-css-colors/css-color-parser/src/index";
 
 describe("parseCssColor", () => {
   it("parses short and alpha hex colors", () => {
