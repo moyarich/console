@@ -299,6 +299,7 @@ export function ConsoleFilteringControls({
   messages,
   sources,
   className = "",
+  style,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
   const availableSources = useMemo(
@@ -333,6 +334,7 @@ export function ConsoleFilteringControls({
       className={`console-filtering-controls ${className}`.trim()}
       role="search"
       aria-label="Console filters"
+      style={style}
     >
       <input
         className="console-filtering-search-input"
