@@ -51,11 +51,7 @@ export function App() {
         </a>
 
         <div className="topbar-actions">
-          <div
-            className="theme-switcher"
-            role="group"
-            aria-label="Appearance"
-          >
+          <div className="theme-switcher" role="group" aria-label="Appearance">
             {themeOptions.map(({ value, label, Icon }) => {
               const isActive = themePreference === value;
 
