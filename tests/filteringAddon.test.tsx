@@ -72,7 +72,9 @@ describe("@moyarich/console-addon-filtering", () => {
     const addon = createConsoleFilteringAddon();
 
     manager.load(addon);
-    expect(manager.services.get(consoleFilteringService)).toBe(addon.controller);
+    expect(manager.services.get(consoleFilteringService)).toBe(
+      addon.controller,
+    );
 
     const initial = manager.extensions.getAll(
       consoleExtensionPoints.messageFilter,
