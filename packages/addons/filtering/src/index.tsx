@@ -239,8 +239,8 @@ export function createConsoleFilteringController(
     },
 
     setMethodEnabled(method, enabled) {
-      const methods = state.methods ?? ALL_CONSOLE_METHODS;
-      const next = new Set(methods);
+      const currentMethods = state.methods ?? ALL_CONSOLE_METHODS;
+      const next = new Set(currentMethods);
 
       if (enabled) {
         next.add(method);
@@ -313,7 +313,7 @@ export function ConsoleFilteringControls({
       ? ""
       : hasCustomSourceSelection
         ? "__custom__"
-        : state.sources[0] ?? "";
+        : (state.sources[0] ?? "");
   const active =
     state.methods !== null ||
     state.sources !== null ||
@@ -383,9 +383,7 @@ export function ConsoleFilteringControls({
             value={sourceValue}
             onChange={(event) =>
               controller.setSources(
-                event.currentTarget.value
-                  ? [event.currentTarget.value]
-                  : null,
+                event.currentTarget.value ? [event.currentTarget.value] : null,
               )
             }
           >
