@@ -527,7 +527,7 @@
   overflow-wrap: anywhere;
   color: var(--_console-panel-header-color);
   font-size: 1rem;
-  font-weight: 820;
+  font-weight: 600;
 }
 
 .console-panel .console-panel-header p {
@@ -628,7 +628,7 @@
   color: var(--_console-panel-control-color);
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.2;
   text-align: left;
   text-decoration: none;
@@ -793,7 +793,7 @@
 
 .console-panel .console-message[data-method="group"],
 .console-panel .console-message[data-method="groupCollapsed"] {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .console-panel .console-message-table {
@@ -1134,7 +1134,7 @@
   z-index: 1;
   background-color: var(--_console-table-header-background-color);
   color: var(--_console-color);
-  font-weight: 600;
+  font-weight: 500;
 }
 .console-panel .console-table tbody tr:nth-child(even) {
   background-color: var(--_console-table-even-background-color);
