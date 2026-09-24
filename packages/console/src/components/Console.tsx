@@ -453,6 +453,7 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      tabIndex={keyboardShortcuts?.length ? 0 : undefined}
       onKeyDown={handleKeyDown}
     >
       {showHeader && (
