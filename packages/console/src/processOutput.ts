@@ -45,6 +45,7 @@ export interface ConsoleProcessControlOutput {
 
 /** Context for one raw process chunk before line normalization. */
 export interface ConsoleProcessControlParserContext {
+  readonly output: ConsoleProcessControlOutput;
   readonly entry: ConsoleStdoutEntry | string;
   readonly index: number;
   readonly id?: string;
@@ -68,7 +69,6 @@ export interface ConsoleProcessControlParserResult {
 export interface ConsoleProcessControlParser {
   readonly id?: string;
   parse(
-    output: ConsoleProcessControlOutput,
     context: ConsoleProcessControlParserContext,
   ): ConsoleProcessControlParserResult | undefined | void;
   reset?(): void;
@@ -76,6 +76,8 @@ export interface ConsoleProcessControlParser {
 
 /** Context supplied to each process-output processor. */
 export interface ConsoleProcessOutputProcessorContext {
+  /** Current immutable process output after earlier processors. */
+  readonly output: ConsoleProcessOutput;
   /** Logical process-output entry after core CR/newline normalization. */
   readonly entry: ConsoleStdoutEntry | string;
   /** Zero-based entry index. */
@@ -110,7 +112,6 @@ export interface ConsoleProcessOutputProcessor {
   /** Optional identifier useful to hosts for diagnostics and composition. */
   readonly id?: string;
   process(
-    output: ConsoleProcessOutput,
     context: ConsoleProcessOutputProcessorContext,
   ): ConsoleProcessOutputProcessorResult | undefined | void;
 }
@@ -323,6 +324,7 @@ export function processConsoleOutputEntry(
 
   for (const processor of processors) {
     const context: ConsoleProcessOutputProcessorContext = Object.freeze({
+      output,
       entry,
       index,
       text: Anser.ansiToText(output.data),
@@ -331,7 +333,7 @@ export function processConsoleOutputEntry(
     });
 
     try {
-      const result = processor.process(output, context);
+      const result = processor.process(context);
 
       if (!result) {
         continue;
@@ -414,16 +416,16 @@ export function resolveConsoleProcessControls(
     });
     let omit = false;
 
-    const context: ConsoleProcessControlParserContext = Object.freeze({
-      entry,
-      index,
-      ...(source.id !== undefined ? { id: source.id } : {}),
-      ...(source.stream !== undefined ? { stream: source.stream } : {}),
-    });
-
     for (const parser of parsers) {
       try {
-        const result = parser.parse(output, context);
+        const context: ConsoleProcessControlParserContext = Object.freeze({
+          output,
+          entry,
+          index,
+          ...(source.id !== undefined ? { id: source.id } : {}),
+          ...(source.stream !== undefined ? { stream: source.stream } : {}),
+        });
+        const result = parser.parse(context);
         if (!result) continue;
 
         if (result.events?.length) {
