@@ -34,7 +34,7 @@ describe("consoleExtensionPoints", () => {
       reset() {
         buffered = "";
       },
-      parse(output) {
+      parse({ output }) {
         const value = buffered + output.data;
 
         if (value.startsWith("[[cwd:") && !value.includes("]]")) {
