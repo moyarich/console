@@ -104,9 +104,7 @@ export function RunnableExample({
   );
   const canonicalSignature = createRunnableProjectSignature(canonicalFiles);
   const canonicalFilesRef = useRef(canonicalFiles);
-  const runtimeModulesRef = useRef(runtimeModules);
   canonicalFilesRef.current = canonicalFiles;
-  runtimeModulesRef.current = runtimeModules;
 
   const [draftFiles, setDraftFiles] = useState<Record<string, string>>(() =>
     createRunnableProjectDraft(canonicalFiles),
@@ -149,7 +147,7 @@ export function RunnableExample({
         const runtime = await compileExampleProject({
           entryPath: nextEntryPath,
           files: nextFiles,
-          runtimeModules: runtimeModulesRef.current,
+          runtimeModules,
         });
 
         if (token !== runTokenRef.current) {
@@ -174,7 +172,7 @@ export function RunnableExample({
         }
       }
     },
-    [replaceRuntime],
+    [replaceRuntime, runtimeModules],
   );
 
   useEffect(() => {
