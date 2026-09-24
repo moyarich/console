@@ -27,8 +27,7 @@ describe("runnable example project state", () => {
 
     const resetDraft = createRunnableProjectDraft(baseline);
     expect(resetDraft).toEqual({
-      "example.tsx":
-        "export default function Example() { return null; }",
+      "example.tsx": "export default function Example() { return null; }",
       "shared.ts": 'export const label = "original";',
     });
   });
