@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
+import { Monitor, Moon, Sun } from "lucide-react";
 import { Playground } from "./components/Playground";
 
 type ThemePreference = "system" | "light" | "dark";
 
-const themeOptions: Array<{ value: ThemePreference; label: string }> = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
+const themeOptions = [
+  { value: "system", label: "System", Icon: Monitor },
+  { value: "light", label: "Light", Icon: Sun },
+  { value: "dark", label: "Dark", Icon: Moon },
+] satisfies Array<{
+  value: ThemePreference;
+  label: string;
+  Icon: typeof Monitor;
+}>;
 
 function GitHubIcon() {
   return (
@@ -50,22 +55,29 @@ export function App() {
         </a>
 
         <div className="topbar-actions">
-          <label className="theme-control">
-            <span>Theme</span>
-            <select
-              aria-label="Playground theme"
-              value={themePreference}
-              onChange={(event) =>
-                setThemePreference(event.target.value as ThemePreference)
-              }
-            >
-              {themeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div
+            className="theme-switcher"
+            role="group"
+            aria-label="Appearance"
+          >
+            {themeOptions.map(({ value, label, Icon }) => {
+              const isActive = themePreference === value;
+
+              return (
+                <button
+                  key={value}
+                  className="theme-switcher-button"
+                  type="button"
+                  aria-label={`${label} theme`}
+                  aria-pressed={isActive}
+                  title={label}
+                  onClick={() => setThemePreference(value)}
+                >
+                  <Icon aria-hidden="true" />
+                </button>
+              );
+            })}
+          </div>
 
           <a
             className="topbar-icon-link"
