@@ -10,12 +10,12 @@
 
 .console-panel {
   /* Color scheme */
-  --_console-color-scheme: var(--console-color-scheme, light dark);
+  --_console-color-scheme: var(--console-color-scheme, inherit);
 
   /* Panel */
   --_console-panel-color-scheme: var(
     --console-panel-color-scheme,
-    var(--console-color-scheme, light dark)
+    var(--console-color-scheme, inherit)
   );
 
   --_console-panel-background-color: var(
@@ -305,7 +305,7 @@
 .console-context-menu {
   --_console-context-menu-color-scheme: var(
     --console-context-menu-color-scheme,
-    var(--console-color-scheme, light dark)
+    var(--console-color-scheme, inherit)
   );
   --_console-context-menu-background-color: var(
     --console-context-menu-background-color,
