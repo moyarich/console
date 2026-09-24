@@ -6,6 +6,7 @@ import {
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
+import { Sidebar } from "../Sidebar";
 
 export function Playground() {
   const [exampleId, setExampleId] = useState(DEFAULT_CONSOLE_EXAMPLE.id);
@@ -20,11 +21,13 @@ export function Playground() {
   return (
     <div className="documentation-layout">
       <aside className="documentation-sidebar">
-        <ExampleSidebar
-          examples={CONSOLE_EXAMPLES}
-          value={example.id}
-          onChange={setExampleId}
-        />
+        <Sidebar aria-label="Console documentation">
+          <ExampleSidebar
+            examples={CONSOLE_EXAMPLES}
+            value={example.id}
+            onChange={setExampleId}
+          />
+        </Sidebar>
       </aside>
 
       <main className="playground-main">
