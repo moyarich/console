@@ -22,12 +22,15 @@ export interface CompiledExampleRuntime {
   dispose(): void;
 }
 
-const SCRIPT_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"] as const;
-const RESOLVABLE_EXTENSIONS = [
-  ...SCRIPT_EXTENSIONS,
-  ".json",
-  ".css",
+const SCRIPT_EXTENSIONS = [
+  ".ts",
+  ".tsx",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
 ] as const;
+const RESOLVABLE_EXTENSIONS = [...SCRIPT_EXTENSIONS, ".json", ".css"] as const;
 
 const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, RuntimeModule>> = {
   react: React,
@@ -61,7 +64,9 @@ function normalizeVirtualPath(path: string): string {
 
     if (segment === "..") {
       if (segments.length === 0) {
-        throw new Error('Virtual path "' + path + '" escapes the runnable project.');
+        throw new Error(
+          'Virtual path "' + path + '" escapes the runnable project.',
+        );
       }
       segments.pop();
       continue;
@@ -342,7 +347,9 @@ function findComponent(exportsValue: unknown): ElementType {
   }
 
   if (!exportsValue || typeof exportsValue !== "object") {
-    throw new Error("The runnable entry module did not export a React component.");
+    throw new Error(
+      "The runnable entry module did not export a React component.",
+    );
   }
 
   const exportsRecord = exportsValue as Record<string, unknown>;
@@ -392,7 +399,11 @@ export async function compileExampleProject({
     if (SCRIPT_EXTENSIONS.some((extension) => path.endsWith(extension))) {
       transpiled.set(path, transpileModule(ts, source, path));
 
-      for (const specifier of collectStaticExternalSpecifiers(ts, source, path)) {
+      for (const specifier of collectStaticExternalSpecifiers(
+        ts,
+        source,
+        path,
+      )) {
         externalSpecifiers.add(specifier);
       }
     }
@@ -449,7 +460,9 @@ export async function compileExampleProject({
     const compiled = transpiled.get(path);
 
     if (!compiled) {
-      throw new Error('Runnable file "' + path + '" has an unsupported extension.');
+      throw new Error(
+        'Runnable file "' + path + '" has an unsupported extension.',
+      );
     }
 
     const moduleRecord: ModuleRecord = {
