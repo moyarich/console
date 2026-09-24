@@ -1,0 +1,274 @@
+/* ==========================================================================
+   Resizable console addon
+   ========================================================================== */
+
+.console-resizable-frame,
+.console-resizable-frame *,
+.console-resizable-frame *::before,
+.console-resizable-frame *::after {
+  box-sizing: border-box;
+}
+
+.console-resizable-frame {
+  --_console-resize-separator-line-background-color: var(
+    --console-resize-separator-line-background-color,
+    currentColor
+  );
+  --_console-resize-separator-hover-line-background-color: var(
+    --console-resize-separator-hover-line-background-color,
+    currentColor
+  );
+  --_console-resize-separator-active-line-background-color: var(
+    --console-resize-separator-active-line-background-color,
+    currentColor
+  );
+  --_console-resize-separator-grip-color: var(
+    --console-resize-separator-grip-color,
+    currentColor
+  );
+  --_console-resize-separator-active-grip-color: var(
+    --console-resize-separator-active-grip-color,
+    var(--_console-resize-separator-grip-color)
+  );
+  --_console-resize-separator-grip-border: var(
+    --console-resize-separator-grip-border,
+    1px solid currentColor
+  );
+  --_console-resize-separator-grip-background-color: var(
+    --console-resize-separator-grip-background-color,
+    transparent
+  );
+  --_console-resize-separator-grip-border-radius: var(
+    --console-resize-separator-grip-border-radius,
+    999px
+  );
+  --_console-resize-separator-grip-box-shadow: var(
+    --console-resize-separator-grip-box-shadow,
+    none
+  );
+  --_console-resize-handle-size: var(--console-resize-handle-size, 10px);
+  --_console-resize-corner-size: var(--console-resize-corner-size, 28px);
+
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.console-resizable-frame[data-console-resize-direction="horizontal"],
+.console-resizable-frame[data-console-resize-direction="inline"],
+.console-resizable-frame[data-console-resize-direction="both"] {
+  width: var(--_console-resizable-width);
+  min-width: var(--_console-resizable-min-width);
+  max-width: var(--_console-resizable-max-width);
+}
+
+.console-resizable-frame[data-console-resize-direction="vertical"],
+.console-resizable-frame[data-console-resize-direction="block"],
+.console-resizable-frame[data-console-resize-direction="both"] {
+  height: var(--_console-resizable-height);
+  min-height: var(--_console-resizable-min-height);
+  max-height: var(--_console-resizable-max-height);
+}
+
+.console-resizable-frame-content {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.console-resize-handle {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--_console-resize-separator-grip-color);
+  outline: none;
+  touch-action: none;
+}
+
+.console-resize-handle[data-console-resize-axis="horizontal"] {
+  top: 0;
+  width: var(--_console-resize-handle-size);
+  height: 100%;
+  cursor: col-resize;
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="end"]
+  > .console-resize-handle[data-console-resize-axis="horizontal"] {
+  right: calc(var(--_console-resize-handle-size) / -2);
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="start"]
+  > .console-resize-handle[data-console-resize-axis="horizontal"] {
+  left: calc(var(--_console-resize-handle-size) / -2);
+}
+
+.console-resize-handle[data-console-resize-axis="vertical"] {
+  left: 0;
+  width: 100%;
+  height: var(--_console-resize-handle-size);
+  cursor: row-resize;
+}
+
+.console-resizable-frame[data-console-resize-vertical-edge="end"]
+  > .console-resize-handle[data-console-resize-axis="vertical"] {
+  bottom: calc(var(--_console-resize-handle-size) / -2);
+}
+
+.console-resizable-frame[data-console-resize-vertical-edge="start"]
+  > .console-resize-handle[data-console-resize-axis="vertical"] {
+  top: calc(var(--_console-resize-handle-size) / -2);
+}
+
+.console-resize-line {
+  position: absolute;
+  background: var(--_console-resize-separator-line-background-color);
+  pointer-events: none;
+  transition: background 120ms ease;
+}
+
+.console-resize-handle[data-console-resize-axis="horizontal"]
+  > .console-resize-line {
+  width: 1px;
+  height: 100%;
+}
+
+.console-resize-handle[data-console-resize-axis="vertical"]
+  > .console-resize-line {
+  width: 100%;
+  height: 1px;
+}
+
+.console-resize-handle:hover > .console-resize-line,
+.console-resize-handle:focus-visible > .console-resize-line {
+  background: var(--_console-resize-separator-hover-line-background-color);
+}
+
+.console-resize-handle[data-active="true"] > .console-resize-line {
+  background: var(--_console-resize-separator-active-line-background-color);
+}
+
+.console-resize-grip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--_console-resize-separator-grip-border-radius);
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  opacity: 0.55;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    color 120ms ease;
+}
+
+.console-resize-handle[data-console-resize-axis="horizontal"]
+  > .console-resize-grip {
+  width: 22px;
+  height: 34px;
+}
+
+.console-resize-handle[data-console-resize-axis="vertical"]
+  > .console-resize-grip {
+  width: 34px;
+  height: 22px;
+}
+
+.console-resize-handle:hover > .console-resize-grip,
+.console-resize-handle:focus-visible > .console-resize-grip,
+.console-resize-handle[data-active="true"] > .console-resize-grip {
+  border: var(--_console-resize-separator-grip-border);
+  background: var(--_console-resize-separator-grip-background-color);
+  box-shadow: var(--_console-resize-separator-grip-box-shadow);
+  opacity: 1;
+}
+
+.console-resize-handle[data-active="true"] > .console-resize-grip {
+  color: var(--_console-resize-separator-active-grip-color);
+}
+
+.console-resize-corner-handle {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  width: var(--_console-resize-corner-size);
+  height: var(--_console-resize-corner-size);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--_console-resize-separator-grip-color);
+  opacity: 0.65;
+  outline: none;
+  touch-action: none;
+  transition:
+    opacity 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    color 120ms ease;
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="end"]
+  > .console-resize-corner-handle {
+  right: -4px;
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="start"]
+  > .console-resize-corner-handle {
+  left: -4px;
+}
+
+.console-resizable-frame[data-console-resize-vertical-edge="end"]
+  > .console-resize-corner-handle {
+  bottom: -4px;
+}
+
+.console-resizable-frame[data-console-resize-vertical-edge="start"]
+  > .console-resize-corner-handle {
+  top: -4px;
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="end"][data-console-resize-vertical-edge="end"]
+  > .console-resize-corner-handle,
+.console-resizable-frame[data-console-resize-horizontal-edge="start"][data-console-resize-vertical-edge="start"]
+  > .console-resize-corner-handle {
+  cursor: nwse-resize;
+}
+
+.console-resizable-frame[data-console-resize-horizontal-edge="end"][data-console-resize-vertical-edge="start"]
+  > .console-resize-corner-handle,
+.console-resizable-frame[data-console-resize-horizontal-edge="start"][data-console-resize-vertical-edge="end"]
+  > .console-resize-corner-handle {
+  cursor: nesw-resize;
+}
+
+.console-resize-corner-handle:hover,
+.console-resize-corner-handle:focus-visible,
+.console-resize-corner-handle[data-active="true"] {
+  border: var(--_console-resize-separator-grip-border);
+  background: var(--_console-resize-separator-grip-background-color);
+  box-shadow: var(--_console-resize-separator-grip-box-shadow);
+  opacity: 1;
+}
+
+.console-resize-corner-handle[data-active="true"] {
+  color: var(--_console-resize-separator-active-grip-color);
+}
