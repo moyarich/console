@@ -1,4 +1,5 @@
 import "@fontsource-variable/inter";
+import "./components/Layout/layout.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./components/MonacoEditor/setup";
