@@ -122,7 +122,7 @@
 }
 
 .console-filtering-method-menu {
-  position: relative;
+  display: contents;
 }
 
 .console-filtering-trigger,
@@ -147,12 +147,7 @@
 .console-filtering-trigger {
   gap: 8px;
   padding: 7px 10px;
-  list-style: none;
   white-space: nowrap;
-}
-
-.console-filtering-trigger::-webkit-details-marker {
-  display: none;
 }
 
 .console-filtering-trigger::after {
@@ -165,7 +160,10 @@
   transition: transform 120ms ease;
 }
 
-.console-filtering-method-menu[open] > .console-filtering-trigger::after {
+.console-filtering-method-menu:has(
+    .console-filtering-method-popover:popover-open
+  )
+  .console-filtering-trigger::after {
   transform: translateY(2px) rotate(225deg);
 }
 
@@ -191,19 +189,28 @@
 }
 
 .console-filtering-method-popover {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 8px);
-  right: 0;
-  display: grid;
+  position: fixed;
+  inset: auto;
+  top: anchor(bottom);
+  right: anchor(right);
   width: max-content;
   min-width: 160px;
-  gap: 2px;
+  margin: 8px 0 0;
   padding: 8px;
   border: 1px solid var(--_console-filtering-border-color);
   border-radius: 14px;
   background: var(--_console-filtering-background-color);
+  color: var(--_console-filtering-color);
   box-shadow: 0 14px 36px var(--_console-filtering-shadow-color);
+}
+
+.console-filtering-method-popover:popover-open {
+  display: grid;
+  gap: 2px;
+}
+
+.console-filtering-method-popover::backdrop {
+  background: transparent;
 }
 
 .console-filtering-method-option {
