@@ -3,12 +3,16 @@ import {
   useMemo,
   useSyncExternalStore,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import {
   consoleExtensionPoints,
+  consoleServices,
   createConsoleServiceToken,
   serializeConsoleValue,
   type ConsoleAddon,
+  type ConsoleDataService,
+  type ConsoleFrameDecorator,
   type ConsoleMessageData,
   type ConsoleMessageFilter,
   type ConsoleMethod,
@@ -68,26 +72,33 @@ export interface ConsoleFilteringController {
   matches(message: ConsoleMessageData): boolean;
 }
 
+export interface ConsoleFilteringControlsOptions {
+  /** Explicit source choices. When omitted, sources are discovered from retained messages. */
+  sources?: readonly string[];
+  /** Additional class name applied to the addon-owned controls. */
+  className?: string;
+  /** Inline styles and theme custom-property overrides for the controls. */
+  style?: CSSProperties;
+}
+
 export interface ConsoleFilteringAddonOptions {
   /** Reuse a host-owned controller instead of creating one. */
   controller?: ConsoleFilteringController;
   /** Initial state used when the addon creates its controller. */
   initialState?: ConsoleFilteringStateInput;
+  /** Set to false for a headless addon with no default UI contribution. */
+  controls?: false | ConsoleFilteringControlsOptions;
 }
 
 export interface ConsoleFilteringAddon extends ConsoleAddon {
   readonly controller: ConsoleFilteringController;
 }
 
-export interface ConsoleFilteringControlsProps {
+export interface ConsoleFilteringControlsProps
+  extends ConsoleFilteringControlsOptions {
   controller: ConsoleFilteringController;
   /** Messages used to discover source choices. */
   messages?: readonly ConsoleMessageData[];
-  /** Explicit source choices. Takes precedence over sources discovered from messages. */
-  sources?: readonly string[];
-  className?: string;
-  /** Inline styles, including theme custom properties or colorScheme. */
-  style?: CSSProperties;
 }
 
 /** Service token exposed while the filtering addon is active. */
@@ -431,7 +442,48 @@ export function ConsoleFilteringControls({
   );
 }
 
+interface ConsoleFilteringFrameProps {
+  controller: ConsoleFilteringController;
+  data?: ConsoleDataService;
+  options: ConsoleFilteringControlsOptions;
+  children: ReactNode;
+}
+
+function useConsoleDataSnapshot(data: ConsoleDataService | undefined) {
+  return useSyncExternalStore(
+    (listener) => {
+      if (!data) return () => undefined;
+      const subscription = data.subscribe(listener);
+      return () => subscription.dispose();
+    },
+    () => data?.getSnapshot(),
+    () => data?.getSnapshot(),
+  );
+}
+
+function ConsoleFilteringFrame({
+  controller,
+  data,
+  options,
+  children,
+}: ConsoleFilteringFrameProps) {
+  const snapshot = useConsoleDataSnapshot(data);
+  const messages = snapshot?.mode === "console" ? snapshot.all : undefined;
+
+  return (
+    <div className="console-filtering-frame">
+      <ConsoleFilteringControls
+        controller={controller}
+        messages={messages}
+        {...options}
+      />
+      {children}
+    </div>
+  );
+}
+
 const filterRegistrationId = `${CONSOLE_FILTERING_ADDON_ID}:message-filter`;
+const frameRegistrationId = `${CONSOLE_FILTERING_ADDON_ID}:frame`;
 
 /**
  * Creates the first-party filtering addon.
@@ -446,6 +498,7 @@ export function createConsoleFilteringAddon(
   const controller =
     options.controller ??
     createConsoleFilteringController(options.initialState);
+  const controls = options.controls === false ? undefined : (options.controls ?? {});
 
   return {
     id: CONSOLE_FILTERING_ADDON_ID,
@@ -454,15 +507,15 @@ export function createConsoleFilteringAddon(
     activate(host) {
       host.services.provide(consoleFilteringService, controller);
 
-      let registration = host.extensions.register(
+      let filterRegistration = host.extensions.register(
         consoleExtensionPoints.messageFilter,
         createConsoleMessageFilter(controller.getState()),
         { id: filterRegistrationId },
       );
 
       const unsubscribe = controller.subscribe(() => {
-        registration.dispose();
-        registration = host.extensions.register(
+        filterRegistration.dispose();
+        filterRegistration = host.extensions.register(
           consoleExtensionPoints.messageFilter,
           createConsoleMessageFilter(controller.getState()),
           { id: filterRegistrationId },
@@ -471,7 +524,30 @@ export function createConsoleFilteringAddon(
 
       host.scope.defer(unsubscribe);
 
-      return () => registration.dispose();
+      if (controls) {
+        const data = host.services.get(consoleServices.data);
+        const decorator: ConsoleFrameDecorator<ReactNode> = {
+          render(context) {
+            if (context.mode !== "console") return undefined;
+
+            return (
+              <ConsoleFilteringFrame
+                controller={controller}
+                data={data}
+                options={controls}
+              >
+                {context.renderDefault()}
+              </ConsoleFilteringFrame>
+            );
+          },
+        };
+
+        host.extensions.register(
+          consoleExtensionPoints.frameDecorator,
+          decorator,
+          { id: frameRegistrationId },
+        );
+      }
     },
   };
 }
