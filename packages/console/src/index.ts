@@ -1,3 +1,5 @@
+import "./styles.css";
+
 /**
  * Public entry point for @moyarich/console.
  *
