@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
-import {
-  Layout,
-  LayoutFooter,
-  LayoutHeader,
-} from "./components/Layout";
+import { Layout, LayoutFooter, LayoutHeader } from "./components/Layout";
 import { Playground } from "./components/Playground";
 
 type ThemePreference = "system" | "light" | "dark";
