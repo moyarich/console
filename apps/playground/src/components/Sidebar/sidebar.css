@@ -110,6 +110,12 @@
   gap: 6px;
 }
 
+.sidebar-section-items {
+  display: grid;
+  gap: 2px;
+  padding: 0 6px;
+}
+
 .sidebar-group-trigger {
   display: flex;
   width: 100%;
