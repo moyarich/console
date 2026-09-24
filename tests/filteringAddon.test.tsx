@@ -45,6 +45,15 @@ const messages: ConsoleMessageData[] = [
   },
 ];
 
+
+function filterMessages(
+  filter: ReturnType<typeof createConsoleMessageFilter>,
+): ConsoleMessageData[] {
+  return messages.filter((message, index) =>
+    filter({ message, index, messages }),
+  );
+}
+
 describe("@moyarich/console-addon-filtering", () => {
   it("uses the package-qualified addon id", () => {
     expect(createConsoleFilteringAddon().id).toBe(CONSOLE_FILTERING_ADDON_ID);
@@ -61,7 +70,7 @@ describe("@moyarich/console-addon-filtering", () => {
       sources: ["worker"],
     });
 
-    const visible = messages.filter(filter);
+    const visible = filterMessages(filter);
 
     expect(visible.map((message) => message.id)).toEqual(["worker-warn"]);
     expect(messages).toEqual(before);
@@ -83,9 +92,13 @@ describe("@moyarich/console-addon-filtering", () => {
     expect(
       manager.extensions.getAll(consoleExtensionPoints.panelElement),
     ).toHaveLength(1);
-    expect(messages.filter(initial[0]!).map((message) => message.id)).toEqual(
-      messages.map((message) => message.id),
-    );
+    expect(
+      messages
+        .filter((message, index) =>
+          initial[0]!({ message, index, messages }),
+        )
+        .map((message) => message.id),
+    ).toEqual(messages.map((message) => message.id));
 
     addon.controller.setState({
       methods: ["warn", "error"],
@@ -97,9 +110,13 @@ describe("@moyarich/console-addon-filtering", () => {
       consoleExtensionPoints.messageFilter,
     );
     expect(updated).toHaveLength(1);
-    expect(messages.filter(updated[0]!).map((message) => message.id)).toEqual([
-      "worker-error",
-    ]);
+    expect(
+      messages
+        .filter((message, index) =>
+          updated[0]!({ message, index, messages }),
+        )
+        .map((message) => message.id),
+    ).toEqual(["worker-error"]);
 
     expect(manager.unload(CONSOLE_FILTERING_ADDON_ID)).toBe(true);
     expect(manager.services.get(consoleFilteringService)).toBeUndefined();
@@ -135,8 +152,12 @@ describe("@moyarich/console-addon-filtering", () => {
     manager.load(filteringAddon);
 
     expect(
-      messages.filter(
-        manager.extensions.getAll(consoleExtensionPoints.messageFilter)[0]!,
+      messages.filter((message, index) =>
+        manager.extensions.getAll(consoleExtensionPoints.messageFilter)[0]!({
+          message,
+          index,
+          messages,
+        }),
       ),
     ).toEqual([]);
 
@@ -147,7 +168,7 @@ describe("@moyarich/console-addon-filtering", () => {
           consoleExtensionPoints.messageTextProvider,
           {
             id: "worker-error-alias",
-            provideText(message) {
+            provideText({ message }) {
               return message.id === "worker-error" ? "search-alias" : undefined;
             },
           },
@@ -160,9 +181,11 @@ describe("@moyarich/console-addon-filtering", () => {
       consoleExtensionPoints.messageFilter,
     )[0]!;
 
-    expect(messages.filter(filter).map((message) => message.id)).toEqual([
-      "worker-error",
-    ]);
+    expect(
+      messages
+        .filter((message, index) => filter({ message, index, messages }))
+        .map((message) => message.id),
+    ).toEqual(["worker-error"]);
   });
 
   it("returns method state to unfiltered when every method is enabled", () => {
