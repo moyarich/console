@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
 import {
   useCallback,
