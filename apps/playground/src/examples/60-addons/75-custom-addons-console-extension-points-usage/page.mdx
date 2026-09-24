@@ -3,23 +3,14 @@ label: "Usage Of Console Extension Points"
 description: "One runnable example for every built-in consoleExtensionPoints.* contract."
 ---
 
-import ProcessOutputProcessor from "./process-output-processor.tsx";
 import processOutputProcessorSource from "./process-output-processor.tsx?raw";
-import StructuredOutputParser from "./structured-output-parser.tsx";
 import structuredOutputParserSource from "./structured-output-parser.tsx?raw";
-import LinkProvider from "./link-provider.tsx";
 import linkProviderSource from "./link-provider.tsx?raw";
-import OutputRenderer from "./output-renderer.tsx";
 import outputRendererSource from "./output-renderer.tsx?raw";
-import MessageRenderer from "./message-renderer.tsx";
 import messageRendererSource from "./message-renderer.tsx?raw";
-import ValueRenderer from "./value-renderer.tsx";
 import valueRendererSource from "./value-renderer.tsx?raw";
-import PanelAction from "./panel-action.tsx";
 import panelActionSource from "./panel-action.tsx?raw";
-import ContextMenuAction from "./context-menu-action.tsx";
 import contextMenuActionSource from "./context-menu-action.tsx?raw";
-import MessageAction from "./message-action.tsx";
 import messageActionSource from "./message-action.tsx?raw";
 
 ## `consoleExtensionPoints.processOutputProcessor`
@@ -27,7 +18,6 @@ import messageActionSource from "./message-action.tsx?raw";
 Transform resolved ANSI/process output before the console renders it.
 
 <RunnableExample
-  component={ProcessOutputProcessor}
   source={processOutputProcessorSource}
   sourcePath="process-output-processor.tsx"
   title="processOutputProcessor"
@@ -38,7 +28,6 @@ Transform resolved ANSI/process output before the console renders it.
 Recognize structured values embedded in terminal text.
 
 <RunnableExample
-  component={StructuredOutputParser}
   source={structuredOutputParserSource}
   sourcePath="structured-output-parser.tsx"
   title="structuredOutputParser"
@@ -49,7 +38,6 @@ Recognize structured values embedded in terminal text.
 Detect application-specific links and attach custom actions to them.
 
 <RunnableExample
-  component={LinkProvider}
   source={linkProviderSource}
   sourcePath="link-provider.tsx"
   title="linkProvider"
@@ -60,7 +48,6 @@ Detect application-specific links and attach custom actions to them.
 Replace the complete output surface for a matching console mode.
 
 <RunnableExample
-  component={OutputRenderer}
   source={outputRendererSource}
   sourcePath="output-renderer.tsx"
   title="outputRenderer"
@@ -71,7 +58,6 @@ Replace the complete output surface for a matching console mode.
 Customize individual structured message rows.
 
 <RunnableExample
-  component={MessageRenderer}
   source={messageRendererSource}
   sourcePath="message-renderer.tsx"
   title="messageRenderer"
@@ -82,7 +68,6 @@ Customize individual structured message rows.
 Customize individual structured values while leaving the rest of the message rendering intact.
 
 <RunnableExample
-  component={ValueRenderer}
   source={valueRendererSource}
   sourcePath="value-renderer.tsx"
   title="valueRenderer"
@@ -93,7 +78,6 @@ Customize individual structured values while leaving the rest of the message ren
 Add a host-defined action to the console panel actions.
 
 <RunnableExample
-  component={PanelAction}
   source={panelActionSource}
   sourcePath="panel-action.tsx"
   title="panelAction"
@@ -104,7 +88,6 @@ Add a host-defined action to the console panel actions.
 Add an action to the context menu and inspect the selected target kind.
 
 <RunnableExample
-  component={ContextMenuAction}
   source={contextMenuActionSource}
   sourcePath="context-menu-action.tsx"
   title="contextMenuAction"
@@ -115,7 +98,6 @@ Add an action to the context menu and inspect the selected target kind.
 Add an action scoped to an individual structured message.
 
 <RunnableExample
-  component={MessageAction}
   source={messageActionSource}
   sourcePath="message-action.tsx"
   title="messageAction"

@@ -3,9 +3,7 @@ label: "Core Addon - Diagnostics"
 description: "Inspect structured data or each stage of the ANSI/process-output pipeline."
 ---
 
-import Structured from "./structured.tsx";
 import structuredSource from "./structured.tsx?raw";
-import Ansi from "./ansi.tsx";
 import ansiSource from "./ansi.tsx?raw";
 
 ## Structured diagnostics
@@ -13,7 +11,6 @@ import ansiSource from "./ansi.tsx?raw";
 Use structured diagnostics when you need retained and visible logical message data.
 
 <RunnableExample
-  component={Structured}
   source={structuredSource}
   sourcePath="structured.tsx"
   title="Structured diagnostics"
@@ -24,7 +21,6 @@ Use structured diagnostics when you need retained and visible logical message da
 ANSI diagnostics preserve raw chunks separately from normalized and processor-resolved output so each stage can be inspected independently.
 
 <RunnableExample
-  component={Ansi}
   source={ansiSource}
   sourcePath="ansi.tsx"
   title="ANSI pipeline diagnostics"
