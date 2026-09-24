@@ -808,22 +808,51 @@ while `--console-warning-border-color` changes only the warning message's
 
 ### Native `color-scheme` support
 
+The Console uses the CSS `light-dark()` color function for its built-in light
+and dark fallback palette. `light-dark()` resolves from the element's used
+`color-scheme`; it does not require a `prefers-color-scheme` media query.
+
+Set the standard `color-scheme` property on `:root`, an application theme
+wrapper, or the Console itself:
+
+```css
+:root {
+  color-scheme: light dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+```
+
+`light dark` allows the browser to select the active scheme from the user's
+preference. `light` or `dark` explicitly forces that scheme. Because the
+Console inherits `color-scheme` by default, application theme state remains
+the source of truth.
+
+Console-specific scheme tokens remain available when one surface needs to
+override the inherited application scheme:
+
 | Token                                 | CSS property   | Applies to                                                          |
 | ------------------------------------- | -------------- | ------------------------------------------------------------------- |
 | `--console-panel-color-scheme`        | `color-scheme` | Panel chrome and header actions                                     |
 | `--console-color-scheme`              | `color-scheme` | Structured/ANSI output surface and, unless overridden, panel chrome |
 | `--console-context-menu-color-scheme` | `color-scheme` | Right-click menu                                                    |
 
-The panel chrome defaults to dark, matching the console output. If
-`--console-color-scheme` is set, the panel inherits that scheme unless
-`--console-panel-color-scheme` overrides it. Header, control, border, muted,
-and heading-icon fallback colors use `light-dark()`, so the header visibly
-tracks the selected light/dark scheme without requiring every panel color token
-to be overridden.
+All built-in panel, output, message-state, primitive-value, table, object
+inspector, and context-menu fallback colors use `light-dark()`. Explicit
+public color tokens still take precedence over scheme-derived fallbacks.
+
+Portaled context menus preserve the computed `color-scheme` from the Console
+when no context-menu-specific scheme token overrides it, so wrapper-local
+themes remain consistent outside the Console DOM subtree.
 
 `color-scheme` also affects browser-rendered UI such as native scrollbars and
-controls. Explicit public color tokens still take precedence over the
-scheme-derived fallbacks.
+form controls.
 
 ### Panel chrome
 
