@@ -45,6 +45,7 @@ export type {
   ConsoleMessageDecoration,
   ConsoleMessageDecorationContext,
   ConsoleMessageDecorationPlacement,
+  ConsoleMessageFilterContext,
   ConsolePanelElement,
   ConsolePanelElementContext,
   ConsolePanelElementPlacement,
