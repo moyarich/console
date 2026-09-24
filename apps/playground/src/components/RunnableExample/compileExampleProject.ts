@@ -418,8 +418,16 @@ export async function compileExampleProject({
 
   const cache = new Map<string, ModuleRecord>();
   const styles = new Map<string, HTMLStyleElement>();
+  let disposed = false;
+
+  const assertActive = () => {
+    if (disposed) {
+      throw new Error("Runnable runtime has been disposed.");
+    }
+  };
 
   const installStyle = (path: string, source: string) => {
+    assertActive();
     if (styles.has(path) || typeof document === "undefined") {
       return {};
     }
@@ -433,6 +441,8 @@ export async function compileExampleProject({
   };
 
   const executeModule = (path: string): unknown => {
+    assertActive();
+
     const cached = cache.get(path);
 
     if (cached) {
@@ -499,6 +509,8 @@ export async function compileExampleProject({
     };
 
     const importModule = async (specifier: string): Promise<unknown> => {
+      assertActive();
+
       if (specifier.startsWith(".") || specifier.startsWith("/")) {
         const resolution = resolveLocalSpecifier(
           specifier,
@@ -564,6 +576,9 @@ export async function compileExampleProject({
     return {
       Component,
       dispose() {
+        if (disposed) return;
+        disposed = true;
+
         for (const style of styles.values()) {
           style.remove();
         }
