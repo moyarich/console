@@ -1,10 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import {
-  isValidElement,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { isValidElement, useEffect, useMemo, useState } from "react";
 import { MonacoEditor } from "../../components/MonacoEditor";
 
 interface CodeElementProps extends ComponentPropsWithoutRef<"code"> {
