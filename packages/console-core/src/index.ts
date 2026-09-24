@@ -42,11 +42,7 @@ export interface ConsoleAddon {
  *   behavior, with the earliest resolved contribution forming the outer layer.
  */
 export type ConsoleExtensionComposition =
-  | "pipeline"
-  | "first-result"
-  | "collect"
-  | "all"
-  | "middleware";
+  "pipeline" | "first-result" | "collect" | "all" | "middleware";
 
 /** Typed metadata token identifying one multi-provider extension contract. */
 export interface ConsoleExtensionPoint<T> {
