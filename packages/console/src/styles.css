@@ -465,11 +465,7 @@
       )
   );
   --_console-context-menu-focus-ring: 0 0 0 3px
-    color-mix(
-      in oklab,
-      light-dark(#635bff, #8b83ff) 24%,
-      transparent
-    );
+    color-mix(in oklab, light-dark(#635bff, #8b83ff) 24%, transparent);
   --_console-context-menu-separator-background-color: var(
     --console-context-menu-separator-background-color,
     color-mix(
