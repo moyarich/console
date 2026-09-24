@@ -265,8 +265,7 @@ function parseHslColor(value: string): RgbaColor | null {
 
 function parseNamedColor(value: string): RgbaColor | null {
   const normalized = value.trim().toLowerCase();
-  const hex =
-    CSS_NAMED_COLORS[normalized as keyof typeof CSS_NAMED_COLORS];
+  const hex = CSS_NAMED_COLORS[normalized as keyof typeof CSS_NAMED_COLORS];
 
   return hex ? parseHexColor(hex) : null;
 }
