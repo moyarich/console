@@ -42,7 +42,7 @@ export default function ConsoleEnhancementsExample() {
       <Console
         messages={messages}
         onClear={clear}
-        filter={(message) => showDebug || message.method !== "debug"}
+        filter={({ message }) => showDebug || message.method !== "debug"}
         actions={
           <button
             type="button"
