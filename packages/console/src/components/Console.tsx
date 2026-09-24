@@ -45,6 +45,7 @@ import {
   consoleExtensionPoints,
   type ConsoleAddon,
   type ConsoleExtensionRegistry,
+  type ConsoleFrameDecorator,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
@@ -59,9 +60,6 @@ import {
 
 /** Rendering mode selected by the top-level console component. */
 export type ConsoleMode = ConsoleModeType;
-/** CSS resize direction supported by the console shell. */
-export type ConsoleResizeDirection =
-  "vertical" | "horizontal" | "both" | "block" | "inline";
 
 /** Supported imperative surface exposed through the top-level Console ref. */
 export interface ConsoleHandle {
@@ -90,8 +88,6 @@ interface ConsoleSharedProps {
   onClear?: () => void;
   /** Keep the output pinned to the bottom while the user remains near it. @default true */
   autoScroll?: boolean;
-  /** Enables native CSS resizing in the requested direction. */
-  resizable?: ConsoleResizeDirection;
   /** Whether to render the panel header. @default true */
   showHeader?: boolean;
   /** Whether to include the built-in clear command when `onClear` is provided. @default true */
@@ -177,6 +173,7 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   scrollKey: unknown;
   children: ReactNode;
   messageActions?: readonly ConsoleMessageAction[];
+  frameDecorators?: readonly ConsoleFrameDecorator<ReactNode>[];
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
@@ -197,6 +194,25 @@ function mergeContributions<T>(
   return [...direct, ...addon];
 }
 
+function renderConsoleFrameDecorators(
+  decorators: readonly ConsoleFrameDecorator<ReactNode>[] | undefined,
+  mode: ConsoleMode,
+  renderDefault: () => ReactNode,
+): ReactNode {
+  let render = renderDefault;
+
+  for (const decorator of [...(decorators ?? [])].reverse()) {
+    const renderNext = render;
+    render = () =>
+      decorator.render({
+        mode,
+        renderDefault: renderNext,
+      }) ?? renderNext();
+  }
+
+  return render();
+}
+
 /**
  * Shared frame that renders panel chrome, actions, context-menu support, and
  * the scrollable output surface for both console modes.
@@ -207,7 +223,6 @@ function ConsoleFrame({
   viewport,
   onClear,
   autoScroll = true,
-  resizable,
   showHeader = true,
   showClearButton = true,
   actions,
@@ -223,6 +238,7 @@ function ConsoleFrame({
   scrollKey,
   children,
   messageActions,
+  frameDecorators,
 }: ConsoleFrameProps) {
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
@@ -262,12 +278,11 @@ function ConsoleFrame({
     showCopyButton ||
     (showClearButton && onClear);
 
-  return (
+  const renderDefaultFrame = () => (
     <article
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
-      data-resizable={resizable}
     >
       {showHeader && (
         <div className="console-panel-header">
@@ -415,6 +430,8 @@ function ConsoleFrame({
       </ConsoleContextMenu>
     </article>
   );
+
+  return renderConsoleFrameDecorators(frameDecorators, mode, renderDefaultFrame);
 }
 
 /** Renders structured console messages and custom message/value renderers. */
@@ -478,6 +495,9 @@ function ConsoleMessageMode({
     linkProviders,
     addonExtensions.getAll(consoleExtensionPoints.linkProvider),
   );
+  const resolvedFrameDecorators = addonExtensions.getAll(
+    consoleExtensionPoints.frameDecorator,
+  ) as readonly ConsoleFrameDecorator<ReactNode>[];
   const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
   const runtimeError = errorProp ?? output?.error ?? "";
   const messages = useMemo<ConsoleMessageData[]>(
@@ -569,6 +589,7 @@ function ConsoleMessageMode({
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       messageActions={resolvedMessageActions}
+      frameDecorators={resolvedFrameDecorators}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
@@ -642,6 +663,9 @@ function ConsoleAnsiMode({
     linkProviders,
     addonExtensions.getAll(consoleExtensionPoints.linkProvider),
   );
+  const resolvedFrameDecorators = addonExtensions.getAll(
+    consoleExtensionPoints.frameDecorator,
+  ) as readonly ConsoleFrameDecorator<ReactNode>[];
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
@@ -670,6 +694,7 @@ function ConsoleAnsiMode({
       scrollKey={messages}
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
+      frameDecorators={resolvedFrameDecorators}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
