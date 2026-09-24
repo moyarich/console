@@ -95,8 +95,7 @@ export interface ConsoleFilteringAddon extends ConsoleAddon {
   readonly controller: ConsoleFilteringController;
 }
 
-export interface ConsoleFilteringControlsProps
-  extends ConsoleFilteringControlsOptions {
+export interface ConsoleFilteringControlsProps extends ConsoleFilteringControlsOptions {
   controller: ConsoleFilteringController;
   /** Messages used to discover source choices. */
   messages?: readonly ConsoleMessageData[];
