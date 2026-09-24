@@ -1505,9 +1505,6 @@ body {
 :root {
   color-scheme: light dark;
   --console-color-scheme: light dark;
-}
-
-.site-shell {
   --playground-background: light-dark(#f8fafc, #0d1117);
   --playground-surface: light-dark(#ffffff, #161b22);
   --playground-surface-subtle: light-dark(#f8fafc, #1c2128);
@@ -1521,7 +1518,12 @@ body {
   --playground-accent: light-dark(#4f46e5, #a5b4fc);
   --playground-accent-strong: light-dark(#3730a3, #c7d2fe);
   --playground-accent-surface: light-dark(#eef2ff, #252a44);
+}
 
+html,
+body,
+#root,
+.site-shell {
   background: var(--playground-background);
   color: var(--playground-text);
 }
