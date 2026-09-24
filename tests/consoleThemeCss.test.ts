@@ -109,12 +109,21 @@ describe("console theme CSS", () => {
     expect(publicAssignments).toBeNull();
   });
 
-  it("resolves property-specific public theme inputs through private tokens", () => {
-    expect(styles).toMatch(
-      /--_console-background-color:\s*var\(\s*--console-background-color,\s*light-dark\(#f8fafc, #1e1e1e\)\s*\);/,
+  it("resolves public theme inputs through neutral private defaults", () => {
+    expect(styles).toContain(
+      "--_console-base-background: light-dark(#f7f7f8, #09090b);",
     );
-    expect(styles).toMatch(
-      /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
+    expect(styles).toContain(
+      "--_console-base-surface: light-dark(#ffffff, #111113);",
+    );
+    expect(styles).toContain(
+      "--_console-base-text: light-dark(#18181b, #f4f4f5);",
+    );
+    expect(styles).toContain(
+      "--_console-accent-color: light-dark(#635bff, #8b83ff);",
+    );
+    expect(styles).toContain(
+      "var(--console-background-color,\n    var(--_console-base-background)",
     );
     expect(styles).toContain(
       "--_console-panel-width: var(--console-panel-width, 100%);",
@@ -128,47 +137,58 @@ describe("console theme CSS", () => {
     expect(styles).toContain(
       "--_console-panel-min-height: var(--console-panel-min-height, 0);",
     );
-    expect(styles).toMatch(
-      /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
-    );
-    expect(styles).toMatch(
-      /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid light-dark\(#d0d5dd, #454545\)\s*\);/,
-    );
+    expect(styles).toContain("color-mix(");
   });
 
-  it("keeps header chrome aligned with light and dark panel schemes", () => {
+  it("keeps header chrome aligned with the neutral and accent palette", () => {
     expect(styles).toMatch(
       /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, inherit\)\s*\);/,
     );
-    expect(styles).toContain("light-dark(#fff, #161b22)");
-    expect(styles).toContain("light-dark(#202c40, #e6edf3)");
-    expect(styles).toContain("light-dark(#7b8799, #8b949e)");
-    expect(styles).toContain("light-dark(#42526b, #c9d1d9)");
-    expect(styles).toContain("light-dark(#5266c9, #79c0ff)");
+    expect(styles).toContain(
+      "--_console-panel-background-color: var(",
+    );
+    expect(styles).toContain(
+      "--_console-header-icon-color: var(",
+    );
+    expect(styles).toContain("var(--_console-accent-color)");
+    expect(styles).toContain(
+      "--_console-panel-control-hover-border-color: var(",
+    );
   });
 
-  it("uses color-scheme-driven light-dark fallbacks across the console", () => {
+  it("uses color-scheme-driven light-dark and color-mix fallbacks", () => {
     expect(styles).toContain(
       "--_console-color-scheme: var(--console-color-scheme, inherit);",
     );
     expect(styles).not.toContain("@media (prefers-color-scheme");
 
     for (const value of [
-      "light-dark(#f8fafc, #1e1e1e)",
-      "light-dark(#172033, #d8dee9)",
-      "light-dark(#fff8db, #332b00)",
-      "light-dark(#fef3f2, #290000)",
-      "light-dark(#b42318, #f28b82)",
-      "light-dark(#175cd3, #8ab4f8)",
-      "light-dark(#7f56d9, #c58af9)",
-      "light-dark(#027a48, #81c995)",
-      "light-dark(#d0d5dd, #4a4a4a)",
-      "light-dark(#eef2f6, #292929)",
-      "light-dark(#fff, #252526)",
-      "light-dark(#202c40, #e6e6e6)",
+      "light-dark(#f7f7f8, #09090b)",
+      "light-dark(#ffffff, #111113)",
+      "light-dark(#18181b, #f4f4f5)",
+      "light-dark(#635bff, #8b83ff)",
+      "light-dark(#b42318, #fb7185)",
+      "light-dark(#b54708, #fbbf24)",
+      "light-dark(#067647, #4ade80)",
+      "light-dark(#9f1239, #fb7185)",
+      "light-dark(#1d4ed8, #60a5fa)",
     ]) {
       expect(styles).toContain(value);
     }
+
+    expect(styles.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThan(12);
+  });
+
+  it("keeps the resizable addon on the same neutral accent system", () => {
+    expect(resizableAddonStyles).toContain(
+      "light-dark(#635bff, #8b83ff)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "color-mix(in oklab, currentColor 18%, transparent)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "color-mix(in oklab, currentColor 38%, transparent)",
+    );
   });
 
   it("preserves inherited color-scheme when the context menu is portaled", () => {
