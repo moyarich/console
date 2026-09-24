@@ -31,7 +31,6 @@ export interface ConsoleProcessOutput {
   readonly metadata: ConsoleProcessOutputMetadata;
 }
 
-
 /** Semantic event extracted from raw process-control sequences. */
 export interface ConsoleProcessControlEvent {
   readonly type: string;
@@ -506,5 +505,7 @@ export function resolveConsoleProcessOutputEntries(
   processors: readonly ConsoleProcessOutputProcessor[] = [],
   controlParsers: readonly ConsoleProcessControlParser[] = [],
 ): ConsoleResolvedProcessOutputEntry[] {
-  return [...resolveConsoleProcessOutput(entries, processors, controlParsers).entries];
+  return [
+    ...resolveConsoleProcessOutput(entries, processors, controlParsers).entries,
+  ];
 }
