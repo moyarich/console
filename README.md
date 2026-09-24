@@ -102,14 +102,14 @@ API documentation source lives in [`apps/playground/src/api`](https://github.com
 
 The workspace contains the core contracts, React console package, and first-party addons.
 
-| Package | Purpose |
-| --- | --- |
-| `@moyarich/console` | React console and ANSI process-output UI |
-| `@moyarich/console-core` | Shared addon, extension-point, capability, service, and lifecycle contracts |
-| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls |
-| `@moyarich/console-addon-data-export` | Data-level output export |
-| `@moyarich/console-addon-diagnostics` | Console diagnostics |
-| `@moyarich/console-addon-resizable` | Resizable console behavior |
+| Package                                        | Purpose                                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------------------- |
+| `@moyarich/console`                            | React console and ANSI process-output UI                                    |
+| `@moyarich/console-core`                       | Shared addon, extension-point, capability, service, and lifecycle contracts |
+| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls                                                |
+| `@moyarich/console-addon-data-export`          | Data-level output export                                                    |
+| `@moyarich/console-addon-diagnostics`          | Console diagnostics                                                         |
+| `@moyarich/console-addon-resizable`            | Resizable console behavior                                                  |
 
 ## Scope
 
