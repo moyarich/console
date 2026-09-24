@@ -12,10 +12,7 @@
 .console-resizable-frame {
   --_console-resize-color-scheme: var(
     --console-resize-color-scheme,
-    var(
-      --console-panel-color-scheme,
-      var(--console-color-scheme, inherit)
-    )
+    var(--console-panel-color-scheme, var(--console-color-scheme, inherit))
   );
   --_console-resize-separator-line-background-color: var(
     --console-resize-separator-line-background-color,
