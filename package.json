@@ -20,7 +20,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --write apps/playground/src/api/15-addons/02-sdk/page.mdx apps/playground/src/examples/60-addons/02-custom/02-extension-points/keyboard-shortcut.tsx apps/playground/src/examples/60-addons/02-custom/02-extension-points/process-control-parser.tsx packages/addons/filtering/src/index.tsx packages/console-core/src/index.ts packages/console/src/components/Console.tsx packages/console/src/processOutput.ts packages/console/src/styles.css && git diff -- apps/playground/src/api/15-addons/02-sdk/page.mdx apps/playground/src/examples/60-addons/02-custom/02-extension-points/keyboard-shortcut.tsx apps/playground/src/examples/60-addons/02-custom/02-extension-points/process-control-parser.tsx packages/addons/filtering/src/index.tsx packages/console-core/src/index.ts packages/console/src/components/Console.tsx packages/console/src/processOutput.ts packages/console/src/styles.css && exit 1",
+    "format:check": "prettier --check .",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable",
     "build:core": "npm run build --workspace @moyarich/console-core"
