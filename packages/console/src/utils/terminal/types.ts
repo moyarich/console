@@ -17,7 +17,6 @@ export interface AnsiTokenRange {
   end: number;
 }
 
-
 /** Metadata supplied to custom terminal structured-output parsers. */
 export type ConsoleStructuredOutputParserContext =
   CoreConsoleStructuredOutputParserContext;
