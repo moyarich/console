@@ -80,6 +80,9 @@ describe("@moyarich/console-addon-filtering", () => {
       consoleExtensionPoints.messageFilter,
     );
     expect(initial).toHaveLength(1);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
+    ).toHaveLength(1);
     expect(messages.filter(initial[0]!).map((message) => message.id)).toEqual(
       messages.map((message) => message.id),
     );
@@ -102,6 +105,23 @@ describe("@moyarich/console-addon-filtering", () => {
     expect(manager.services.get(consoleFilteringService)).toBeUndefined();
     expect(
       manager.extensions.getAll(consoleExtensionPoints.messageFilter),
+    ).toEqual([]);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
+    ).toEqual([]);
+  });
+
+  it("supports a headless registration without the default control UI", () => {
+    const manager = createConsoleAddonManager();
+    const addon = createConsoleFilteringAddon({ controls: false });
+
+    manager.load(addon);
+
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.messageFilter),
+    ).toHaveLength(1);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
     ).toEqual([]);
   });
 
