@@ -12,10 +12,12 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./styles.css": "./src/styles.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/styles.css"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -52,5 +54,8 @@
     "addon",
     "resize",
     "developer-tools"
+  ],
+  "sideEffects": [
+    "./src/styles.css"
   ]
 }
