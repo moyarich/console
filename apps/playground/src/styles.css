@@ -1571,10 +1571,7 @@ body {
   --playground-danger: light-dark(#b42318, #fb7185);
   --playground-warning: light-dark(#b54708, #fbbf24);
 
-  --playground-shadow-color: light-dark(
-    rgb(17 24 39 / 0.1),
-    rgb(0 0 0 / 0.46)
-  );
+  --playground-shadow-color: light-dark(rgb(17 24 39 / 0.1), rgb(0 0 0 / 0.46));
 }
 
 html,
@@ -1587,11 +1584,7 @@ body,
 
 .topbar {
   border-bottom-color: var(--playground-border);
-  background: color-mix(
-    in oklab,
-    var(--playground-surface) 92%,
-    transparent
-  );
+  background: color-mix(in oklab, var(--playground-surface) 92%, transparent);
   box-shadow: 0 1px 0
     color-mix(in oklab, var(--playground-text) 4%, transparent);
 }
@@ -1862,8 +1855,7 @@ body,
 }
 
 .preview-modal .preview-panel {
-  box-shadow: 0 30px 90px
-    color-mix(in oklab, black 38%, transparent);
+  box-shadow: 0 30px 90px color-mix(in oklab, black 38%, transparent);
 }
 
 .preview-modal .panel-icon-button {
