@@ -15,46 +15,61 @@ The extension does not paint Monaco decorations itself. It returns
 `ColorInformation` and `ColorPresentation` values so the VS Code-compatible editor
 runtime owns the color swatch, color picker, refresh lifecycle, and editor settings.
 
-## Monaco VS Code API
+## @typefox/monaco-editor-react
 
 Build the package first so `dist/extension.js` is available, then register the web
-extension after the VS Code services are initialized.
+extension in the VS Code API configuration used by the TypeFox editor host.
 
 ```ts
-import {
-  ExtensionHostKind,
-  registerExtension,
-} from "@codingame/monaco-vscode-api/extensions";
 import {
   vscodeVisualizeCssColorsBrowserPath,
   vscodeVisualizeCssColorsManifest,
 } from "@moyarich/vscode-visualize-css-colors";
 import extensionUrl from "@moyarich/vscode-visualize-css-colors/extension.js?url";
+import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
+import { configureDefaultWorkerFactory } from "monaco-languageclient/workerFactory";
 
-export async function registerVisualizeCssColors() {
-  const extension = registerExtension(
-    vscodeVisualizeCssColorsManifest,
-    ExtensionHostKind.LocalProcess,
-  );
+const filesOrContents = new Map<string, string | URL>([
+  [
+    vscodeVisualizeCssColorsBrowserPath,
+    new URL(extensionUrl, window.location.href),
+  ],
+]);
 
-  extension.registerFileUrl(vscodeVisualizeCssColorsBrowserPath, extensionUrl);
-
-  await extension.whenReady?.();
-
-  return extension;
-}
+export const vscodeApiConfig: MonacoVscodeApiConfig = {
+  $type: "extended",
+  viewsConfig: {
+    $type: "EditorService",
+  },
+  userConfiguration: {
+    json: JSON.stringify({
+      "editor.colorDecorators": true,
+    }),
+  },
+  extensions: [
+    {
+      config: vscodeVisualizeCssColorsManifest,
+      filesOrContents,
+    },
+  ],
+  monacoWorkerFactory: configureDefaultWorkerFactory,
+};
 ```
 
-With `@typefox/monaco-editor-react`, call that registration from
-`onVscodeApiInitDone`:
+Pass that configuration to `MonacoEditorReactComp`:
 
 ```tsx
+import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
+
 <MonacoEditorReactComp
   vscodeApiConfig={vscodeApiConfig}
   editorAppConfig={editorAppConfig}
-  onVscodeApiInitDone={registerVisualizeCssColors}
-/>
+/>;
 ```
+
+The extension is registered as a real VS Code web extension. The host loads its
+`browser` entry point and activates it through the extension lifecycle, while the
+extension registers its `DocumentColorProvider` through the `vscode` API.
 
 The executable extension bundle is CommonJS because the VS Code web extension host
 expects a bundled extension module rather than application ESM. The extension imports
