@@ -5,6 +5,7 @@ description: "Choose the convenience hook or subscribe to ConsoleEventEmitter di
 
 import useConsoleMessagesSource from "./use-console-messages.tsx?raw";
 import eventEmitterSource from "./event-emitter.tsx?raw";
+import eventRuntimeSource from "./event-runtime.ts?raw";
 
 ## Convenience hook
 
@@ -23,5 +24,6 @@ Subscribe to `ConsoleEventEmitter` directly when the application needs its own r
 <RunnableExample
   source={eventEmitterSource}
   sourcePath="event-emitter.tsx"
+  files={{ "event-runtime.ts": eventRuntimeSource }}
   title="ConsoleEventEmitter with React state"
 />
