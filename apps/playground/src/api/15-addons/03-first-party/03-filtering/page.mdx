@@ -14,20 +14,11 @@ Create the addon explicitly and pass it through the normal `addons` prop:
 
 ```tsx
 import { Console } from "@moyarich/console";
-import {
-  ConsoleFilteringControls,
-  createConsoleFilteringAddon,
-} from "@moyarich/console-addon-filtering";
+import { createConsoleFilteringAddon } from "@moyarich/console-addon-filtering";
 
 const filteringAddon = createConsoleFilteringAddon();
 
-<>
-  <ConsoleFilteringControls
-    controller={filteringAddon.controller}
-    messages={messages}
-  />
-  <Console messages={messages} addons={[filteringAddon]} />
-</>;
+<Console messages={messages} addons={[filteringAddon]} />;
 ```
 
 The addon contributes a `consoleExtensionPoints.messageFilter` predicate.
@@ -79,19 +70,35 @@ standalone predicate is enough.
 
 ## Default controls
 
-`ConsoleFilteringControls` provides:
+The addon registers its default control surface through
+`consoleExtensionPoints.frameDecorator`. Hosts do not need to mount a second
+component next to `<Console>`.
 
-- log / info / warn / error / debug method toggles
+The same addon therefore contributes both:
+
+- `consoleExtensionPoints.messageFilter` for method/text/source filtering
+- `consoleExtensionPoints.frameDecorator` for the default search/filter UI
+
+The control surface provides:
+
+- log / info / warn / error / debug method filtering
 - case-insensitive text filtering across method, source, and serialized values
-- source discovery from the supplied messages
-- an explicit source list override
+- source discovery from the Console's retained structured messages
 - reset behavior
-- `className` and `style` hooks for host layout and theming
+- native HTML Popover API controls for level selection
 
-The controls inherit the standard `color-scheme` by default. Filtering-specific
-theme inputs use the `--console-filtering-*` namespace and fall back to the
-Console panel/control theme inputs, including the current violet interaction
-accent.
+Disable the default UI while keeping the filtering behavior when a host wants to
+render its own controls:
+
+```tsx
+const filteringAddon = createConsoleFilteringAddon({
+  controls: false,
+});
+```
+
+`ConsoleFilteringControls` remains exported for custom host layouts that use
+the addon headlessly. The default registered controls inherit the standard
+`color-scheme` and use `--console-filtering-*` theme inputs.
 
 ## Lifecycle
 
