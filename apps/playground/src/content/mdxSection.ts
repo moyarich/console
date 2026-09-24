@@ -90,8 +90,7 @@ export function createMdxSection({
         left.order - right.order || left.id.localeCompare(right.id),
     );
 
-  const getPage = (pageId: string) =>
-    pages.find((page) => page.id === pageId);
+  const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {
     id,
