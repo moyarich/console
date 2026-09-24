@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Playground } from "./components/Playground";
 
 type ThemePreference = "system" | "light" | "dark";
@@ -40,7 +41,7 @@ export function App() {
   return (
     <div className="layout" data-theme={themePreference}>
       <header className="layout-header topbar">
-        <a className="brand" href={import.meta.env.BASE_URL}>
+        <Link className="brand" to="/">
           <span className="brand-mark" aria-hidden="true">
             &gt;_
           </span>
@@ -48,7 +49,7 @@ export function App() {
             <strong>@moyarich/console</strong>
             <small>React developer console</small>
           </span>
-        </a>
+        </Link>
 
         <div className="topbar-actions">
           <div className="theme-switcher" role="group" aria-label="Appearance">

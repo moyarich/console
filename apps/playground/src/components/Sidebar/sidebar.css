@@ -121,7 +121,9 @@
   gap: 2px;
 }
 
-.sidebar-tree-group {
+.sidebar-tree-group,
+.sidebar-tree-page,
+.sidebar-outline-entry {
   display: grid;
   gap: 2px;
 }
@@ -233,13 +235,20 @@
   box-shadow: 0 0 0 4px var(--playground-focus-ring);
 }
 
-.sidebar-item[aria-current="page"] {
+.sidebar-item[aria-current="page"],
+.sidebar-item[aria-current="location"] {
   background: var(--playground-accent-surface);
   color: var(--playground-accent-strong);
   font-weight: 500;
 }
 
-.sidebar-item[aria-current="page"]::before {
+.sidebar-outline-item {
+  padding-block: 5px;
+  font-size: 0.72rem;
+}
+
+.sidebar-item[aria-current="page"]::before,
+.sidebar-item[aria-current="location"]::before {
   position: absolute;
   top: 7px;
   bottom: 7px;

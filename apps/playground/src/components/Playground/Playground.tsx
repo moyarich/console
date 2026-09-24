@@ -1,65 +1,72 @@
-import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import {
   CONSOLE_EXAMPLE_SECTION,
   DEFAULT_CONSOLE_EXAMPLE,
 } from "../../examples";
-import { DOCUMENTATION_SECTIONS } from "../../utils/documentationSections";
+import { MdxPage } from "../../mdx/MdxPage";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
+import { DOCUMENTATION_SECTIONS } from "../../utils/documentationSections";
+import {
+  buildPlaygroundPath,
+  resolvePlaygroundPath,
+} from "../../utils/playgroundRouting";
 import { Sidebar } from "../Sidebar";
 import { ExamplesSection } from "../Sidebar/sections/ExamplesSection";
 import { MdxPageSection } from "../Sidebar/sections/MdxPageSection";
 
-type PlaygroundSelection =
-  | { type: "example"; id: string }
-  | { type: "documentation"; sectionId: string; id: string };
+const PLAYGROUND_SECTIONS = [
+  CONSOLE_EXAMPLE_SECTION,
+  ...DOCUMENTATION_SECTIONS,
+] as const;
+
+const DEFAULT_PLAYGROUND_PATH = buildPlaygroundPath(
+  CONSOLE_EXAMPLE_SECTION.id,
+  DEFAULT_CONSOLE_EXAMPLE.id,
+);
 
 export function Playground() {
-  const [selection, setSelection] = useState<PlaygroundSelection>({
-    type: "example",
-    id: DEFAULT_CONSOLE_EXAMPLE.id,
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const mainRef = useRef<HTMLElement>(null);
+  const route = resolvePlaygroundPath(location.pathname, PLAYGROUND_SECTIONS);
+  const routePageId = route?.page.id;
+  const routeOutlineId = route?.outline?.id;
 
-  const example =
-    selection.type === "example"
-      ? (CONSOLE_EXAMPLE_SECTION.getPage(selection.id) ??
-        DEFAULT_CONSOLE_EXAMPLE)
-      : DEFAULT_CONSOLE_EXAMPLE;
+  useEffect(() => {
+    if (!routePageId) {
+      return;
+    }
 
-  const documentationSection =
-    selection.type === "documentation"
-      ? DOCUMENTATION_SECTIONS.find(
-          (section) => section.id === selection.sectionId,
-        )
-      : undefined;
-  const documentationPage =
-    selection.type === "documentation"
-      ? (documentationSection?.getPage(selection.id) ??
-        documentationSection?.defaultPage)
-      : undefined;
+    const frame = requestAnimationFrame(() => {
+      if (routeOutlineId) {
+        document
+          .getElementById(routeOutlineId)
+          ?.scrollIntoView({ block: "start" });
+        return;
+      }
 
-  const showingDocumentation = Boolean(
-    documentationSection && documentationPage,
-  );
-  const selectedPage = showingDocumentation ? documentationPage! : example;
+      mainRef.current?.scrollTo({ top: 0 });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [routeOutlineId, routePageId]);
+
+  if (!route) {
+    return <Navigate to={DEFAULT_PLAYGROUND_PATH} replace />;
+  }
+
+  const { section, page: selectedPage, outline } = route;
+  const showingExamples = section.id === CONSOLE_EXAMPLE_SECTION.id;
   const Page = selectedPage.Page;
 
-  const eyebrow = showingDocumentation
-    ? documentationSection!.label
-    : "Interactive playground";
-  const title = showingDocumentation
-    ? selectedPage.label
-    : "Edit, run, and inspect console examples.";
-  const description = showingDocumentation
-    ? selectedPage.description
-    : "Browse the library by capability, edit the source in Monaco, and run each example against the live preview.";
-  const pathLabel = showingDocumentation
-    ? documentationSection!.label
-    : example.id
-        .split("/")
-        .slice(0, -1)
-        .map((segment) => sentenceCase(segment))
-        .join(" / ");
+  function navigateToPage(
+    sectionId: string,
+    pageId: string,
+    outlineId?: string,
+  ) {
+    navigate(buildPlaygroundPath(sectionId, pageId, outlineId));
+  }
 
   return (
     <div className="layout-content">
@@ -67,53 +74,44 @@ export function Playground() {
         <Sidebar aria-label="Console documentation">
           <ExamplesSection
             section={CONSOLE_EXAMPLE_SECTION}
-            value={selection.type === "example" ? selection.id : undefined}
-            onChange={(id) => setSelection({ type: "example", id })}
+            value={showingExamples ? selectedPage.id : undefined}
+            outlineValue={showingExamples ? outline?.id : undefined}
+            onChange={(id, outlineId) =>
+              navigateToPage(CONSOLE_EXAMPLE_SECTION.id, id, outlineId)
+            }
           />
 
-          {DOCUMENTATION_SECTIONS.map((section) => (
+          {DOCUMENTATION_SECTIONS.map((documentationSection) => (
             <MdxPageSection
-              key={section.id}
-              section={section}
+              key={documentationSection.id}
+              section={documentationSection}
               value={
-                selection.type === "documentation" &&
-                selection.sectionId === section.id
-                  ? selection.id
+                section.id === documentationSection.id
+                  ? selectedPage.id
                   : undefined
               }
-              onChange={(id) =>
-                setSelection({
-                  type: "documentation",
-                  sectionId: section.id,
-                  id,
-                })
+              outlineValue={
+                section.id === documentationSection.id ? outline?.id : undefined
+              }
+              onChange={(id, outlineId) =>
+                navigateToPage(documentationSection.id, id, outlineId)
               }
             />
           ))}
         </Sidebar>
       </aside>
 
-      <main className="layout-main">
-        <section className="hero">
-          <span className="eyebrow">{eyebrow}</span>
-          <h1>{title}</h1>
-          {description && <p>{description}</p>}
-
-          <div className="hero-example-path" aria-label="Selected page">
-            <span>{pathLabel}</span>
-            <span aria-hidden="true">/</span>
-            <strong>{selectedPage.label}</strong>
-          </div>
-        </section>
-
-        <section
-          className="documentation-page"
-          aria-label={`${selectedPage.label} documentation`}
+      <main className="layout-main" ref={mainRef}>
+        <MdxPage
+          key={`${section.id}/${selectedPage.id}`}
+          section={section}
+          page={selectedPage}
+          activeOutlineId={outline?.id}
         >
           <PlaygroundMDXProvider pageTitle={selectedPage.label}>
             <Page />
           </PlaygroundMDXProvider>
-        </section>
+        </MdxPage>
       </main>
     </div>
   );
