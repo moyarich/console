@@ -20,11 +20,9 @@ export function App() {
   useEffect(() => {
     const root = document.documentElement;
     root.style.colorScheme = colorScheme;
-    root.style.setProperty("--console-color-scheme", colorScheme);
 
     return () => {
       root.style.removeProperty("color-scheme");
-      root.style.removeProperty("--console-color-scheme");
     };
   }, [colorScheme]);
 
