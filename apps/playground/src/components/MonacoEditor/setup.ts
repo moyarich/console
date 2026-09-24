@@ -9,6 +9,7 @@ import {
   vscodeVisualizeCssColorsManifest,
 } from "@moyarich/vscode-visualize-css-colors";
 import extensionSource from "@moyarich/vscode-visualize-css-colors/extension-source";
+import * as monaco from "monaco-editor";
 import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
 import {
   defineDefaultWorkerLoaders,
@@ -19,6 +20,23 @@ import {
 const extensionFiles = new Map<string, string | URL>([
   [vscodeVisualizeCssColorsBrowserPath, extensionSource],
 ]);
+
+const typeScriptDefaults = monaco.languages.typescript.typescriptDefaults;
+
+typeScriptDefaults.setCompilerOptions({
+  target: monaco.languages.typescript.ScriptTarget.ES2020,
+  module: monaco.languages.typescript.ModuleKind.ESNext,
+  moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+  jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+  allowNonTsExtensions: true,
+  esModuleInterop: true,
+  strict: true,
+});
+
+typeScriptDefaults.setDiagnosticsOptions({
+  noSemanticValidation: true,
+  noSyntaxValidation: false,
+});
 
 function configurePlaygroundWorkers() {
   const typeScriptWorker = () =>
@@ -74,17 +92,6 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
   userConfiguration: {
     json: JSON.stringify({
       "editor.colorDecorators": true,
-
-      // Mirror the inferred TypeScript project behavior from the previous
-      // @monaco-editor/react setup.
-      "js/ts.implicitProjectConfig.target": "ES2020",
-      "js/ts.implicitProjectConfig.module": "ESNext",
-      "js/ts.implicitProjectConfig.strict": true,
-
-      // Keep semantic diagnostics disabled, matching main's
-      // typescriptDefaults.setDiagnosticsOptions configuration.
-      "typescript.tsserver.web.projectWideIntellisense.enabled": true,
-      "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": true,
     }),
   },
   extensions: [
