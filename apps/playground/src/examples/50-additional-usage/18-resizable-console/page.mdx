@@ -7,6 +7,6 @@ import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
 
-`createResizableConsoleAddon()` owns the resize state and pointer handling. `@moyarich/console-addon-resizable/styles.css` owns resize directions, size constraints, edge placement, visible grips, and the public resize theme variables. The core `Console` stylesheet contains no resize-specific CSS and only exposes the generic frame-decorator extension point used by the addon.
+`createResizableConsoleAddon()` owns the resize state and pointer handling. The addon imports its own stylesheet, which owns resize directions, size constraints, edge placement, visible grips, and the public resize theme variables. The core `Console` package likewise imports its own stylesheet; core contains no resize-specific CSS and only exposes the generic frame-decorator extension point used by the addon.
 
 Choose a resize direction, then drag the visible handle around the console shell. Horizontal, vertical, both, block, and inline directions are supported.
