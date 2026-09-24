@@ -35,11 +35,13 @@ export function Playground() {
       : undefined;
   const documentationPage =
     selection.type === "documentation"
-      ? documentationSection?.getPage(selection.id) ??
-        documentationSection?.defaultPage
+      ? (documentationSection?.getPage(selection.id) ??
+        documentationSection?.defaultPage)
       : undefined;
 
-  const showingDocumentation = Boolean(documentationSection && documentationPage);
+  const showingDocumentation = Boolean(
+    documentationSection && documentationPage,
+  );
   const selectedPage = showingDocumentation ? documentationPage! : example;
   const Page = selectedPage.Page;
 
