@@ -14,7 +14,7 @@ function createProcessOutputProcessorAddon(): ConsoleAddon {
         consoleExtensionPoints.processOutputProcessor,
         {
           id: "build-status",
-          process(output) {
+          process({ output }) {
             if (!output.data.includes("BUILD_OK")) return;
 
             return {
