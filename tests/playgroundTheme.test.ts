@@ -79,6 +79,19 @@ describe("playground color scheme", () => {
     expect(playgroundStyles).toContain("-moz-osx-font-smoothing: grayscale;");
   });
 
+  it("uses themeable thin scrollbars", () => {
+    expect(playgroundStyles).toContain("--scrollbar-width: thin;");
+    expect(playgroundStyles).toContain(
+      "--scrollbar-color: rgba(60, 60, 67, 0.32) transparent;",
+    );
+    expect(playgroundStyles).toContain(
+      "scrollbar-width: var(--scrollbar-width);",
+    );
+    expect(playgroundStyles).toContain(
+      "scrollbar-color: var(--scrollbar-color);",
+    );
+  });
+
   it("uses lighter typography weights for general playground UI", () => {
     expect(playgroundStyles).toContain("font-weight: 400;");
     expect(playgroundStyles).toContain("strong,\nb {\n  font-weight: 500;\n}");
