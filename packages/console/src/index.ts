@@ -93,6 +93,8 @@ export type {
 } from "./components/ConsoleStdout";
 export {
   processConsoleOutputEntry,
+  resolveConsoleProcessControls,
+  resolveConsoleProcessOutput,
   resolveConsoleProcessOutputEntries,
 } from "./processOutput";
 export type {
@@ -106,6 +108,8 @@ export type {
   ConsoleProcessOutputProcessor,
   ConsoleProcessOutputProcessorContext,
   ConsoleProcessOutputProcessorResult,
+  ConsoleResolvedProcessControls,
+  ConsoleResolvedProcessOutput,
   ConsoleResolvedProcessOutputEntry,
 } from "./processOutput";
 export {
