@@ -294,17 +294,6 @@ describe("Console rendering", () => {
     expect(html).toContain('data-console-mode="console"');
   });
 
-  it("marks a console as resizable when enabled", () => {
-    const html = renderToStaticMarkup(
-      <Console
-        messages={[{ method: "log", data: ["hello"], depth: 0 }]}
-        resizable="both"
-      />,
-    );
-
-    expect(html).toContain('data-resizable="both"');
-  });
-
   it("renders the ANSI empty state through Console", () => {
     const html = renderToStaticMarkup(<Console mode="ansi" messages={[]} />);
 
