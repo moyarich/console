@@ -4,7 +4,10 @@ import type {
   ConsoleStdoutEntry,
 } from "../../processOutput";
 import { parseStrictJsonOutput } from "./parseStrictJsonOutput";
-import type { ConsoleStructuredOutputParser } from "./types";
+import type {
+  ConsoleStructuredOutputParser,
+  ConsoleStructuredOutputParserContext,
+} from "./types";
 
 /**
  * Runs custom structured-output parsers before optional strict JSON parsing.
@@ -29,10 +32,11 @@ export function parseStructuredOutput(
   processMetadata: ConsoleProcessOutputMetadata,
 ): unknown | undefined {
   const text = Anser.ansiToText(data);
-  const context =
+  const context: ConsoleStructuredOutputParserContext =
     typeof entry === "string"
-      ? { entry, index, metadata: processMetadata }
+      ? { text, entry, index, metadata: processMetadata }
       : {
+          text,
           entry,
           index,
           id: entry.id,
@@ -42,7 +46,7 @@ export function parseStructuredOutput(
 
   for (const parser of parsers ?? []) {
     try {
-      const value = parser(text, context);
+      const value = parser(context);
 
       if (value !== undefined) {
         return value;
