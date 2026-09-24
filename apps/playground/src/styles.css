@@ -62,6 +62,22 @@ a {
   color: inherit;
 }
 
+hr {
+  --_hr-line-offset: var(--hr-line-offset, 10%);
+  --_hr-color: var(--hr-color, gold);
+
+  border-image-slice: 1;
+  border-image-source: linear-gradient(
+    to right,
+    transparent 25%,
+    var(--_hr-color) calc(50% - var(--_hr-line-offset)),
+    var(--_hr-color) calc(50% + var(--_hr-line-offset)),
+    transparent 75%
+  );
+  height: 0;
+  margin: 35px auto;
+}
+
 .site-shell {
   min-height: 0;
 }
