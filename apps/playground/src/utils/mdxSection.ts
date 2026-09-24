@@ -18,7 +18,6 @@ export interface MdxSectionPage {
   order: number;
   label: string;
   description?: string;
-  groupId?: string;
   meta: PageMeta;
   Page: ComponentType;
 }
@@ -27,18 +26,20 @@ export interface MdxSectionGroup {
   id: string;
   order: number;
   label: string;
-  pages: readonly MdxSectionPage[];
+  items: readonly MdxSectionItem[];
 }
 
 export type MdxSectionItem =
   | {
       type: "page";
       order: number;
+      id: string;
       page: MdxSectionPage;
     }
   | {
       type: "group";
       order: number;
+      id: string;
       group: MdxSectionGroup;
     };
 
@@ -57,6 +58,27 @@ interface CreateMdxSectionOptions {
   modules: Record<string, MdxPageModule>;
   defaultPageId?: string;
 }
+
+interface MutableMdxSectionGroup {
+  id: string;
+  order: number;
+  label: string;
+  items: Map<string, MutableMdxSectionItem>;
+}
+
+type MutableMdxSectionItem =
+  | {
+      type: "page";
+      order: number;
+      id: string;
+      page: MdxSectionPage;
+    }
+  | {
+      type: "group";
+      order: number;
+      id: string;
+      group: MutableMdxSectionGroup;
+    };
 
 const ORDERED_DIRECTORY_PATTERN = /^(\d+)-(.+)$/;
 
@@ -79,111 +101,137 @@ export function parseOrderedDirectory(
   };
 }
 
+function sortItems(items: Iterable<MutableMdxSectionItem>): MdxSectionItem[] {
+  return Array.from(items)
+    .sort(
+      (left, right) =>
+        left.order - right.order || left.id.localeCompare(right.id),
+    )
+    .map((item) => {
+      if (item.type === "page") {
+        return item;
+      }
+
+      return {
+        type: "group" as const,
+        order: item.order,
+        id: item.id,
+        group: {
+          id: item.group.id,
+          order: item.group.order,
+          label: item.group.label,
+          items: sortItems(item.group.items.values()),
+        },
+      };
+    });
+}
+
+function collectPages(items: readonly MdxSectionItem[]): MdxSectionPage[] {
+  return items.flatMap((item) =>
+    item.type === "page" ? [item.page] : collectPages(item.group.items),
+  );
+}
+
 export function createMdxSection({
   id,
   label,
   modules,
   defaultPageId,
 }: CreateMdxSectionOptions): MdxSection {
-  const flatPages: MdxSectionPage[] = [];
-  const groupedPages = new Map<
-    string,
-    {
-      group: OrderedDirectory;
-      pages: MdxSectionPage[];
-    }
-  >();
+  const root = new Map<string, MutableMdxSectionItem>();
 
   for (const [path, pageModule] of Object.entries(modules)) {
     const parts = path.replace(/^\.\//, "").split("/");
-    const meta = parsePageMeta(pageModule.meta, path);
 
-    if (parts.length === 2 && parts[1] === "page.mdx") {
-      const page = parseOrderedDirectory(parts[0]!, `${label} page`);
-
-      flatPages.push({
-        id: page.id,
-        order: page.order,
-        label: meta.label,
-        description: meta.description,
-        meta,
-        Page: pageModule.default,
-      });
-      continue;
+    if (parts.length < 2 || parts.at(-1) !== "page.mdx") {
+      throw new Error(
+        `Invalid ${label} page path "${path}". Expected ordered directories ending in page.mdx.`,
+      );
     }
 
-    if (parts.length === 3 && parts[2] === "page.mdx") {
-      const group = parseOrderedDirectory(parts[0]!, `${label} group`);
-      const page = parseOrderedDirectory(parts[1]!, `${label} page`);
-      const existing = groupedPages.get(group.id);
+    const directories = parts
+      .slice(0, -1)
+      .map((directory, index, all) =>
+        parseOrderedDirectory(
+          directory,
+          index === all.length - 1 ? `${label} page` : `${label} group`,
+        ),
+      );
+    const pageDirectory = directories.at(-1)!;
+    const groupDirectories = directories.slice(0, -1);
+    const meta = parsePageMeta(pageModule.meta, path);
+    const pageId = directories.map((directory) => directory.id).join("/");
+    const page: MdxSectionPage = {
+      id: pageId,
+      order: pageDirectory.order,
+      label: meta.label,
+      description: meta.description,
+      meta,
+      Page: pageModule.default,
+    };
 
-      if (existing && existing.group.order !== group.order) {
+    let items = root;
+    const ancestry: string[] = [];
+
+    for (const groupDirectory of groupDirectories) {
+      ancestry.push(groupDirectory.id);
+      const groupId = ancestry.join("/");
+      const key = `group:${groupDirectory.id}`;
+      const existing = items.get(key);
+
+      if (existing && existing.type !== "group") {
         throw new Error(
-          `${label} group "${group.id}" uses multiple numeric prefixes.`,
+          `Invalid ${label} hierarchy: "${groupId}" is both a page and a group.`,
         );
       }
 
-      const groupEntry = existing ?? { group, pages: [] };
-      groupEntry.pages.push({
-        id: `${group.id}/${page.id}`,
-        order: page.order,
-        label: meta.label,
-        description: meta.description,
-        groupId: group.id,
-        meta,
-        Page: pageModule.default,
-      });
-      groupedPages.set(group.id, groupEntry);
-      continue;
+      if (
+        existing?.type === "group" &&
+        existing.order !== groupDirectory.order
+      ) {
+        throw new Error(
+          `${label} group "${groupId}" uses multiple numeric prefixes.`,
+        );
+      }
+
+      const group =
+        existing?.type === "group"
+          ? existing.group
+          : {
+              id: groupId,
+              order: groupDirectory.order,
+              label: sentenceCase(groupDirectory.id),
+              items: new Map<string, MutableMdxSectionItem>(),
+            };
+
+      if (!existing) {
+        items.set(key, {
+          type: "group",
+          id: groupId,
+          order: groupDirectory.order,
+          group,
+        });
+      }
+
+      items = group.items;
     }
 
-    throw new Error(
-      `Invalid ${label} page path "${path}". Expected ./NN-page/page.mdx or ./NN-group/NN-page/page.mdx.`,
-    );
-  }
+    const pageKey = `page:${pageDirectory.id}`;
 
-  flatPages.sort(
-    (left, right) =>
-      left.order - right.order || left.id.localeCompare(right.id),
-  );
+    if (items.has(pageKey)) {
+      throw new Error(`Duplicate ${label} page id "${pageId}".`);
+    }
 
-  const groups = Array.from(groupedPages.values())
-    .map(({ group, pages }) => ({
-      id: group.id,
-      order: group.order,
-      label: sentenceCase(group.id),
-      pages: pages.sort(
-        (left, right) =>
-          left.order - right.order || left.id.localeCompare(right.id),
-      ),
-    }))
-    .sort(
-      (left, right) =>
-        left.order - right.order || left.id.localeCompare(right.id),
-    );
-
-  const items: MdxSectionItem[] = [
-    ...flatPages.map((page) => ({
-      type: "page" as const,
+    items.set(pageKey, {
+      type: "page",
+      id: pageId,
       order: page.order,
       page,
-    })),
-    ...groups.map((group) => ({
-      type: "group" as const,
-      order: group.order,
-      group,
-    })),
-  ].sort(
-    (left, right) =>
-      left.order - right.order ||
-      (left.type === "page" ? left.page.id : left.group.id).localeCompare(
-        right.type === "page" ? right.page.id : right.group.id,
-      ),
-  );
+    });
+  }
 
-  const pages = items.flatMap((item) =>
-    item.type === "page" ? [item.page] : item.group.pages,
-  );
+  const items = sortItems(root.values());
+  const pages = collectPages(items);
   const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {
