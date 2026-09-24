@@ -785,24 +785,24 @@ export interface ConsoleViewportService {
 }
 
 export interface ConsoleActionContextBase {
-  mode: ConsoleMode;
-  hasMessages: boolean;
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
 }
 
 export interface ConsoleSurfaceActionContext extends ConsoleActionContextBase {
-  kind: "console";
+  readonly kind: "console";
 }
 
 export interface ConsoleObjectActionContext extends ConsoleActionContextBase {
-  kind: "object";
-  value: object;
+  readonly kind: "object";
+  readonly value: object;
 }
 
 export interface ConsoleMessageActionContext extends ConsoleActionContextBase {
-  kind: "message";
-  message: ConsoleMessageData;
-  index: number;
-  messages: readonly ConsoleMessageData[];
+  readonly kind: "message";
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
 }
 
 export type ConsoleContextMenuActionContext =
@@ -900,14 +900,14 @@ export interface ConsoleMessageDecoration<TUi = unknown> {
 
 export type ConsoleOutputRendererContext<TUi = unknown> =
   | {
-      mode: "console";
-      messages: readonly ConsoleMessageData[];
-      renderDefault: () => TUi;
+      readonly mode: "console";
+      readonly messages: readonly ConsoleMessageData[];
+      readonly renderDefault: () => TUi;
     }
   | {
-      mode: "ansi";
-      entries: readonly (ConsoleStdoutEntry | string)[];
-      renderDefault: () => TUi;
+      readonly mode: "ansi";
+      readonly entries: readonly (ConsoleStdoutEntry | string)[];
+      readonly renderDefault: () => TUi;
     };
 
 export interface ConsoleOutputRenderer<TUi = unknown> {
@@ -918,7 +918,7 @@ export interface ConsoleOutputRenderer<TUi = unknown> {
 
 export interface ConsoleFrameDecoratorContext<TUi = unknown> {
   readonly mode: ConsoleMode;
-  renderDefault: () => TUi;
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleFrameDecorator<TUi = unknown> {
@@ -929,7 +929,7 @@ export interface ConsoleEmptyStateRendererContext<TUi = unknown> {
   readonly mode: ConsoleMode;
   readonly hasMessages: boolean;
   readonly message: string;
-  renderDefault: () => TUi;
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleEmptyStateRenderer<TUi = unknown> {
