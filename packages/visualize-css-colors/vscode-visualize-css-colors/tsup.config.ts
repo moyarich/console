@@ -18,7 +18,7 @@ export default defineConfig([
     target: "es2022",
     bundle: true,
     splitting: false,
-    dts: false,
+    dts: true,
     clean: false,
     external: ["vscode"],
     noExternal: ["@moyarich/css-color-parser"],
