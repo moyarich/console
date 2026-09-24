@@ -8,7 +8,6 @@ const meta = {
   args: {
     mode: "ansi",
     onClear: () => undefined,
-    resizable: "vertical",
     style: { height: 360, minHeight: 240, maxHeight: 640 },
   },
   decorators: [
