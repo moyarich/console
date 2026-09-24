@@ -1,8 +1,4 @@
-import {
-  GripHorizontal,
-  GripVertical,
-  MoveDiagonal2,
-} from "lucide-react";
+import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -20,15 +16,10 @@ import {
 } from "@moyarich/console-core";
 
 /** Stable package-qualified identity for the resizable frame addon. */
-export const RESIZABLE_CONSOLE_ADDON_ID =
-  "@moyarich/console-addon-resizable";
+export const RESIZABLE_CONSOLE_ADDON_ID = "@moyarich/console-addon-resizable";
 
 export type ConsoleResizeDirection =
-  | "vertical"
-  | "horizontal"
-  | "both"
-  | "block"
-  | "inline";
+  "vertical" | "horizontal" | "both" | "block" | "inline";
 
 export type ConsoleResizeEdge = "start" | "end";
 
@@ -100,9 +91,7 @@ export function resolveConsoleResizeAxes(
       direction === "both" ||
       direction === "inline",
     vertical:
-      direction === "vertical" ||
-      direction === "both" ||
-      direction === "block",
+      direction === "vertical" || direction === "both" || direction === "block",
   };
 }
 
@@ -195,10 +184,7 @@ function ResizableConsoleFrame({
     restoreBodyStyles();
   }, [direction, restoreBodyStyles]);
 
-  const startResize = (
-    event: PointerEvent<HTMLElement>,
-    axis: ResizeAxis,
-  ) => {
+  const startResize = (event: PointerEvent<HTMLElement>, axis: ResizeAxis) => {
     event.preventDefault();
 
     const frame = frameRef.current;
@@ -258,8 +244,7 @@ function ResizableConsoleFrame({
     if (drag.axis === "horizontal" || drag.axis === "both") {
       const directionMultiplier = horizontalEdge === "end" ? 1 : -1;
       nextWidth = clamp(
-        drag.startWidth +
-          (event.clientX - drag.startX) * directionMultiplier,
+        drag.startWidth + (event.clientX - drag.startX) * directionMultiplier,
         minWidth,
         drag.maxWidth,
       );
@@ -269,8 +254,7 @@ function ResizableConsoleFrame({
     if (drag.axis === "vertical" || drag.axis === "both") {
       const directionMultiplier = verticalEdge === "end" ? 1 : -1;
       nextHeight = clamp(
-        drag.startHeight +
-          (event.clientY - drag.startY) * directionMultiplier,
+        drag.startHeight + (event.clientY - drag.startY) * directionMultiplier,
         minHeight,
         drag.maxHeight,
       );
