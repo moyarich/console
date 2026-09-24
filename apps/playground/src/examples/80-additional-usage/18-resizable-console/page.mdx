@@ -14,8 +14,9 @@ The resizable frame resolves its color scheme in this order:
 1. `--console-resize-color-scheme`
 2. `--console-panel-color-scheme`
 3. `--console-color-scheme`
+4. the inherited standard `color-scheme` property
 
-The playground owns the **System / Light / Dark** theme control globally. This example uses `light-dark()` for its resize-handle tokens, so the handles follow the playground color scheme without maintaining separate theme state.
+The playground owns the **System / Light / Dark** theme control globally through the standard `color-scheme` property. This example uses `light-dark()` for its resize-handle tokens, so the handles follow the playground color scheme without maintaining separate theme state.
 
 The example also uses the core panel sizing theme variables so the console starts at a smaller initial size.
 
