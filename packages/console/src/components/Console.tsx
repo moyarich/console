@@ -16,11 +16,12 @@ import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
 import {
   ConsoleResolvedStdout,
+  type ConsoleProcessControlParser,
   type ConsoleProcessOutputProcessor,
   type ConsoleStdoutEntry,
   type ConsoleStructuredOutputParser,
 } from "./ConsoleStdout";
-import { resolveConsoleProcessOutputEntries } from "../processOutput";
+import { resolveConsoleProcessOutput } from "../processOutput";
 import type {
   ConsoleMessageData,
   ConsoleMode as ConsoleModeType,
@@ -44,8 +45,19 @@ import type { ConsoleLinkProvider } from "../links";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
+  type ConsoleEmptyStateRenderer,
+  type ConsoleEmptyStateRendererContext,
   type ConsoleExtensionRegistry,
   type ConsoleFrameDecorator,
+  type ConsoleKeyboardShortcut,
+  type ConsoleKeyboardShortcutContext,
+  type ConsoleMessageDecoration,
+  type ConsoleMessageDecorationPlacement,
+  type ConsoleMessageFilter as CoreConsoleMessageFilter,
+  type ConsoleMessageFilterContext,
+  type ConsolePanelElement,
+  type ConsolePanelElementContext,
+  type ConsolePanelElementPlacement,
 } from "../addons";
 import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
@@ -74,11 +86,7 @@ export interface ConsoleHandle {
 /**
  * Predicate used to decide whether a structured message should be visible.
  */
-export type ConsoleMessageFilter = (
-  message: ConsoleMessageData,
-  index: number,
-  messages: readonly ConsoleMessageData[],
-) => boolean;
+export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and ANSI console modes. */
 interface ConsoleSharedProps {
@@ -150,6 +158,8 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
   messages?: readonly (ConsoleStdoutEntry | string)[];
   /** Parse complete JSON object/array lines into structured value inspectors. */
   parseStructuredOutput?: boolean;
+  /** Ordered raw control parsers applied before line normalization. */
+  processControlParsers?: readonly ConsoleProcessControlParser[];
   /** Ordered process-output processors applied before structured parsing/rendering. */
   processors?: readonly ConsoleProcessOutputProcessor[];
   /** Ordered custom parsers that can promote text lines into structured values. */
@@ -174,6 +184,9 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   children: ReactNode;
   messageActions?: readonly ConsoleMessageAction[];
   frameDecorators?: readonly ConsoleFrameDecorator<ReactNode>[];
+  panelElements?: readonly ConsolePanelElement<ReactNode>[];
+  emptyStateRenderers?: readonly ConsoleEmptyStateRenderer<ReactNode>[];
+  keyboardShortcuts?: readonly ConsoleKeyboardShortcut[];
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
@@ -213,6 +226,133 @@ function renderConsoleFrameDecorators(
   return render();
 }
 
+function renderConsolePanelElements(
+  elements: readonly ConsolePanelElement<ReactNode>[] | undefined,
+  placement: ConsolePanelElementPlacement,
+  context: ConsolePanelElementContext,
+): ReactNode {
+  const rendered: ReactNode[] = [];
+
+  for (const element of elements ?? []) {
+    if (element.placement !== placement) continue;
+
+    try {
+      const value = element.render(context);
+
+      if (value !== undefined) {
+        rendered.push(
+          <div
+            key={element.id}
+            className="console-panel-element"
+            data-console-panel-element={element.id}
+          >
+            {value}
+          </div>,
+        );
+      }
+    } catch {
+      // One addon-owned panel element must not break the console frame.
+    }
+  }
+
+  if (rendered.length === 0) return null;
+
+  return (
+    <div
+      className={`console-panel-elements console-panel-elements-${placement}`}
+      data-console-panel-placement={placement}
+    >
+      {rendered}
+    </div>
+  );
+}
+
+function renderConsoleMessageDecorations(
+  decorations: readonly ConsoleMessageDecoration<ReactNode>[],
+  placement: ConsoleMessageDecorationPlacement,
+  message: ConsoleMessageData,
+  index: number,
+  messages: readonly ConsoleMessageData[],
+): ReactNode {
+  const rendered: ReactNode[] = [];
+  const context = { message, index, messages, placement };
+
+  for (const decoration of decorations) {
+    if (decoration.placement !== placement) continue;
+
+    try {
+      if (decoration.match && !decoration.match(context)) continue;
+      const value = decoration.render(context);
+
+      if (value !== undefined) {
+        rendered.push(
+          <div
+            key={decoration.id}
+            className="console-message-decoration"
+            data-console-message-decoration={decoration.id}
+          >
+            {value}
+          </div>,
+        );
+      }
+    } catch {
+      // One addon-owned decoration must not break message rendering.
+    }
+  }
+
+  if (rendered.length === 0) return null;
+
+  return (
+    <div
+      className={`console-message-decorations console-message-decorations-${placement}`}
+      data-console-message-decoration-placement={placement}
+    >
+      {rendered}
+    </div>
+  );
+}
+
+function renderConsoleEmptyState(
+  renderers: readonly ConsoleEmptyStateRenderer<ReactNode>[] | undefined,
+  context: ConsoleEmptyStateRendererContext<ReactNode>,
+): ReactNode {
+  for (const renderer of renderers ?? []) {
+    try {
+      if (renderer.mode && renderer.mode !== context.mode) continue;
+      if (renderer.match && !renderer.match(context)) continue;
+
+      const rendered = renderer.render(context);
+      if (rendered !== undefined) return rendered;
+    } catch {
+      // One addon-owned empty-state renderer must not break the console.
+    }
+  }
+
+  return context.renderDefault();
+}
+
+function isEditableKeyboardTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+
+  return (
+    target.isContentEditable ||
+    target.matches("input, textarea, select, [contenteditable='true']")
+  );
+}
+
+function matchesConsoleKeyboardShortcut(
+  shortcut: ConsoleKeyboardShortcut,
+  event: React.KeyboardEvent<HTMLElement>,
+): boolean {
+  return (
+    event.key.toLocaleLowerCase() === shortcut.key.toLocaleLowerCase() &&
+    event.altKey === Boolean(shortcut.altKey) &&
+    event.ctrlKey === Boolean(shortcut.ctrlKey) &&
+    event.metaKey === Boolean(shortcut.metaKey) &&
+    event.shiftKey === Boolean(shortcut.shiftKey)
+  );
+}
+
 /**
  * Shared frame that renders panel chrome, actions, context-menu support, and
  * the scrollable output surface for both console modes.
@@ -239,6 +379,9 @@ function ConsoleFrame({
   children,
   messageActions,
   frameDecorators,
+  panelElements,
+  emptyStateRenderers,
+  keyboardShortcuts,
 }: ConsoleFrameProps) {
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
@@ -271,6 +414,34 @@ function ConsoleFrame({
     () => resolveConsoleActions(panelActions, panelActionContext),
     [panelActionContext, panelActions],
   );
+  const panelElementContext = useMemo<ConsolePanelElementContext>(
+    () => ({ mode, hasMessages, isEmpty }),
+    [hasMessages, isEmpty, mode],
+  );
+  const keyboardShortcutContext = useMemo<ConsoleKeyboardShortcutContext>(
+    () => ({ mode, hasMessages, isEmpty }),
+    [hasMessages, isEmpty, mode],
+  );
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      for (const shortcut of keyboardShortcuts ?? []) {
+        if (
+          !shortcut.allowInEditable &&
+          isEditableKeyboardTarget(event.target)
+        ) {
+          continue;
+        }
+        if (!matchesConsoleKeyboardShortcut(shortcut, event)) continue;
+        if (shortcut.when && !shortcut.when(keyboardShortcutContext)) continue;
+
+        if (shortcut.preventDefault !== false) event.preventDefault();
+        if (shortcut.stopPropagation) event.stopPropagation();
+        void shortcut.onTrigger(keyboardShortcutContext);
+        break;
+      }
+    },
+    [keyboardShortcutContext, keyboardShortcuts],
+  );
   const showCopyButton = mode === "ansi";
   const showActions =
     actions ||
@@ -283,10 +454,17 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      tabIndex={keyboardShortcuts?.length ? 0 : undefined}
+      onKeyDown={handleKeyDown}
     >
       {showHeader && (
         <div className="console-panel-header">
           <div className="console-panel-header-main">
+            {renderConsolePanelElements(
+              panelElements,
+              "header-start",
+              panelElementContext,
+            )}
             <div className="console-heading">
               <SquareTerminal
                 className="console-heading-icon"
@@ -298,6 +476,12 @@ function ConsoleFrame({
                 {subtitle && <p>{subtitle}</p>}
               </div>
             </div>
+
+            {renderConsolePanelElements(
+              panelElements,
+              "header-end",
+              panelElementContext,
+            )}
 
             {showActions && (
               <div className="console-actions-popover-shell">
@@ -394,6 +578,12 @@ function ConsoleFrame({
         </div>
       )}
 
+      {renderConsolePanelElements(
+        panelElements,
+        "before-output",
+        panelElementContext,
+      )}
+
       <ConsoleContextMenu
         mode={mode}
         hasMessages={hasMessages}
@@ -412,14 +602,21 @@ function ConsoleFrame({
           onScroll={viewport.updateFromScroll}
         >
           {isEmpty ? (
-            <div className="console-empty">
-              <SquareTerminal
-                className="console-empty-icon"
-                size={28}
-                aria-hidden="true"
-              />
-              <span>{emptyMessage}</span>
-            </div>
+            renderConsoleEmptyState(emptyStateRenderers, {
+              mode,
+              hasMessages,
+              message: emptyMessage ?? "",
+              renderDefault: () => (
+                <div className="console-empty">
+                  <SquareTerminal
+                    className="console-empty-icon"
+                    size={28}
+                    aria-hidden="true"
+                  />
+                  <span>{emptyMessage}</span>
+                </div>
+              ),
+            })
           ) : (
             <>
               {children}
@@ -428,6 +625,13 @@ function ConsoleFrame({
           )}
         </div>
       </ConsoleContextMenu>
+
+      {renderConsolePanelElements(
+        panelElements,
+        "after-output",
+        panelElementContext,
+      )}
+      {renderConsolePanelElements(panelElements, "footer", panelElementContext)}
     </article>
   );
 
@@ -502,6 +706,21 @@ function ConsoleMessageMode({
   const resolvedFrameDecorators = addonExtensions.getAll(
     consoleExtensionPoints.frameDecorator,
   ) as readonly ConsoleFrameDecorator<ReactNode>[];
+  const resolvedPanelElements = addonExtensions.getAll(
+    consoleExtensionPoints.panelElement,
+  ) as readonly ConsolePanelElement<ReactNode>[];
+  const resolvedEmptyStateRenderers = addonExtensions.getAll(
+    consoleExtensionPoints.emptyStateRenderer,
+  ) as readonly ConsoleEmptyStateRenderer<ReactNode>[];
+  const resolvedKeyboardShortcuts = addonExtensions.getAll(
+    consoleExtensionPoints.keyboardShortcut,
+  ) as readonly ConsoleKeyboardShortcut[];
+  const resolvedMessageDecorations = addonExtensions.getAll(
+    consoleExtensionPoints.messageDecoration,
+  ) as readonly ConsoleMessageDecoration<ReactNode>[];
+  const addonMessageFilters = addonExtensions.getAll(
+    consoleExtensionPoints.messageFilter,
+  ) as readonly CoreConsoleMessageFilter[];
   const sourceMessages = messagesProp ?? output?.messages ?? EMPTY_MESSAGES;
   const runtimeError = errorProp ?? output?.error ?? "";
   const messages = useMemo<ConsoleMessageData[]>(
@@ -516,10 +735,21 @@ function ConsoleMessageMode({
   );
   const visibleMessages = useMemo(
     () =>
-      filter
-        ? messages.filter((message, index) => filter(message, index, messages))
+      filter || addonMessageFilters.length > 0
+        ? messages.filter((message, index) => {
+            const context: ConsoleMessageFilterContext = {
+              message,
+              index,
+              messages,
+            };
+
+            return (
+              (!filter || filter(context)) &&
+              addonMessageFilters.every((addonFilter) => addonFilter(context))
+            );
+          })
         : messages,
-    [filter, messages],
+    [addonMessageFilters, filter, messages],
   );
 
   useEffect(() => {
@@ -553,14 +783,49 @@ function ConsoleMessageMode({
   };
 
   const renderDefaultOutput = () =>
-    visibleMessages.map((message, index) => (
-      <div
-        key={
-          message.id ??
-          `${message.method}-${message.timestamp ?? "na"}-${index}`
-        }
-        data-console-message-id={message.id}
-      >
+    visibleMessages.map((message, index) => {
+      const key =
+        message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
+      const gutter = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "gutter",
+        message,
+        index,
+        visibleMessages,
+      );
+      const before = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "before",
+        message,
+        index,
+        visibleMessages,
+      );
+      const after = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "after",
+        message,
+        index,
+        visibleMessages,
+      );
+      const badge = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "badge",
+        message,
+        index,
+        visibleMessages,
+      );
+      const overlay = renderConsoleMessageDecorations(
+        resolvedMessageDecorations,
+        "overlay",
+        message,
+        index,
+        visibleMessages,
+      );
+      const hasDecorations = Boolean(
+        gutter || before || after || badge || overlay,
+      );
+
+      const renderedMessage = (
         <ConsoleMessage
           message={message}
           index={index}
@@ -572,8 +837,35 @@ function ConsoleMessageMode({
           detectLinks={detectLinks}
           linkProviders={resolvedLinkProviders}
         />
-      </div>
-    ));
+      );
+
+      if (!hasDecorations) {
+        return (
+          <div key={key} data-console-message-id={message.id}>
+            {renderedMessage}
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={key}
+          className="console-message-extension-shell"
+          data-console-message-id={message.id}
+        >
+          {before}
+          <div className="console-message-extension-row">
+            {gutter}
+            <div className="console-message-extension-content">
+              {renderedMessage}
+            </div>
+            {badge}
+          </div>
+          {after}
+          {overlay}
+        </div>
+      );
+    });
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
     messages: visibleMessages,
@@ -594,6 +886,9 @@ function ConsoleMessageMode({
       contextMenuActions={resolvedContextMenuActions}
       messageActions={resolvedMessageActions}
       frameDecorators={resolvedFrameDecorators}
+      panelElements={resolvedPanelElements}
+      emptyStateRenderers={resolvedEmptyStateRenderers}
+      keyboardShortcuts={resolvedKeyboardShortcuts}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>
@@ -604,6 +899,7 @@ function ConsoleMessageMode({
 function ConsoleAnsiMode({
   messages = EMPTY_ANSI_MESSAGES,
   parseStructuredOutput = false,
+  processControlParsers,
   processors,
   structuredOutputParsers,
   panelActions,
@@ -618,6 +914,10 @@ function ConsoleAnsiMode({
   emptyMessage = "No process output yet.",
   ...frameProps
 }: ConsoleAnsiModeProps & ConsoleResolvedAddonProps) {
+  const resolvedProcessControlParsers = mergeContributions(
+    processControlParsers,
+    addonExtensions.getAll(consoleExtensionPoints.processControlParser),
+  );
   const resolvedProcessors = mergeContributions(
     processors,
     addonExtensions.getAll(consoleExtensionPoints.processOutputProcessor),
@@ -626,10 +926,16 @@ function ConsoleAnsiMode({
     structuredOutputParsers,
     addonExtensions.getAll(consoleExtensionPoints.structuredOutputParser),
   );
-  const resolvedEntries = useMemo(
-    () => resolveConsoleProcessOutputEntries(messages, resolvedProcessors),
-    [messages, resolvedProcessors],
+  const resolvedProcessOutput = useMemo(
+    () =>
+      resolveConsoleProcessOutput(
+        messages,
+        resolvedProcessors,
+        resolvedProcessControlParsers,
+      ),
+    [messages, resolvedProcessControlParsers, resolvedProcessors],
   );
+  const resolvedEntries = resolvedProcessOutput.entries;
 
   useEffect(() => {
     data.setSnapshot({
@@ -637,8 +943,9 @@ function ConsoleAnsiMode({
       rawEntries: messages,
       all: resolvedEntries,
       visible: resolvedEntries,
+      controlEvents: resolvedProcessOutput.controlEvents,
     });
-  }, [data, messages, resolvedEntries]);
+  }, [data, messages, resolvedEntries, resolvedProcessOutput.controlEvents]);
   const resolvedPanelActions = mergeContributions(
     panelActions,
     addonExtensions.getAll(
@@ -670,6 +977,15 @@ function ConsoleAnsiMode({
   const resolvedFrameDecorators = addonExtensions.getAll(
     consoleExtensionPoints.frameDecorator,
   ) as readonly ConsoleFrameDecorator<ReactNode>[];
+  const resolvedPanelElements = addonExtensions.getAll(
+    consoleExtensionPoints.panelElement,
+  ) as readonly ConsolePanelElement<ReactNode>[];
+  const resolvedEmptyStateRenderers = addonExtensions.getAll(
+    consoleExtensionPoints.emptyStateRenderer,
+  ) as readonly ConsoleEmptyStateRenderer<ReactNode>[];
+  const resolvedKeyboardShortcuts = addonExtensions.getAll(
+    consoleExtensionPoints.keyboardShortcut,
+  ) as readonly ConsoleKeyboardShortcut[];
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
@@ -694,11 +1010,14 @@ function ConsoleAnsiMode({
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
-      isEmpty={messages.length === 0 && !hasCustomOutput}
-      scrollKey={messages}
+      isEmpty={resolvedEntries.length === 0 && !hasCustomOutput}
+      scrollKey={resolvedEntries}
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       frameDecorators={resolvedFrameDecorators}
+      panelElements={resolvedPanelElements}
+      emptyStateRenderers={resolvedEmptyStateRenderers}
+      keyboardShortcuts={resolvedKeyboardShortcuts}
     >
       {hasCustomOutput ? renderedOutput : renderDefaultOutput()}
     </ConsoleFrame>

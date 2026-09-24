@@ -31,8 +31,53 @@ export interface ConsoleProcessOutput {
   readonly metadata: ConsoleProcessOutputMetadata;
 }
 
+/** Semantic event extracted from raw process-control sequences. */
+export interface ConsoleProcessControlEvent {
+  readonly type: string;
+  readonly data?: Readonly<Record<string, unknown>>;
+}
+
+/** Current printable chunk state passed through raw process-control parsers. */
+export interface ConsoleProcessControlOutput {
+  readonly data: string;
+  readonly metadata: ConsoleProcessOutputMetadata;
+}
+
+/** Context for one raw process chunk before line normalization. */
+export interface ConsoleProcessControlParserContext {
+  readonly output: ConsoleProcessControlOutput;
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+}
+
+/** Patch produced by a raw process-control parser. */
+export interface ConsoleProcessControlParserResult {
+  data?: string;
+  metadata?: Readonly<Record<string, unknown>>;
+  events?: readonly ConsoleProcessControlEvent[];
+  omit?: boolean;
+}
+
+/**
+ * Stateful parser for semantic process-control sequences.
+ *
+ * Parsers run against raw chunks before carriage-return/newline normalization.
+ * The host calls reset before replaying the retained chunk set.
+ */
+export interface ConsoleProcessControlParser {
+  readonly id?: string;
+  parse(
+    context: ConsoleProcessControlParserContext,
+  ): ConsoleProcessControlParserResult | undefined | void;
+  reset?(): void;
+}
+
 /** Context supplied to each process-output processor. */
 export interface ConsoleProcessOutputProcessorContext {
+  /** Current immutable process output after earlier processors. */
+  readonly output: ConsoleProcessOutput;
   /** Logical process-output entry after core CR/newline normalization. */
   readonly entry: ConsoleStdoutEntry | string;
   /** Zero-based entry index. */
@@ -67,7 +112,6 @@ export interface ConsoleProcessOutputProcessor {
   /** Optional identifier useful to hosts for diagnostics and composition. */
   readonly id?: string;
   process(
-    output: ConsoleProcessOutput,
     context: ConsoleProcessOutputProcessorContext,
   ): ConsoleProcessOutputProcessorResult | undefined | void;
 }
@@ -280,6 +324,7 @@ export function processConsoleOutputEntry(
 
   for (const processor of processors) {
     const context: ConsoleProcessOutputProcessorContext = Object.freeze({
+      output,
       entry,
       index,
       text: Anser.ansiToText(output.data),
@@ -288,7 +333,7 @@ export function processConsoleOutputEntry(
     });
 
     try {
-      const result = processor.process(output, context);
+      const result = processor.process(context);
 
       if (!result) {
         continue;
@@ -326,6 +371,102 @@ export function processConsoleOutputEntry(
   return output;
 }
 
+/** Raw process-control resolution before line-oriented normalization. */
+export interface ConsoleResolvedProcessControls {
+  readonly entries: readonly ConsoleStdoutEntry[];
+  readonly events: readonly ConsoleProcessControlEvent[];
+}
+
+/**
+ * Runs raw process-control parsers in declaration order before line
+ * normalization. Parser failures are isolated and prior transformations remain.
+ */
+export function resolveConsoleProcessControls(
+  entries: readonly (ConsoleStdoutEntry | string)[],
+  parsers: readonly ConsoleProcessControlParser[] = [],
+): ConsoleResolvedProcessControls {
+  if (!parsers.length) {
+    return {
+      entries: entries.map((entry) =>
+        typeof entry === "string" ? { data: entry } : entry,
+      ),
+      events: [],
+    };
+  }
+
+  for (const parser of parsers) {
+    try {
+      parser.reset?.();
+    } catch {
+      // Parser reset failures must not prevent output rendering.
+    }
+  }
+
+  const printableEntries: ConsoleStdoutEntry[] = [];
+  const events: ConsoleProcessControlEvent[] = [];
+
+  entries.forEach((entry, index) => {
+    const source: ConsoleStdoutEntry =
+      typeof entry === "string" ? { data: entry } : entry;
+    let output: ConsoleProcessControlOutput = Object.freeze({
+      data: source.data,
+      metadata: source.metadata
+        ? freezeMetadata(source.metadata)
+        : EMPTY_METADATA,
+    });
+    let omit = false;
+
+    for (const parser of parsers) {
+      try {
+        const context: ConsoleProcessControlParserContext = Object.freeze({
+          output,
+          entry,
+          index,
+          ...(source.id !== undefined ? { id: source.id } : {}),
+          ...(source.stream !== undefined ? { stream: source.stream } : {}),
+        });
+        const result = parser.parse(context);
+        if (!result) continue;
+
+        if (result.events?.length) {
+          events.push(...result.events);
+        }
+
+        output = Object.freeze({
+          data: result.data ?? output.data,
+          metadata: freezeMetadata({
+            ...output.metadata,
+            ...(result.metadata ?? {}),
+          }),
+        });
+
+        if (result.omit) {
+          omit = true;
+          break;
+        }
+      } catch {
+        // A process-control parser must not block later parsers or rendering.
+      }
+    }
+
+    if (omit) return;
+
+    printableEntries.push({
+      data: output.data,
+      ...(source.id !== undefined ? { id: source.id } : {}),
+      ...(source.stream !== undefined ? { stream: source.stream } : {}),
+      ...(Object.keys(output.metadata).length
+        ? { metadata: output.metadata }
+        : {}),
+    });
+  });
+
+  return {
+    entries: printableEntries,
+    events: Object.freeze([...events]),
+  };
+}
+
 /** One logical process-output entry after normalization and processors. */
 export interface ConsoleResolvedProcessOutputEntry {
   readonly entry: ConsoleStdoutEntry;
@@ -336,12 +477,37 @@ export interface ConsoleResolvedProcessOutputEntry {
  * Resolves process output once for consumers that need the same logical view
  * used by rendering and addon data services.
  */
-export function resolveConsoleProcessOutputEntries(
+export interface ConsoleResolvedProcessOutput {
+  readonly entries: readonly ConsoleResolvedProcessOutputEntry[];
+  readonly controlEvents: readonly ConsoleProcessControlEvent[];
+}
+
+/** Resolves raw controls, logical lines, and output processors in order. */
+export function resolveConsoleProcessOutput(
   entries: readonly (ConsoleStdoutEntry | string)[],
   processors: readonly ConsoleProcessOutputProcessor[] = [],
-): ConsoleResolvedProcessOutputEntry[] {
-  return normalizeConsoleProcessOutputEntries(entries).map((entry, index) => ({
+  controlParsers: readonly ConsoleProcessControlParser[] = [],
+): ConsoleResolvedProcessOutput {
+  const controls = resolveConsoleProcessControls(entries, controlParsers);
+  const resolvedEntries = normalizeConsoleProcessOutputEntries(
+    controls.entries,
+  ).map((entry, index) => ({
     entry,
     output: processConsoleOutputEntry(entry, index, processors),
   }));
+
+  return {
+    entries: resolvedEntries,
+    controlEvents: controls.events,
+  };
+}
+
+export function resolveConsoleProcessOutputEntries(
+  entries: readonly (ConsoleStdoutEntry | string)[],
+  processors: readonly ConsoleProcessOutputProcessor[] = [],
+  controlParsers: readonly ConsoleProcessControlParser[] = [],
+): ConsoleResolvedProcessOutputEntry[] {
+  return [
+    ...resolveConsoleProcessOutput(entries, processors, controlParsers).entries,
+  ];
 }

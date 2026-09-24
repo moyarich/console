@@ -8,7 +8,7 @@ const messages = ["Progress 10%\r", "Progress 60%\r", "Progress 100%\n"];
 const processors: ConsoleProcessOutputProcessor[] = [
   {
     id: "diagnostics-build-status",
-    process(output) {
+    process({ output }) {
       if (!output.data.includes("Progress 100%")) return;
 
       return {

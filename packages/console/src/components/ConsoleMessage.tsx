@@ -181,7 +181,8 @@ export function ConsoleMessage({
     />
   );
 
-  const custom = dispatchMessageRenderer(renderers, message, {
+  const custom = dispatchMessageRenderer(renderers, {
+    message,
     index,
     messages: sourceMessages,
     renderDefault,

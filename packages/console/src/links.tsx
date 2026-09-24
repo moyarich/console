@@ -1,42 +1,24 @@
 import type { ReactNode } from "react";
-import type { ConsoleMode } from "./types";
+import type {
+  ConsoleLink as CoreConsoleLink,
+  ConsoleLinkActionContext as CoreConsoleLinkActionContext,
+  ConsoleLinkProvider as CoreConsoleLinkProvider,
+  ConsoleLinkProviderContext as CoreConsoleLinkProviderContext,
+} from "./addons";
 
 /** Metadata describing an interactive range inside rendered console text. */
-export interface ConsoleLink {
-  text: string;
-  start: number;
-  end: number;
-  target?: string;
-  title?: string;
-  action?: (context: ConsoleLinkActionContext) => void;
-}
+export type ConsoleLink = CoreConsoleLink;
 
 /** Context supplied to custom link providers. */
-export interface ConsoleLinkProviderContext {
-  mode: ConsoleMode;
-  value?: unknown;
-  propertyKey?: string;
-  index?: number;
-  id?: string;
-  stream?: "stdout" | "stderr";
-  metadata?: Readonly<Record<string, unknown>>;
-}
+export type ConsoleLinkProviderContext = CoreConsoleLinkProviderContext;
 
 /** Context supplied when a host-defined link action runs. */
-export interface ConsoleLinkActionContext extends ConsoleLinkProviderContext {
-  link: ConsoleLink;
-  sourceText: string;
-  providerId?: string;
-}
+export type ConsoleLinkActionContext = CoreConsoleLinkActionContext;
 
 /** Ordered provider that can discover application-specific links in text. */
-export interface ConsoleLinkProvider {
-  readonly id?: string;
-  provideLinks(
-    text: string,
-    context: ConsoleLinkProviderContext,
-  ): readonly ConsoleLink[] | undefined | void;
-}
+export type ConsoleLinkProvider = CoreConsoleLinkProvider;
+
+type ConsoleLinkProviderBaseContext = Omit<ConsoleLinkProviderContext, "text">;
 
 interface ResolvedConsoleLink extends ConsoleLink {
   providerId?: string;
@@ -165,7 +147,7 @@ function normalizeLink(
  */
 export function resolveConsoleLinks(
   text: string,
-  context: ConsoleLinkProviderContext,
+  context: ConsoleLinkProviderBaseContext,
   options: {
     detectLinks?: boolean;
     providers?: readonly ConsoleLinkProvider[];
@@ -190,9 +172,14 @@ export function resolveConsoleLinks(
 
   append(links);
 
+  const providerContext: ConsoleLinkProviderContext = {
+    ...context,
+    text,
+  };
+
   for (const provider of providers ?? []) {
     try {
-      append(provider.provideLinks(text, context) ?? undefined, provider.id);
+      append(provider.provideLinks(providerContext) ?? undefined, provider.id);
     } catch {
       // A custom provider must not prevent the original text from rendering.
     }
@@ -229,7 +216,7 @@ export function resolveConsoleLinks(
 
 export interface ConsoleLinkedTextProps {
   text: string;
-  context: ConsoleLinkProviderContext;
+  context: ConsoleLinkProviderBaseContext;
   detectLinks?: boolean;
   providers?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
@@ -281,8 +268,8 @@ export function ConsoleLinkedText({
 
     const linkContext: ConsoleLinkActionContext = {
       ...context,
+      text,
       link,
-      sourceText: text,
       ...(link.providerId ? { providerId: link.providerId } : {}),
     };
     const content = renderText(

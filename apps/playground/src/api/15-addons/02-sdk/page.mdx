@@ -12,6 +12,7 @@ packages/
 └─ addons/
    ├─ data-export/          → @moyarich/console-addon-data-export
    ├─ diagnostics/          → @moyarich/console-addon-diagnostics
+   ├─ filtering/            → @moyarich/console-addon-filtering
    ├─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
    └─ resizable/            → @moyarich/console-addon-resizable
 ```
@@ -29,3 +30,87 @@ import {
 `@moyarich/console` is the React host implementation and re-exports core contracts for application convenience.
 
 Core is a capability boundary, not a restriction on addon design. Addons that only need shared contracts should prefer `@moyarich/console-core`; addons that intentionally use React-host-specific APIs may also depend on `@moyarich/console`.
+
+## Callback convention
+
+Extension contributions use one immutable context object. The primary value is part of that context instead of being passed as a separate positional argument.
+
+```ts
+host.extensions.register(
+  consoleExtensionPoints.messageFilter,
+  ({ message }) => {
+    return message.method !== "debug";
+  },
+);
+
+host.extensions.register(consoleExtensionPoints.processOutputProcessor, {
+  id: "strip-prefix",
+  process({ output, text, stream }) {
+    if (stream !== "stdout" || !text.startsWith("[worker] ")) {
+      return undefined;
+    }
+
+    return {
+      data: output.data.replace("[worker] ", ""),
+    };
+  },
+});
+```
+
+This keeps callback signatures stable as the SDK grows: new host information can be added to the context without adding positional parameters. Context values are readonly inputs; processors and parsers return result/patch objects instead of mutating host-owned state.
+
+## Composition and ordering
+
+Each extension token exposes its composition model:
+
+```ts
+consoleExtensionPoints.processOutputProcessor.composition; // "pipeline"
+consoleExtensionPoints.messageRenderer.composition; // "first-result"
+consoleExtensionPoints.panelElement.composition; // "collect"
+consoleExtensionPoints.messageFilter.composition; // "all"
+consoleExtensionPoints.frameDecorator.composition; // "middleware"
+```
+
+Contributions are resolved by descending `priority`, then stable registration order for equal priorities. Normal addon order should be preferred; `priority` is an explicit override for cases such as placing a specialized parser before a generic parser.
+
+For pipeline points, each contribution sees the immutable result from previous contributions:
+
+```text
+input
+  ↓
+processor A
+  ↓ A result
+processor B
+  ↓ B result
+processor C
+  ↓
+final output
+```
+
+This means transform order can change the result, just as it can in Vite, unified/rehype, or compiler plugin pipelines.
+
+## Extension-point selection
+
+Addons should use the narrowest generic `consoleExtensionPoints.*` contract that matches the behavior they contribute:
+
+| Extension point          | Composition    | Purpose                                                        |
+| ------------------------ | -------------- | -------------------------------------------------------------- |
+| `processControlParser`   | `pipeline`     | Parse stateful raw process controls before line normalization. |
+| `processOutputProcessor` | `pipeline`     | Transform or enrich logical ANSI/process output.               |
+| `structuredOutputParser` | `first-result` | Promote terminal text into structured values.                  |
+| `linkProvider`           | `collect`      | Detect application-specific links and actions.                 |
+| `outputRenderer`         | `first-result` | Replace the complete output surface.                           |
+| `frameDecorator`         | `middleware`   | Structurally wrap the complete Console frame.                  |
+| `emptyStateRenderer`     | `first-result` | Customize only an empty output surface.                        |
+| `panelElement`           | `collect`      | Add persistent UI at generic panel placements.                 |
+| `messageFilter`          | `all`          | Contribute structured-message visibility rules.                |
+| `messageRenderer`        | `first-result` | Replace a complete structured message row.                     |
+| `messageDecoration`      | `collect`      | Add UI around a row without replacing it.                      |
+| `messageTextProvider`    | `collect`      | Add logical searchable/plain text for a message.               |
+| `valueRenderer`          | `first-result` | Customize an individual structured value.                      |
+| `keyboardShortcut`       | `first-result` | Add keyboard commands scoped to the focused Console.           |
+| `panelAction`            | `collect`      | Add Console-level actions.                                     |
+| `contextMenuAction`      | `collect`      | Add context-menu actions.                                      |
+| `messageAction`          | `collect`      | Add actions scoped to one structured message.                  |
+
+`frameDecorator` is intentionally structural. Persistent feature UI such as search, filtering, status, retention, or progress controls should normally use `panelElement` so independent addons compose without becoming nested frame wrappers.

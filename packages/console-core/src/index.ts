@@ -25,8 +25,35 @@ export interface ConsoleAddon {
 }
 
 /** Typed token identifying a multi-provider extension point. */
+/**
+ * Describes how multiple contributions to the same extension point compose.
+ *
+ * Contributions are always resolved in deterministic extension order:
+ * higher `priority` first, then registration order for equal priorities.
+ *
+ * - `"pipeline"`: every contribution runs sequentially. Each stage receives
+ *   the immutable state produced by preceding stages.
+ * - `"first-result"`: contributions are tried in order until one handles the
+ *   input and returns a result.
+ * - `"collect"`: all applicable contributions are accumulated in order.
+ * - `"all"`: every contribution must accept/pass the input. Hosts may
+ *   short-circuit once the result is known.
+ * - `"middleware"`: contributions wrap the next contribution/default
+ *   behavior, with the earliest resolved contribution forming the outer layer.
+ */
+export type ConsoleExtensionComposition =
+  "pipeline" | "first-result" | "collect" | "all" | "middleware";
+
+/** Typed metadata token identifying one multi-provider extension contract. */
 export interface ConsoleExtensionPoint<T> {
+  /** Stable package-independent identifier used by the extension registry. */
   readonly id: string;
+  /**
+   * Declares the host's composition semantics when multiple contributions are
+   * registered for this point.
+   */
+  readonly composition: ConsoleExtensionComposition;
+  /** Type-only marker for the contribution accepted by this point. */
   readonly __consoleExtensionType?: T;
 }
 
@@ -34,18 +61,40 @@ export interface ConsoleExtensionPoint<T> {
 export interface ConsoleExtensionRegistrationOptions {
   /** Optional identifier unique within this extension point. */
   readonly id?: string;
-  /** Higher priorities are returned before lower priorities. @default 0 */
+  /**
+   * Higher priorities are resolved before lower priorities.
+   * Equal priorities preserve registration order.
+   * @default 0
+   */
   readonly priority?: number;
 }
 
-/** Registry for ordered, multi-provider console extensions. */
+/**
+ * Registry for ordered, multi-provider console extensions.
+ *
+ * The registry owns ordering only. The host implements the behavior described
+ * by each extension point's `composition` metadata.
+ */
 export interface ConsoleExtensionRegistry {
+  /**
+   * Registers one contribution.
+   *
+   * Contributions with higher priorities resolve first. Equal priorities keep
+   * registration order. Disposing the returned handle removes the contribution.
+   */
   register<T>(
     point: ConsoleExtensionPoint<T>,
     contribution: T,
     options?: ConsoleExtensionRegistrationOptions,
   ): ConsoleDisposable;
+  /**
+   * Returns contributions in effective execution/rendering order.
+   *
+   * The returned order is higher priority first and stable registration order
+   * for equal priorities.
+   */
   getAll<T>(point: ConsoleExtensionPoint<T>): readonly T[];
+  /** Subscribes to extension registration and disposal changes. */
   subscribe(listener: () => void): ConsoleDisposable;
 }
 
@@ -356,11 +405,21 @@ class CapabilityRegistry implements ConsoleCapabilityRegistry {
   }
 }
 
-/** Creates a typed multi-provider extension-point token. */
+/**
+ * Creates a typed multi-provider extension-point token.
+ *
+ * @param id Stable identifier for the extension contract.
+ * @param composition How a host composes multiple registered contributions.
+ * @defaultValue composition `"collect"`
+ */
 export function createConsoleExtensionPoint<T>(
   id: string,
+  composition: ConsoleExtensionComposition = "collect",
 ): ConsoleExtensionPoint<T> {
-  return Object.freeze({ id: validateIdentifier(id, "Extension point") });
+  return Object.freeze({
+    id: validateIdentifier(id, "Extension point"),
+    composition,
+  });
 }
 
 /** Creates an independent extension registry for advanced/headless hosts. */
@@ -590,6 +649,18 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
+/** Context used to decide whether one structured console message is visible. */
+export interface ConsoleMessageFilterContext {
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+}
+
+/** Predicate used to decide whether a structured console message is visible. */
+export type ConsoleMessageFilter = (
+  context: ConsoleMessageFilterContext,
+) => boolean;
+
 export interface RunOutput {
   messages: ConsoleMessageData[];
   error?: string;
@@ -630,25 +701,24 @@ export interface ConsoleLink {
 }
 
 export interface ConsoleLinkProviderContext {
-  mode: ConsoleMode;
-  value?: unknown;
-  propertyKey?: string;
-  index?: number;
-  id?: string;
-  stream?: ConsoleOutputStream;
-  metadata?: Readonly<Record<string, unknown>>;
+  readonly text: string;
+  readonly mode: ConsoleMode;
+  readonly value?: unknown;
+  readonly propertyKey?: string;
+  readonly index?: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+  readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 export interface ConsoleLinkActionContext extends ConsoleLinkProviderContext {
-  link: ConsoleLink;
-  sourceText: string;
-  providerId?: string;
+  readonly link: ConsoleLink;
+  readonly providerId?: string;
 }
 
 export interface ConsoleLinkProvider {
   readonly id?: string;
   provideLinks(
-    text: string,
     context: ConsoleLinkProviderContext,
   ): readonly ConsoleLink[] | undefined | void;
 }
@@ -660,7 +730,41 @@ export interface ConsoleProcessOutput {
   readonly metadata: ConsoleProcessOutputMetadata;
 }
 
+export interface ConsoleProcessControlEvent {
+  readonly type: string;
+  readonly data?: Readonly<Record<string, unknown>>;
+}
+
+export interface ConsoleProcessControlOutput {
+  readonly data: string;
+  readonly metadata: ConsoleProcessOutputMetadata;
+}
+
+export interface ConsoleProcessControlParserContext {
+  readonly output: ConsoleProcessControlOutput;
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+}
+
+export interface ConsoleProcessControlParserResult {
+  data?: string;
+  metadata?: Readonly<Record<string, unknown>>;
+  events?: readonly ConsoleProcessControlEvent[];
+  omit?: boolean;
+}
+
+export interface ConsoleProcessControlParser {
+  readonly id?: string;
+  parse(
+    context: ConsoleProcessControlParserContext,
+  ): ConsoleProcessControlParserResult | undefined | void;
+  reset?(): void;
+}
+
 export interface ConsoleProcessOutputProcessorContext {
+  readonly output: ConsoleProcessOutput;
   readonly entry: ConsoleStdoutEntry | string;
   readonly index: number;
   readonly text: string;
@@ -678,7 +782,6 @@ export interface ConsoleProcessOutputProcessorResult {
 export interface ConsoleProcessOutputProcessor {
   readonly id?: string;
   process(
-    output: ConsoleProcessOutput,
     context: ConsoleProcessOutputProcessorContext,
   ): ConsoleProcessOutputProcessorResult | undefined | void;
 }
@@ -691,15 +794,15 @@ export interface ConsoleResolvedProcessOutputEntry {
 export type ConsoleProcessViewEntry = ConsoleResolvedProcessOutputEntry;
 
 export interface ConsoleStructuredOutputParserContext {
-  entry: ConsoleStdoutEntry | string;
-  index: number;
-  id?: string;
-  stream?: ConsoleOutputStream;
-  metadata?: ConsoleProcessOutputMetadata;
+  readonly text: string;
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+  readonly metadata?: ConsoleProcessOutputMetadata;
 }
 
 export type ConsoleStructuredOutputParser = (
-  text: string,
   context: ConsoleStructuredOutputParserContext,
 ) => unknown | undefined;
 
@@ -714,6 +817,7 @@ export interface ConsoleProcessDataSnapshot {
   readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
   readonly all: readonly ConsoleProcessViewEntry[];
   readonly visible: readonly ConsoleProcessViewEntry[];
+  readonly controlEvents?: readonly ConsoleProcessControlEvent[];
 }
 
 export type ConsoleDataSnapshot =
@@ -740,24 +844,24 @@ export interface ConsoleViewportService {
 }
 
 export interface ConsoleActionContextBase {
-  mode: ConsoleMode;
-  hasMessages: boolean;
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
 }
 
 export interface ConsoleSurfaceActionContext extends ConsoleActionContextBase {
-  kind: "console";
+  readonly kind: "console";
 }
 
 export interface ConsoleObjectActionContext extends ConsoleActionContextBase {
-  kind: "object";
-  value: object;
+  readonly kind: "object";
+  readonly value: object;
 }
 
 export interface ConsoleMessageActionContext extends ConsoleActionContextBase {
-  kind: "message";
-  message: ConsoleMessageData;
-  index: number;
-  messages: readonly ConsoleMessageData[];
+  readonly kind: "message";
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
 }
 
 export type ConsoleContextMenuActionContext =
@@ -801,16 +905,68 @@ export type ConsoleMessageAction<TUi = unknown> = ConsoleAction<
   TUi
 >;
 
+export interface ConsoleKeyboardShortcutContext {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly isEmpty: boolean;
+}
+
+export interface ConsoleKeyboardShortcut {
+  readonly id: string;
+  readonly key: string;
+  readonly altKey?: boolean;
+  readonly ctrlKey?: boolean;
+  readonly metaKey?: boolean;
+  readonly shiftKey?: boolean;
+  readonly allowInEditable?: boolean;
+  readonly preventDefault?: boolean;
+  readonly stopPropagation?: boolean;
+  when?: (context: ConsoleKeyboardShortcutContext) => boolean;
+  onTrigger: (context: ConsoleKeyboardShortcutContext) => void | Promise<void>;
+}
+
+export type ConsolePanelElementPlacement =
+  "header-start" | "header-end" | "before-output" | "after-output" | "footer";
+
+export interface ConsolePanelElementContext {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly isEmpty: boolean;
+}
+
+export interface ConsolePanelElement<TUi = unknown> {
+  readonly id: string;
+  readonly placement: ConsolePanelElementPlacement;
+  render: (context: ConsolePanelElementContext) => TUi | undefined;
+}
+
+export type ConsoleMessageDecorationPlacement =
+  "gutter" | "before" | "after" | "badge" | "overlay";
+
+export interface ConsoleMessageDecorationContext {
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+  readonly placement: ConsoleMessageDecorationPlacement;
+}
+
+export interface ConsoleMessageDecoration<TUi = unknown> {
+  readonly id: string;
+  readonly placement: ConsoleMessageDecorationPlacement;
+  match?: (context: ConsoleMessageDecorationContext) => boolean;
+  render: (context: ConsoleMessageDecorationContext) => TUi | undefined;
+}
+
 export type ConsoleOutputRendererContext<TUi = unknown> =
   | {
-      mode: "console";
-      messages: readonly ConsoleMessageData[];
-      renderDefault: () => TUi;
+      readonly mode: "console";
+      readonly messages: readonly ConsoleMessageData[];
+      readonly renderDefault: () => TUi;
     }
   | {
-      mode: "ansi";
-      entries: readonly (ConsoleStdoutEntry | string)[];
-      renderDefault: () => TUi;
+      readonly mode: "ansi";
+      readonly entries: readonly (ConsoleStdoutEntry | string)[];
+      readonly renderDefault: () => TUi;
     };
 
 export interface ConsoleOutputRenderer<TUi = unknown> {
@@ -821,48 +977,64 @@ export interface ConsoleOutputRenderer<TUi = unknown> {
 
 export interface ConsoleFrameDecoratorContext<TUi = unknown> {
   readonly mode: ConsoleMode;
-  renderDefault: () => TUi;
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleFrameDecorator<TUi = unknown> {
   render: (context: ConsoleFrameDecoratorContext<TUi>) => TUi | undefined;
 }
 
+export interface ConsoleEmptyStateRendererContext<TUi = unknown> {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly message: string;
+  readonly renderDefault: () => TUi;
+}
+
+export interface ConsoleEmptyStateRenderer<TUi = unknown> {
+  readonly mode?: ConsoleMode;
+  match?: (context: ConsoleEmptyStateRendererContext<TUi>) => boolean;
+  render: (context: ConsoleEmptyStateRendererContext<TUi>) => TUi | undefined;
+}
+
+export interface ConsoleMessageTextProviderContext {
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+}
+
+export interface ConsoleMessageTextProvider {
+  readonly id?: string;
+  provideText: (
+    context: ConsoleMessageTextProviderContext,
+  ) => string | readonly string[] | undefined;
+}
+
 export interface ConsoleMessageRendererContext<TUi = unknown> {
-  index: number;
-  messages: readonly ConsoleMessageData[];
-  renderDefault: () => TUi;
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleMessageRenderer<TUi = unknown> {
-  method?: ConsoleMethod;
-  match?: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext<TUi>,
-  ) => boolean;
-  render: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext<TUi>,
-  ) => TUi | undefined;
+  readonly method?: ConsoleMethod;
+  match?: (context: ConsoleMessageRendererContext<TUi>) => boolean;
+  render: (context: ConsoleMessageRendererContext<TUi>) => TUi | undefined;
 }
 
 export interface ConsoleValueRendererContext<TUi = unknown> {
-  propertyKey?: string;
-  depth: number;
-  type: string;
-  renderDefault: () => TUi;
+  readonly value: unknown;
+  readonly propertyKey?: string;
+  readonly depth: number;
+  readonly type: string;
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleValueRenderer<TUi = unknown> {
-  type?: string;
-  match?: (
-    value: unknown,
-    context: ConsoleValueRendererContext<TUi>,
-  ) => boolean;
-  render: (
-    value: unknown,
-    context: ConsoleValueRendererContext<TUi>,
-  ) => TUi | undefined;
+  readonly type?: string;
+  match?: (context: ConsoleValueRendererContext<TUi>) => boolean;
+  render: (context: ConsoleValueRendererContext<TUi>) => TUi | undefined;
 }
 
 /** Built-in capabilities understood by the standard console host. */
@@ -881,38 +1053,170 @@ export const consoleServices = Object.freeze({
 });
 
 /** Shared extension-point tokens used by console hosts and addons. */
+/**
+ * Built-in extension contracts supported by Console hosts.
+ *
+ * Each point declares its composition strategy so addon authors can determine
+ * whether registration order affects transformation, matching, rendering, or
+ * collection behavior directly from IDE hover information.
+ */
 export const consoleExtensionPoints = Object.freeze({
+  /**
+   * Parses stateful controls from raw process chunks before CR/newline
+   * normalization.
+   *
+   * @composition pipeline Each parser receives the output of preceding parsers.
+   */
+  processControlParser:
+    createConsoleExtensionPoint<ConsoleProcessControlParser>(
+      "console.process.control",
+      "pipeline",
+    ),
+  /**
+   * Transforms/enriches normalized process output before structured parsing.
+   *
+   * @composition pipeline Each processor receives accumulated prior output.
+   */
   processOutputProcessor:
     createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
       "console.process.output",
+      "pipeline",
     ),
+  /**
+   * Promotes process text to structured values.
+   *
+   * @composition first-result The first parser returning a value wins.
+   */
   structuredOutputParser:
     createConsoleExtensionPoint<ConsoleStructuredOutputParser>(
       "console.process.structuredOutputParser",
+      "first-result",
     ),
+  /**
+   * Discovers application-specific interactive link ranges.
+   *
+   * @composition collect All providers contribute; earlier overlapping ranges win.
+   */
   linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
     "console.linkProvider",
+    "collect",
   ),
+  /**
+   * Replaces the complete output surface.
+   *
+   * @composition first-result The first renderer returning a value wins.
+   */
   outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
     "console.render.output",
+    "first-result",
   ),
+  /**
+   * Structurally wraps the complete Console frame.
+   *
+   * @composition middleware Earlier contributions become outer wrappers.
+   */
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
+    "middleware",
   ),
+  /**
+   * Customizes the empty-output surface without replacing normal output.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
+  emptyStateRenderer: createConsoleExtensionPoint<ConsoleEmptyStateRenderer>(
+    "console.render.emptyState",
+    "first-result",
+  ),
+  /**
+   * Adds persistent addon UI to generic panel placements.
+   *
+   * @composition collect All matching elements render in resolved order.
+   */
+  panelElement: createConsoleExtensionPoint<ConsolePanelElement>(
+    "console.render.panelElement",
+    "collect",
+  ),
+  /**
+   * Contributes structured-message visibility predicates.
+   *
+   * @composition all A message must pass every registered filter.
+   */
+  messageFilter: createConsoleExtensionPoint<ConsoleMessageFilter>(
+    "console.filter.message",
+    "all",
+  ),
+  /**
+   * Replaces one structured-message row.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
+    "first-result",
   ),
+  /**
+   * Adds UI around a structured message without replacing its renderer.
+   *
+   * @composition collect All matching decorations render in resolved order.
+   */
+  messageDecoration: createConsoleExtensionPoint<ConsoleMessageDecoration>(
+    "console.render.messageDecoration",
+    "collect",
+  ),
+  /**
+   * Contributes logical searchable/plain text for structured messages.
+   *
+   * @composition collect Text from all providers is accumulated in resolved order.
+   */
+  messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
+    "console.message.text",
+    "collect",
+  ),
+  /**
+   * Replaces rendering for an individual structured value.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
+    "first-result",
   ),
+  /**
+   * Contributes keyboard commands scoped to the focused Console.
+   *
+   * @composition first-result The first matching enabled shortcut handles the event.
+   */
+  keyboardShortcut: createConsoleExtensionPoint<ConsoleKeyboardShortcut>(
+    "console.keyboard.shortcut",
+    "first-result",
+  ),
+  /**
+   * Adds Console-level actions.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
     "console.action.panel",
+    "collect",
   ),
+  /**
+   * Adds context-menu actions for Console, object, or message targets.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
     "console.action.contextMenu",
+    "collect",
   ),
+  /**
+   * Adds actions scoped to one structured message.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   messageAction: createConsoleExtensionPoint<ConsoleMessageAction>(
     "console.action.message",
+    "collect",
   ),
 });
 

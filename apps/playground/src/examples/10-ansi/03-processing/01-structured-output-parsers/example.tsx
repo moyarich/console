@@ -8,7 +8,8 @@ import "@moyarich/console/styles.css";
 
 const ESC = "\u001b[";
 
-const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
+const diagnosticParser: ConsoleStructuredOutputParser = (context) => {
+  const { text } = context;
   const match = text
     .trim()
     .match(/^ERROR\s+(TS\d+)\s+(.+?):(\d+):(\d+)\s+-\s+(.+)$/);
@@ -30,7 +31,8 @@ const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
   };
 };
 
-const testEventParser: ConsoleStructuredOutputParser = (text, context) => {
+const testEventParser: ConsoleStructuredOutputParser = (context) => {
+  const { text } = context;
   const match = text.trim().match(/^TEST\s+(PASS|FAIL)\s+(.+)\s+\((\d+)ms\)$/);
 
   if (!match) {
