@@ -79,7 +79,7 @@ function filterItems(
     return [...items];
   }
 
-  return items.flatMap((item) => {
+  return items.flatMap<MdxSectionItem>((item) => {
     if (item.type === "page") {
       const matches = [
         item.page.label,
