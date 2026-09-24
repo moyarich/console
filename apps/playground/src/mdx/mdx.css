@@ -1,0 +1,68 @@
+.mdx-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--playground-border);
+  border-radius: 10px;
+  background: var(--playground-surface);
+  scrollbar-gutter: stable;
+}
+
+.mdx-table-scroll:focus-visible {
+  outline: 2px solid var(--playground-accent);
+  outline-offset: 2px;
+}
+
+.documentation-page .mdx-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.documentation-page .mdx-table-scroll th,
+.documentation-page .mdx-table-scroll td {
+  min-width: 140px;
+  padding: 10px 12px;
+  border-right: 1px solid var(--playground-border);
+  border-bottom: 1px solid var(--playground-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.documentation-page .mdx-table-scroll th {
+  background: var(--playground-surface-subtle);
+  color: var(--playground-text);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.documentation-page .mdx-table-scroll td {
+  color: var(--playground-text-secondary);
+}
+
+.documentation-page .mdx-table-scroll tr:last-child td {
+  border-bottom: 0;
+}
+
+.documentation-page .mdx-table-scroll th:last-child,
+.documentation-page .mdx-table-scroll td:last-child {
+  border-right: 0;
+}
+
+.mdx-code-block {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--playground-border);
+  border-radius: 10px;
+  background: var(--playground-surface);
+}
+
+.documentation-page .mdx-code-block code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
