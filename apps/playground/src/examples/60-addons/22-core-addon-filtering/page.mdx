@@ -1,0 +1,12 @@
+---
+label: "Core Addon - Filtering"
+description: "Combine first-party method, text, and source controls with the existing host predicate filter without mutating source messages."
+---
+
+import source from "./example.tsx?raw";
+
+The filtering addon contributes a structured-message predicate while keeping filter state outside the source message collection.
+
+Use the method toggles, text field, and source selector together. The example also keeps a host-owned `filter` predicate active, so addon criteria compose with existing application filtering instead of replacing it.
+
+<RunnableExample source={source} sourcePath="example.tsx" />
