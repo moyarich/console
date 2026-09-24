@@ -19,11 +19,7 @@ import {
 export const RESIZABLE_CONSOLE_ADDON_ID = "@moyarich/console-addon-resizable";
 
 export type ConsoleResizeDirection =
-  | "vertical"
-  | "horizontal"
-  | "both"
-  | "block"
-  | "inline";
+  "vertical" | "horizontal" | "both" | "block" | "inline";
 
 export type ConsoleResizeEdge = "start" | "end";
 
