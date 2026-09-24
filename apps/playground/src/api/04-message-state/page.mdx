@@ -1,0 +1,41 @@
+---
+label: "Message state"
+description: "Manage console messages in React with useConsoleMessages()."
+---
+
+`useConsoleMessages()` is the easiest way to connect event producers to React state.
+
+```tsx
+const { messages, output, console, append, clear, events, setMessages } =
+  useConsoleMessages({
+    maxMessages: 1000,
+    dedupeById: true,
+    resetKey: sessionId,
+  });
+```
+
+### Options
+
+| Option            | Default          | Purpose                                                    |
+| ----------------- | ---------------- | ---------------------------------------------------------- |
+| `initialMessages` | `[]`             | Initial structured messages                                |
+| `maxMessages`     | `1000`           | Keeps only the newest messages after the limit is exceeded |
+| `dedupeById`      | `true`           | Ignores a new message when its `id` already exists         |
+| `resetKey`        | —                | Emits a clear when the value changes                       |
+| `events`          | internal emitter | Reuse an existing `ConsoleEventEmitter`                    |
+| `capture`         | `false`          | Capture calls from a real console                          |
+| `source`          | `"page"`         | Source metadata added during capture                       |
+| `passThrough`     | `true`           | Also call the original console method while capturing      |
+| `consoleTarget`   | global console   | Existing `Console` object to capture                       |
+
+### Returned values
+
+| Value             | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `messages`        | Current `ConsoleMessageData[]`                          |
+| `output`          | Convenience `{ messages, error: "" }` object            |
+| `console`         | Stable console-compatible producer backed by hook state |
+| `append(message)` | Emits a message into the hook's event channel           |
+| `clear()`         | Emits a clear event                                     |
+| `events`          | The `ConsoleEventEmitter` used by the hook              |
+| `setMessages`     | Direct React state setter for advanced cases            |

@@ -1,6 +1,6 @@
 ---
 label: "Resizable console addon"
-description: "Add visible, themeable IDE-style resize handles without putting optional resize behavior into the core Console component."
+description: "Add visible, themeable IDE-style resize handles that inherit the console and playground color scheme."
 ---
 
 import source from "./example.tsx?raw";
@@ -9,7 +9,16 @@ import source from "./example.tsx?raw";
 
 Choose a resize direction, then drag the visible handle along the console shell. The addon supports horizontal, vertical, both, block, and inline resize directions.
 
-This example also uses the core panel sizing theme variables so the console starts at a smaller initial size.
+The resizable frame resolves its color scheme in this order:
+
+1. `--console-resize-color-scheme`
+2. `--console-panel-color-scheme`
+3. `--console-color-scheme`
+4. the inherited standard `color-scheme` property
+
+The playground owns the **System / Light / Dark** theme control globally through the standard `color-scheme` property. This example uses `light-dark()` for its resize-handle tokens, so the handles follow the playground color scheme without maintaining separate theme state.
+
+The example also uses the core panel sizing theme variables so the console starts at a smaller initial size.
 
 - `--console-panel-width`
 - `--console-panel-height`

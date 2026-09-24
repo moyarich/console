@@ -4,23 +4,28 @@ import {
   RunnableExample,
   type RunnableExampleProps,
 } from "../components/RunnableExample";
+import { MdxCodeBlock } from "./components/MdxCodeBlock";
+import { MdxTable } from "./components/MdxTable";
+import "./mdx.css";
 
 interface PlaygroundMDXProviderProps {
   children: ReactNode;
-  exampleTitle: string;
+  pageTitle: string;
 }
 
 export function PlaygroundMDXProvider({
   children,
-  exampleTitle,
+  pageTitle,
 }: PlaygroundMDXProviderProps) {
   const components = useMemo(
     () => ({
+      pre: MdxCodeBlock,
+      table: MdxTable,
       RunnableExample: (props: RunnableExampleProps) => (
-        <RunnableExample title={exampleTitle} {...props} />
+        <RunnableExample title={pageTitle} {...props} />
       ),
     }),
-    [exampleTitle],
+    [pageTitle],
   );
 
   return <MDXProvider components={components}>{children}</MDXProvider>;

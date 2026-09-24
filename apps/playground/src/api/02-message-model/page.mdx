@@ -1,0 +1,32 @@
+---
+label: "Message model"
+description: "The structured ConsoleMessageData shape and metadata used by the renderer."
+---
+
+A rendered console message uses this shape:
+
+```ts
+interface ConsoleMessageData {
+  id?: string;
+  method: ConsoleMethod;
+  data: unknown[];
+  depth: number;
+  timestamp?: number;
+  source?: string;
+  columns?: string[];
+  expandLevel?: number;
+  showNonenumerable?: boolean;
+}
+```
+
+| Field               | Meaning                                                                   |
+| ------------------- | ------------------------------------------------------------------------- |
+| `method`            | Visual/semantic console method such as `log`, `warn`, `table`, or `trace` |
+| `data`              | Original values passed to the console call                                |
+| `depth`             | Group nesting level                                                       |
+| `id`                | Optional stable identifier used by message state for deduplication        |
+| `timestamp`         | Optional message creation time                                            |
+| `source`            | Optional producer label such as `page`, `iframe`, or `sandbox`            |
+| `columns`           | Optional requested columns for `console.table()`                          |
+| `expandLevel`       | Initial object expansion depth, used by `console.dir()`                   |
+| `showNonenumerable` | Metadata corresponding to `console.dir(..., { showHidden: true })`        |

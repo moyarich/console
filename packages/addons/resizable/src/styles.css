@@ -10,33 +10,40 @@
 }
 
 .console-resizable-frame {
+  --_console-resize-color-scheme: var(
+    --console-resize-color-scheme,
+    var(--console-panel-color-scheme, var(--console-color-scheme, inherit))
+  );
   --_console-resize-separator-line-background-color: var(
     --console-resize-separator-line-background-color,
-    currentColor
+    color-mix(in oklab, currentColor 18%, transparent)
   );
   --_console-resize-separator-hover-line-background-color: var(
     --console-resize-separator-hover-line-background-color,
-    currentColor
+    color-mix(in oklab, currentColor 38%, transparent)
   );
   --_console-resize-separator-active-line-background-color: var(
     --console-resize-separator-active-line-background-color,
-    color-mix(in hsl, hsl(200 50 80) 30%, currentColor 70%)
+    light-dark(#635bff, #8b83ff)
   );
   --_console-resize-separator-grip-color: var(
     --console-resize-separator-grip-color,
-    currentColor
+    color-mix(in oklab, currentColor 58%, transparent)
   );
   --_console-resize-separator-active-grip-color: var(
     --console-resize-separator-active-grip-color,
-    var(--_console-resize-separator-grip-color)
+    light-dark(#635bff, #8b83ff)
   );
   --_console-resize-separator-grip-border: var(
     --console-resize-separator-grip-border,
-    1px solid currentColor
+    1px solid color-mix(in oklab, currentColor 18%, transparent)
   );
   --_console-resize-separator-grip-background-color: var(
     --console-resize-separator-grip-background-color,
-    transparent
+    light-dark(
+      color-mix(in oklab, white 96%, currentColor 4%),
+      color-mix(in oklab, #111113 94%, currentColor 6%)
+    )
   );
   --_console-resize-separator-grip-border-radius: var(
     --console-resize-separator-grip-border-radius,
@@ -44,11 +51,12 @@
   );
   --_console-resize-separator-grip-box-shadow: var(
     --console-resize-separator-grip-box-shadow,
-    none
+    0 4px 14px color-mix(in oklab, currentColor 14%, transparent)
   );
   --_console-resize-handle-size: var(--console-resize-handle-size, 10px);
   --_console-resize-corner-size: var(--console-resize-corner-size, 28px);
 
+  color-scheme: var(--_console-resize-color-scheme);
   position: relative;
   display: flex;
   width: 100%;
