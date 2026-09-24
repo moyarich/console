@@ -6,10 +6,7 @@ const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
 const themingDocsPath = fileURLToPath(
-  new URL(
-    "../apps/playground/src/api/12-theming/page.mdx",
-    import.meta.url,
-  ),
+  new URL("../apps/playground/src/api/12-theming/page.mdx", import.meta.url),
 );
 const consoleIndexPath = fileURLToPath(
   new URL("../packages/console/src/index.ts", import.meta.url),
