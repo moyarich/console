@@ -12,6 +12,12 @@ const resizableAddonStylesPath = fileURLToPath(
 const consoleIndexPath = fileURLToPath(
   new URL("../packages/console/src/index.ts", import.meta.url),
 );
+const contextMenuThemeStylePath = fileURLToPath(
+  new URL(
+    "../packages/console/src/utils/console/style/getContextMenuThemeStyle.ts",
+    import.meta.url,
+  ),
+);
 const resizableAddonIndexPath = fileURLToPath(
   new URL("../packages/addons/resizable/src/index.tsx", import.meta.url),
 );
@@ -26,6 +32,7 @@ const styles = readFileSync(stylesPath, "utf8");
 const readme = readFileSync(readmePath, "utf8");
 const resizableAddonStyles = readFileSync(resizableAddonStylesPath, "utf8");
 const consoleIndex = readFileSync(consoleIndexPath, "utf8");
+const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
 const consolePackage = JSON.parse(readFileSync(consolePackagePath, "utf8")) as {
   scripts: { build: string };
@@ -103,8 +110,8 @@ describe("console theme CSS", () => {
   });
 
   it("resolves property-specific public theme inputs through private tokens", () => {
-    expect(styles).toContain(
-      "--_console-background-color: var(--console-background-color, #1e1e1e);",
+    expect(styles).toMatch(
+      /--_console-background-color:\s*var\(\s*--console-background-color,\s*light-dark\(#f8fafc, #1e1e1e\)\s*\);/,
     );
     expect(styles).toMatch(
       /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
@@ -125,19 +132,55 @@ describe("console theme CSS", () => {
       /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
     );
     expect(styles).toMatch(
-      /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid #454545\s*\);/,
+      /--_console-context-menu-border:\s*var\(\s*--console-context-menu-border,\s*1px solid light-dark\(#d0d5dd, #454545\)\s*\);/,
     );
   });
 
   it("keeps header chrome aligned with light and dark panel schemes", () => {
     expect(styles).toMatch(
-      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, dark\)\s*\);/,
+      /--_console-panel-color-scheme:\s*var\(\s*--console-panel-color-scheme,\s*var\(--console-color-scheme, inherit\)\s*\);/,
     );
     expect(styles).toContain("light-dark(#fff, #161b22)");
     expect(styles).toContain("light-dark(#202c40, #e6edf3)");
     expect(styles).toContain("light-dark(#7b8799, #8b949e)");
     expect(styles).toContain("light-dark(#42526b, #c9d1d9)");
     expect(styles).toContain("light-dark(#5266c9, #79c0ff)");
+  });
+
+  it("uses color-scheme-driven light-dark fallbacks across the console", () => {
+    expect(styles).toContain(
+      "--_console-color-scheme: var(--console-color-scheme, inherit);",
+    );
+    expect(styles).not.toContain("@media (prefers-color-scheme");
+
+    for (const value of [
+      "light-dark(#f8fafc, #1e1e1e)",
+      "light-dark(#172033, #d8dee9)",
+      "light-dark(#fff8db, #332b00)",
+      "light-dark(#fef3f2, #290000)",
+      "light-dark(#b42318, #f28b82)",
+      "light-dark(#175cd3, #8ab4f8)",
+      "light-dark(#7f56d9, #c58af9)",
+      "light-dark(#027a48, #81c995)",
+      "light-dark(#d0d5dd, #4a4a4a)",
+      "light-dark(#eef2f6, #292929)",
+      "light-dark(#fff, #252526)",
+      "light-dark(#202c40, #e6e6e6)",
+    ]) {
+      expect(styles).toContain(value);
+    }
+  });
+
+  it("preserves inherited color-scheme when the context menu is portaled", () => {
+    expect(contextMenuThemeStyle).toContain(
+      'themeStyle["--console-context-menu-color-scheme"]',
+    );
+    expect(contextMenuThemeStyle).toContain(
+      'themeStyle["--console-color-scheme"]',
+    );
+    expect(contextMenuThemeStyle).toContain(
+      "themeStyle.colorScheme = computedStyle.colorScheme",
+    );
   });
 
   it("uses shorthand tokens only with their matching shorthand properties", () => {
