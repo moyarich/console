@@ -731,6 +731,99 @@
   pointer-events: none;
 }
 /* ==========================================================================
+   Addon panel elements and message decorations
+   ========================================================================== */
+
+.console-panel .console-panel-elements {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.console-panel .console-panel-elements-header-start,
+.console-panel .console-panel-elements-header-end {
+  flex: 0 1 auto;
+}
+
+.console-panel .console-panel-elements-header-end {
+  margin-left: auto;
+}
+
+.console-panel .console-panel-elements-before-output,
+.console-panel .console-panel-elements-after-output,
+.console-panel .console-panel-elements-footer {
+  width: 100%;
+  padding: 10px 12px;
+  border-bottom: var(--_console-entry-border-bottom);
+  background-color: var(--_console-panel-header-background-color);
+}
+
+.console-panel .console-panel-elements-after-output,
+.console-panel .console-panel-elements-footer {
+  border-top: var(--_console-entry-border-bottom);
+  border-bottom: 0;
+}
+
+.console-panel .console-panel-element {
+  min-width: 0;
+}
+
+.console-panel .console-panel-elements-before-output .console-panel-element,
+.console-panel .console-panel-elements-after-output .console-panel-element,
+.console-panel .console-panel-elements-footer .console-panel-element {
+  width: 100%;
+}
+
+.console-panel .console-message-extension-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.console-panel .console-message-extension-row {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.console-panel .console-message-extension-content {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.console-panel .console-message-decorations {
+  min-width: 0;
+}
+
+.console-panel .console-message-decorations-gutter,
+.console-panel .console-message-decorations-badge {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 6px;
+}
+
+.console-panel .console-message-decorations-before,
+.console-panel .console-message-decorations-after {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+  padding: 4px 12px;
+}
+
+.console-panel .console-message-decorations-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.console-panel .console-message-decorations-overlay
+  .console-message-decoration {
+  pointer-events: auto;
+}
+
+/* ==========================================================================
    Process output
    ========================================================================== */
 
