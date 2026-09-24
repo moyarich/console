@@ -29,7 +29,9 @@ const resizableStyles = readFileSync(
 describe("playground color scheme", () => {
   it("owns an icon-based System, Light, and Dark appearance switcher", () => {
     expect(app).toContain('import { Monitor, Moon, Sun } from "lucide-react";');
-    expect(app).toContain('{ value: "system", label: "System", Icon: Monitor }');
+    expect(app).toContain(
+      '{ value: "system", label: "System", Icon: Monitor }',
+    );
     expect(app).toContain('{ value: "light", label: "Light", Icon: Sun }');
     expect(app).toContain('{ value: "dark", label: "Dark", Icon: Moon }');
     expect(app).toContain('aria-label="Appearance"');
@@ -70,7 +72,9 @@ describe("playground color scheme", () => {
     );
     expect(playgroundStyles).not.toContain("font-weight: 750;");
     expect(playgroundStyles).not.toContain("font-weight: 800;");
-    expect(playgroundStyles).toContain(".theme-switcher-button[aria-pressed=\"true\"]");
+    expect(playgroundStyles).toContain(
+      '.theme-switcher-button[aria-pressed="true"]',
+    );
   });
 
   it("renders a GitHub repository icon link", () => {
