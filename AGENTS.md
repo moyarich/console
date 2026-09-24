@@ -101,6 +101,30 @@ Use `processControlParser` only for raw stream semantics that must be recognized
 
 Use `messageTextProvider` when an addon owns logical text that search/filter/copy/indexing features should be able to discover without changing visible rendering.
 
+## Extension callback contracts
+
+Extension callbacks should receive **one readonly context object** rather than a growing list of positional arguments.
+
+- put the primary subject in the context too: for example `message`, `value`, `text`, or `output`
+- prefer `callback(context)` over signatures such as `callback(message, index, messages)` or `callback(output, context)`
+- make context fields `readonly`; extension callbacks should treat host state as immutable input
+- when an extension needs additional information later, add a field to its context instead of adding another positional parameter
+- use the same context shape for `match`, `render`, `process`, or provider callbacks that operate on the same extension contribution
+- keep result/patch objects separate from input context objects; parsers and processors return changes rather than mutating `context.output`
+
+Example:
+
+```ts
+host.extensions.register(consoleExtensionPoints.messageRenderer, {
+  match: ({ message }) => message.method === "error",
+  render: ({ message, renderDefault }) => (
+    <ErrorBoundary message={message}>{renderDefault()}</ErrorBoundary>
+  ),
+});
+```
+
+Do not introduce compatibility overloads for new extension contracts merely to preserve an older positional callback shape while the addon API is still being established.
+
 ## Addon UI contributions
 
 Addon-owned UI should participate in the same extension system as addon behavior.
