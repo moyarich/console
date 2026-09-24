@@ -1,10 +1,12 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
+import type { Toc } from "@stefanprobst/rehype-extract-toc";
 import { parsePageMeta, type PageMeta } from "./pageMetadata";
 
 export interface MdxPageModule {
   default: ComponentType;
   meta?: unknown;
+  tableOfContents?: Toc;
 }
 
 export interface OrderedDirectory {
@@ -18,6 +20,7 @@ export interface MdxSectionPage {
   order: number;
   label: string;
   description?: string;
+  outline: Toc;
   meta: PageMeta;
   Page: ComponentType;
 }
@@ -166,6 +169,7 @@ export function createMdxSection({
       order: pageDirectory.order,
       label: meta.label,
       description: meta.description,
+      outline: pageModule.tableOfContents ?? [],
       meta,
       Page: pageModule.default,
     };
