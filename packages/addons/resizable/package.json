@@ -1,0 +1,56 @@
+{
+  "name": "@moyarich/console-addon-resizable",
+  "version": "0.1.0",
+  "description": "First-party resizable frame addon for @moyarich/console hosts.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external @moyarich/console-core --external react",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "^1.47.0"
+  },
+  "peerDependencies": {
+    "@moyarich/console-core": "^0.1.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@moyarich/console-core": "0.1.0",
+    "@types/react": "^19.1.12",
+    "react": "^19.2.7",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyarich/console.git",
+    "directory": "packages/addons/resizable"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
+  "homepage": "https://github.com/moyarich/console#readme",
+  "keywords": [
+    "console",
+    "addon",
+    "resize",
+    "developer-tools"
+  ]
+}
