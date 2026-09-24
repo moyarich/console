@@ -17,23 +17,20 @@ runtime owns the color swatch, color picker, refresh lifecycle, and editor setti
 
 ## @typefox/monaco-editor-react
 
-Build the package first so `dist/extension.js` is available, then register the web
-extension in the VS Code API configuration used by the TypeFox editor host.
+Build the package first, then register the web extension in the VS Code API
+configuration used by the TypeFox editor host.
 
 ```ts
 import {
   vscodeVisualizeCssColorsBrowserPath,
   vscodeVisualizeCssColorsManifest,
 } from "@moyarich/vscode-visualize-css-colors";
-import extensionUrl from "@moyarich/vscode-visualize-css-colors/extension.js?url";
+import extensionSource from "@moyarich/vscode-visualize-css-colors/extension-source";
 import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
 import { configureDefaultWorkerFactory } from "monaco-languageclient/workerFactory";
 
 const filesOrContents = new Map<string, string | URL>([
-  [
-    vscodeVisualizeCssColorsBrowserPath,
-    new URL(extensionUrl, window.location.href),
-  ],
+  [vscodeVisualizeCssColorsBrowserPath, extensionSource],
 ]);
 
 export const vscodeApiConfig: MonacoVscodeApiConfig = {
@@ -67,10 +64,22 @@ import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
 />;
 ```
 
+For Vite production builds, configure Monaco/VS Code workers as ES modules:
+
+```ts
+export default defineConfig({
+  worker: {
+    format: "es",
+  },
+});
+```
+
 The extension is registered as a real VS Code web extension. The host loads its
 `browser` entry point and activates it through the extension lifecycle, while the
 extension registers its `DocumentColorProvider` through the `vscode` API.
 
 The executable extension bundle is CommonJS because the VS Code web extension host
-expects a bundled extension module rather than application ESM. The extension imports
-only the `vscode` API and the parser package; it does not use Node-only APIs.
+expects a bundled extension module rather than application ESM. The package also
+generates the typed `extension-source` export so browser hosts can register that
+bundle without bundler-specific asset import syntax. The extension imports only the
+`vscode` API and the parser package; it does not use Node-only APIs.
