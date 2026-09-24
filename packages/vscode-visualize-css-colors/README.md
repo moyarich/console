@@ -37,10 +37,7 @@ export async function registerVisualizeCssColors() {
     ExtensionHostKind.LocalProcess,
   );
 
-  extension.registerFileUrl(
-    vscodeVisualizeCssColorsBrowserPath,
-    extensionUrl,
-  );
+  extension.registerFileUrl(vscodeVisualizeCssColorsBrowserPath, extensionUrl);
 
   await extension.whenReady?.();
 
