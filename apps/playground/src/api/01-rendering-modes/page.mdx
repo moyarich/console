@@ -1,0 +1,215 @@
+---
+label: "Rendering modes"
+description: "Structured console and ANSI process-output rendering, processors, links, and structured output parsing."
+---
+
+`Console` has two distinct modes because browser console messages and process output have different semantics.
+
+| Mode      | Input                                 | Best for                                                                  |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------- |
+| `console` | `ConsoleMessageData[]` or `RunOutput` | Browser-style `console.*`, rich JavaScript values, groups, tables, traces |
+| `ansi`    | strings or `ConsoleStdoutEntry[]`     | Process `stdout` / `stderr`, build output, CLI output, ANSI colors        |
+
+### Structured console mode
+
+Structured mode is the default.
+
+```tsx
+<Console
+  messages={[
+    {
+      method: "log",
+      data: ["Result", { user: { id: 42 }, roles: ["admin"] }],
+      depth: 0,
+    },
+  ]}
+/>
+```
+
+Values stay structured instead of being flattened to strings. Objects, arrays, Maps, Sets, typed values, errors, and nested data can therefore be inspected in the UI.
+
+Structured mode also understands metadata produced by the proxy, including group depth, table columns, timestamps, sources, and `console.dir()` expansion depth.
+
+### ANSI process-output mode
+
+Use `mode="ansi"` for text written by a process or CLI.
+
+```tsx
+const entries = [
+  { id: "1", data: "\u001b[32mServer ready\u001b[0m", stream: "stdout" },
+  {
+    id: "2",
+    data: "\u001b[31mConnection failed\u001b[0m",
+    stream: "stderr",
+  },
+];
+
+<Console mode="ansi" messages={entries} />;
+```
+
+ANSI rendering uses `anser` and supports standard and bright colors, 256-color, truecolor, and common text decorations.
+
+`stream` is process-channel metadata. A `stderr` entry is **not** converted to `console.error()`.
+
+ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
+
+#### Carriage-return and progress output
+
+ANSI mode normalizes common process-output redraw behavior before rendering. A standalone `\r` updates the current logical line instead of creating another permanent row, whether a producer places the carriage return at the end of one chunk (`progress\r`) or at the start of the next redraw chunk (`\rprogress`, as `tqdm` does). `\n` completes the current line, and `\r\n` remains a normal newline. Supported ANSI clear-line sequences apply to the current logical line as well.
+
+This keeps spinner/progress output from build tools, package managers, test runners, and downloads readable without turning the component into a terminal emulator. Completed lines stay stable, and `stdout` / `stderr` metadata remains attached to the visible logical line.
+
+Normalization happens before process-output processors and structured-output parsers, so extensions receive the text that is actually visible instead of stale intermediate progress frames. Ordinary adjacent entries still remain separate rows unless a carriage return, newline boundary, or clear-line control explicitly connects them. Arbitrary cursor positioning and terminal screen/buffer emulation remain intentionally out of scope.
+
+The playground also includes a real-world browser example using Pyodide + `tqdm`. The editable-source runner executes compiled examples as real browser ESM: built-in bare imports such as React and `@moyarich/console` are bridged to ESM module URLs, while absolute browser ESM URLs remain native imports. The example therefore imports Pyodide from `pyodide.mjs` directly and forwards the real `tqdm` formatter's exact carriage-return payloads into ANSI mode.
+
+### Process output with ordered processors
+
+Use `processors` when process output needs runtime-specific normalization or enrichment before rendering. A processor receives immutable output state plus ANSI-stripped text and returns only the fields it wants to change:
+
+```tsx
+import type { ConsoleProcessOutputProcessor } from "@moyarich/console";
+
+const processors: ConsoleProcessOutputProcessor[] = [
+  {
+    id: "normalize-prefix",
+    process: (output, context) => ({
+      data: context.text.startsWith("[worker] ")
+        ? output.data.replace("[worker] ", "")
+        : output.data,
+      metadata: { runtime: "worker" },
+    }),
+  },
+  {
+    id: "promote-task-event",
+    process: (output, context) => {
+      if (!context.text.startsWith("TASK ")) {
+        return undefined;
+      }
+
+      return {
+        structuredValue: {
+          kind: "task",
+          message: context.text.slice(5),
+          runtime: output.metadata.runtime,
+        },
+      };
+    },
+  },
+];
+
+<Console mode="ansi" messages={entries} processors={processors} />;
+```
+
+Processors run in array order. Each processor sees the successful output and metadata produced by earlier processors. If one throws, its changes are discarded and later processors continue from the last successful state, so a plugin failure cannot suppress the remaining output.
+
+A processor may:
+
+- replace `data` while preserving ANSI rendering for the resulting text
+- set `structuredValue` to promote a line into the normal value inspector
+- merge host/plugin data into `metadata`
+- return `links` using the shared `ConsoleLink` range contract
+- observe current ANSI-stripped text through `context.text` without changing output
+
+If a processor changes `data`, link ranges produced for earlier text are discarded because their offsets are no longer valid. A processor that transforms text can return replacement `links` for the new output in the same result. The generic metadata bag remains available for application-specific enrichment that does not yet have a dedicated contract.
+
+For non-React pipelines, `processConsoleOutputEntry(entry, index, processors)` applies the same ordered processor chain directly.
+
+### Interactive links and custom link providers
+
+HTTP and HTTPS URLs are detected by default in both structured console strings and ANSI/process output. Built-in URL detection can be disabled with `detectLinks={false}`.
+
+Use `linkProviders` for application-specific references such as source locations, routes, stack frames, or issue identifiers:
+
+```tsx
+import { Console, type ConsoleLinkProvider } from "@moyarich/console";
+
+const sourceLinks: ConsoleLinkProvider = {
+  id: "source-location",
+  provideLinks(text) {
+    const matches = text.matchAll(
+      /\\b[\\w./-]+\\.(?:ts|tsx|js|jsx):\\d+(?::\\d+)?\\b/g,
+    );
+
+    return Array.from(matches, (match) => ({
+      text: match[0],
+      start: match.index,
+      end: match.index + match[0].length,
+      title: "Open source",
+      action: ({ link }) => openSource(link.text),
+    }));
+  },
+};
+
+<Console messages={messages} linkProviders={[sourceLinks]} />;
+<Console mode="ansi" messages={stdout} linkProviders={[sourceLinks]} />;
+```
+
+Each `ConsoleLink` includes the visible `text`, inclusive `start` offset, exclusive `end` offset, and optionally a safe navigation `target`, `title`, or host-defined `action`. Providers run in declaration order before built-in web-link detection, so application-specific ranges take precedence when links overlap.
+
+Navigation targets are restricted to HTTP/HTTPS URLs and same-site relative/hash targets. External web links open with `noopener noreferrer`. Link rendering preserves normal text selection and copy behavior.
+
+ANSI processors can also return `links` using the same `ConsoleLink` contract, which keeps process-output plugins and renderer-level link providers on one metadata model.
+
+### Parse structured values from ANSI output
+
+If a process prints complete JSON objects or arrays, `parseStructuredOutput` keeps the built-in strict-JSON behavior and renders matching values through the normal expandable inspector:
+
+```tsx
+<Console
+  mode="ansi"
+  messages={['{"request":{"method":"GET","status":200}}']}
+  parseStructuredOutput
+/>
+```
+
+For NDJSON records, compiler diagnostics, test-runner events, or application-specific lines, pass one or more `structuredOutputParsers`:
+
+```tsx
+import type { ConsoleStructuredOutputParser } from "@moyarich/console";
+
+const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
+  const match = text.match(/^ERROR\s+(TS\d+):\s+(.+)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    kind: "diagnostic",
+    code: match[1],
+    message: match[2],
+    stream: context.stream,
+  };
+};
+
+<Console
+  mode="ansi"
+  messages={[
+    {
+      id: "diagnostic-1",
+      data: "\u001b[31mERROR TS2322: invalid value\u001b[0m",
+      stream: "stderr",
+    },
+  ]}
+  structuredOutputParsers={[diagnosticParser]}
+/>;
+```
+
+Parsers run in order and receive ANSI-stripped text plus the original entry context:
+
+```ts
+interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: "stdout" | "stderr";
+  metadata?: ConsoleProcessOutputMetadata;
+}
+```
+
+Processors run before structured parsers, so parsers receive transformed text and accumulated processor metadata. Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+
+ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
+
+Use `ConsoleStdout` directly if you only need the lower-level ANSI list without the surrounding panel.
