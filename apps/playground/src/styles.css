@@ -1274,10 +1274,7 @@ body,
 
 .source-toolbar {
   border-bottom-color: light-dark(var(--playground-border), #283142);
-  background: light-dark(
-    var(--playground-surface-subtle),
-    linear-gradient(180deg, #1d2532, #19212d)
-  );
+  background: light-dark(var(--playground-surface-subtle), #1b2230);
 }
 
 .source-toolbar strong {
