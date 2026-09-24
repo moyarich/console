@@ -65,7 +65,7 @@ function FilteringAddonStory() {
   const addons = useMemo(() => [filteringAddon], [filteringAddon]);
 
   return (
-    <div style={{ width: 760, maxWidth: "90vw" }}>
+    <div style={{ display: "grid", gap: 12, width: 760, maxWidth: "90vw" }}>
       <ConsoleFilteringControls
         controller={filteringAddon.controller}
         messages={messages}
@@ -80,8 +80,6 @@ function FilteringAddonStory() {
         style={{
           width: "100%",
           height: 320,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
         }}
       />
     </div>
