@@ -23,6 +23,9 @@ export default defineConfig({
           import.meta.url,
         ),
       ),
+      "@moyarich/console-addon-resizable": fileURLToPath(
+        new URL("./packages/addons/resizable/src/index.tsx", import.meta.url),
+      ),
     },
   },
   test: {

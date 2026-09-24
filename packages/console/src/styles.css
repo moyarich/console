@@ -39,6 +39,10 @@
     --console-panel-box-shadow,
     0 10px 28px rgb(45 60 85 / 0.05)
   );
+  --_console-panel-width: var(--console-panel-width, 100%);
+  --_console-panel-height: var(--console-panel-height, auto);
+  --_console-panel-min-width: var(--console-panel-min-width, 0);
+  --_console-panel-min-height: var(--console-panel-min-height, 0);
 
   /* Header */
   --_console-panel-header-color: var(
@@ -305,13 +309,15 @@
   box-sizing: border-box;
 }
 /* ==========================================================================
-   Panel shell and resizing
+   Panel shell
    ========================================================================== */
 
 .console-panel {
   display: flex;
-  width: 100%;
-  min-width: 0;
+  width: var(--_console-panel-width);
+  height: var(--_console-panel-height);
+  min-width: var(--_console-panel-min-width);
+  min-height: var(--_console-panel-min-height);
   max-width: 100%;
   flex-direction: column;
   overflow: hidden;
@@ -321,32 +327,6 @@
   color: var(--_console-panel-color);
   box-shadow: var(--_console-panel-box-shadow);
   color-scheme: var(--_console-panel-color-scheme);
-}
-
-.console-panel[data-resizable="vertical"] {
-  resize: vertical;
-}
-
-.console-panel[data-resizable="horizontal"] {
-  resize: horizontal;
-}
-
-.console-panel[data-resizable="both"] {
-  resize: both;
-}
-
-.console-panel[data-resizable="block"] {
-  resize: block;
-}
-
-.console-panel[data-resizable="inline"] {
-  resize: inline;
-}
-
-.console-panel[data-resizable] .console-surface,
-.console-panel[data-resizable] .console-empty,
-.console-panel[data-resizable] .console-stdout-empty {
-  min-height: 0;
 }
 /* ==========================================================================
    Panel header

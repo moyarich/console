@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import AnsiLinkProviderExample from "../apps/playground/src/examples/50-additional-usage/14-link-providers/ansi";
+import AnsiLinkProviderExample from "../apps/playground/src/examples/80-additional-usage/14-link-providers/ansi";
 
 const meta = {
   title: "Console/Link Providers/ANSI",

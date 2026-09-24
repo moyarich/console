@@ -81,7 +81,6 @@ function LiveTqdmRedrawStory() {
         subtitle="Each leading carriage return replaces the current logical line"
         messages={messages}
         onClear={() => setMessages([])}
-        resizable="vertical"
         style={{ height: 360, minHeight: 240, maxHeight: 640 }}
       />
     </div>
@@ -94,7 +93,6 @@ const meta = {
   args: {
     mode: "ansi",
     onClear: () => undefined,
-    resizable: "vertical",
     style: { height: 360, minHeight: 240, maxHeight: 640 },
   },
   decorators: [

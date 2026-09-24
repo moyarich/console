@@ -16,6 +16,7 @@
     "@moyarich/console-addon-data-export": "*",
     "@moyarich/console-addon-diagnostics": "*",
     "@moyarich/console-addon-imperative-scrolling": "*",
+    "@moyarich/console-addon-resizable": "*",
     "@moyarich/console-core": "*",
     "change-case": "^5.4.4",
     "lucide-react": "^1.47.0",

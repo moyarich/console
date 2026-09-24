@@ -52,20 +52,18 @@ Install:
 npm install @moyarich/console
 ```
 
-Import the component and styles:
+Import the component:
 
 ```tsx
 import { Console } from "@moyarich/console";
-import "@moyarich/console/styles.css";
 ```
 
-The package ships ESM and CommonJS builds, TypeScript declarations, and separately exported styles.
+The package ships ESM and CommonJS builds plus TypeScript declarations. Importing `@moyarich/console` loads its own core stylesheet automatically.
 
 ## Quick start
 
 ```tsx
 import { Console, useConsoleMessages } from "@moyarich/console";
-import "@moyarich/console/styles.css";
 
 export function AppConsole() {
   const { messages, console, clear } = useConsoleMessages();
@@ -528,27 +526,43 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 ### Shared panel props
 
-| Prop                  | Purpose                                                                        |
-| --------------------- | ------------------------------------------------------------------------------ |
-| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation               |
-| `onClear`             | Callback used by the clear action                                              |
-| `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
-| `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
-| `showHeader`          | Show/hide the panel header                                                     |
-| `showClearButton`     | Show clear when `onClear` is available                                         |
-| `actions`             | Add arbitrary React content to the ellipsis popover                            |
-| `panelActions`        | Add descriptor-based actions to the ellipsis popover                           |
-| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
-| `title` / `subtitle`  | Customize panel heading text                                                   |
-| `emptyMessage`        | Customize the empty state                                                      |
-| `className` / `style` | Host-owned layout and styling                                                  |
-| `valueRenderers`      | Override rendering for matching values                                         |
-| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
-| `linkProviders`       | Add ordered application-specific link providers                                |
-| `addons`              | Add reusable `ConsoleAddon` instances                                          |
-| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID          |
+| Prop                  | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation     |
+| `onClear`             | Callback used by the clear action                                    |
+| `autoScroll`          | Follow new output while the viewer remains near the bottom           |
+| `showHeader`          | Show/hide the panel header                                           |
+| `showClearButton`     | Show clear when `onClear` is available                               |
+| `actions`             | Add arbitrary React content to the ellipsis popover                  |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                 |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu         |
+| `title` / `subtitle`  | Customize panel heading text                                         |
+| `emptyMessage`        | Customize the empty state                                            |
+| `className` / `style` | Host-owned layout and styling                                        |
+| `valueRenderers`      | Override rendering for matching values                               |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                         |
+| `linkProviders`       | Add ordered application-specific link providers                      |
+| `addons`              | Add reusable `ConsoleAddon` instances                                |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID |
 
-The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
+Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the core `Console` props:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
+
+const resizable = createResizableConsoleAddon({
+  direction: "both",
+  defaultWidth: 720,
+  defaultHeight: 300,
+  minWidth: 320,
+  minHeight: 180,
+});
+
+<Console messages={messages} addons={[resizable]} />;
+```
+
+The addon owns resize state, pointer handling, constraints, edges, visible handles, and resize theming while `Console` continues to own the panel and output viewport. Importing `@moyarich/console-addon-resizable` loads the addon stylesheet automatically; the resize CSS remains packaged separately from core.
 
 ### Structured-mode props
 
@@ -821,6 +835,10 @@ scheme-derived fallbacks.
 | `--console-panel-border`                  | `border` shorthand         |
 | `--console-panel-border-radius`           | `border-radius`            |
 | `--console-panel-box-shadow`              | `box-shadow`               |
+| `--console-panel-width`                   | `width`                    |
+| `--console-panel-height`                  | `height`                   |
+| `--console-panel-min-width`               | `min-width`                |
+| `--console-panel-min-height`              | `min-height`               |
 | `--console-panel-header-color`            | `color` (header and title) |
 | `--console-panel-header-muted-color`      | `color` (subtitle)         |
 | `--console-panel-header-background-color` | `background-color`         |
@@ -1145,7 +1163,8 @@ packages/
 └─ addons/
    ├─ data-export/          → @moyarich/console-addon-data-export
    ├─ diagnostics/          → @moyarich/console-addon-diagnostics
-   └─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
+   ├─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
+   └─ resizable/            → @moyarich/console-addon-resizable
 ```
 
 Portable or headless addons can depend only on core:
@@ -1281,6 +1300,7 @@ The host exposes four generic concepts:
 - `structuredOutputParser`
 - `linkProvider`
 - `outputRenderer`
+- `frameDecorator`
 - `messageRenderer`
 - `valueRenderer`
 - `panelAction`
@@ -1315,7 +1335,7 @@ The output architecture is symmetric across both modes:
  surface  renderer                    surface
 ```
 
-An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, resize behavior, context menu, addon lifecycle, and surrounding layout.
+An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, context menu, addon lifecycle, and output viewport. Layout-oriented addons can instead use `consoleExtensionPoints.frameDecorator` to wrap the complete frame without replacing its output renderer.
 
 This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
 

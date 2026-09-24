@@ -92,7 +92,6 @@ export default function StructuredOutputParsersExample() {
         messages={messages}
         structuredOutputParsers={structuredOutputParsers}
         parseStructuredOutput
-        resizable="vertical"
         style={{ height: 440, minHeight: 240, maxHeight: 720 }}
         onClear={() => setMessages([])}
       />

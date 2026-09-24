@@ -6,15 +6,96 @@ const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
 const readmePath = fileURLToPath(new URL("../README.md", import.meta.url));
+const resizableAddonStylesPath = fileURLToPath(
+  new URL("../packages/addons/resizable/src/styles.css", import.meta.url),
+);
+const consoleIndexPath = fileURLToPath(
+  new URL("../packages/console/src/index.ts", import.meta.url),
+);
+const resizableAddonIndexPath = fileURLToPath(
+  new URL("../packages/addons/resizable/src/index.tsx", import.meta.url),
+);
+const consolePackagePath = fileURLToPath(
+  new URL("../packages/console/package.json", import.meta.url),
+);
+const resizableAddonPackagePath = fileURLToPath(
+  new URL("../packages/addons/resizable/package.json", import.meta.url),
+);
 
 const styles = readFileSync(stylesPath, "utf8");
 const readme = readFileSync(readmePath, "utf8");
+const resizableAddonStyles = readFileSync(resizableAddonStylesPath, "utf8");
+const consoleIndex = readFileSync(consoleIndexPath, "utf8");
+const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
+const consolePackage = JSON.parse(readFileSync(consolePackagePath, "utf8")) as {
+  scripts: { build: string };
+};
+const resizableAddonPackage = JSON.parse(
+  readFileSync(resizableAddonPackagePath, "utf8"),
+) as {
+  scripts: { build: string };
+};
 
 function collectPublicThemeTokens(source: string) {
   return Array.from(new Set(source.match(/--console-[\w-]+/g) ?? [])).sort();
 }
 
 describe("console theme CSS", () => {
+  it("loads each package's stylesheet from its own entrypoint", () => {
+    expect(consoleIndex).toContain('import "./styles.css";');
+    expect(resizableAddonIndex).toContain('import "./styles.css";');
+    expect(consolePackage.scripts.build).toContain("--inject-style");
+    expect(resizableAddonPackage.scripts.build).toContain("--inject-style");
+    expect(readme).not.toContain('import "@moyarich/console/styles.css";');
+    expect(readme).not.toContain(
+      'import "@moyarich/console-addon-resizable/styles.css";',
+    );
+  });
+
+  it("keeps resize CSS owned by the resizable addon", () => {
+    expect(styles).not.toContain("console-resizable");
+    expect(styles).not.toContain("console-resize-");
+    expect(styles).not.toContain("--console-resize-");
+
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="horizontal"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="vertical"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="both"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="inline"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="block"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-horizontal-edge="start"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-horizontal-edge="end"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-vertical-edge="start"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-vertical-edge="end"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      "var(--_console-resizable-min-width)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "var(--_console-resizable-max-height)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "--console-resize-separator-grip-background-color",
+    );
+    expect(resizableAddonStyles).toContain("--console-resize-handle-size");
+  });
+
   it("keeps public console custom properties as inputs only", () => {
     const publicAssignments = styles.match(/^\s*--console-[\w-]+\s*:/gm);
 
@@ -27,6 +108,18 @@ describe("console theme CSS", () => {
     );
     expect(styles).toMatch(
       /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
+    );
+    expect(styles).toContain(
+      "--_console-panel-width: var(--console-panel-width, 100%);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-height: var(--console-panel-height, auto);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-min-width: var(--console-panel-min-width, 0);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-min-height: var(--console-panel-min-height, 0);",
     );
     expect(styles).toMatch(
       /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
@@ -177,7 +270,7 @@ describe("console theme CSS", () => {
 
   it("keeps console content shrinkable inside narrow containers", () => {
     expect(styles).toContain(
-      ".console-panel {\n  display: flex;\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;",
+      ".console-panel {\n  display: flex;\n  width: var(--_console-panel-width);\n  height: var(--_console-panel-height);\n  min-width: var(--_console-panel-min-width);\n  min-height: var(--_console-panel-min-height);\n  max-width: 100%;",
     );
     expect(styles).toContain(
       ".console-panel .console-surface {\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;",
@@ -190,28 +283,6 @@ describe("console theme CSS", () => {
     );
     expect(styles).not.toContain(
       ".console-property-value {\n  min-width: 12ch;",
-    );
-  });
-
-  it("keeps every public resize direction wired to native CSS resize", () => {
-    for (const direction of [
-      "vertical",
-      "horizontal",
-      "both",
-      "block",
-      "inline",
-    ]) {
-      expect(styles).toContain(
-        `.console-panel[data-resizable="${direction}"] {\n  resize: ${direction};\n}`,
-      );
-    }
-
-    expect(styles).toContain(
-      ".console-panel[data-resizable] .console-surface,\n" +
-        ".console-panel[data-resizable] .console-empty,\n" +
-        ".console-panel[data-resizable] .console-stdout-empty {\n" +
-        "  min-height: 0;\n" +
-        "}",
     );
   });
 

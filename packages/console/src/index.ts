@@ -1,3 +1,5 @@
+import "./styles.css";
+
 /**
  * Public entry point for @moyarich/console.
  *
@@ -32,6 +34,8 @@ export type {
   ConsoleExtensionPoint,
   ConsoleExtensionRegistrationOptions,
   ConsoleExtensionRegistry,
+  ConsoleFrameDecorator,
+  ConsoleFrameDecoratorContext,
   ConsoleServiceRegistry,
   ConsoleServiceToken,
   CreateConsoleAddonManagerOptions,

@@ -819,6 +819,15 @@ export interface ConsoleOutputRenderer<TUi = unknown> {
   render: (context: ConsoleOutputRendererContext<TUi>) => TUi | undefined;
 }
 
+export interface ConsoleFrameDecoratorContext<TUi = unknown> {
+  readonly mode: ConsoleMode;
+  renderDefault: () => TUi;
+}
+
+export interface ConsoleFrameDecorator<TUi = unknown> {
+  render: (context: ConsoleFrameDecoratorContext<TUi>) => TUi | undefined;
+}
+
 export interface ConsoleMessageRendererContext<TUi = unknown> {
   index: number;
   messages: readonly ConsoleMessageData[];
@@ -886,6 +895,9 @@ export const consoleExtensionPoints = Object.freeze({
   ),
   outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
     "console.render.output",
+  ),
+  frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
+    "console.render.frame",
   ),
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
