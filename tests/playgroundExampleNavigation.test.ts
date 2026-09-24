@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildExampleNavigation } from "../apps/playground/src/components/ExampleSidebar/exampleNavigation";
+import { buildExampleNavigation } from "../apps/playground/src/components/Sidebar/sections/exampleNavigation";
 
 const groups = [
   {
