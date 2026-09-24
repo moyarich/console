@@ -324,8 +324,8 @@
     --console-table-header-background-color,
     color-mix(
       in oklab,
-      var(--_console-background-color) 90%,
-      var(--_console-color) 10%
+      var(--_console-background-color) 95%,
+      var(--_console-accent-color) 5%
     )
   );
   --_console-table-even-background-color: var(
