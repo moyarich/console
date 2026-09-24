@@ -309,7 +309,8 @@ export function ConsoleValue({
       linkContext,
     });
 
-  const custom = dispatchValueRenderer(renderers, value, {
+  const custom = dispatchValueRenderer(renderers, {
+    value,
     propertyKey,
     depth: ancestors.size,
     type: getConsoleValueType(value),
