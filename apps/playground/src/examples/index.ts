@@ -1,9 +1,6 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
-import {
-  parseOrderedDirectory,
-  type MdxPageModule,
-} from "../utils/mdxSection";
+import { parseOrderedDirectory, type MdxPageModule } from "../utils/mdxSection";
 import { parsePageMeta, type PageMeta } from "../utils/pageMetadata";
 
 export type ConsoleExampleGroupId = string;
