@@ -17,9 +17,10 @@
   --_console-base-surface: light-dark(#ffffff, #111113);
   --_console-base-text: light-dark(#18181b, #f4f4f5);
   --_console-accent-color: light-dark(#635bff, #8b83ff);
+  --_console-accent-companion-color: light-dark(#2d9aaa, #69baa5);
   --_console-danger-color: light-dark(#b42318, #fb7185);
   --_console-warning-accent-color: light-dark(#b54708, #fbbf24);
-  --_console-success-color: light-dark(#067647, #4ade80);
+  --_console-success-color: light-dark(#009162, #00cb95);
   --_console-shadow-color: light-dark(rgb(17 24 39 / 0.1), rgb(0 0 0 / 0.46));
   --_console-scrollbar-width: var(--console-scrollbar-width, thin);
   --_console-scrollbar-color: var(
@@ -213,7 +214,7 @@
 
   --_console-info-color: var(
     --console-info-color,
-    var(--_console-accent-color)
+    var(--_console-accent-companion-color)
   );
   --_console-debug-color: var(
     --console-debug-color,
