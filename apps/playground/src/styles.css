@@ -1503,19 +1503,78 @@ body {
 
 :root {
   color-scheme: light dark;
-  --playground-background: light-dark(#f8fafc, #0d1117);
-  --playground-surface: light-dark(#ffffff, #161b22);
-  --playground-surface-subtle: light-dark(#f8fafc, #1c2128);
-  --playground-surface-muted: light-dark(#f9fafb, #21262d);
-  --playground-border: light-dark(#e5e7eb, #30363d);
-  --playground-border-strong: light-dark(#d9dee7, #3d444d);
-  --playground-text: light-dark(#101828, #e6edf3);
-  --playground-text-secondary: light-dark(#475467, #c9d1d9);
-  --playground-text-muted: light-dark(#667085, #8b949e);
-  --playground-text-subtle: light-dark(#98a2b3, #6e7681);
-  --playground-accent: light-dark(#4f46e5, #a5b4fc);
-  --playground-accent-strong: light-dark(#3730a3, #c7d2fe);
-  --playground-accent-surface: light-dark(#eef2ff, #252a44);
+
+  --playground-background: light-dark(#f7f7f8, #09090b);
+  --playground-surface: light-dark(#ffffff, #111113);
+  --playground-text: light-dark(#111113, #f4f4f5);
+
+  --playground-surface-subtle: color-mix(
+    in oklab,
+    var(--playground-surface) 96%,
+    var(--playground-text) 4%
+  );
+  --playground-surface-muted: color-mix(
+    in oklab,
+    var(--playground-surface) 91%,
+    var(--playground-text) 9%
+  );
+  --playground-border: color-mix(
+    in oklab,
+    var(--playground-surface) 86%,
+    var(--playground-text) 14%
+  );
+  --playground-border-strong: color-mix(
+    in oklab,
+    var(--playground-surface) 76%,
+    var(--playground-text) 24%
+  );
+
+  --playground-text-secondary: color-mix(
+    in oklab,
+    var(--playground-text) 74%,
+    var(--playground-background) 26%
+  );
+  --playground-text-muted: color-mix(
+    in oklab,
+    var(--playground-text) 56%,
+    var(--playground-background) 44%
+  );
+  --playground-text-subtle: color-mix(
+    in oklab,
+    var(--playground-text) 42%,
+    var(--playground-background) 58%
+  );
+
+  --playground-accent: light-dark(#635bff, #8b83ff);
+  --playground-accent-strong: color-mix(
+    in oklab,
+    var(--playground-accent) 78%,
+    light-dark(black, white) 22%
+  );
+  --playground-accent-surface: color-mix(
+    in oklab,
+    var(--playground-accent) 11%,
+    var(--playground-surface) 89%
+  );
+  --playground-accent-surface-strong: color-mix(
+    in oklab,
+    var(--playground-accent) 18%,
+    var(--playground-surface) 82%
+  );
+  --playground-focus-ring: color-mix(
+    in oklab,
+    var(--playground-accent) 38%,
+    transparent
+  );
+
+  --playground-success: light-dark(#067647, #4ade80);
+  --playground-danger: light-dark(#b42318, #fb7185);
+  --playground-warning: light-dark(#b54708, #fbbf24);
+
+  --playground-shadow-color: light-dark(
+    rgb(17 24 39 / 0.1),
+    rgb(0 0 0 / 0.46)
+  );
 }
 
 html,
@@ -1528,7 +1587,13 @@ body,
 
 .topbar {
   border-bottom-color: var(--playground-border);
-  background: light-dark(rgb(255 255 255 / 0.94), rgb(22 27 34 / 0.94));
+  background: color-mix(
+    in oklab,
+    var(--playground-surface) 92%,
+    transparent
+  );
+  box-shadow: 0 1px 0
+    color-mix(in oklab, var(--playground-text) 4%, transparent);
 }
 
 .brand,
@@ -1536,8 +1601,21 @@ body,
 .hero h1,
 .example-documentation h1,
 .example-documentation h2,
-.example-documentation h3 {
+.example-documentation h3,
+.controls-card h2,
+.iframe-demo-heading strong {
   color: var(--playground-text);
+}
+
+.brand-mark {
+  background: linear-gradient(
+    135deg,
+    var(--playground-accent),
+    var(--playground-accent-strong)
+  );
+  color: #fff;
+  box-shadow: 0 8px 24px
+    color-mix(in oklab, var(--playground-accent) 26%, transparent);
 }
 
 .brand-copy small,
@@ -1546,7 +1624,11 @@ body,
 .example-navigation-item,
 .example-navigation-group-label svg,
 .preview-loading,
-.site-footer {
+.site-footer,
+.controls-card p,
+.controls-card label,
+.socket-status,
+.iframe-demo-heading > span:last-child {
   color: var(--playground-text-muted);
 }
 
@@ -1568,9 +1650,10 @@ body,
 .theme-control select,
 .topbar-icon-link,
 .panel-icon-button {
-  border: 1px solid var(--playground-border-strong);
+  border: 1px solid var(--playground-border);
   background: var(--playground-surface);
   color: var(--playground-text-secondary);
+  box-shadow: 0 1px 2px var(--playground-shadow-color);
 }
 
 .theme-control select {
@@ -1590,15 +1673,19 @@ body,
 
 .topbar-icon-link:hover,
 .panel-icon-button:hover {
-  border-color: light-dark(#aeb9ca, #6e7681);
+  border-color: var(--playground-border-strong);
   background: var(--playground-surface-subtle);
   color: var(--playground-text);
 }
 
 .topbar-icon-link:focus-visible,
-.theme-control select:focus-visible {
-  outline: 2px solid #818cf8;
+.theme-control select:focus-visible,
+.panel-icon-button:focus-visible,
+.example-navigation-item:focus-visible,
+.source-file-tab:focus-visible {
+  outline: 2px solid var(--playground-accent);
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--playground-focus-ring);
 }
 
 .topbar-icon-link svg {
@@ -1612,6 +1699,8 @@ body,
 .iframe-demo-card {
   border-color: var(--playground-border);
   background: var(--playground-surface);
+  box-shadow: 0 10px 32px
+    color-mix(in oklab, var(--playground-shadow-color) 60%, transparent);
 }
 
 .example-navigation {
@@ -1625,13 +1714,19 @@ body,
 }
 
 .example-navigation-search {
-  border-color: var(--playground-border-strong);
-  background: var(--playground-surface-muted);
+  border-color: var(--playground-border);
+  background: var(--playground-surface-subtle);
   color: var(--playground-text-subtle);
 }
 
 .example-navigation-search:focus-within {
+  border-color: color-mix(
+    in oklab,
+    var(--playground-accent) 58%,
+    var(--playground-border) 42%
+  );
   background: var(--playground-surface);
+  box-shadow: 0 0 0 3px var(--playground-focus-ring);
 }
 
 .example-navigation-search input {
@@ -1660,12 +1755,14 @@ body,
 }
 
 .example-navigation-item.active {
-  background: linear-gradient(
-    90deg,
-    light-dark(#eef2ff, #252a44),
-    light-dark(#f5f3ff, #2d2542)
-  );
+  background: var(--playground-accent-surface);
   color: var(--playground-accent-strong);
+}
+
+.example-navigation-item.active::before {
+  background: var(--playground-accent);
+  box-shadow: 0 0 12px
+    color-mix(in oklab, var(--playground-accent) 34%, transparent);
 }
 
 .example-navigation-empty strong,
@@ -1677,8 +1774,13 @@ body,
 .hero-example-path strong,
 .example-documentation a,
 .eyebrow,
-.panel-kicker {
+.panel-kicker,
+.iframe-demo-kicker {
   color: var(--playground-accent);
+}
+
+.example-documentation a:hover {
+  color: var(--playground-accent-strong);
 }
 
 .example-documentation code,
@@ -1687,41 +1789,81 @@ body,
   color: var(--playground-accent-strong);
 }
 
-.panel-toolbar {
+.example-count {
+  background: var(--playground-accent-surface);
+  color: var(--playground-accent-strong);
+}
+
+.panel-toolbar,
+.iframe-demo-header {
   background: linear-gradient(
     180deg,
-    light-dark(#ffffff, #1c2128),
-    light-dark(#fbfcfe, #161b22)
+    var(--playground-surface),
+    var(--playground-surface-subtle)
   );
 }
 
 .preview-stage {
-  background: var(--playground-surface-subtle);
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in oklab, var(--playground-accent) 5%, transparent),
+      transparent 24rem
+    ),
+    var(--playground-surface-subtle);
 }
 
 .preview-stage button:not([class^="console-"]):not([class*=" console-"]) {
-  border-color: var(--playground-border-strong);
+  border-color: var(--playground-border);
   background: var(--playground-surface);
   color: var(--playground-text-secondary);
+  box-shadow: 0 1px 2px var(--playground-shadow-color);
 }
 
 .preview-stage
   button:not([class^="console-"]):not([class*=" console-"]):hover:not(
     :disabled
   ) {
-  border-color: light-dark(#9aa7ba, #6e7681);
+  border-color: var(--playground-border-strong);
+  background: var(--playground-surface-muted);
+  color: var(--playground-text);
+}
+
+.controls-card input,
+.controls-card iframe {
+  border-color: var(--playground-border);
   background: var(--playground-surface-subtle);
+  color: var(--playground-text);
 }
 
 .live-badge {
-  border-color: light-dark(#d9f2e5, #26543a);
-  background: light-dark(#f3fcf7, #163423);
-  color: light-dark(#28794d, #7ee2a8);
+  border-color: color-mix(
+    in oklab,
+    var(--playground-success) 28%,
+    var(--playground-surface) 72%
+  );
+  background: color-mix(
+    in oklab,
+    var(--playground-success) 10%,
+    var(--playground-surface) 90%
+  );
+  color: var(--playground-success);
+}
+
+.live-dot {
+  background: var(--playground-success);
+  box-shadow: 0 0 0 3px
+    color-mix(in oklab, var(--playground-success) 16%, transparent);
 }
 
 .preview-modal .preview-panel,
 .preview-modal .panel-icon-button {
-  border-color: var(--playground-border-strong);
+  border-color: var(--playground-border);
+}
+
+.preview-modal .preview-panel {
+  box-shadow: 0 30px 90px
+    color-mix(in oklab, black 38%, transparent);
 }
 
 .preview-modal .panel-icon-button {
@@ -1729,16 +1871,46 @@ body,
   color: var(--playground-text-secondary);
 }
 
+.preview-modal .panel-icon-button:hover {
+  border-color: color-mix(
+    in oklab,
+    var(--playground-danger) 38%,
+    var(--playground-border) 62%
+  );
+  background: color-mix(
+    in oklab,
+    var(--playground-danger) 8%,
+    var(--playground-surface) 92%
+  );
+  color: var(--playground-danger);
+}
+
 .runtime-error {
-  border-color: light-dark(#fecaca, #7f1d1d);
-  background: light-dark(#fff7f7, #2a1215);
-  color: light-dark(#991b1b, #fca5a5);
+  border-color: color-mix(
+    in oklab,
+    var(--playground-danger) 34%,
+    var(--playground-surface) 66%
+  );
+  background: color-mix(
+    in oklab,
+    var(--playground-danger) 8%,
+    var(--playground-surface) 92%
+  );
+  color: var(--playground-danger);
 }
 
 .compile-error {
-  border-color: light-dark(#fed7aa, #7c2d12);
-  background: light-dark(#fffaf3, #2a1710);
-  color: light-dark(#9a3412, #fdba74);
+  border-color: color-mix(
+    in oklab,
+    var(--playground-warning) 34%,
+    var(--playground-surface) 66%
+  );
+  background: color-mix(
+    in oklab,
+    var(--playground-warning) 8%,
+    var(--playground-surface) 92%
+  );
+  color: var(--playground-warning);
 }
 
 @media (max-width: 760px) {
