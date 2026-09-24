@@ -81,7 +81,7 @@ describe("@moyarich/console-addon-filtering", () => {
     );
     expect(initial).toHaveLength(1);
     expect(
-      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
+      manager.extensions.getAll(consoleExtensionPoints.panelElement),
     ).toHaveLength(1);
     expect(messages.filter(initial[0]!).map((message) => message.id)).toEqual(
       messages.map((message) => message.id),
@@ -107,7 +107,7 @@ describe("@moyarich/console-addon-filtering", () => {
       manager.extensions.getAll(consoleExtensionPoints.messageFilter),
     ).toEqual([]);
     expect(
-      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
+      manager.extensions.getAll(consoleExtensionPoints.panelElement),
     ).toEqual([]);
   });
 
@@ -121,8 +121,48 @@ describe("@moyarich/console-addon-filtering", () => {
       manager.extensions.getAll(consoleExtensionPoints.messageFilter),
     ).toHaveLength(1);
     expect(
-      manager.extensions.getAll(consoleExtensionPoints.frameDecorator),
+      manager.extensions.getAll(consoleExtensionPoints.panelElement),
     ).toEqual([]);
+  });
+
+  it("rebuilds its text predicate when message text providers change", () => {
+    const manager = createConsoleAddonManager();
+    const filteringAddon = createConsoleFilteringAddon({
+      initialState: { text: "search-alias" },
+      controls: false,
+    });
+
+    manager.load(filteringAddon);
+
+    expect(
+      messages.filter(
+        manager.extensions.getAll(consoleExtensionPoints.messageFilter)[0]!,
+      ),
+    ).toEqual([]);
+
+    manager.load({
+      id: "test.message-text-provider",
+      activate(host) {
+        host.extensions.register(
+          consoleExtensionPoints.messageTextProvider,
+          {
+            id: "worker-error-alias",
+            provideText(message) {
+              return message.id === "worker-error" ? "search-alias" : undefined;
+            },
+          },
+          { id: "worker-error-alias" },
+        );
+      },
+    });
+
+    const filter = manager.extensions.getAll(
+      consoleExtensionPoints.messageFilter,
+    )[0]!;
+
+    expect(messages.filter(filter).map((message) => message.id)).toEqual([
+      "worker-error",
+    ]);
   });
 
   it("returns method state to unfiltered when every method is enabled", () => {
