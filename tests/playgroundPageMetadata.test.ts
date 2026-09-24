@@ -9,9 +9,7 @@ describe("playground page metadata", () => {
       nested: { enabled: true },
     };
 
-    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(
-      metadata,
-    );
+    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(metadata);
   });
 
   it("accepts an optional description", () => {
