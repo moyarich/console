@@ -1654,12 +1654,18 @@ body,
   box-shadow: 0 1px 2px var(--playground-shadow-color);
 }
 
-.theme-switcher-button,
-.topbar-icon-link,
-.panel-icon-button {
+.theme-switcher-button {
   border: 1px solid transparent;
   background: transparent;
   color: var(--playground-text-muted);
+}
+
+.topbar-icon-link,
+.panel-icon-button {
+  border: 1px solid var(--playground-border);
+  background: var(--playground-surface);
+  color: var(--playground-text-secondary);
+  box-shadow: 0 1px 2px var(--playground-shadow-color);
 }
 
 .theme-switcher-button {
