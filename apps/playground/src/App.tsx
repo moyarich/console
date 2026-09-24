@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Playground } from "./components/Playground";
-import {
-  ResolvedColorSchemeContext,
-  type ResolvedColorScheme,
-} from "./theme";
+import { ResolvedColorSchemeContext, type ResolvedColorScheme } from "./theme";
 
 type ThemePreference = "system" | "light" | "dark";
 
