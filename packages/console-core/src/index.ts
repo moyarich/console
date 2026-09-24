@@ -667,6 +667,39 @@ export interface ConsoleProcessOutput {
   readonly metadata: ConsoleProcessOutputMetadata;
 }
 
+export interface ConsoleProcessControlEvent {
+  readonly type: string;
+  readonly data?: Readonly<Record<string, unknown>>;
+}
+
+export interface ConsoleProcessControlOutput {
+  readonly data: string;
+  readonly metadata: ConsoleProcessOutputMetadata;
+}
+
+export interface ConsoleProcessControlParserContext {
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+}
+
+export interface ConsoleProcessControlParserResult {
+  data?: string;
+  metadata?: Readonly<Record<string, unknown>>;
+  events?: readonly ConsoleProcessControlEvent[];
+  omit?: boolean;
+}
+
+export interface ConsoleProcessControlParser {
+  readonly id?: string;
+  parse(
+    output: ConsoleProcessControlOutput,
+    context: ConsoleProcessControlParserContext,
+  ): ConsoleProcessControlParserResult | undefined | void;
+  reset?(): void;
+}
+
 export interface ConsoleProcessOutputProcessorContext {
   readonly entry: ConsoleStdoutEntry | string;
   readonly index: number;
@@ -721,6 +754,7 @@ export interface ConsoleProcessDataSnapshot {
   readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
   readonly all: readonly ConsoleProcessViewEntry[];
   readonly visible: readonly ConsoleProcessViewEntry[];
+  readonly controlEvents: readonly ConsoleProcessControlEvent[];
 }
 
 export type ConsoleDataSnapshot =
@@ -808,6 +842,28 @@ export type ConsoleMessageAction<TUi = unknown> = ConsoleAction<
   TUi
 >;
 
+export interface ConsoleKeyboardShortcutContext {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly isEmpty: boolean;
+}
+
+export interface ConsoleKeyboardShortcut {
+  readonly id: string;
+  readonly key: string;
+  readonly altKey?: boolean;
+  readonly ctrlKey?: boolean;
+  readonly metaKey?: boolean;
+  readonly shiftKey?: boolean;
+  readonly allowInEditable?: boolean;
+  readonly preventDefault?: boolean;
+  readonly stopPropagation?: boolean;
+  when?: (context: ConsoleKeyboardShortcutContext) => boolean;
+  onTrigger: (
+    context: ConsoleKeyboardShortcutContext,
+  ) => void | Promise<void>;
+}
+
 export type ConsolePanelElementPlacement =
   | "header-start"
   | "header-end"
@@ -880,6 +936,34 @@ export interface ConsoleFrameDecorator<TUi = unknown> {
   render: (context: ConsoleFrameDecoratorContext<TUi>) => TUi | undefined;
 }
 
+export interface ConsoleEmptyStateRendererContext<TUi = unknown> {
+  readonly mode: ConsoleMode;
+  readonly hasMessages: boolean;
+  readonly message: string;
+  renderDefault: () => TUi;
+}
+
+export interface ConsoleEmptyStateRenderer<TUi = unknown> {
+  readonly mode?: ConsoleMode;
+  match?: (context: ConsoleEmptyStateRendererContext<TUi>) => boolean;
+  render: (
+    context: ConsoleEmptyStateRendererContext<TUi>,
+  ) => TUi | undefined;
+}
+
+export interface ConsoleMessageTextProviderContext {
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+}
+
+export interface ConsoleMessageTextProvider {
+  readonly id?: string;
+  provideText: (
+    message: ConsoleMessageData,
+    context: ConsoleMessageTextProviderContext,
+  ) => string | readonly string[] | undefined;
+}
+
 export interface ConsoleMessageRendererContext<TUi = unknown> {
   index: number;
   messages: readonly ConsoleMessageData[];
@@ -934,6 +1018,9 @@ export const consoleServices = Object.freeze({
 
 /** Shared extension-point tokens used by console hosts and addons. */
 export const consoleExtensionPoints = Object.freeze({
+  processControlParser: createConsoleExtensionPoint<ConsoleProcessControlParser>(
+    "console.process.control",
+  ),
   processOutputProcessor:
     createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
       "console.process.output",
@@ -951,6 +1038,9 @@ export const consoleExtensionPoints = Object.freeze({
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
   ),
+  emptyStateRenderer: createConsoleExtensionPoint<ConsoleEmptyStateRenderer>(
+    "console.render.emptyState",
+  ),
   panelElement: createConsoleExtensionPoint<ConsolePanelElement>(
     "console.render.panelElement",
   ),
@@ -963,8 +1053,14 @@ export const consoleExtensionPoints = Object.freeze({
   messageDecoration: createConsoleExtensionPoint<ConsoleMessageDecoration>(
     "console.render.messageDecoration",
   ),
+  messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
+    "console.message.text",
+  ),
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
+  ),
+  keyboardShortcut: createConsoleExtensionPoint<ConsoleKeyboardShortcut>(
+    "console.keyboard.shortcut",
   ),
   panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
     "console.action.panel",
