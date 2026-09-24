@@ -4,7 +4,6 @@ import {
   useCallback,
   useEffect,
   useId,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -98,14 +97,17 @@ export function RunnableExample({
   const instanceId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
   const previewDialogTitleId = `${instanceId}-preview-dialog-title`;
   const entryPath = normalizeRunnablePath(sourcePath);
-  const canonicalFiles = useMemo(
-    () => createRunnableProjectBaseline(source, entryPath, files),
-    [entryPath, files, source],
+  const canonicalFiles = createRunnableProjectBaseline(
+    source,
+    entryPath,
+    files,
   );
-  const canonicalSignature = useMemo(
-    () => createRunnableProjectSignature(canonicalFiles),
-    [canonicalFiles],
-  );
+  const canonicalSignature = createRunnableProjectSignature(canonicalFiles);
+  const canonicalFilesRef = useRef(canonicalFiles);
+  const runtimeModulesRef = useRef(runtimeModules);
+  canonicalFilesRef.current = canonicalFiles;
+  runtimeModulesRef.current = runtimeModules;
+
   const [draftFiles, setDraftFiles] = useState<Record<string, string>>(() =>
     createRunnableProjectDraft(canonicalFiles),
   );
@@ -114,6 +116,7 @@ export function RunnableExample({
     null,
   );
   const [runVersion, setRunVersion] = useState(0);
+  const [compiledSignature, setCompiledSignature] = useState("");
   const [compileError, setCompileError] = useState("");
   const [isCompiling, setIsCompiling] = useState(true);
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
@@ -122,12 +125,16 @@ export function RunnableExample({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const replaceRuntime = useCallback((runtime: CompiledExampleRuntime) => {
-    runtimeRef.current?.dispose();
-    runtimeRef.current = runtime;
-    setRuntimeComponent(() => runtime.Component);
-    setRunVersion((current) => current + 1);
-  }, []);
+  const replaceRuntime = useCallback(
+    (runtime: CompiledExampleRuntime, signature: string) => {
+      runtimeRef.current?.dispose();
+      runtimeRef.current = runtime;
+      setRuntimeComponent(() => runtime.Component);
+      setCompiledSignature(signature);
+      setRunVersion((current) => current + 1);
+    },
+    [],
+  );
 
   const compileFiles = useCallback(
     async (
@@ -142,7 +149,7 @@ export function RunnableExample({
         const runtime = await compileExampleProject({
           entryPath: nextEntryPath,
           files: nextFiles,
-          runtimeModules,
+          runtimeModules: runtimeModulesRef.current,
         });
 
         if (token !== runTokenRef.current) {
@@ -150,7 +157,7 @@ export function RunnableExample({
           return;
         }
 
-        replaceRuntime(runtime);
+        replaceRuntime(runtime, createRunnableProjectSignature(nextFiles));
       } catch (error) {
         if (token !== runTokenRef.current) {
           return;
@@ -167,16 +174,17 @@ export function RunnableExample({
         }
       }
     },
-    [replaceRuntime, runtimeModules],
+    [replaceRuntime],
   );
 
   useEffect(() => {
-    const nextFiles = createRunnableProjectDraft(canonicalFiles);
+    const nextFiles = createRunnableProjectDraft(canonicalFilesRef.current);
     const token = ++runTokenRef.current;
 
     setDraftFiles(nextFiles);
     setActivePath(entryPath);
     setRuntimeComponent(null);
+    setCompiledSignature("");
     setCompileError("");
     setPreviewFullscreen(false);
     runtimeRef.current?.dispose();
@@ -187,7 +195,7 @@ export function RunnableExample({
     return () => {
       runTokenRef.current += 1;
     };
-  }, [canonicalFiles, canonicalSignature, compileFiles, entryPath]);
+  }, [canonicalSignature, compileFiles, entryPath]);
 
   useEffect(
     () => () => {
@@ -234,6 +242,7 @@ export function RunnableExample({
   const activeSource = draftFiles[activePath] ?? "";
   const dirty =
     createRunnableProjectSignature(draftFiles) !== canonicalSignature;
+  const resetNeeded = dirty || compiledSignature !== canonicalSignature;
   const editorPath = `${instanceId}/${activePath}`;
 
   const runSource = () => {
@@ -244,7 +253,7 @@ export function RunnableExample({
   const resetSource = () => {
     // Always clone the immutable prop-derived baseline. Draft editor state is
     // never promoted to the reset baseline.
-    const resetFiles = createRunnableProjectDraft(canonicalFiles);
+    const resetFiles = createRunnableProjectDraft(canonicalFilesRef.current);
     const token = ++runTokenRef.current;
 
     setDraftFiles(resetFiles);
@@ -331,7 +340,7 @@ export function RunnableExample({
               <button
                 type="button"
                 className="source-action-button"
-                disabled={!dirty || isCompiling}
+                disabled={!resetNeeded || isCompiling}
                 onClick={resetSource}
               >
                 Reset
