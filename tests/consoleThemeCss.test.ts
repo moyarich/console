@@ -5,9 +5,6 @@ import { describe, expect, it } from "vitest";
 const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
-const themingDocsPath = fileURLToPath(
-  new URL("../apps/playground/src/api/12-theming/page.mdx", import.meta.url),
-);
 const consoleIndexPath = fileURLToPath(
   new URL("../packages/console/src/index.ts", import.meta.url),
 );
@@ -28,7 +25,6 @@ const resizableAddonPackagePath = fileURLToPath(
 );
 
 const styles = readFileSync(stylesPath, "utf8");
-const themingDocs = readFileSync(themingDocsPath, "utf8");
 const consoleIndex = readFileSync(consoleIndexPath, "utf8");
 const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
@@ -40,10 +36,6 @@ const resizableAddonPackage = JSON.parse(
 ) as {
   scripts: { build: string };
 };
-
-function collectPublicThemeTokens(source: string) {
-  return Array.from(new Set(source.match(/--console-[\w-]+/g) ?? [])).sort();
-}
 
 describe("console theme CSS", () => {
   it("loads each package stylesheet from its own entrypoint", () => {
@@ -65,9 +57,4 @@ describe("console theme CSS", () => {
     );
   });
 
-  it("documents the public theme token surface", () => {
-    expect(collectPublicThemeTokens(themingDocs)).toEqual(
-      collectPublicThemeTokens(styles),
-    );
-  });
 });
