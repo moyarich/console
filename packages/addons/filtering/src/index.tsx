@@ -184,10 +184,10 @@ export function getConsoleMessageFilterText(
     try {
       const provided = provider.provideText(message, context);
 
-      if (Array.isArray(provided)) {
-        text.push(...provided);
-      } else if (provided) {
+      if (typeof provided === "string") {
         text.push(provided);
+      } else if (provided) {
+        text.push(...provided);
       }
     } catch {
       // One text provider must not prevent filtering from using base text.
