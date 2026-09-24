@@ -312,7 +312,7 @@ export function ConsoleFilteringControls({
       ? ""
       : hasCustomSourceSelection
         ? "__custom__"
-        : (state.sources[0] ?? "");
+        : state.sources[0] ?? "";
   const active =
     state.methods !== null ||
     state.sources !== null ||
