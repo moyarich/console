@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useMemo, useSyncExternalStore, type CSSProperties } from "react";
 import {
   consoleExtensionPoints,
   createConsoleServiceToken,
@@ -302,6 +302,7 @@ export function ConsoleFilteringControls({
   style,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
+  const methodPopoverId = useId();
   const availableSources = useMemo(
     () => normalizeSources(messages, sources),
     [messages, sources],
@@ -346,10 +347,19 @@ export function ConsoleFilteringControls({
       />
 
       <div className="console-filtering-actions">
-        <details className="console-filtering-method-menu">
-          <summary className="console-filtering-trigger">{methodLabel}</summary>
+        <div className="console-filtering-method-menu">
+          <button
+            type="button"
+            className="console-filtering-trigger"
+            popoverTarget={methodPopoverId}
+            aria-controls={methodPopoverId}
+          >
+            {methodLabel}
+          </button>
           <div
+            id={methodPopoverId}
             className="console-filtering-method-popover"
+            popover="auto"
             role="group"
             aria-label="Message levels"
           >
@@ -374,7 +384,7 @@ export function ConsoleFilteringControls({
               );
             })}
           </div>
-        </details>
+        </div>
 
         {availableSources.length > 0 && (
           <select
