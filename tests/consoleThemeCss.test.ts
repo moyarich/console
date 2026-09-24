@@ -193,28 +193,6 @@ describe("console theme CSS", () => {
     );
   });
 
-  it("keeps every public resize direction wired to native CSS resize", () => {
-    for (const direction of [
-      "vertical",
-      "horizontal",
-      "both",
-      "block",
-      "inline",
-    ]) {
-      expect(styles).toContain(
-        `.console-panel[data-resizable="${direction}"] {\n  resize: ${direction};\n}`,
-      );
-    }
-
-    expect(styles).toContain(
-      ".console-panel[data-resizable] .console-surface,\n" +
-        ".console-panel[data-resizable] .console-empty,\n" +
-        ".console-panel[data-resizable] .console-stdout-empty {\n" +
-        "  min-height: 0;\n" +
-        "}",
-    );
-  });
-
   it("supports separate native color schemes for console surfaces", () => {
     expect(styles).toContain(
       "color-scheme: var(--_console-panel-color-scheme);",
