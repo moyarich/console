@@ -20,7 +20,7 @@ function ProcessState({ data }: { data: ConsoleDataService }) {
   );
   const cwdEvent =
     snapshot.mode === "ansi"
-      ? snapshot.controlEvents.find((event) => event.type === "cwd")
+      ? snapshot.controlEvents?.find((event) => event.type === "cwd")
       : undefined;
 
   return (
