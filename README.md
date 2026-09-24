@@ -528,27 +528,43 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 ### Shared panel props
 
-| Prop                  | Purpose                                                                        |
-| --------------------- | ------------------------------------------------------------------------------ |
-| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation               |
-| `onClear`             | Callback used by the clear action                                              |
-| `autoScroll`          | Follow new output while the viewer remains near the bottom                     |
-| `resizable`           | Enables CSS resize with `vertical`, `horizontal`, `both`, `block`, or `inline` |
-| `showHeader`          | Show/hide the panel header                                                     |
-| `showClearButton`     | Show clear when `onClear` is available                                         |
-| `actions`             | Add arbitrary React content to the ellipsis popover                            |
-| `panelActions`        | Add descriptor-based actions to the ellipsis popover                           |
-| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu                   |
-| `title` / `subtitle`  | Customize panel heading text                                                   |
-| `emptyMessage`        | Customize the empty state                                                      |
-| `className` / `style` | Host-owned layout and styling                                                  |
-| `valueRenderers`      | Override rendering for matching values                                         |
-| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                                   |
-| `linkProviders`       | Add ordered application-specific link providers                                |
-| `addons`              | Add reusable `ConsoleAddon` instances                                          |
-| `disabledAddonIds`    | Keep selected supplied addons unloaded by stable package-qualified ID          |
+| Prop                  | Purpose                                                               |
+| --------------------- | --------------------------------------------------------------------- |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation      |
+| `onClear`             | Callback used by the clear action                                     |
+| `autoScroll`          | Follow new output while the viewer remains near the bottom            |
+| `showHeader`          | Show/hide the panel header                                            |
+| `showClearButton`     | Show clear when `onClear` is available                                |
+| `actions`             | Add arbitrary React content to the ellipsis popover                   |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                  |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu          |
+| `title` / `subtitle`  | Customize panel heading text                                          |
+| `emptyMessage`        | Customize the empty state                                             |
+| `className` / `style` | Host-owned layout and styling                                         |
+| `valueRenderers`      | Override rendering for matching values                                |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                          |
+| `linkProviders`       | Add ordered application-specific link providers                       |
+| `addons`              | Add reusable `ConsoleAddon` instances                                 |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID  |
 
-The host application owns min/max dimensions. The library only applies the requested CSS resize direction.
+Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the core `Console` props:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
+
+const resizable = createResizableConsoleAddon({
+  direction: "both",
+  defaultWidth: 720,
+  defaultHeight: 300,
+  minWidth: 320,
+  minHeight: 180,
+});
+
+<Console messages={messages} addons={[resizable]} />;
+```
+
+The addon owns resize state, pointer handling, constraints, visible handles, and resize theming while `Console` continues to own the panel and output viewport.
 
 ### Structured-mode props
 
@@ -1315,7 +1331,7 @@ The output architecture is symmetric across both modes:
  surface  renderer                    surface
 ```
 
-An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, resize behavior, context menu, addon lifecycle, and surrounding layout.
+An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, context menu, addon lifecycle, and output viewport. Layout-oriented addons can instead use `consoleExtensionPoints.frameDecorator` to wrap the complete frame without replacing its output renderer.
 
 This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
 
