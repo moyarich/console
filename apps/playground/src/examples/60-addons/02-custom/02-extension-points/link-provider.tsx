@@ -28,7 +28,7 @@ export default function LinkProviderExample() {
             consoleExtensionPoints.linkProvider,
             {
               id: "task-links",
-              provideLinks(text) {
+              provideLinks({ text }) {
                 return Array.from(text.matchAll(/TASK-\d+/g), (match) => ({
                   text: match[0],
                   start: match.index,
