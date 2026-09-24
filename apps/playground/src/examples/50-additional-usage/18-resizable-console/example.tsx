@@ -1,8 +1,5 @@
 import { useMemo, useState, type CSSProperties } from "react";
-import {
-  Console,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, type ConsoleMessageData } from "@moyarich/console";
 import {
   createResizableConsoleAddon,
   type ConsoleResizeDirection,
@@ -47,8 +44,7 @@ const resizeTheme = {
 } as CSSProperties;
 
 export default function ResizableConsoleExample() {
-  const [direction, setDirection] =
-    useState<ConsoleResizeDirection>("both");
+  const [direction, setDirection] = useState<ConsoleResizeDirection>("both");
 
   const resizableAddon = useMemo(
     () =>
