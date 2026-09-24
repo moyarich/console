@@ -1,10 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 
 const extensionUrl = new URL("../dist/extension.js", import.meta.url);
-const sourceModuleUrl = new URL(
-  "../dist/extension-source.js",
-  import.meta.url,
-);
+const sourceModuleUrl = new URL("../dist/extension-source.js", import.meta.url);
 const sourceTypesUrl = new URL(
   "../dist/extension-source.d.ts",
   import.meta.url,
