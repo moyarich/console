@@ -8,7 +8,12 @@ import {
 import "@moyarich/console/styles.css";
 
 const messages: ConsoleMessageData[] = [
-  { id: "ready", method: "log", data: ["Focus this panel, then press Ctrl+K."], depth: 0 },
+  {
+    id: "ready",
+    method: "log",
+    data: ["Focus this panel, then press Ctrl+K."],
+    depth: 0,
+  },
 ];
 
 export default function KeyboardShortcutExample() {
