@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
+import {
+  Layout,
+  LayoutFooter,
+  LayoutHeader,
+} from "./components/Layout";
 import { Playground } from "./components/Playground";
 
 type ThemePreference = "system" | "light" | "dark";
@@ -38,8 +43,8 @@ export function App() {
   }, [colorScheme]);
 
   return (
-    <div className="site-shell" data-theme={themePreference}>
-      <header className="topbar">
+    <Layout data-theme={themePreference}>
+      <LayoutHeader className="topbar">
         <a className="brand" href={import.meta.env.BASE_URL}>
           <span className="brand-mark" aria-hidden="true">
             &gt;_
@@ -82,14 +87,14 @@ export function App() {
             <GitHubIcon />
           </a>
         </div>
-      </header>
+      </LayoutHeader>
 
       <Playground />
 
-      <footer className="site-footer">
+      <LayoutFooter className="site-footer">
         <span>@moyarich/console</span>
         <span>React console UI and transport adapters</span>
-      </footer>
-    </div>
+      </LayoutFooter>
+    </Layout>
   );
 }
