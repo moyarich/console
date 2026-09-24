@@ -1,0 +1,69 @@
+---
+label: "Console component"
+description: "Shared, structured-mode, and ANSI-mode Console component props."
+---
+
+The component is intentionally a console surface, not a runtime shell. Runtime selectors, restart buttons, server/client tabs, and similar application controls should be composed around it.
+
+### Shared panel props
+
+| Prop                  | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation     |
+| `onClear`             | Callback used by the clear action                                    |
+| `autoScroll`          | Follow new output while the viewer remains near the bottom           |
+| `showHeader`          | Show/hide the panel header                                           |
+| `showClearButton`     | Show clear when `onClear` is available                               |
+| `actions`             | Add arbitrary React content to the ellipsis popover                  |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                 |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu         |
+| `title` / `subtitle`  | Customize panel heading text                                         |
+| `emptyMessage`        | Customize the empty state                                            |
+| `className` / `style` | Host-owned layout and styling                                        |
+| `valueRenderers`      | Override rendering for matching values                               |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                         |
+| `linkProviders`       | Add ordered application-specific link providers                      |
+| `addons`              | Add reusable `ConsoleAddon` instances                                |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID |
+
+Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the core `Console` props:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
+
+const resizable = createResizableConsoleAddon({
+  direction: "both",
+  defaultWidth: 720,
+  defaultHeight: 300,
+  minWidth: 320,
+  minHeight: 180,
+});
+
+<Console messages={messages} addons={[resizable]} />;
+```
+
+The addon owns resize state, pointer handling, constraints, edges, visible handles, and resize theming while `Console` continues to own the panel and output viewport. Importing `@moyarich/console-addon-resizable` loads the addon stylesheet automatically; the resize CSS remains packaged separately from core.
+
+### Structured-mode props
+
+| Prop               | Purpose                                               |
+| ------------------ | ----------------------------------------------------- |
+| `messages`         | Structured messages to render                         |
+| `output`           | Alternative `RunOutput` source                        |
+| `error`            | Appends a synthetic `error` message                   |
+| `filter`           | Predicate that controls which messages are visible    |
+| `onMessagesChange` | Observes the source message list                      |
+| `messageRenderers` | Override rendering for matching messages              |
+| `messageActions`   | Add actions that receive the selected message context |
+
+### ANSI-mode props
+
+| Prop                      | Purpose                                                       |
+| ------------------------- | ------------------------------------------------------------- |
+| `messages`                | Strings or `ConsoleStdoutEntry[]`                             |
+| `parseStructuredOutput`   | Promote complete strict-JSON objects/arrays to `ConsoleValue` |
+| `structuredOutputParsers` | Parse ANSI-stripped text into application-defined values      |
+| `valueRenderers`          | Customize promoted structured values                          |
+
+ANSI mode also adds **Copy output** to the actions menu.
