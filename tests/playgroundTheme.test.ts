@@ -55,9 +55,9 @@ describe("playground color scheme", () => {
   });
 
   it("renders a GitHub repository icon link", () => {
-    expect(app).toContain('import { Github } from "lucide-react";');
+    expect(app).toContain("function GitHubIcon()");
     expect(app).toContain('aria-label="Open @moyarich/console on GitHub"');
-    expect(app).toContain('<Github aria-hidden="true" />');
+    expect(app).toContain("<GitHubIcon />");
   });
 
   it("keeps resize examples theme-headless and inherits the global scheme", () => {
