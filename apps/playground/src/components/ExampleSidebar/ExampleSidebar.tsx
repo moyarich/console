@@ -85,17 +85,17 @@ export function ExampleSidebar({
   const searching = query.trim().length > 0;
 
   return (
-    <nav className="example-navigation" aria-label="Console examples">
-      <div className="example-navigation-header">
-        <div className="example-navigation-title">
+    <>
+      <div className="sidebar-header">
+        <div className="sidebar-title">
           <div>
-            <span className="panel-kicker">Examples</span>
+            <span className="sidebar-kicker">Examples</span>
             <strong>Playground</strong>
           </div>
-          <span className="example-count">{examples.length}</span>
+          <span className="sidebar-count">{examples.length}</span>
         </div>
 
-        <label className="example-navigation-search">
+        <label className="sidebar-search">
           <Search aria-hidden="true" />
           <input
             type="search"
@@ -107,24 +107,24 @@ export function ExampleSidebar({
         </label>
       </div>
 
-      <div className="example-navigation-groups">
+      <div className="sidebar-content">
         {navigationGroups.map(({ group, examples: groupExamples }) => {
           const Icon = getGroupIcon(group.id);
           const expanded = searching || !collapsedGroupIds.has(group.id);
 
           return (
-            <section className="example-navigation-group" key={group.id}>
+            <section className="sidebar-section" key={group.id}>
               <button
                 type="button"
-                className="example-navigation-group-trigger"
+                className="sidebar-section-trigger"
                 aria-expanded={expanded}
                 onClick={() => toggleGroup(group.id)}
               >
-                <span className="example-navigation-group-label">
+                <span className="sidebar-section-label">
                   <Icon aria-hidden="true" />
                   <span>{group.label}</span>
                 </span>
-                <span className="example-navigation-group-meta">
+                <span className="sidebar-section-meta">
                   <span>{groupExamples.length}</span>
                   <ChevronDown
                     className={expanded ? "expanded" : undefined}
@@ -134,7 +134,7 @@ export function ExampleSidebar({
               </button>
 
               {expanded && (
-                <div className="example-navigation-items">
+                <div className="sidebar-items">
                   {groupExamples.map((example) => {
                     const active = example.id === value;
 
@@ -142,11 +142,7 @@ export function ExampleSidebar({
                       <button
                         key={example.id}
                         type="button"
-                        className={
-                          active
-                            ? "example-navigation-item active"
-                            : "example-navigation-item"
-                        }
+                        className="sidebar-item"
                         aria-current={active ? "page" : undefined}
                         title={example.description}
                         onClick={() => onChange(example.id)}
@@ -162,13 +158,13 @@ export function ExampleSidebar({
         })}
 
         {!navigationGroups.length && (
-          <div className="example-navigation-empty">
+          <div className="sidebar-empty">
             <Search aria-hidden="true" />
             <strong>No examples found</strong>
             <span>Try log, table, ANSI, transport, or addon.</span>
           </div>
         )}
       </div>
-    </nav>
+    </>
   );
 }
