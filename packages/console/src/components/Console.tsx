@@ -779,8 +779,7 @@ function ConsoleMessageMode({
   const renderDefaultOutput = () =>
     visibleMessages.map((message, index) => {
       const key =
-        message.id ??
-        `${message.method}-${message.timestamp ?? "na"}-${index}`;
+        message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
       const gutter = renderConsoleMessageDecorations(
         resolvedMessageDecorations,
         "gutter",
@@ -816,7 +815,9 @@ function ConsoleMessageMode({
         index,
         visibleMessages,
       );
-      const hasDecorations = Boolean(gutter || before || after || badge || overlay);
+      const hasDecorations = Boolean(
+        gutter || before || after || badge || overlay,
+      );
 
       const renderedMessage = (
         <ConsoleMessage
