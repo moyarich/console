@@ -498,7 +498,8 @@ export function createConsoleFilteringAddon(
   const controller =
     options.controller ??
     createConsoleFilteringController(options.initialState);
-  const controls = options.controls === false ? undefined : (options.controls ?? {});
+  const controls =
+    options.controls === false ? undefined : (options.controls ?? {});
 
   return {
     id: CONSOLE_FILTERING_ADDON_ID,
