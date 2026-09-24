@@ -46,7 +46,7 @@ const DEFAULT_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
 };
 
 function toEditorUri(path: string) {
-  return `file:///workspace/${path.replace(/^\\/+/, "")}`;
+  return `file:///workspace/${path.replace(/^\/+/, "")}`;
 }
 
 export function MonacoEditor({
