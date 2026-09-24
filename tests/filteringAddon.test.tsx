@@ -138,7 +138,7 @@ describe("@moyarich/console-addon-filtering", () => {
 
     expect(markup).toContain('aria-label="Console filters"');
     expect(markup).toContain('popover="auto"');
-    expect(markup).toContain("popovertarget=");
+    expect(markup).toContain("popoverTarget=");
     expect(markup).not.toContain("<details");
     expect(markup).toContain(">warn<");
     expect(markup).toContain('placeholder="Filter console output"');
