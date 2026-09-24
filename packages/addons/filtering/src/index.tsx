@@ -16,6 +16,7 @@ import {
   type ConsoleMessageTextProviderContext,
   type ConsolePanelElement,
   type ConsoleMessageFilter,
+  type ConsoleMessageFilterContext,
   type ConsoleMethod,
 } from "@moyarich/console-core";
 import "./styles.css";
