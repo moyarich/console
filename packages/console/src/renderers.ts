@@ -84,7 +84,8 @@ export function dispatchMessageRenderer(
 
   for (const renderer of renderers) {
     try {
-      if (renderer.method && renderer.method !== context.message.method) continue;
+      if (renderer.method && renderer.method !== context.message.method)
+        continue;
       if (renderer.match && !renderer.match(context)) continue;
 
       const rendered = renderer.render(context);
