@@ -31,10 +31,7 @@
     --console-panel-background-color,
     var(--_console-base-surface)
   );
-  --_console-panel-color: var(
-    --console-panel-color,
-    var(--_console-base-text)
-  );
+  --_console-panel-color: var(--console-panel-color, var(--_console-base-text));
   --_console-panel-muted-color: var(
     --console-panel-muted-color,
     color-mix(
@@ -221,7 +218,10 @@
       var(--_console-background-color) 42%
     )
   );
-  --_console-link-color: var(--console-link-color, var(--_console-accent-color));
+  --_console-link-color: var(
+    --console-link-color,
+    var(--_console-accent-color)
+  );
   --_console-stderr-border-left: var(
     --console-stderr-border-left,
     2px solid var(--_console-error-border-color)
@@ -232,8 +232,7 @@
   );
   --_console-message-action-focus-outline: var(
     --console-message-action-focus-outline,
-    2px solid
-      color-mix(in oklab, var(--_console-accent-color) 72%, transparent)
+    2px solid color-mix(in oklab, var(--_console-accent-color) 72%, transparent)
   );
 
   /* Primitive values */
@@ -451,7 +450,11 @@
   --_console-context-menu-box-shadow: var(
     --console-context-menu-box-shadow,
     0 16px 42px
-      color-mix(in oklab, light-dark(rgb(17 24 39 / 0.16), rgb(0 0 0 / 0.5)) 88%, transparent)
+      color-mix(
+        in oklab,
+        light-dark(rgb(17 24 39 / 0.16), rgb(0 0 0 / 0.5)) 88%,
+        transparent
+      )
   );
   --_console-context-menu-separator-background-color: var(
     --console-context-menu-separator-background-color,
