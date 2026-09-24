@@ -46,9 +46,7 @@ const messages: ConsoleMessageData[] = [
 
 describe("@moyarich/console-addon-filtering", () => {
   it("uses the package-qualified addon id", () => {
-    expect(createConsoleFilteringAddon().id).toBe(
-      CONSOLE_FILTERING_ADDON_ID,
-    );
+    expect(createConsoleFilteringAddon().id).toBe(CONSOLE_FILTERING_ADDON_ID);
     expect(CONSOLE_FILTERING_ADDON_ID).toBe(
       "@moyarich/console-addon-filtering",
     );
@@ -120,10 +118,7 @@ describe("@moyarich/console-addon-filtering", () => {
     const controller = createConsoleFilteringController();
 
     const markup = renderToStaticMarkup(
-      <ConsoleFilteringControls
-        controller={controller}
-        messages={messages}
-      />,
+      <ConsoleFilteringControls controller={controller} messages={messages} />,
     );
 
     expect(markup).toContain('aria-label="Console filters"');
