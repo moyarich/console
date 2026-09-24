@@ -57,7 +57,7 @@ export default function FilteringAddonExample() {
       <Console
         messages={messages}
         addons={addons}
-        filter={(message) => message.id !== "host-hidden"}
+        filter={({ message }) => message.id !== "host-hidden"}
         title="Filtered console"
         subtitle="Addon filters compose with the host predicate."
         style={{ height: 320 }}
