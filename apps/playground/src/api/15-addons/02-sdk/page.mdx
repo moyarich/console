@@ -31,6 +31,31 @@ import {
 
 Core is a capability boundary, not a restriction on addon design. Addons that only need shared contracts should prefer `@moyarich/console-core`; addons that intentionally use React-host-specific APIs may also depend on `@moyarich/console`.
 
+## Callback convention
+
+Extension contributions use one immutable context object. The primary value is part of that context instead of being passed as a separate positional argument.
+
+```ts
+host.extensions.register(consoleExtensionPoints.messageFilter, ({ message }) => {
+  return message.method !== "debug";
+});
+
+host.extensions.register(consoleExtensionPoints.processOutputProcessor, {
+  id: "strip-prefix",
+  process({ output, text, stream }) {
+    if (stream !== "stdout" || !text.startsWith("[worker] ")) {
+      return undefined;
+    }
+
+    return {
+      data: output.data.replace("[worker] ", ""),
+    };
+  },
+});
+```
+
+This keeps callback signatures stable as the SDK grows: new host information can be added to the context without adding positional parameters. Context values are readonly inputs; processors and parsers return result/patch objects instead of mutating host-owned state.
+
 ## Extension-point selection
 
 Addons should use the narrowest generic `consoleExtensionPoints.*` contract that matches the behavior they contribute:
