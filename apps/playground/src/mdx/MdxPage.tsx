@@ -26,9 +26,7 @@ interface MdxPageTocProps {
   activeOutlineId?: string;
 }
 
-function getFirstPageId(
-  items: readonly MdxSectionItem[],
-): string | undefined {
+function getFirstPageId(items: readonly MdxSectionItem[]): string | undefined {
   for (const item of items) {
     if (item.type === "page") {
       return item.page.id;
@@ -149,11 +147,7 @@ function TocItems({
   );
 }
 
-function MdxPageToc({
-  sectionId,
-  page,
-  activeOutlineId,
-}: MdxPageTocProps) {
+function MdxPageToc({ sectionId, page, activeOutlineId }: MdxPageTocProps) {
   const options = resolvePageTocOptions(page.meta);
   const [open, setOpen] = useState(options.defaultOpen);
 
@@ -211,9 +205,7 @@ export function MdxPage({
       <header className="mdx-page-header">
         <nav className="mdx-page-path" aria-label="Breadcrumb">
           {section.defaultPage ? (
-            <Link
-              to={buildPlaygroundPath(section.id, section.defaultPage.id)}
-            >
+            <Link to={buildPlaygroundPath(section.id, section.defaultPage.id)}>
               {section.label}
             </Link>
           ) : (
