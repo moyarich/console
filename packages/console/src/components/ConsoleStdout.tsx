@@ -73,7 +73,7 @@ function AnsiText({
   links,
 }: {
   data: string;
-  context: ConsoleLinkProviderContext;
+  context: Omit<ConsoleLinkProviderContext, "text">;
   detectLinks: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
@@ -164,7 +164,7 @@ export function ConsoleResolvedStdout({
                 )
               : undefined;
         const clearLine = hasAnsiClearLine(data);
-        const linkContext: ConsoleLinkProviderContext = {
+        const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
           mode: "ansi",
           index,
           ...(entry.id !== undefined ? { id: entry.id } : {}),
