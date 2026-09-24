@@ -1,5 +1,6 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
+import { parseOrderedDirectory } from "../content/mdxSection";
 import {
   parseConsoleExampleMeta,
   type ConsoleExampleMeta,
@@ -30,33 +31,6 @@ export interface ConsoleExample {
 interface ConsoleExamplePageModule {
   default: ComponentType;
   meta?: unknown;
-}
-
-interface OrderedDirectory {
-  directory: string;
-  id: string;
-  order: number;
-}
-
-const ORDERED_DIRECTORY_PATTERN = /^(\d+)-(.+)$/;
-
-function parseOrderedDirectory(
-  directory: string,
-  kind: "group" | "example",
-): OrderedDirectory {
-  const match = ORDERED_DIRECTORY_PATTERN.exec(directory);
-
-  if (!match) {
-    throw new Error(
-      `Invalid ${kind} directory "${directory}". Expected NN-name.`,
-    );
-  }
-
-  return {
-    directory,
-    order: Number(match[1]),
-    id: match[2]!,
-  };
 }
 
 function parseExamplePath(path: string) {
