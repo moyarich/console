@@ -1,4 +1,0 @@
-{
-  "label": "Custom Addon - Replace Ansi Output Surface",
-  "description": "Replace the built-in ANSI output surface through the generic addon renderer contract."
-}

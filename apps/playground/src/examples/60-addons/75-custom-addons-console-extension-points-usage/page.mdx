@@ -1,0 +1,120 @@
+---
+label: "Usage Of Console Extension Points"
+description: "One runnable example for every built-in consoleExtensionPoints.* contract."
+---
+
+import processOutputProcessorSource from "./process-output-processor.tsx?raw";
+import structuredOutputParserSource from "./structured-output-parser.tsx?raw";
+import linkProviderSource from "./link-provider.tsx?raw";
+import outputRendererSource from "./output-renderer.tsx?raw";
+import messageRendererSource from "./message-renderer.tsx?raw";
+import valueRendererSource from "./value-renderer.tsx?raw";
+import panelActionSource from "./panel-action.tsx?raw";
+import contextMenuActionSource from "./context-menu-action.tsx?raw";
+import messageActionSource from "./message-action.tsx?raw";
+
+## `consoleExtensionPoints.processOutputProcessor`
+
+Transform resolved ANSI/process output before the console renders it.
+
+<RunnableExample
+  source={processOutputProcessorSource}
+  sourcePath="process-output-processor.tsx"
+  title="processOutputProcessor"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.structuredOutputParser`
+
+Recognize structured values embedded in terminal text.
+
+<RunnableExample
+  source={structuredOutputParserSource}
+  sourcePath="structured-output-parser.tsx"
+  title="structuredOutputParser"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.linkProvider`
+
+Detect application-specific links and attach custom actions to them.
+
+<RunnableExample
+  source={linkProviderSource}
+  sourcePath="link-provider.tsx"
+  title="linkProvider"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.outputRenderer`
+
+Replace the complete output surface for a matching console mode.
+
+<RunnableExample
+  source={outputRendererSource}
+  sourcePath="output-renderer.tsx"
+  title="outputRenderer"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.messageRenderer`
+
+Customize individual structured message rows.
+
+<RunnableExample
+  source={messageRendererSource}
+  sourcePath="message-renderer.tsx"
+  title="messageRenderer"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.valueRenderer`
+
+Customize individual structured values while leaving the rest of the message rendering intact.
+
+<RunnableExample
+  source={valueRendererSource}
+  sourcePath="value-renderer.tsx"
+  title="valueRenderer"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.panelAction`
+
+Add a host-defined action to the console panel actions.
+
+<RunnableExample
+  source={panelActionSource}
+  sourcePath="panel-action.tsx"
+  title="panelAction"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.contextMenuAction`
+
+Add an action to the context menu and inspect the selected target kind.
+
+<RunnableExample
+  source={contextMenuActionSource}
+  sourcePath="context-menu-action.tsx"
+  title="contextMenuAction"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.messageAction`
+
+Add an action scoped to an individual structured message.
+
+<RunnableExample
+  source={messageActionSource}
+  sourcePath="message-action.tsx"
+  title="messageAction"
+/>

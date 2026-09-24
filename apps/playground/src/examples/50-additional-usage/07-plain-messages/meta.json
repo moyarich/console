@@ -1,4 +1,0 @@
-{
-  "label": "Plain messages",
-  "description": "Render ConsoleMessageData objects directly with no events or useConsoleMessages."
-}

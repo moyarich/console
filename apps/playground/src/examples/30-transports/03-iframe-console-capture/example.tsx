@@ -51,13 +51,6 @@ const IFRAME_SOURCE = `
         font-size: 16px;
       }
 
-      p {
-        margin: 0;
-        color: #64748b;
-        font-size: 13px;
-        line-height: 1.5;
-      }
-
       button {
         width: fit-content;
         border: 1px solid #4f46e5;
@@ -74,12 +67,6 @@ const IFRAME_SOURCE = `
         background: #4338ca;
       }
 
-      code {
-        border-radius: 6px;
-        padding: 2px 5px;
-        background: #eef2ff;
-        color: #4338ca;
-      }
     </style>
   </head>
   <body>
@@ -88,11 +75,6 @@ const IFRAME_SOURCE = `
         <span class="kicker">Iframe</span>
         <h1>Plain console.log()</h1>
       </div>
-
-      <p>
-        This iframe calls <code>console.log()</code> normally.
-        The host page captures the iframe console directly.
-      </p>
 
       <button id="log" type="button">
         console.log(...)
@@ -136,9 +118,6 @@ export default function IframeConsoleCaptureExample() {
           <div className="iframe-demo-heading">
             <span className="iframe-demo-kicker">Host page</span>
             <strong>Capture iframe console directly</strong>
-            <span>
-              The iframe uses ordinary console.log() with no transport event.
-            </span>
           </div>
         </header>
 

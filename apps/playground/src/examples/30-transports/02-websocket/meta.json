@@ -1,4 +1,0 @@
-{
-  "label": "WebSocket",
-  "description": "Keep one WebSocket connection mounted while sending and receiving console transport envelopes."
-}
