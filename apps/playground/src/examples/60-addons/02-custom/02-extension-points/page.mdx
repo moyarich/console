@@ -10,15 +10,35 @@ sidebarOutline: true
 outlineLabelPrefix: "consoleExtensionPoints."
 ---
 
+import processControlParserSource from "./process-control-parser.tsx?raw";
 import processOutputProcessorSource from "./process-output-processor.tsx?raw";
 import structuredOutputParserSource from "./structured-output-parser.tsx?raw";
 import linkProviderSource from "./link-provider.tsx?raw";
 import outputRendererSource from "./output-renderer.tsx?raw";
+import frameDecoratorSource from "./frame-decorator.tsx?raw";
+import emptyStateRendererSource from "./empty-state-renderer.tsx?raw";
+import panelElementSource from "./panel-element.tsx?raw";
+import messageFilterSource from "./message-filter.tsx?raw";
 import messageRendererSource from "./message-renderer.tsx?raw";
+import messageDecorationSource from "./message-decoration.tsx?raw";
+import messageTextProviderSource from "./message-text-provider.tsx?raw";
 import valueRendererSource from "./value-renderer.tsx?raw";
+import keyboardShortcutSource from "./keyboard-shortcut.tsx?raw";
 import panelActionSource from "./panel-action.tsx?raw";
 import contextMenuActionSource from "./context-menu-action.tsx?raw";
 import messageActionSource from "./message-action.tsx?raw";
+
+## `consoleExtensionPoints.processControlParser`
+
+Parse stateful semantic controls from raw process chunks before carriage-return and newline normalization.
+
+<RunnableExample
+  source={processControlParserSource}
+  sourcePath="process-control-parser.tsx"
+  title="processControlParser"
+/>
+
+<hr />
 
 ## `consoleExtensionPoints.processOutputProcessor`
 
@@ -68,6 +88,56 @@ Replace the complete output surface for a matching console mode.
 
 <hr />
 
+## `consoleExtensionPoints.frameDecorator`
+
+Structurally wrap the complete Console frame. Reserve this for frame-level behavior such as resizing or docking.
+
+<RunnableExample
+  source={frameDecoratorSource}
+  sourcePath="frame-decorator.tsx"
+  title="frameDecorator"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.emptyStateRenderer`
+
+Customize only the empty-state surface while leaving normal output rendering unchanged.
+
+<RunnableExample
+  source={emptyStateRendererSource}
+  sourcePath="empty-state-renderer.tsx"
+  title="emptyStateRenderer"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.panelElement`
+
+Add persistent addon-owned UI to a generic panel placement without wrapping the Console frame.
+
+Supported placements are `header-start`, `header-end`, `before-output`, `after-output`, and `footer`.
+
+<RunnableExample
+  source={panelElementSource}
+  sourcePath="panel-element.tsx"
+  title="panelElement"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.messageFilter`
+
+Contribute a predicate to the structured-message view. Multiple addon filters compose with the host-owned `filter` prop.
+
+<RunnableExample
+  source={messageFilterSource}
+  sourcePath="message-filter.tsx"
+  title="messageFilter"
+/>
+
+<hr />
+
 ## `consoleExtensionPoints.messageRenderer`
 
 Customize individual structured message rows.
@@ -80,6 +150,32 @@ Customize individual structured message rows.
 
 <hr />
 
+## `consoleExtensionPoints.messageDecoration`
+
+Add UI around a structured row without replacing its renderer.
+
+Supported placements are `gutter`, `before`, `after`, `badge`, and `overlay`.
+
+<RunnableExample
+  source={messageDecorationSource}
+  sourcePath="message-decoration.tsx"
+  title="messageDecoration"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.messageTextProvider`
+
+Contribute logical searchable/plain text for a structured message without changing its visible renderer.
+
+<RunnableExample
+  source={messageTextProviderSource}
+  sourcePath="message-text-provider.tsx"
+  title="messageTextProvider"
+/>
+
+<hr />
+
 ## `consoleExtensionPoints.valueRenderer`
 
 Customize individual structured values while leaving the rest of the message rendering intact.
@@ -88,6 +184,18 @@ Customize individual structured values while leaving the rest of the message ren
   source={valueRendererSource}
   sourcePath="value-renderer.tsx"
   title="valueRenderer"
+/>
+
+<hr />
+
+## `consoleExtensionPoints.keyboardShortcut`
+
+Register a keyboard command scoped to the focused Console instead of installing global document listeners.
+
+<RunnableExample
+  source={keyboardShortcutSource}
+  sourcePath="keyboard-shortcut.tsx"
+  title="keyboardShortcut"
 />
 
 <hr />
