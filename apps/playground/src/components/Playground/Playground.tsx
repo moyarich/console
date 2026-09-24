@@ -6,7 +6,6 @@ import {
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
-import { LayoutContent, LayoutMain, LayoutSidebar } from "../Layout";
 import { Sidebar } from "../Sidebar";
 
 export function Playground() {
@@ -20,8 +19,8 @@ export function Playground() {
   const ExamplePage = example.Page;
 
   return (
-    <LayoutContent>
-      <LayoutSidebar className="documentation-sidebar">
+    <div className="layout-content">
+      <aside className="layout-sidebar documentation-sidebar">
         <Sidebar aria-label="Console documentation">
           <ExampleSidebar
             examples={CONSOLE_EXAMPLES}
@@ -29,9 +28,9 @@ export function Playground() {
             onChange={setExampleId}
           />
         </Sidebar>
-      </LayoutSidebar>
+      </aside>
 
-      <LayoutMain>
+      <main className="layout-main">
         <section className="hero">
           <span className="eyebrow">Interactive playground</span>
           <h1>Edit, run, and inspect console examples.</h1>
@@ -55,7 +54,7 @@ export function Playground() {
             <ExamplePage />
           </PlaygroundMDXProvider>
         </section>
-      </LayoutMain>
-    </LayoutContent>
+      </main>
+    </div>
   );
 }
