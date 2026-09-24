@@ -16,23 +16,28 @@ describe("@moyarich/console-core", () => {
       capabilities: [createConsoleCapability("test.capability")],
     });
     const serviceToken = createConsoleServiceToken<string>("test.service");
-    const extensionPoint =
-      createConsoleExtensionPoint<string>("test.extension");
+    const extensionPoint = createConsoleExtensionPoint<string>(
+      "test.extension",
+      "pipeline",
+    );
     const addon: ConsoleAddon = {
       id: "test.addon",
       activate(host) {
         host.services.provide(serviceToken, "ready");
         host.extensions.register(extensionPoint, "later", { priority: 1 });
         host.extensions.register(extensionPoint, "first", { priority: 10 });
+        host.extensions.register(extensionPoint, "last", { priority: 1 });
       },
     };
 
     manager.load(addon);
 
     expect(manager.services.require(serviceToken)).toBe("ready");
+    expect(extensionPoint.composition).toBe("pipeline");
     expect(manager.extensions.getAll(extensionPoint)).toEqual([
       "first",
       "later",
+      "last",
     ]);
 
     expect(manager.unload(addon.id)).toBe(true);
