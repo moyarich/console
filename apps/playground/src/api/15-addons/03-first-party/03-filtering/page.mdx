@@ -1,0 +1,87 @@
+---
+label: "Filtering addon"
+description: "Filter structured console messages by method, text, and source with reusable controls or a headless controller."
+---
+
+Install the first-party filtering addon separately when an application needs reusable structured-message filters:
+
+```bash
+npm install @moyarich/console-addon-filtering
+```
+
+Create the addon explicitly and pass it through the normal `addons` prop:
+
+```tsx
+import { Console } from "@moyarich/console";
+import {
+  ConsoleFilteringControls,
+  createConsoleFilteringAddon,
+} from "@moyarich/console-addon-filtering";
+
+const filteringAddon = createConsoleFilteringAddon();
+
+<>
+  <ConsoleFilteringControls
+    controller={filteringAddon.controller}
+    messages={messages}
+  />
+  <Console messages={messages} addons={[filteringAddon]} />
+</>
+```
+
+The addon contributes a `consoleExtensionPoints.messageFilter` predicate. Filtering is view-only: retained source messages are not deleted or rewritten.
+
+## Composition
+
+Addon filters compose with the existing host-owned `filter` prop. A message must satisfy the host predicate and every registered addon predicate to remain visible:
+
+```tsx
+<Console
+  messages={messages}
+  addons={[filteringAddon]}
+  filter={(message) => message.source !== "internal"}
+/>
+```
+
+This keeps application-specific rules in the host while reusable method, text, and source criteria stay in the addon.
+
+## Headless controller
+
+The default controls are optional. Applications can own the filter UI and drive the same state through `createConsoleFilteringController()`:
+
+```ts
+import {
+  createConsoleFilteringAddon,
+  createConsoleFilteringController,
+} from "@moyarich/console-addon-filtering";
+
+const controller = createConsoleFilteringController({
+  methods: ["warn", "error"],
+  sources: ["api"],
+});
+
+const filteringAddon = createConsoleFilteringAddon({ controller });
+
+controller.setText("timeout");
+controller.setMethodEnabled("warn", false);
+controller.reset();
+```
+
+The controller exposes `getState()`, `subscribe()`, state setters, `reset()`, and `matches(message)`. Use `createConsoleMessageFilter()` when a fixed standalone predicate is enough.
+
+## Default controls
+
+`ConsoleFilteringControls` provides:
+
+- log / info / warn / error / debug method toggles
+- case-insensitive text filtering across method, source, and serialized values
+- source discovery from the supplied messages
+- an explicit source list override
+- reset behavior
+- `className` and `style` hooks for host layout and theming
+
+The controls inherit the standard `color-scheme` by default. Filtering-specific theme inputs use the `--console-filtering-*` namespace and fall back to the Console panel/control theme inputs, including the current violet interaction accent.
+
+## Lifecycle
+
+The addon ID is `@moyarich/console-addon-filtering`. Its controller is also exposed through `consoleFilteringService` while the addon is active. Unloading the addon removes both the message-filter contribution and the service through the normal addon scope lifecycle.

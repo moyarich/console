@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore, type CSSProperties } from "react";
 import {
   consoleExtensionPoints,
   createConsoleServiceToken,
@@ -81,6 +81,8 @@ export interface ConsoleFilteringControlsProps {
   /** Explicit source choices. Takes precedence over sources discovered from messages. */
   sources?: readonly string[];
   className?: string;
+  /** Inline styles, including theme custom properties or colorScheme. */
+  style?: CSSProperties;
 }
 
 /** Service token exposed while the filtering addon is active. */
@@ -292,6 +294,7 @@ export function ConsoleFilteringControls({
   messages,
   sources,
   className = "",
+  style,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
   const availableSources = useMemo(
@@ -314,6 +317,7 @@ export function ConsoleFilteringControls({
   return (
     <div
       className={`console-filtering-controls ${className}`.trim()}
+      style={style}
       role="group"
       aria-label="Console filters"
     >
