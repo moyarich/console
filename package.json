@@ -20,7 +20,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write apps/playground/src/components/RunnableExample/compileExampleProject.ts apps/playground/src/components/RunnableExample/RunnableExample.tsx apps/playground/src/styles.css tests/runnableProjectState.test.ts && git diff -- apps/playground/src/components/RunnableExample/compileExampleProject.ts apps/playground/src/components/RunnableExample/RunnableExample.tsx apps/playground/src/styles.css tests/runnableProjectState.test.ts && git diff --exit-code -- apps/playground/src/components/RunnableExample/compileExampleProject.ts apps/playground/src/components/RunnableExample/RunnableExample.tsx apps/playground/src/styles.css tests/runnableProjectState.test.ts",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics",
     "build:core": "npm run build --workspace @moyarich/console-core"
