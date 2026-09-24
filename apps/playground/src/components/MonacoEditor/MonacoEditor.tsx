@@ -1,10 +1,14 @@
 import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
-import type * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor";
 import type {
   EditorAppConfig,
   TextContents,
 } from "monaco-languageclient/editorApp";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+  monacoThemeForColorScheme,
+  useResolvedColorScheme,
+} from "../../theme";
 import { languageForPath } from "./languages";
 import { vscodeApiConfig } from "./setup";
 
@@ -42,7 +46,7 @@ const DEFAULT_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
 };
 
 function toEditorUri(path: string) {
-  return `file:///workspace/${path.replace(/^\/+/, "")}`;
+  return `file:///workspace/${path.replace(/^\\/+/, "")}`;
 }
 
 export function MonacoEditor({
@@ -50,12 +54,14 @@ export function MonacoEditor({
   language,
   value = "",
   onChange,
-  theme = "vs-dark",
+  theme,
   loading = <div className="editor-loading">Loading editor…</div>,
   options,
   height = "100%",
   width = "100%",
 }: MonacoEditorProps) {
+  const colorScheme = useResolvedColorScheme();
+  const resolvedTheme = theme ?? monacoThemeForColorScheme(colorScheme);
   const resolvedLanguage = language ?? languageForPath(path);
   const currentTextRef = useRef(value);
   const [configVersion, setConfigVersion] = useState(0);
@@ -71,6 +77,14 @@ export function MonacoEditor({
     setConfigVersion((current) => current + 1);
   }, [value]);
 
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    monaco.editor.setTheme(resolvedTheme);
+  }, [ready, resolvedTheme]);
+
   const editorAppConfig = useMemo<EditorAppConfig>(
     () => ({
       codeResources: {
@@ -83,10 +97,10 @@ export function MonacoEditor({
       editorOptions: {
         ...DEFAULT_OPTIONS,
         ...options,
-        theme,
+        theme: resolvedTheme,
       },
     }),
-    [options, path, resolvedLanguage, theme, value],
+    [options, path, resolvedLanguage, resolvedTheme, value],
   );
 
   const handleTextChanged = ({ modified }: TextContents) => {
