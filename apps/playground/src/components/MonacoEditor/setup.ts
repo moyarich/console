@@ -2,15 +2,12 @@ import {
   vscodeVisualizeCssColorsBrowserPath,
   vscodeVisualizeCssColorsManifest,
 } from "@moyarich/vscode-visualize-css-colors";
-import extensionUrl from "@moyarich/vscode-visualize-css-colors/extension.js?url";
+import extensionSource from "@moyarich/vscode-visualize-css-colors/extension-source";
 import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
 import { configureDefaultWorkerFactory } from "monaco-languageclient/workerFactory";
 
 const extensionFiles = new Map<string, string | URL>([
-  [
-    vscodeVisualizeCssColorsBrowserPath,
-    new URL(extensionUrl, window.location.href),
-  ],
+  [vscodeVisualizeCssColorsBrowserPath, extensionSource],
 ]);
 
 export const vscodeApiConfig: MonacoVscodeApiConfig = {
