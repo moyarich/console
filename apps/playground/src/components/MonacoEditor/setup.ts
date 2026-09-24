@@ -84,8 +84,7 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
       // Keep semantic diagnostics disabled, matching main's
       // typescriptDefaults.setDiagnosticsOptions configuration.
       "typescript.tsserver.web.projectWideIntellisense.enabled": true,
-      "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors":
-        true,
+      "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": true,
     }),
   },
   extensions: [
