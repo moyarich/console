@@ -30,6 +30,10 @@ const messages: ConsoleMessageData[] = Array.from(
 );
 
 const resizeTheme = {
+  "--console-panel-width": "100%",
+  "--console-panel-height": "100%",
+  "--console-panel-min-width": "0",
+  "--console-panel-min-height": "0",
   "--console-resize-separator-line-background-color": "#d0d5dd",
   "--console-resize-separator-hover-line-background-color": "#98a2b3",
   "--console-resize-separator-active-line-background-color": "#475467",
@@ -90,12 +94,6 @@ export default function ResizableConsoleExample() {
         autoScroll={false}
         title="Resizable console"
         subtitle="Resize behavior is provided by @moyarich/console-addon-resizable."
-        style={{
-          width: "100%",
-          height: "100%",
-          minWidth: 0,
-          minHeight: 0,
-        }}
       />
     </div>
   );
