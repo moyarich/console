@@ -15,7 +15,7 @@
     },
     "./manifest.json": "./extension.manifest.json",
     "./extension.js": {
-      "types": "./dist/extension.d.ts",
+      "types": "./dist/extension.d.cts",
       "default": "./dist/extension.js"
     }
   },
