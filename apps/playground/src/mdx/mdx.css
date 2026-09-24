@@ -33,7 +33,11 @@
 }
 
 .documentation-page .mdx-table-scroll th {
-  background: var(--playground-surface-subtle);
+  background: color-mix(
+    in oklab,
+    var(--playground-accent-soft) 7%,
+    var(--playground-surface-subtle) 93%
+  );
   color: var(--playground-text);
   font-weight: 500;
   white-space: nowrap;
