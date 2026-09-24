@@ -129,7 +129,12 @@
 .sidebar-tree-children {
   margin-left: 12px;
   padding-left: 8px;
-  border-left: 1px solid var(--playground-border);
+  border-left: 1px solid
+    color-mix(
+      in oklab,
+      var(--playground-accent-neutral) 34%,
+      var(--playground-border) 66%
+    );
 }
 
 .sidebar-group-trigger {
@@ -191,6 +196,11 @@
 
 .sidebar-group-meta svg.expanded,
 .sidebar-group-trigger > svg.expanded {
+  color: color-mix(
+    in oklab,
+    var(--playground-accent-companion) 62%,
+    var(--playground-text-subtle) 38%
+  );
   transform: rotate(180deg);
 }
 
