@@ -32,6 +32,8 @@ export type {
   ConsoleExtensionPoint,
   ConsoleExtensionRegistrationOptions,
   ConsoleExtensionRegistry,
+  ConsoleFrameDecorator,
+  ConsoleFrameDecoratorContext,
   ConsoleServiceRegistry,
   ConsoleServiceToken,
   CreateConsoleAddonManagerOptions,
