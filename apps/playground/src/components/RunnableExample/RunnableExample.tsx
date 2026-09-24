@@ -186,7 +186,7 @@ export function RunnableExample({
     return () => {
       runTokenRef.current += 1;
     };
-  }, [canonicalSignature, compileFiles, entryPath]);
+  }, [canonicalFiles, canonicalSignature, compileFiles, entryPath]);
 
   useEffect(
     () => () => {
