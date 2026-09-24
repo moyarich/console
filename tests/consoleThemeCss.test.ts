@@ -6,15 +6,63 @@ const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
 const readmePath = fileURLToPath(new URL("../README.md", import.meta.url));
+const resizableAddonStylesPath = fileURLToPath(
+  new URL("../packages/addons/resizable/src/styles.css", import.meta.url),
+);
 
 const styles = readFileSync(stylesPath, "utf8");
 const readme = readFileSync(readmePath, "utf8");
+const resizableAddonStyles = readFileSync(resizableAddonStylesPath, "utf8");
 
 function collectPublicThemeTokens(source: string) {
   return Array.from(new Set(source.match(/--console-[\w-]+/g) ?? [])).sort();
 }
 
 describe("console theme CSS", () => {
+  it("keeps resize CSS owned by the resizable addon", () => {
+    expect(styles).not.toContain("console-resizable");
+    expect(styles).not.toContain("console-resize-");
+    expect(styles).not.toContain("--console-resize-");
+
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="horizontal"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="vertical"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="both"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="inline"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-direction="block"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-horizontal-edge="start"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-horizontal-edge="end"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-vertical-edge="start"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      '[data-console-resize-vertical-edge="end"]',
+    );
+    expect(resizableAddonStyles).toContain(
+      "var(--_console-resizable-min-width)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "var(--_console-resizable-max-height)",
+    );
+    expect(resizableAddonStyles).toContain(
+      "--console-resize-separator-grip-background-color",
+    );
+    expect(resizableAddonStyles).toContain("--console-resize-handle-size");
+  });
+
   it("keeps public console custom properties as inputs only", () => {
     const publicAssignments = styles.match(/^\s*--console-[\w-]+\s*:/gm);
 
