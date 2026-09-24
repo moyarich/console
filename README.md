@@ -528,24 +528,24 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 
 ### Shared panel props
 
-| Prop                  | Purpose                                                               |
-| --------------------- | --------------------------------------------------------------------- |
-| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation      |
-| `onClear`             | Callback used by the clear action                                     |
-| `autoScroll`          | Follow new output while the viewer remains near the bottom            |
-| `showHeader`          | Show/hide the panel header                                            |
-| `showClearButton`     | Show clear when `onClear` is available                                |
-| `actions`             | Add arbitrary React content to the ellipsis popover                   |
-| `panelActions`        | Add descriptor-based actions to the ellipsis popover                  |
-| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu          |
-| `title` / `subtitle`  | Customize panel heading text                                          |
-| `emptyMessage`        | Customize the empty state                                             |
-| `className` / `style` | Host-owned layout and styling                                         |
-| `valueRenderers`      | Override rendering for matching values                                |
-| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                          |
-| `linkProviders`       | Add ordered application-specific link providers                       |
-| `addons`              | Add reusable `ConsoleAddon` instances                                 |
-| `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID  |
+| Prop                  | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `ref`                 | `ConsoleHandle` ref for supported imperative viewport navigation     |
+| `onClear`             | Callback used by the clear action                                    |
+| `autoScroll`          | Follow new output while the viewer remains near the bottom           |
+| `showHeader`          | Show/hide the panel header                                           |
+| `showClearButton`     | Show clear when `onClear` is available                               |
+| `actions`             | Add arbitrary React content to the ellipsis popover                  |
+| `panelActions`        | Add descriptor-based actions to the ellipsis popover                 |
+| `contextMenuActions`  | Add descriptor-based actions to the right-click context menu         |
+| `title` / `subtitle`  | Customize panel heading text                                         |
+| `emptyMessage`        | Customize the empty state                                            |
+| `className` / `style` | Host-owned layout and styling                                        |
+| `valueRenderers`      | Override rendering for matching values                               |
+| `detectLinks`         | Enable/disable built-in HTTP/HTTPS detection                         |
+| `linkProviders`       | Add ordered application-specific link providers                      |
+| `addons`              | Add reusable `ConsoleAddon` instances                                |
+| `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID |
 
 Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the core `Console` props:
 
