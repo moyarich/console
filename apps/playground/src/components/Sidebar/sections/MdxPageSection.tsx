@@ -1,4 +1,4 @@
-import type { MdxSection } from "../../../content/mdxSection";
+import type { MdxSection } from "../../../utils/mdxSection";
 
 interface MdxPageSectionProps {
   section: MdxSection;
