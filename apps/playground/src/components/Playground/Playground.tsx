@@ -6,11 +6,7 @@ import {
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
-import {
-  LayoutContent,
-  LayoutMain,
-  LayoutSidebar,
-} from "../Layout";
+import { LayoutContent, LayoutMain, LayoutSidebar } from "../Layout";
 import { Sidebar } from "../Sidebar";
 
 export function Playground() {
