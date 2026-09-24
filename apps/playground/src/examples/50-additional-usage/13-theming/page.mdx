@@ -6,6 +6,13 @@ description: "Use inherited color-scheme variables for broad theming or override
 import colorSchemeSource from "./color-scheme.tsx?raw";
 import customTokensSource from "./custom-tokens.tsx?raw";
 
+<style>{`
+  hr {
+    --hr-line-offset: 14%;
+    --hr-color: #6366f1;
+  }
+`}</style>
+
 ## Inherited color scheme
 
 Place theme variables on a host container when multiple console surfaces should inherit the same appearance. Color-scheme tokens also affect native UI and the portaled context menu.
@@ -15,6 +22,8 @@ Place theme variables on a host container when multiple console surfaces should 
   sourcePath="color-scheme.tsx"
   title="Inherited color scheme"
 />
+
+<hr />
 
 ## Individual theme tokens
 
