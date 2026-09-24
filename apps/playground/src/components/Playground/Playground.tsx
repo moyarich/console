@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { CONSOLE_API_SECTION } from "../../api";
+import {
+  DOCUMENTATION_SECTIONS,
+  getDocumentationSection,
+} from "../../content/documentationSections";
 import {
   CONSOLE_EXAMPLES,
   CONSOLE_EXAMPLE_GROUPS,
@@ -7,12 +10,12 @@ import {
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { Sidebar } from "../Sidebar";
-import { MdxPageSection } from "../Sidebar/sections/MdxPageSection";
 import { ExamplesSection } from "../Sidebar/sections/ExamplesSection";
+import { MdxPageSection } from "../Sidebar/sections/MdxPageSection";
 
 type PlaygroundSelection =
   | { type: "example"; id: string }
-  | { type: "api"; id: string };
+  | { type: "documentation"; sectionId: string; id: string };
 
 export function Playground() {
   const [selection, setSelection] = useState<PlaygroundSelection>({
@@ -25,27 +28,37 @@ export function Playground() {
       (candidate) =>
         selection.type === "example" && candidate.id === selection.id,
     ) ?? DEFAULT_CONSOLE_EXAMPLE;
-  const apiPage =
-    CONSOLE_API_SECTION.pages.find(
-      (candidate) => selection.type === "api" && candidate.id === selection.id,
-    ) ?? CONSOLE_API_PAGES[0];
 
-  const showingApi = selection.type === "api" && apiPage;
-  const selectedPage = showingApi ? apiPage : example;
+  const documentationSection =
+    selection.type === "documentation"
+      ? getDocumentationSection(selection.sectionId)
+      : undefined;
+  const documentationPage =
+    selection.type === "documentation"
+      ? documentationSection?.getPage(selection.id) ??
+        documentationSection?.defaultPage
+      : undefined;
+
+  const showingDocumentation = Boolean(documentationSection && documentationPage);
+  const selectedPage = showingDocumentation ? documentationPage! : example;
   const Page = selectedPage.Page;
 
   const exampleGroup =
     CONSOLE_EXAMPLE_GROUPS.find((group) => group.id === example.groupId) ??
     CONSOLE_EXAMPLE_GROUPS[0];
 
-  const eyebrow = showingApi ? "API reference" : "Interactive playground";
-  const title = showingApi
+  const eyebrow = showingDocumentation
+    ? documentationSection!.label
+    : "Interactive playground";
+  const title = showingDocumentation
     ? selectedPage.label
     : "Edit, run, and inspect console examples.";
-  const description = showingApi
+  const description = showingDocumentation
     ? selectedPage.description
     : "Browse the library by capability, edit the source in Monaco, and run each example against the live preview.";
-  const pathLabel = showingApi ? "API" : (exampleGroup?.label ?? example.groupId);
+  const pathLabel = showingDocumentation
+    ? documentationSection!.label
+    : (exampleGroup?.label ?? example.groupId);
 
   return (
     <div className="layout-content">
@@ -56,11 +69,26 @@ export function Playground() {
             value={selection.type === "example" ? selection.id : undefined}
             onChange={(id) => setSelection({ type: "example", id })}
           />
-          <MdxPageSection
-            section={CONSOLE_API_SECTION}
-            value={selection.type === "api" ? selection.id : undefined}
-            onChange={(id) => setSelection({ type: "api", id })}
-          />
+
+          {DOCUMENTATION_SECTIONS.map((section) => (
+            <MdxPageSection
+              key={section.id}
+              section={section}
+              value={
+                selection.type === "documentation" &&
+                selection.sectionId === section.id
+                  ? selection.id
+                  : undefined
+              }
+              onChange={(id) =>
+                setSelection({
+                  type: "documentation",
+                  sectionId: section.id,
+                  id,
+                })
+              }
+            />
+          ))}
         </Sidebar>
       </aside>
 
