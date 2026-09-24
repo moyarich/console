@@ -15,6 +15,8 @@ export interface MonacoEditorProps {
   theme?: string;
   loading?: ReactNode;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
+  height?: string | number;
+  width?: string | number;
 }
 
 const DEFAULT_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
@@ -50,6 +52,8 @@ export function MonacoEditor({
   theme = "vs-dark",
   loading = <div className="editor-loading">Loading editor…</div>,
   options,
+  height = "100%",
+  width = "100%",
 }: MonacoEditorProps) {
   const currentTextRef = useRef(value);
   const [configVersion, setConfigVersion] = useState(0);
@@ -93,7 +97,7 @@ export function MonacoEditor({
   };
 
   return (
-    <div style={{ height: "100%", position: "relative" }}>
+    <div style={{ height, width, position: "relative" }}>
       {!ready && !error && (
         <div
           style={{
