@@ -1,15 +1,23 @@
 ---
 label: "Resizable console addon"
-description: "Add visible, themeable IDE-style resize handles without putting optional resize behavior into the core Console component."
+description: "Add visible, themeable IDE-style resize handles with light, dark, and system color-scheme support."
 ---
 
 import source from "./example.tsx?raw";
 
 `createResizableConsoleAddon()` manages resize state and pointer interactions. The addon controls resize directions, size constraints, resize-edge placement, visible grips, and the public resize theme variables.
 
-Choose a resize direction, then drag the visible handle along the console shell. The addon supports horizontal, vertical, both, block, and inline resize directions.
+Choose a theme and resize direction, then drag the visible handle along the console shell. The example supports **System**, **Light**, and **Dark** themes and horizontal, vertical, both, block, and inline resize directions.
 
-This example also uses the core panel sizing theme variables so the console starts at a smaller initial size.
+The resizable frame now resolves its color scheme in this order:
+
+1. `--console-resize-color-scheme`
+2. `--console-panel-color-scheme`
+3. `--console-color-scheme`
+
+The example sets `--console-color-scheme` and uses `light-dark()` values for both console and resize tokens, so the addon follows the same color scheme as the console without duplicating theme state. **System** uses `light dark`, allowing the browser to follow the operating-system preference.
+
+The example also uses the core panel sizing theme variables so the console starts at a smaller initial size.
 
 - `--console-panel-width`
 - `--console-panel-height`
