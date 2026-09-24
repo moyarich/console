@@ -3,11 +3,7 @@ import "./sidebar.css";
 
 export type SidebarProps = ComponentPropsWithoutRef<"nav">;
 
-export function Sidebar({
-  className,
-  children,
-  ...props
-}: SidebarProps) {
+export function Sidebar({ className, children, ...props }: SidebarProps) {
   const classes = className ? `sidebar ${className}` : "sidebar";
 
   return (
