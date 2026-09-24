@@ -36,9 +36,12 @@ Core is a capability boundary, not a restriction on addon design. Addons that on
 Extension contributions use one immutable context object. The primary value is part of that context instead of being passed as a separate positional argument.
 
 ```ts
-host.extensions.register(consoleExtensionPoints.messageFilter, ({ message }) => {
-  return message.method !== "debug";
-});
+host.extensions.register(
+  consoleExtensionPoints.messageFilter,
+  ({ message }) => {
+    return message.method !== "debug";
+  },
+);
 
 host.extensions.register(consoleExtensionPoints.processOutputProcessor, {
   id: "strip-prefix",
