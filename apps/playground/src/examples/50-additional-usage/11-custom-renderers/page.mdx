@@ -4,6 +4,7 @@ description: "Customize values and whole message rows independently while preser
 ---
 
 import valueRendererSource from "./value-renderer.tsx?raw";
+import metricSource from "./metric.ts?raw";
 import messageRendererSource from "./message-renderer.tsx?raw";
 
 ## Value renderer
@@ -13,6 +14,7 @@ Use a value renderer when only a particular value needs custom presentation. Ret
 <RunnableExample
   source={valueRendererSource}
   sourcePath="value-renderer.tsx"
+  files={{ "metric.ts": metricSource }}
   title="Value renderer"
 />
 
