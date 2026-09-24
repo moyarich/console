@@ -1,9 +1,10 @@
 ---
 label: "Filtering addon"
-description: "Filter structured console messages by method, text, and source with reusable controls or a headless controller."
+description: "Filter structured messages with reusable controls or a headless controller."
 ---
 
-Install the first-party filtering addon separately when an application needs reusable structured-message filters:
+Install the first-party filtering addon separately when an application needs
+reusable structured-message filters:
 
 ```bash
 npm install @moyarich/console-addon-filtering
@@ -29,11 +30,14 @@ const filteringAddon = createConsoleFilteringAddon();
 </>
 ```
 
-The addon contributes a `consoleExtensionPoints.messageFilter` predicate. Filtering is view-only: retained source messages are not deleted or rewritten.
+The addon contributes a `consoleExtensionPoints.messageFilter` predicate.
+Filtering is view-only: retained source messages are not deleted or rewritten.
 
 ## Composition
 
-Addon filters compose with the existing host-owned `filter` prop. A message must satisfy the host predicate and every registered addon predicate to remain visible:
+Addon filters compose with the existing host-owned `filter` prop. A message
+must satisfy the host predicate and every registered addon predicate to remain
+visible:
 
 ```tsx
 <Console
@@ -43,11 +47,13 @@ Addon filters compose with the existing host-owned `filter` prop. A message must
 />
 ```
 
-This keeps application-specific rules in the host while reusable method, text, and source criteria stay in the addon.
+This keeps application-specific rules in the host while reusable method, text,
+and source criteria stay in the addon.
 
 ## Headless controller
 
-The default controls are optional. Applications can own the filter UI and drive the same state through `createConsoleFilteringController()`:
+The default controls are optional. Applications can own the filter UI and drive
+the same state through `createConsoleFilteringController()`:
 
 ```ts
 import {
@@ -67,7 +73,9 @@ controller.setMethodEnabled("warn", false);
 controller.reset();
 ```
 
-The controller exposes `getState()`, `subscribe()`, state setters, `reset()`, and `matches(message)`. Use `createConsoleMessageFilter()` when a fixed standalone predicate is enough.
+The controller exposes `getState()`, `subscribe()`, state setters, `reset()`,
+and `matches(message)`. Use `createConsoleMessageFilter()` when a fixed
+standalone predicate is enough.
 
 ## Default controls
 
@@ -80,8 +88,14 @@ The controller exposes `getState()`, `subscribe()`, state setters, `reset()`, an
 - reset behavior
 - `className` and `style` hooks for host layout and theming
 
-The controls inherit the standard `color-scheme` by default. Filtering-specific theme inputs use the `--console-filtering-*` namespace and fall back to the Console panel/control theme inputs, including the current violet interaction accent.
+The controls inherit the standard `color-scheme` by default. Filtering-specific
+theme inputs use the `--console-filtering-*` namespace and fall back to the
+Console panel/control theme inputs, including the current violet interaction
+accent.
 
 ## Lifecycle
 
-The addon ID is `@moyarich/console-addon-filtering`. Its controller is also exposed through `consoleFilteringService` while the addon is active. Unloading the addon removes both the message-filter contribution and the service through the normal addon scope lifecycle.
+The addon ID is `@moyarich/console-addon-filtering`. Its controller is also
+exposed through `consoleFilteringService` while the addon is active. Unloading
+the addon removes both the message-filter contribution and the service through
+the normal addon scope lifecycle.
