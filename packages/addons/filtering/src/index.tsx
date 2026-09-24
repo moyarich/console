@@ -1,4 +1,9 @@
-import { useId, useMemo, useSyncExternalStore, type CSSProperties } from "react";
+import {
+  useId,
+  useMemo,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 import {
   consoleExtensionPoints,
   createConsoleServiceToken,
