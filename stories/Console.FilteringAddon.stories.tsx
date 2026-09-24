@@ -66,7 +66,7 @@ function FilteringAddonStory() {
       <Console
         messages={messages}
         addons={addons}
-        filter={(message) => message.id !== "host-hidden"}
+        filter={({ message }) => message.id !== "host-hidden"}
         title="Filtered console"
         subtitle="Method, text, and source filters compose with the host predicate."
         style={{
