@@ -20,7 +20,7 @@
   );
   --_console-resize-separator-active-line-background-color: var(
     --console-resize-separator-active-line-background-color,
-    currentColor
+    color-mix(in hsl, hsl(200 50 80) 30%, currentColor 70%)
   );
   --_console-resize-separator-grip-color: var(
     --console-resize-separator-grip-color,
@@ -135,21 +135,25 @@
   content: "";
   pointer-events: none;
   transition: background 120ms ease;
+  margin-top: -1px;
+  border-radius: 6px;
+  opacity: 0;
 }
 
 .console-resize-handle[data-console-resize-axis="horizontal"]::before {
-  width: 1px;
+  width: 5px;
   height: 90%;
 }
 
 .console-resize-handle[data-console-resize-axis="vertical"]::before {
   width: 90%;
-  height: 1px;
+  height: 5px;
 }
 
 .console-resize-handle:hover::before,
 .console-resize-handle:focus-visible::before {
   background: var(--_console-resize-separator-hover-line-background-color);
+  opacity: 1;
 }
 
 .console-resize-handle[data-active="true"]::before {
