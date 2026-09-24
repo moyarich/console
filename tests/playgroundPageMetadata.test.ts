@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parsePageMeta } from "../apps/playground/src/content/pageMetadata";
+import { parsePageMeta } from "../apps/playground/src/utils/pageMetadata";
 
 describe("playground page metadata", () => {
   it("requires only a label and preserves additional frontmatter", () => {
