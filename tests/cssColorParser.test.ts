@@ -88,8 +88,8 @@ describe("extractCssColors", () => {
   });
 
   it("does not treat a named color inside an identifier as a color", () => {
-    expect(extractCssColors(".red-button { color: red; }").map(({ value }) => value)).toEqual([
-      "red",
-    ]);
+    expect(
+      extractCssColors(".red-button { color: red; }").map(({ value }) => value),
+    ).toEqual(["red"]);
   });
 });
