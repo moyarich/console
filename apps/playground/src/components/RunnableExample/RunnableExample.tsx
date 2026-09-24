@@ -1,14 +1,18 @@
 import { Maximize2, X } from "lucide-react";
-import { Component, useEffect, useId, useRef, useState } from "react";
-import type { ComponentType, ErrorInfo, ReactNode } from "react";
+import { Component, useEffect, useId, useMemo, useRef, useState } from "react";
+import type { ElementType, ErrorInfo, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { MonacoEditor } from "../MonacoEditor";
-import { compileExampleSource } from "./compileExampleSource";
+import {
+  compileExampleProject,
+  type CompiledExampleRuntime,
+} from "./compileExampleProject";
 
 export interface RunnableExampleProps {
-  component: ComponentType;
   source: string;
   sourcePath?: string;
+  files?: Readonly<Record<string, string>>;
+  runtimeModules?: Readonly<Record<string, unknown>>;
   title?: string;
 }
 
@@ -50,39 +54,152 @@ class RuntimeErrorBoundary extends Component<
   }
 }
 
+function normalizePath(path: string) {
+  return path.replaceAll("\\", "/").replace(/^\.\//, "");
+}
+
+function createCanonicalFiles(
+  source: string,
+  sourcePath: string,
+  files: Readonly<Record<string, string>>,
+) {
+  return Object.freeze({
+    ...Object.fromEntries(
+      Object.entries(files).map(([path, value]) => [normalizePath(path), value]),
+    ),
+    [normalizePath(sourcePath)]: source,
+  });
+}
+
+function cloneFiles(files: Readonly<Record<string, string>>) {
+  return { ...files };
+}
+
+function createProjectSignature(files: Readonly<Record<string, string>>) {
+  return JSON.stringify(
+    Object.entries(files).sort(([left], [right]) => left.localeCompare(right)),
+  );
+}
+
+function languageForPath(path: string) {
+  if (path.endsWith(".json")) return "json";
+  if (path.endsWith(".css")) return "css";
+  if (
+    path.endsWith(".js") ||
+    path.endsWith(".jsx") ||
+    path.endsWith(".mjs") ||
+    path.endsWith(".cjs")
+  ) {
+    return "javascript";
+  }
+
+  return "typescript";
+}
+
 export function RunnableExample({
-  component,
   source,
   sourcePath = "example.tsx",
+  files = {},
+  runtimeModules,
   title = sourcePath,
 }: RunnableExampleProps) {
   const reactId = useId();
   const instanceId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
   const previewDialogTitleId = `${instanceId}-preview-dialog-title`;
-  const editorPath = `${instanceId}/${sourcePath}`;
-  const [draftSource, setDraftSource] = useState(source);
-  const [RuntimeComponent, setRuntimeComponent] = useState<ComponentType>(
-    () => component,
+  const entryPath = normalizePath(sourcePath);
+  const canonicalFiles = useMemo(
+    () => createCanonicalFiles(source, entryPath, files),
+    [entryPath, files, source],
   );
+  const canonicalSignature = useMemo(
+    () => createProjectSignature(canonicalFiles),
+    [canonicalFiles],
+  );
+  const [draftFiles, setDraftFiles] = useState<Record<string, string>>(() =>
+    cloneFiles(canonicalFiles),
+  );
+  const [activePath, setActivePath] = useState(entryPath);
+  const [RuntimeComponent, setRuntimeComponent] =
+    useState<ElementType | null>(null);
   const [runVersion, setRunVersion] = useState(0);
   const [compileError, setCompileError] = useState("");
-  const [isCompiling, setIsCompiling] = useState(false);
-  const [hasCustomRuntime, setHasCustomRuntime] = useState(false);
+  const [isCompiling, setIsCompiling] = useState(true);
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const runTokenRef = useRef(0);
+  const runtimeRef = useRef<CompiledExampleRuntime | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    runTokenRef.current += 1;
-    setDraftSource(source);
-    setRuntimeComponent(() => component);
+  const replaceRuntime = (runtime: CompiledExampleRuntime) => {
+    runtimeRef.current?.dispose();
+    runtimeRef.current = runtime;
+    setRuntimeComponent(() => runtime.Component);
     setRunVersion((current) => current + 1);
+  };
+
+  const compileFiles = async (
+    nextFiles: Readonly<Record<string, string>>,
+    token: number,
+  ) => {
+    setIsCompiling(true);
     setCompileError("");
-    setIsCompiling(false);
-    setHasCustomRuntime(false);
+
+    try {
+      const runtime = await compileExampleProject({
+        entryPath,
+        files: nextFiles,
+        runtimeModules,
+      });
+
+      if (token !== runTokenRef.current) {
+        runtime.dispose();
+        return;
+      }
+
+      replaceRuntime(runtime);
+    } catch (error) {
+      if (token !== runTokenRef.current) {
+        return;
+      }
+
+      setCompileError(
+        error instanceof Error ? error.message : "Unable to run this example.",
+      );
+    } finally {
+      if (token === runTokenRef.current) {
+        setIsCompiling(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const nextFiles = cloneFiles(canonicalFiles);
+    const token = ++runTokenRef.current;
+
+    setDraftFiles(nextFiles);
+    setActivePath(entryPath);
+    setRuntimeComponent(null);
+    setCompileError("");
     setPreviewFullscreen(false);
-  }, [component, source]);
+    runtimeRef.current?.dispose();
+    runtimeRef.current = null;
+
+    void compileFiles(nextFiles, token);
+
+    return () => {
+      runTokenRef.current += 1;
+    };
+    // canonicalSignature represents immutable canonical file contents.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canonicalSignature, entryPath, runtimeModules]);
+
+  useEffect(
+    () => () => {
+      runtimeRef.current?.dispose();
+      runtimeRef.current = null;
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!previewFullscreen) {
@@ -112,49 +229,23 @@ export function RunnableExample({
     };
   }, [previewFullscreen]);
 
-  const dirty = draftSource !== source;
+  const filePaths = Object.keys(draftFiles);
+  const activeSource = draftFiles[activePath] ?? "";
+  const dirty = createProjectSignature(draftFiles) !== canonicalSignature;
+  const editorPath = `${instanceId}/${activePath}`;
 
-  const runSource = async () => {
-    const runToken = ++runTokenRef.current;
-    setIsCompiling(true);
-    setCompileError("");
-
-    try {
-      const ComponentFromSource = await compileExampleSource(
-        draftSource,
-        sourcePath,
-      );
-
-      if (runToken !== runTokenRef.current) {
-        return;
-      }
-
-      setRuntimeComponent(() => ComponentFromSource);
-      setRunVersion((current) => current + 1);
-      setHasCustomRuntime(true);
-    } catch (error) {
-      if (runToken !== runTokenRef.current) {
-        return;
-      }
-
-      setCompileError(
-        error instanceof Error ? error.message : "Unable to run this example.",
-      );
-    } finally {
-      if (runToken === runTokenRef.current) {
-        setIsCompiling(false);
-      }
-    }
+  const runSource = () => {
+    const token = ++runTokenRef.current;
+    void compileFiles(cloneFiles(draftFiles), token);
   };
 
   const resetSource = () => {
-    runTokenRef.current += 1;
-    setDraftSource(source);
-    setRuntimeComponent(() => component);
-    setRunVersion((current) => current + 1);
-    setCompileError("");
-    setIsCompiling(false);
-    setHasCustomRuntime(false);
+    const resetFiles = cloneFiles(canonicalFiles);
+    const token = ++runTokenRef.current;
+
+    setDraftFiles(resetFiles);
+    setActivePath(entryPath);
+    void compileFiles(resetFiles, token);
   };
 
   const previewPanel = (
@@ -171,7 +262,7 @@ export function RunnableExample({
         <div className="preview-toolbar-actions">
           <span className="live-badge">
             <span className="live-dot" aria-hidden="true" />
-            Runnable
+            {isCompiling ? "Compiling" : "Runnable"}
           </span>
           <button
             ref={previewFullscreen ? closeButtonRef : undefined}
@@ -203,9 +294,17 @@ export function RunnableExample({
           </div>
         )}
 
-        <RuntimeErrorBoundary key={`${instanceId}-${runVersion}`}>
-          <RuntimeComponent />
-        </RuntimeErrorBoundary>
+        {RuntimeComponent ? (
+          <RuntimeErrorBoundary key={`${instanceId}-${runVersion}`}>
+            <RuntimeComponent />
+          </RuntimeErrorBoundary>
+        ) : (
+          !compileError && (
+            <div className="preview-loading" role="status">
+              Compiling preview...
+            </div>
+          )
+        )}
       </div>
     </section>
   );
@@ -220,7 +319,7 @@ export function RunnableExample({
           <div className="panel-toolbar source-toolbar">
             <div>
               <span className="panel-kicker">Source</span>
-              <strong>{sourcePath}</strong>
+              <strong>{activePath}</strong>
             </div>
 
             <div className="source-toolbar-actions">
@@ -228,7 +327,7 @@ export function RunnableExample({
               <button
                 type="button"
                 className="source-action-button"
-                disabled={!dirty && !hasCustomRuntime}
+                disabled={!dirty || isCompiling}
                 onClick={resetSource}
               >
                 Reset
@@ -239,17 +338,44 @@ export function RunnableExample({
                 disabled={isCompiling}
                 onClick={runSource}
               >
-                {isCompiling ? "Running…" : "Run"}
+                {isCompiling ? "Running..." : "Run"}
               </button>
             </div>
           </div>
 
+          {filePaths.length > 1 && (
+            <div className="source-file-tabs" role="tablist" aria-label="Files">
+              {filePaths.map((path) => (
+                <button
+                  key={path}
+                  type="button"
+                  role="tab"
+                  aria-selected={path === activePath}
+                  className={
+                    path === activePath
+                      ? "source-file-tab active"
+                      : "source-file-tab"
+                  }
+                  onClick={() => setActivePath(path)}
+                >
+                  {path}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="example-source-editor">
             <MonacoEditor
+              key={editorPath}
               path={editorPath}
-              language="typescript"
-              value={draftSource}
-              onChange={(value) => setDraftSource(value ?? "")}
+              language={languageForPath(activePath)}
+              value={activeSource}
+              onChange={(value) =>
+                setDraftFiles((current) => ({
+                  ...current,
+                  [activePath]: value ?? "",
+                }))
+              }
               options={{
                 contextmenu: true,
                 renderLineHighlight: "line",
