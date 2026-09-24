@@ -4,12 +4,7 @@ import {
   parseOrderedDirectory,
   type MdxPageModule,
 } from "../content/mdxSection";
-import {
-  parseConsoleExampleMeta,
-  type ConsoleExampleMeta,
-} from "./exampleMetadata";
-
-export type { ConsoleExampleMeta } from "./exampleMetadata";
+import { parsePageMeta, type PageMeta } from "../content/pageMetadata";
 
 export type ConsoleExampleGroupId = string;
 
@@ -27,7 +22,7 @@ export interface ConsoleExample {
   order: number;
   label: string;
   description?: string;
-  meta: ConsoleExampleMeta;
+  meta: PageMeta;
   Page: ComponentType;
 }
 
@@ -55,7 +50,7 @@ const pageModules = import.meta.glob("./*/*/page.mdx", {
 const discoveredExamples = Object.entries(pageModules).map(
   ([path, pageModule]) => ({
     path,
-    metadata: parseConsoleExampleMeta(pageModule.meta, path),
+    metadata: parsePageMeta(pageModule.meta, path),
     Page: pageModule.default,
     ...parseExamplePath(path),
   }),
