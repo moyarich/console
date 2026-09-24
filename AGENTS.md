@@ -69,6 +69,38 @@ Prefer modern, standards-based browser primitives over custom JavaScript behavio
 
 Do not use `<details>` merely as a substitute for a menu or floating popover when the Popover API expresses the interaction more accurately.
 
+## Choosing a Console extension point
+
+Prefer the narrowest existing `consoleExtensionPoints.*` contract instead of adding feature-specific branches to the Console host.
+
+```text
+processControlParser  raw, stateful process controls before line normalization
+processOutputProcessor transformed/enriched logical ANSI output
+structuredOutputParser promote terminal text into structured values
+linkProvider          application-specific links and link actions
+outputRenderer        replace the complete output surface
+frameDecorator        structurally wrap the complete Console frame
+emptyStateRenderer    customize only an empty output surface
+panelElement          persistent addon-owned UI in generic panel slots
+messageFilter         structured-message visibility predicates
+messageRenderer       replace a structured message row
+messageDecoration     additive UI around a structured message row
+messageTextProvider   logical searchable/plain text for a message
+valueRenderer         customize an individual structured value
+keyboardShortcut      keyboard commands scoped to the focused Console
+panelAction           Console-level actions
+contextMenuAction     context-menu actions
+messageAction         actions scoped to one structured message
+```
+
+Use `frameDecorator` only when the addon genuinely needs structural wrapping, such as resizing or docking. Search bars, filters, status rows, progress UI, and other persistent controls should normally use `panelElement`.
+
+Use `messageDecoration` for additive row UI such as badges, bookmarks, annotations, search highlights, or gutter markers. Do not replace the whole row with `messageRenderer` merely to add one small visual element.
+
+Use `processControlParser` only for raw stream semantics that must be recognized before line normalization, including stateful control sequences split across chunks. Printable logical-line transformations belong in `processOutputProcessor`.
+
+Use `messageTextProvider` when an addon owns logical text that search/filter/copy/indexing features should be able to discover without changing visible rendering.
+
 ## Addon UI contributions
 
 Addon-owned UI should participate in the same extension system as addon behavior.
