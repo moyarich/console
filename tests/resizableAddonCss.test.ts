@@ -2,17 +2,15 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const coreStyles = readFileSync(
-  fileURLToPath(new URL("../packages/console/src/styles.css", import.meta.url)),
-  "utf8",
+const coreStylesPath = fileURLToPath(
+  new URL("../packages/console/src/styles.css", import.meta.url),
+);
+const addonStylesPath = fileURLToPath(
+  new URL("../packages/addons/resizable/src/styles.css", import.meta.url),
 );
 
-const addonStyles = readFileSync(
-  fileURLToPath(
-    new URL("../packages/addons/resizable/src/styles.css", import.meta.url),
-  ),
-  "utf8",
-);
+const coreStyles = readFileSync(coreStylesPath, "utf8");
+const addonStyles = readFileSync(addonStylesPath, "utf8");
 
 describe("@moyarich/console-addon-resizable CSS ownership", () => {
   it("keeps resize-specific CSS out of the core console stylesheet", () => {
