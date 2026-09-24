@@ -29,3 +29,30 @@ import {
 `@moyarich/console` is the React host implementation and re-exports core contracts for application convenience.
 
 Core is a capability boundary, not a restriction on addon design. Addons that only need shared contracts should prefer `@moyarich/console-core`; addons that intentionally use React-host-specific APIs may also depend on `@moyarich/console`.
+
+
+## Extension-point selection
+
+Addons should use the narrowest generic `consoleExtensionPoints.*` contract that matches the behavior they contribute:
+
+| Extension point | Purpose |
+| --- | --- |
+| `processControlParser` | Parse stateful raw process controls before line normalization. |
+| `processOutputProcessor` | Transform or enrich logical ANSI/process output. |
+| `structuredOutputParser` | Promote terminal text into structured values. |
+| `linkProvider` | Detect application-specific links and actions. |
+| `outputRenderer` | Replace the complete output surface. |
+| `frameDecorator` | Structurally wrap the complete Console frame. |
+| `emptyStateRenderer` | Customize only an empty output surface. |
+| `panelElement` | Add persistent UI at generic panel placements. |
+| `messageFilter` | Contribute structured-message visibility rules. |
+| `messageRenderer` | Replace a complete structured message row. |
+| `messageDecoration` | Add UI around a row without replacing it. |
+| `messageTextProvider` | Add logical searchable/plain text for a message. |
+| `valueRenderer` | Customize an individual structured value. |
+| `keyboardShortcut` | Add keyboard commands scoped to the focused Console. |
+| `panelAction` | Add Console-level actions. |
+| `contextMenuAction` | Add context-menu actions. |
+| `messageAction` | Add actions scoped to one structured message. |
+
+`frameDecorator` is intentionally structural. Persistent feature UI such as search, filtering, status, retention, or progress controls should normally use `panelElement` so independent addons compose without becoming nested frame wrappers.
