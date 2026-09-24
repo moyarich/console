@@ -1,41 +1,33 @@
-import { loader } from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
-import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import TypeScriptWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+import {
+  vscodeVisualizeCssColorsBrowserPath,
+  vscodeVisualizeCssColorsManifest,
+} from "@moyarich/vscode-visualize-css-colors";
+import extensionUrl from "@moyarich/vscode-visualize-css-colors/extension.js?url";
+import type { MonacoVscodeApiConfig } from "monaco-languageclient/vscodeApiWrapper";
+import { configureDefaultWorkerFactory } from "monaco-languageclient/workerFactory";
 
-type MonacoEnvironment = {
-  getWorker(moduleId: string, label: string): Worker;
-};
+const extensionFiles = new Map<string, string | URL>([
+  [
+    vscodeVisualizeCssColorsBrowserPath,
+    new URL(extensionUrl, window.location.href),
+  ],
+]);
 
-const runtime = globalThis as typeof globalThis & {
-  MonacoEnvironment?: MonacoEnvironment;
-};
-
-runtime.MonacoEnvironment = {
-  getWorker(_moduleId, label) {
-    if (label === "typescript" || label === "javascript") {
-      return new TypeScriptWorker();
-    }
-
-    return new EditorWorker();
+export const vscodeApiConfig: MonacoVscodeApiConfig = {
+  $type: "extended",
+  viewsConfig: {
+    $type: "EditorService",
   },
+  userConfiguration: {
+    json: JSON.stringify({
+      "editor.colorDecorators": true,
+    }),
+  },
+  extensions: [
+    {
+      config: vscodeVisualizeCssColorsManifest,
+      filesOrContents: extensionFiles,
+    },
+  ],
+  monacoWorkerFactory: configureDefaultWorkerFactory,
 };
-
-const typeScriptDefaults = monaco.languages.typescript.typescriptDefaults;
-
-typeScriptDefaults.setCompilerOptions({
-  target: monaco.languages.typescript.ScriptTarget.ES2020,
-  module: monaco.languages.typescript.ModuleKind.ESNext,
-  moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-  jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
-  allowNonTsExtensions: true,
-  esModuleInterop: true,
-  strict: true,
-});
-
-typeScriptDefaults.setDiagnosticsOptions({
-  noSemanticValidation: true,
-  noSyntaxValidation: false,
-});
-
-loader.config({ monaco });
