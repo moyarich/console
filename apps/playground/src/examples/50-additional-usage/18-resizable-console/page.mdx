@@ -1,10 +1,12 @@
 ---
-label: "Resizable console"
-description: "Use visible, themeable IDE-style resize separators with Lucide grip icons for vertical, horizontal, both, block, and inline resizing while keeping the console viewport scrollable."
+label: "Resizable console addon"
+description: "Add visible, themeable IDE-style resize handles without putting optional resize behavior into the core Console component."
 ---
 
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
 
-Choose a resize direction, then drag the visible grip around the console shell. The host owns the width and height state, while the console remains scrollable inside the resized viewport. The grip cursor changes to match the active resize axis.
+`createResizableConsoleAddon()` owns the resize state, pointer handling, size constraints, and visible grips. The core `Console` only renders its normal frame and exposes the generic frame-decorator extension point used by the addon.
+
+Choose a resize direction, then drag the visible handle around the console shell. Horizontal, vertical, both, block, and inline directions are supported.
