@@ -34,13 +34,19 @@ const resizeTheme = {
   "--console-panel-height": "100%",
   "--console-panel-min-width": "0",
   "--console-panel-min-height": "0",
-  "--console-resize-separator-line-background-color": "#d0d5dd",
-  "--console-resize-separator-hover-line-background-color": "#98a2b3",
-  "--console-resize-separator-active-line-background-color": "#475467",
-  "--console-resize-separator-grip-color": "#667085",
-  "--console-resize-separator-active-grip-color": "#344054",
-  "--console-resize-separator-grip-border": "1px solid #d0d5dd",
-  "--console-resize-separator-grip-background-color": "#ffffff",
+  "--console-resize-separator-line-background-color":
+    "light-dark(#d0d5dd, #475467)",
+  "--console-resize-separator-hover-line-background-color":
+    "light-dark(#98a2b3, #667085)",
+  "--console-resize-separator-active-line-background-color":
+    "light-dark(#475467, #d0d5dd)",
+  "--console-resize-separator-grip-color": "light-dark(#667085, #98a2b3)",
+  "--console-resize-separator-active-grip-color":
+    "light-dark(#344054, #eaecf0)",
+  "--console-resize-separator-grip-border":
+    "1px solid light-dark(#d0d5dd, #475467)",
+  "--console-resize-separator-grip-background-color":
+    "light-dark(#ffffff, #1d2939)",
   "--console-resize-separator-grip-border-radius": "999px",
   "--console-resize-separator-grip-box-shadow":
     "0 2px 8px rgb(16 24 40 / 0.14)",
@@ -93,7 +99,7 @@ export default function ResizableConsoleExample() {
         addons={[resizableAddon]}
         autoScroll={false}
         title="Resizable console"
-        subtitle="Resize behavior is provided by @moyarich/console-addon-resizable."
+        subtitle="Resize handles inherit the playground color scheme."
       />
     </div>
   );

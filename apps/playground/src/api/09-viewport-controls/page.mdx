@@ -1,0 +1,53 @@
+---
+label: "Viewport controls"
+description: "Imperative scrolling, focusing, and message navigation through the Console handle."
+---
+
+Use a `ConsoleHandle` ref when surrounding application UI needs to navigate the console without reaching into its DOM:
+
+```tsx
+import { useRef } from "react";
+import { Console, type ConsoleHandle } from "@moyarich/console";
+
+const consoleRef = useRef<ConsoleHandle>(null);
+
+<Console ref={consoleRef} messages={messages} />;
+
+consoleRef.current?.scrollToTop();
+consoleRef.current?.scrollToBottom();
+consoleRef.current?.scrollToMessage("message-42", {
+  block: "center",
+});
+consoleRef.current?.focus();
+```
+
+The handle also exposes `isAtTop()` and `isAtBottom()`. `isAtBottom()` uses the same near-bottom threshold as smart auto-scroll. Calling `scrollToBottom()` restores pinned-to-latest behavior; scrolling to the top or an older logical message leaves the viewport unpinned so new output does not immediately snap it back down.
+
+`scrollToMessage(id)` targets stable logical message IDs and returns `false` when the requested ID is not rendered. Structured messages use `ConsoleMessageData.id`; ANSI/process entries use `ConsoleStdoutEntry.id`.
+
+Addons consume the same implementation through `consoleServices.viewport`:
+
+```ts
+import { consoleServices, type ConsoleAddon } from "@moyarich/console";
+
+const navigationAddon: ConsoleAddon = {
+  id: "@acme/console-navigation",
+  activate(host) {
+    const viewport = host.services.require(consoleServices.viewport);
+
+    viewport.scrollToMessage("message-42");
+  },
+};
+```
+
+The first-party imperative-scrolling addon is a separate workspace package:
+
+```tsx
+import { createImperativeScrollingAddon } from "@moyarich/console-addon-imperative-scrolling";
+
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
+```
+
+It contributes standard **Scroll to top**, **Latest output**, and **Focus output** panel actions while delegating all behavior to the same core viewport service.
+
+The public handle and addon service intentionally expose navigation only—not the root DOM node, scroll element, addon manager, or extension registries. This keeps the contract compatible with future virtualization.

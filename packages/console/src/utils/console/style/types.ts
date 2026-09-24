@@ -3,7 +3,11 @@ import type { CSSProperties } from "react";
 /** Public CSS-variable keys copied from a console surface into its context-menu portal. */
 export type ContextMenuThemeProperty =
   | "--console-color-scheme"
+  | "--console-scrollbar-width"
+  | "--console-scrollbar-color"
   | "--console-context-menu-color-scheme"
+  | "--console-context-menu-scrollbar-width"
+  | "--console-context-menu-scrollbar-color"
   | "--console-context-menu-background-color"
   | "--console-context-menu-border"
   | "--console-context-menu-color"

@@ -1,0 +1,32 @@
+---
+label: "Serialization"
+description: "Serialize and restore rich JavaScript values, messages, and events."
+---
+
+Plain JSON cannot preserve many values that appear in real console output. The serialization helpers preserve or safely represent:
+
+- `undefined`
+- bigint
+- symbols
+- function placeholders
+- `NaN`, infinities, and `-0`
+- `Error`
+- `Date`
+- `RegExp`
+- `Map` and `Set`
+- `ArrayBuffer`, `DataView`, and typed arrays
+- HTML elements and NodeLists
+- circular references
+
+Available helpers:
+
+| Helper                        | Purpose                                         |
+| ----------------------------- | ----------------------------------------------- |
+| `serializeConsoleValue()`     | Convert one value to a JSON-safe representation |
+| `deserializeConsoleValue()`   | Restore one serialized value                    |
+| `serializeConsoleMessage()`   | Serialize every value in a console message      |
+| `deserializeConsoleMessage()` | Restore a serialized console message            |
+| `serializeConsoleEvent()`     | Serialize a `message` or `clear` event          |
+| `deserializeConsoleEvent()`   | Restore a serialized event                      |
+
+`serializeConsoleValue()` also accepts `maxDepth` and `maxEntries` limits so transport payloads can be bounded.

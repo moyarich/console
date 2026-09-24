@@ -1,0 +1,49 @@
+---
+label: "Console methods"
+description: "Supported console methods, grouping, timers, tables, and proxy behavior."
+---
+
+`createConsoleProxy()` implements the following console methods. `captureConsole()` wraps the same method set when capturing a real console.
+
+| Console call                 | Message/output behavior                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `log(...data)`               | Emits a `log` message with the original values                                                                         |
+| `debug(...data)`             | Emits a `debug` message                                                                                                |
+| `info(...data)`              | Emits an `info` message                                                                                                |
+| `warn(...data)`              | Emits a `warn` message                                                                                                 |
+| `error(...data)`             | Emits an `error` message                                                                                               |
+| `assert(condition, ...data)` | Emits `assert` only when the condition is false; defaults to `"Assertion failed"` when no message is supplied          |
+| `dir(value, options)`        | Emits one `dir` message and records the requested expansion depth; default depth is 1 and `depth: null` expands deeply |
+| `dirxml(...data)`            | Emits a `dir` message with expansion depth 1                                                                           |
+| `table(data, columns?)`      | Emits a `table` message and preserves optional requested columns                                                       |
+| `count(label?)`              | Increments an internal counter and emits `"label: n"`; label defaults to `"default"`                                   |
+| `countReset(label?)`         | Resets the internal counter to 0 and emits no message                                                                  |
+| `time(label?)`               | Starts/restarts an internal timer and emits no message                                                                 |
+| `timeLog(label?, ...data)`   | Emits a `log` message with elapsed milliseconds plus additional values; emits `warn` if the timer does not exist       |
+| `timeEnd(label?)`            | Emits a `timeEnd` message with elapsed milliseconds and removes the timer; emits `warn` if it does not exist           |
+| `timeStamp()`                | Currently a no-op                                                                                                      |
+| `trace(...data)`             | Emits a `trace` message and appends a generated JavaScript stack trace when available                                  |
+| `group(...data)`             | Optionally emits a group header, then increases nesting depth                                                          |
+| `groupCollapsed(...data)`    | Same nesting behavior as `group()`, but emits `groupCollapsed` metadata                                                |
+| `groupEnd()`                 | Decreases nesting depth without emitting a message                                                                     |
+| `clear()`                    | Emits `clear` through the proxy's event channel                                                                        |
+
+If sandboxed code calls an unknown console method on the proxy, the proxy does not throw. It falls back to a `log` message whose first value is `"<method>:"`.
+
+### Example: timers and groups
+
+```ts
+const events = createConsoleEventEmitter();
+const runtimeConsole = createConsoleProxy({ events });
+
+runtimeConsole.group("build");
+runtimeConsole.time("compile");
+
+runtimeConsole.log("Compiling", { files: 42 });
+runtimeConsole.timeLog("compile", "after parsing");
+runtimeConsole.timeEnd("compile");
+
+runtimeConsole.groupEnd();
+```
+
+The messages contain the calculated group depth and timer output, so the renderer does not need to reconstruct console state later.

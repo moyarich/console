@@ -1,0 +1,92 @@
+---
+label: "Public API"
+description: "Reference of public components, hooks, types, extension APIs, transport helpers, and utilities."
+---
+
+### Components
+
+| Export           | Purpose                                  |
+| ---------------- | ---------------------------------------- |
+| `Console`        | Complete structured-console / ANSI panel |
+| `ConsoleHandle`  | Supported imperative viewport navigation |
+| `ConsoleMessage` | Render one structured message            |
+| `ConsoleValue`   | Render one JavaScript value              |
+| `ConsoleTable`   | Render normalized `console.table()` data |
+| `ConsoleStdout`  | Lower-level ANSI process-output list     |
+
+### State, capture, and events
+
+| Export                      | Purpose                                                  |
+| --------------------------- | -------------------------------------------------------- |
+| `useConsoleMessages`        | React message state connected to a console event channel |
+| `captureConsole`            | Temporarily wrap an existing `Console` object            |
+| `createConsoleProxy`        | Create a console-compatible producer for sandboxed code  |
+| `createConsoleEventEmitter` | Typed `message` / `clear` event channel                  |
+
+### Structured-output parsing
+
+| Export                                 | Purpose                                                   |
+| -------------------------------------- | --------------------------------------------------------- |
+| `ConsoleStructuredOutputParser`        | Parse one ANSI-stripped output entry into a value         |
+| `ConsoleStructuredOutputParserContext` | Original entry metadata passed to structured-output hooks |
+
+### Links
+
+| Export                       | Purpose                                                       |
+| ---------------------------- | ------------------------------------------------------------- |
+| `ConsoleLink`                | Text/range/target/action metadata for one interactive range   |
+| `ConsoleLinkProvider`        | Discover application-specific links in rendered text          |
+| `ConsoleLinkProviderContext` | Mode/value/process metadata supplied to link providers        |
+| `ConsoleLinkActionContext`   | Activated link plus provider/source context                   |
+| `detectWebLinks`             | Detect safe HTTP/HTTPS URL ranges                             |
+| `resolveConsoleLinks`        | Resolve explicit links, providers, and built-in URL detection |
+| `isSafeConsoleLinkTarget`    | Validate navigation targets used by the built-in renderer     |
+
+### Custom rendering
+
+| Export                          | Purpose                                                         |
+| ------------------------------- | --------------------------------------------------------------- |
+| `getConsoleValueType`           | Resolve the normalized type key used by value-renderer dispatch |
+| `ConsoleMessageRenderer`        | Message renderer entry type                                     |
+| `ConsoleMessageRendererContext` | Message renderer context type                                   |
+| `ConsoleOutputRenderer`         | Complete output-surface renderer entry type                     |
+| `ConsoleOutputRendererContext`  | Structured/ANSI context plus built-in `renderDefault()`         |
+| `ConsoleValueRenderer`          | Value renderer entry type                                       |
+| `ConsoleValueRendererContext`   | Value renderer context type                                     |
+
+### Addons and extension infrastructure
+
+| Export                                            | Purpose                                                                |
+| ------------------------------------------------- | ---------------------------------------------------------------------- |
+| `ConsoleAddon` / `ConsoleAddonHost`               | Stable lifecycle contract for reusable addons                          |
+| `createConsoleAddonManager`                       | Load/unload addons against shared registries, including headless hosts |
+| `consoleExtensionPoints`                          | Built-in processor/parser/link/renderer/action extension points        |
+| `consoleServices`                                 | Built-in typed services, including the shared viewport service         |
+| `createConsoleExtensionPoint`                     | Define a typed third-party multi-provider extension point              |
+| `createConsoleServiceToken`                       | Define a typed single-provider service                                 |
+| `consoleCapabilities` / `createConsoleCapability` | Discover optional host functionality                                   |
+| `createConsoleDisposableScope`                    | Group arbitrary resources under idempotent cleanup                     |
+
+### Transport and serialization
+
+| Export                                                  | Purpose                                                  |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| `listenForConsolePostMessages`                          | Receive validated console events from `postMessage`      |
+| `listenForConsoleWebSocket`                             | Receive validated console events from WebSocket messages |
+| `serializeConsoleValue` / `deserializeConsoleValue`     | Round-trip rich values                                   |
+| `serializeConsoleMessage` / `deserializeConsoleMessage` | Round-trip structured messages                           |
+| `serializeConsoleEvent` / `deserializeConsoleEvent`     | Round-trip console events                                |
+| `CONSOLE_TRANSPORT_TYPE`                                | Envelope type, currently `"CONSOLE_PANEL"`               |
+| `CONSOLE_TRANSPORT_VERSION`                             | Envelope version, currently `1`                          |
+| `DEFAULT_CONSOLE_CHANNEL`                               | Default channel name                                     |
+| `isConsoleEnvelope`                                     | Runtime envelope validator                               |
+
+### Utilities
+
+| Export                       | Purpose                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| `CONSOLE_METHODS`            | Message methods understood by structured rendering/transport validation |
+| `normalizeConsoleTableData`  | Normalize values for the table renderer                                 |
+| `formatConsoleObjectForCopy` | Format inspectable values for copy actions                              |
+
+The package also exports the corresponding component, hook, transport, event, serialization, and message TypeScript types from `packages/console/src/index.ts`.

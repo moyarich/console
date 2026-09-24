@@ -1,0 +1,368 @@
+---
+label: "Addons"
+description: "Addon lifecycle, extension points, services, capabilities, and headless hosts."
+---
+
+Use `addons` when a reusable feature needs to combine several console extension points, shared APIs, or lifecycle resources behind one package-level abstraction.
+
+```tsx
+import {
+  Console,
+  consoleExtensionPoints,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+function createBuildAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-build-tools",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.linkProvider, {
+        id: "build-task-links",
+        provideLinks(text) {
+          const match = /TASK-\d+/.exec(text);
+
+          if (!match || match.index === undefined) {
+            return undefined;
+          }
+
+          return [
+            {
+              text: match[0],
+              start: match.index,
+              end: match.index + match[0].length,
+              action: () => openTask(match[0]),
+            },
+          ];
+        },
+      });
+    },
+  };
+}
+
+const buildAddon = createBuildAddon();
+
+<Console messages={messages} addons={[buildAddon]} />;
+```
+
+An addon owns **lifecycle and composition**, not a fixed list of feature fields:
+
+```ts
+interface ConsoleAddon {
+  readonly id: string;
+  activate(host: ConsoleAddonHost): ConsoleAddonCleanup;
+}
+```
+
+Every addon has a required stable ID. Use a package-qualified ID to avoid collisions:
+
+- one addon per package: `@acme/console-addon-search`
+- multiple addons from one package: `@acme/console-tools:search`
+- application-local addons: use an application namespace such as `my-app:build-tools`
+
+First-party core addons are normal workspace packages with package-qualified IDs, for example:
+
+```text
+@moyarich/console-addon-imperative-scrolling
+@moyarich/console-addon-search
+@moyarich/console-addon-links
+```
+
+They use the same `ConsoleAddon` interface and lifecycle as external addons. The `core` distinction describes first-party ownership; it does not create a second runtime addon type.
+
+`@moyarich/console` does not import or auto-register sibling `console-addon-*` packages. Add the packages you want explicitly:
+
+```tsx
+import {
+  createImperativeScrollingAddon,
+  IMPERATIVE_SCROLLING_ADDON_ID,
+} from "@moyarich/console-addon-imperative-scrolling";
+
+<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
+```
+
+Use `disabledAddonIds` to keep a supplied addon inactive:
+
+```tsx
+<Console
+  messages={messages}
+  addons={[createImperativeScrollingAddon()]}
+  disabledAddonIds={[IMPERATIVE_SCROLLING_ADDON_ID]}
+/>
+```
+
+`disabledAddonIds` is controlled state. Adding an ID unloads the supplied addon and runs its normal cleanup; removing the ID allows it to load again.
+
+For headless hosts, addons can also be removed directly by ID:
+
+```ts
+const manager = createConsoleAddonManager();
+
+manager.load(addon);
+manager.unload(addon.id);
+```
+
+`unload(id)` returns `true` when an active addon was removed and `false` when no addon with that ID was loaded.
+
+The host exposes four generic concepts:
+
+| API                 | Purpose                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `host.extensions`   | Register ordered multi-provider contributions such as processors, parsers, renderers, links, and actions |
+| `host.services`     | Publish or consume a typed single-provider API/state service                                             |
+| `host.capabilities` | Detect optional functionality without reaching into React or DOM internals                               |
+| `host.scope`        | Own listeners, subscriptions, and other disposables for the addon lifetime                               |
+
+### Built-in extension points
+
+`consoleExtensionPoints` currently exposes the package's existing composable hooks:
+
+- `processOutputProcessor`
+- `structuredOutputParser`
+- `linkProvider`
+- `outputRenderer`
+- `frameDecorator`
+- `messageRenderer`
+- `valueRenderer`
+- `panelAction`
+- `contextMenuAction`
+- `messageAction`
+
+Direct component props remain supported. When both a direct prop and addon contributions target the same ordered hook, the direct prop entries are placed first so the embedding application retains final control over dispatch precedence.
+
+### Replacing the output surface
+
+`ConsoleStdout` remains the built-in, zero-configuration ANSI/process-output renderer. It is a core default implementation, **not** an addon that applications must install.
+
+The output architecture is symmetric across both modes:
+
+```text
+                         Console
+                            │
+                            ▼
+                 outputRenderer extensions
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+   mode: "console"                     mode: "ansi"
+          │                                   │
+     handled?                            handled?
+      │     │                             │     │
+     yes    no                           yes    no
+      │     │                             │     │
+      ▼     ▼                             ▼     ▼
+ custom   built-in                    custom  ConsoleStdout
+ feed     structured                  terminal   default
+ surface  renderer                    surface
+```
+
+An addon can replace the complete inner output surface through `consoleExtensionPoints.outputRenderer` while `Console` continues to own the panel frame, title, actions, context menu, addon lifecycle, and output viewport. Layout-oriented addons can instead use `consoleExtensionPoints.frameDecorator` to wrap the complete frame without replacing its output renderer.
+
+This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
+
+```tsx
+function createTerminalSurfaceAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-terminal-surface",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "ansi",
+        render(context) {
+          if (context.mode !== "ansi") {
+            return undefined;
+          }
+
+          return <MyTerminal entries={context.entries} />;
+        },
+      });
+    },
+  };
+}
+```
+
+The same extension point can replace structured console rendering:
+
+```tsx
+function createConsoleFeedAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-feed",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "console",
+        render(context) {
+          if (context.mode !== "console") {
+            return undefined;
+          }
+
+          return <MyConsoleFeed messages={context.messages} />;
+        },
+      });
+    },
+  };
+}
+```
+
+The discriminated renderer context keeps the source data appropriate to each mode:
+
+- `mode: "console"` receives structured `ConsoleMessageData[]` as `context.messages`
+- `mode: "ansi"` receives strings / `ConsoleStdoutEntry[]` as `context.entries`
+- both modes receive `renderDefault()` for wrapping or decorating the built-in renderer
+
+Returning `undefined` delegates to the next output renderer and ultimately the built-in surface. Any other React result, including `null`, counts as an intentional replacement.
+
+The renderer context also exposes `renderDefault()`, so an addon can wrap or decorate the built-in surface instead of replacing it completely:
+
+```tsx
+host.extensions.register(consoleExtensionPoints.outputRenderer, {
+  mode: "ansi",
+  render: ({ renderDefault }) => (
+    <TerminalShell>{renderDefault()}</TerminalShell>
+  ),
+});
+```
+
+A custom output renderer can still handle an empty source list. This is intentional: terminal implementations such as xterm.js may need to initialize before future process chunks arrive, and structured feed renderers may want to own their own empty state.
+
+The output renderer is implementation-neutral. It can support console-feed-style structured views, alternative terminal engines, virtualized output views, trace views, or other complete output presentations without adding another `Console` mode or feature-specific field to `ConsoleAddon`.
+
+### Custom extension points
+
+Third-party packages can define their own typed extension points without changing `ConsoleAddon`:
+
+```ts
+import {
+  createConsoleExtensionPoint,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface DiagnosticProvider {
+  analyze(text: string): string | undefined;
+}
+
+export const diagnosticProvider =
+  createConsoleExtensionPoint<DiagnosticProvider>("acme.diagnosticProvider");
+
+export function createDiagnosticAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-diagnostics",
+    activate(host) {
+      host.extensions.register(
+        diagnosticProvider,
+        {
+          analyze: (text) => (text.includes("ERROR") ? "failure" : undefined),
+        },
+        {
+          id: "default",
+          priority: 100,
+        },
+      );
+    },
+  };
+}
+```
+
+Higher extension priorities are returned first. Equal priorities preserve registration order. Registration IDs are optional, but when supplied they must be unique within that extension point.
+
+### Services
+
+Use a service when one addon or core feature publishes an API that another addon consumes:
+
+```ts
+import {
+  createConsoleServiceToken,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface BuildService {
+  rerun(): void;
+}
+
+const buildService = createConsoleServiceToken<BuildService>("acme.build");
+
+const provider: ConsoleAddon = {
+  id: "@acme/console-build-tools:provider",
+  activate(host) {
+    host.services.provide(buildService, {
+      rerun: () => runBuild(),
+    });
+  },
+};
+
+const consumer: ConsoleAddon = {
+  id: "@acme/console-build-tools:actions",
+  activate(host) {
+    const build = host.services.require(buildService);
+
+    // Register actions/commands that call build.rerun().
+  },
+};
+```
+
+A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
+
+`@moyarich/console` provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. Workspace addons such as `@moyarich/console-addon-imperative-scrolling`, search, and navigation consume this shared service rather than implementing their own viewport logic.
+
+### Capabilities
+
+The React `Console` host currently advertises:
+
+- `consoleCapabilities.react`
+- `consoleCapabilities.dom`
+- `consoleCapabilities.structuredMessages` in structured-console mode
+- `consoleCapabilities.processOutput` in ANSI/process-output mode
+
+Use capabilities when an addon can adapt to multiple host surfaces:
+
+```ts
+if (host.capabilities.has(consoleCapabilities.processOutput)) {
+  // Register process-output behavior.
+}
+```
+
+Future headless/session hosts can expose a different capability set without changing the addon contract.
+
+### Lifecycle and cleanup
+
+Every addon activation receives its own disposable scope. Registrations made through the scoped `host.extensions` and `host.services` registries are removed automatically when the addon unloads.
+
+Use `host.scope` for other resources:
+
+```ts
+activate(host) {
+  const controller = new AbortController();
+
+  host.scope.defer(() => {
+    controller.abort();
+  });
+
+  return () => {
+    // Optional additional addon cleanup.
+  };
+}
+```
+
+Cleanup is idempotent. When an addon manager is disposed, loaded addons are disposed in reverse activation order.
+
+`<Console addons={...} />` treats the addon list as controlled state. Removing an addon unloads it. Reusing the same addon instance under the same ID keeps it active even if the array container changes. Stateful addons should therefore be created once, for example with `useMemo`, instead of creating a new instance during every render:
+
+```tsx
+const addons = useMemo(() => [createBuildAddon()], []);
+
+return <Console messages={messages} addons={addons} />;
+```
+
+Duplicate addon IDs are rejected deterministically. Prefer the npm package name as the addon ID, or `<package>:<feature>` when one package exposes multiple addons.
+
+### Headless and advanced hosts
+
+The package also exports the generic factories used by the React integration:
+
+- `createConsoleAddonManager()`
+- `createConsoleExtensionPoint()`
+- `createConsoleExtensionRegistry()`
+- `createConsoleServiceToken()`
+- `createConsoleServiceRegistry()`
+- `createConsoleCapability()`
+- `createConsoleCapabilityRegistry()`
+- `createConsoleDisposableScope()`
+
+These contracts intentionally do not expose private component nodes or terminal cursor/buffer concepts. Future data, view, viewport, selection, session, and raw-process stages can be introduced as new services or extension points without adding feature-specific fields to `ConsoleAddon`.
