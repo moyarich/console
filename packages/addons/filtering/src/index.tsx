@@ -299,7 +299,6 @@ export function ConsoleFilteringControls({
   messages,
   sources,
   className = "",
-  style,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
   const availableSources = useMemo(
@@ -318,51 +317,67 @@ export function ConsoleFilteringControls({
     state.methods !== null ||
     state.sources !== null ||
     state.text.trim().length > 0;
+  const enabledMethods = CONSOLE_FILTERING_METHODS.filter(
+    (method) => state.methods === null || state.methods.includes(method),
+  );
+  const methodLabel =
+    state.methods === null ||
+    enabledMethods.length === CONSOLE_FILTERING_METHODS.length
+      ? "All levels"
+      : enabledMethods.length === 0
+        ? "No levels"
+        : `${enabledMethods.length} levels`;
 
   return (
     <div
       className={`console-filtering-controls ${className}`.trim()}
-      style={style}
-      role="group"
+      role="search"
       aria-label="Console filters"
     >
-      <div
-        className="console-filtering-methods"
-        role="group"
-        aria-label="Message methods"
-      >
-        {CONSOLE_FILTERING_METHODS.map((method) => {
-          const enabled =
-            state.methods === null || state.methods.includes(method);
+      <input
+        className="console-filtering-search-input"
+        type="search"
+        aria-label="Filter console output"
+        value={state.text}
+        placeholder="Filter console output"
+        onChange={(event) => controller.setText(event.currentTarget.value)}
+      />
 
-          return (
-            <button
-              key={method}
-              type="button"
-              className="console-filtering-method"
-              aria-pressed={enabled}
-              onClick={() => controller.setMethodEnabled(method, !enabled)}
-            >
-              {method}
-            </button>
-          );
-        })}
-      </div>
+      <div className="console-filtering-actions">
+        <details className="console-filtering-method-menu">
+          <summary className="console-filtering-trigger">{methodLabel}</summary>
+          <div
+            className="console-filtering-method-popover"
+            role="group"
+            aria-label="Message levels"
+          >
+            {CONSOLE_FILTERING_METHODS.map((method) => {
+              const enabled =
+                state.methods === null || state.methods.includes(method);
 
-      <label className="console-filtering-field console-filtering-search">
-        <span className="console-filtering-label">Filter</span>
-        <input
-          type="search"
-          value={state.text}
-          placeholder="Filter console output"
-          onChange={(event) => controller.setText(event.currentTarget.value)}
-        />
-      </label>
+              return (
+                <label key={method} className="console-filtering-method-option">
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    onChange={(event) =>
+                      controller.setMethodEnabled(
+                        method,
+                        event.currentTarget.checked,
+                      )
+                    }
+                  />
+                  <span>{method}</span>
+                </label>
+              );
+            })}
+          </div>
+        </details>
 
-      {availableSources.length > 0 && (
-        <label className="console-filtering-field">
-          <span className="console-filtering-label">Source</span>
+        {availableSources.length > 0 && (
           <select
+            className="console-filtering-source-select"
+            aria-label="Filter by source"
             value={sourceValue}
             onChange={(event) =>
               controller.setSources(
@@ -375,7 +390,7 @@ export function ConsoleFilteringControls({
             <option value="">All sources</option>
             {hasCustomSourceSelection && (
               <option value="__custom__" disabled>
-                Custom selection
+                Custom sources
               </option>
             )}
             {availableSources.map((source) => (
@@ -384,18 +399,19 @@ export function ConsoleFilteringControls({
               </option>
             ))}
           </select>
-        </label>
-      )}
+        )}
 
-      {active && (
-        <button
-          type="button"
-          className="console-filtering-reset"
-          onClick={() => controller.reset()}
-        >
-          Reset
-        </button>
-      )}
+        {active && (
+          <button
+            type="button"
+            className="console-filtering-reset"
+            aria-label="Reset console filters"
+            onClick={() => controller.reset()}
+          >
+            Reset
+          </button>
+        )}
+      </div>
     </div>
   );
 }
