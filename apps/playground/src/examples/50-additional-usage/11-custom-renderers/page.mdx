@@ -3,9 +3,7 @@ label: "Custom renderers"
 description: "Customize values and whole message rows independently while preserving built-in fallback behavior."
 ---
 
-import ValueRenderer from "./value-renderer.tsx";
 import valueRendererSource from "./value-renderer.tsx?raw";
-import MessageRenderer from "./message-renderer.tsx";
 import messageRendererSource from "./message-renderer.tsx?raw";
 
 ## Value renderer
@@ -13,7 +11,6 @@ import messageRendererSource from "./message-renderer.tsx?raw";
 Use a value renderer when only a particular value needs custom presentation. Returning `undefined` keeps the built-in inspector as the fallback.
 
 <RunnableExample
-  component={ValueRenderer}
   source={valueRendererSource}
   sourcePath="value-renderer.tsx"
   title="Value renderer"
@@ -24,7 +21,6 @@ Use a value renderer when only a particular value needs custom presentation. Ret
 Use a message renderer when the whole console row needs custom presentation. `renderDefault()` lets a wrapper preserve the standard message UI.
 
 <RunnableExample
-  component={MessageRenderer}
   source={messageRendererSource}
   sourcePath="message-renderer.tsx"
   title="Message renderer"

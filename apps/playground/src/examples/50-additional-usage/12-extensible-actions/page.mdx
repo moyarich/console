@@ -3,9 +3,7 @@ label: "Extensible actions"
 description: "Add host-defined context-menu and per-message actions with visibility and disabled predicates."
 ---
 
-import ContextMenuActions from "./context-menu-actions.tsx";
 import contextMenuActionsSource from "./context-menu-actions.tsx?raw";
-import MessageActions from "./message-actions.tsx";
 import messageActionsSource from "./message-actions.tsx?raw";
 
 ## Context-menu actions
@@ -13,7 +11,6 @@ import messageActionsSource from "./message-actions.tsx?raw";
 Context actions receive the target kind, so the same menu can adapt to the console surface, a message, or an inspected object.
 
 <RunnableExample
-  component={ContextMenuActions}
   source={contextMenuActionsSource}
   sourcePath="context-menu-actions.tsx"
   title="Context-menu actions"
@@ -24,7 +21,6 @@ Context actions receive the target kind, so the same menu can adapt to the conso
 Message actions receive the selected message and index. Use predicates to disable or hide commands based on message metadata.
 
 <RunnableExample
-  component={MessageActions}
   source={messageActionsSource}
   sourcePath="message-actions.tsx"
   title="Message actions"
