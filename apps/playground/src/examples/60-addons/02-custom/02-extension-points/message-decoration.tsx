@@ -23,7 +23,7 @@ export default function MessageDecorationExample() {
             {
               id: "error-badge",
               placement: "badge",
-              match: (message) => message.method === "error",
+              match: ({ message }) => message.method === "error",
               render: () => (
                 <span
                   style={{
