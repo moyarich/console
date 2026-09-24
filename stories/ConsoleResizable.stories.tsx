@@ -82,8 +82,7 @@ const darkResizeTheme = {
   "--console-resize-separator-grip-border": "1px solid #3d444d",
   "--console-resize-separator-grip-background-color": "#21262d",
   "--console-resize-separator-grip-border-radius": "999px",
-  "--console-resize-separator-grip-box-shadow":
-    "0 2px 8px rgb(0 0 0 / 0.28)",
+  "--console-resize-separator-grip-box-shadow": "0 2px 8px rgb(0 0 0 / 0.28)",
 } as CSSProperties;
 
 function isHorizontalDock(dock: DockPosition) {
@@ -273,20 +272,22 @@ function EditorShell() {
 
   return (
     <div
-      style={{
-        display: "grid",
-        gridTemplateRows: "44px minmax(0, 1fr)",
-        width: "100%",
-        height: "min(720px, calc(100vh - 48px))",
-        minHeight: 460,
-        overflow: "hidden",
-        border: "1px solid #30363d",
-        borderRadius: 10,
-        background: "#0d1117",
-        boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
-        "--console-color-scheme": "dark",
-        "--console-context-menu-color-scheme": "dark",
-      } as CSSProperties}
+      style={
+        {
+          display: "grid",
+          gridTemplateRows: "44px minmax(0, 1fr)",
+          width: "100%",
+          height: "min(720px, calc(100vh - 48px))",
+          minHeight: 460,
+          overflow: "hidden",
+          border: "1px solid #30363d",
+          borderRadius: 10,
+          background: "#0d1117",
+          boxShadow: "0 16px 40px rgb(0 0 0 / 0.18)",
+          "--console-color-scheme": "dark",
+          "--console-context-menu-color-scheme": "dark",
+        } as CSSProperties
+      }
     >
       <div
         style={{
