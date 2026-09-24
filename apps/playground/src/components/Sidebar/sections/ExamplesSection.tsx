@@ -17,7 +17,7 @@ import { buildExampleNavigation } from "./exampleNavigation";
 
 interface ExamplesSectionProps {
   examples: readonly ConsoleExample[];
-  value: string;
+  value?: string;
   onChange: (id: string) => void;
 }
 
