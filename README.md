@@ -1161,7 +1161,8 @@ packages/
 └─ addons/
    ├─ data-export/          → @moyarich/console-addon-data-export
    ├─ diagnostics/          → @moyarich/console-addon-diagnostics
-   └─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
+   ├─ imperative-scrolling/ → @moyarich/console-addon-imperative-scrolling
+   └─ resizable/            → @moyarich/console-addon-resizable
 ```
 
 Portable or headless addons can depend only on core:
@@ -1297,6 +1298,7 @@ The host exposes four generic concepts:
 - `structuredOutputParser`
 - `linkProvider`
 - `outputRenderer`
+- `frameDecorator`
 - `messageRenderer`
 - `valueRenderer`
 - `panelAction`
