@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@moyarich/console/styles.css";
+import "@moyarich/console-addon-resizable/styles.css";
 import "./components/MonacoEditor/setup";
 import "./styles.css";
 import { App } from "./App";
