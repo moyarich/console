@@ -8,8 +8,8 @@ import {
 const messageRenderers: ConsoleMessageRenderer[] = [
   {
     method: "info",
-    match: (message) => message.source === "build",
-    render: (_message, { renderDefault }) => (
+    match: ({ message }) => message.source === "build",
+    render: ({ renderDefault }) => (
       <div style={{ borderLeft: "3px solid currentColor", paddingLeft: 6 }}>
         {renderDefault()}
       </div>
