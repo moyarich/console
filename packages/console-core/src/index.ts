@@ -834,11 +834,10 @@ export type ConsoleMessageDecorationPlacement =
   | "badge"
   | "overlay";
 
-export interface ConsoleMessageDecorationContext<TUi = unknown> {
+export interface ConsoleMessageDecorationContext {
   readonly index: number;
   readonly messages: readonly ConsoleMessageData[];
   readonly placement: ConsoleMessageDecorationPlacement;
-  renderDefault: () => TUi;
 }
 
 export interface ConsoleMessageDecoration<TUi = unknown> {
@@ -846,11 +845,11 @@ export interface ConsoleMessageDecoration<TUi = unknown> {
   readonly placement: ConsoleMessageDecorationPlacement;
   match?: (
     message: ConsoleMessageData,
-    context: ConsoleMessageDecorationContext<TUi>,
+    context: ConsoleMessageDecorationContext,
   ) => boolean;
   render: (
     message: ConsoleMessageData,
-    context: ConsoleMessageDecorationContext<TUi>,
+    context: ConsoleMessageDecorationContext,
   ) => TUi | undefined;
 }
 
