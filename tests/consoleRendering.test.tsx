@@ -157,7 +157,7 @@ describe("Console rendering", () => {
           { method: "log", data: ["visible"], depth: 0 },
           { method: "debug", data: ["hidden"], depth: 0 },
         ]}
-        filter={(message) => message.method !== "debug"}
+        filter={({ message }) => message.method !== "debug"}
       />,
     );
 
@@ -464,7 +464,8 @@ describe("Console rendering", () => {
           },
         ]}
         structuredOutputParsers={[
-          (text, context) => {
+          (context) => {
+            const { text } = context;
             receivedText = text;
             receivedId = context.id;
             receivedStream = context.stream;
@@ -534,14 +535,15 @@ describe("Console rendering", () => {
     const processors: ConsoleProcessOutputProcessor[] = [
       {
         id: "prefix",
-        process: (output) => ({
+        process: ({ output }) => ({
           data: `first: ${output.data}`,
           metadata: { stage: "first" },
         }),
       },
       {
         id: "promote",
-        process: (output, context) => {
+        process: (context) => {
+          const { output } = context;
           observations.push([context.text, output.metadata.stage]);
 
           return {
@@ -569,7 +571,7 @@ describe("Console rendering", () => {
   it("continues with later processors when one throws", () => {
     const processors: ConsoleProcessOutputProcessor[] = [
       {
-        process: (output) => ({ data: `before ${output.data}` }),
+        process: ({ output }) => ({ data: `before ${output.data}` }),
       },
       {
         process: () => {
@@ -577,7 +579,7 @@ describe("Console rendering", () => {
         },
       },
       {
-        process: (output) => ({ data: `${output.data} after` }),
+        process: ({ output }) => ({ data: `${output.data} after` }),
       },
     ];
 
@@ -601,7 +603,8 @@ describe("Console rendering", () => {
           },
         ]}
         structuredOutputParsers={[
-          (text, context) => {
+          (context) => {
+            const { text } = context;
             receivedKind = context.metadata?.kind;
             return text.startsWith("EVENT") ? { text } : undefined;
           },
@@ -651,7 +654,7 @@ describe("Console rendering", () => {
         messageRenderers={[
           {
             method: "warn",
-            render: (_message, { renderDefault }) => (
+            render: ({ renderDefault }) => (
               <section data-custom-message="warning">{renderDefault()}</section>
             ),
           },
@@ -678,7 +681,7 @@ describe("Console rendering", () => {
         valueRenderers={[
           {
             type: "number",
-            render: (value) =>
+            render: ({ value }) =>
               value === 42 ? (
                 <mark data-custom-value="answer">42</mark>
               ) : undefined,
@@ -777,7 +780,7 @@ describe("Console rendering", () => {
   it("uses custom link providers in structured and ANSI modes", () => {
     const provider: ConsoleLinkProvider = {
       id: "source-location",
-      provideLinks(text) {
+      provideLinks({ text }) {
         const match = /src\/app\.ts:42:8/.exec(text);
 
         if (match?.index === undefined) {
@@ -857,7 +860,7 @@ describe("Console rendering", () => {
   it("renders link providers for completed stdout and stderr entries", () => {
     const provider: ConsoleLinkProvider = {
       id: "source-location",
-      provideLinks(text) {
+      provideLinks({ text }) {
         const match = /src\/cli\/run\.ts:91:12/.exec(text);
 
         return match?.index === undefined

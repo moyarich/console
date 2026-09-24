@@ -32,8 +32,8 @@ function createMessageRendererAddon(): ConsoleAddon {
         consoleExtensionPoints.messageRenderer,
         {
           method: "info",
-          match: (message) => message.source === "build",
-          render: (message) => (
+          match: ({ message }) => message.source === "build",
+          render: ({ message }) => (
             <div
               style={{ borderLeft: "3px solid currentColor", paddingLeft: 8 }}
             >

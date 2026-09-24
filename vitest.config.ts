@@ -17,6 +17,9 @@ export default defineConfig({
       "@moyarich/console-addon-data-export": fileURLToPath(
         new URL("./packages/addons/data-export/src/index.ts", import.meta.url),
       ),
+      "@moyarich/console-addon-filtering": fileURLToPath(
+        new URL("./packages/addons/filtering/src/index.tsx", import.meta.url),
+      ),
       "@moyarich/console-addon-imperative-scrolling": fileURLToPath(
         new URL(
           "./packages/addons/imperative-scrolling/src/index.ts",

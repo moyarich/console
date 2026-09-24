@@ -43,8 +43,8 @@ function createValueRendererAddon(): ConsoleAddon {
         consoleExtensionPoints.valueRenderer,
         {
           type: "Object",
-          match: isMetric,
-          render(value) {
+          match: ({ value }) => isMetric(value),
+          render({ value }) {
             if (!isMetric(value)) return undefined;
 
             return (

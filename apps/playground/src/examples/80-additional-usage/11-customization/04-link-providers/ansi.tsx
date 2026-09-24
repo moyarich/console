@@ -24,7 +24,7 @@ export default function AnsiLinkProviderExample() {
 
   const sourceProvider: ConsoleLinkProvider = {
     id: "source-location",
-    provideLinks(text) {
+    provideLinks({ text }) {
       return Array.from(
         text.matchAll(/\b[\w./-]+\.(?:ts|tsx|js|jsx):\d+(?::\d+)?\b/g),
         (match) => ({

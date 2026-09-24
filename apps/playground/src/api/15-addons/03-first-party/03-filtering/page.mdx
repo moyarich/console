@@ -1,0 +1,108 @@
+---
+label: "Filtering addon"
+description: "Filter structured messages with reusable controls or a headless controller."
+---
+
+Install the first-party filtering addon separately when an application needs
+reusable structured-message filters:
+
+```bash
+npm install @moyarich/console-addon-filtering
+```
+
+Create the addon explicitly and pass it through the normal `addons` prop:
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleFilteringAddon } from "@moyarich/console-addon-filtering";
+
+const filteringAddon = createConsoleFilteringAddon();
+
+<Console messages={messages} addons={[filteringAddon]} />;
+```
+
+The addon contributes a `consoleExtensionPoints.messageFilter` predicate.
+Filtering is view-only: retained source messages are not deleted or rewritten.
+
+## Composition
+
+Addon filters compose with the existing host-owned `filter` prop. A message
+must satisfy the host predicate and every registered addon predicate to remain
+visible:
+
+```tsx
+<Console
+  messages={messages}
+  addons={[filteringAddon]}
+  filter={(message) => message.source !== "internal"}
+/>
+```
+
+This keeps application-specific rules in the host while reusable method, text,
+and source criteria stay in the addon.
+
+## Headless controller
+
+The default controls are optional. Applications can own the filter UI and drive
+the same state through `createConsoleFilteringController()`:
+
+```ts
+import {
+  createConsoleFilteringAddon,
+  createConsoleFilteringController,
+} from "@moyarich/console-addon-filtering";
+
+const controller = createConsoleFilteringController({
+  methods: ["warn", "error"],
+  sources: ["api"],
+});
+
+const filteringAddon = createConsoleFilteringAddon({ controller });
+
+controller.setText("timeout");
+controller.setMethodEnabled("warn", false);
+controller.reset();
+```
+
+The controller exposes `getState()`, `subscribe()`, state setters, `reset()`,
+and `matches(message)`. Use `createConsoleMessageFilter()` when a fixed
+standalone predicate is enough.
+
+## Default controls
+
+The addon registers its default control surface through
+`consoleExtensionPoints.panelElement`. Hosts do not need to mount a second
+component next to `<Console>`.
+
+The same addon therefore contributes both:
+
+- `consoleExtensionPoints.messageFilter` for method/text/source filtering
+- `consoleExtensionPoints.panelElement` for the default search/filter UI
+
+The control surface provides:
+
+- log / info / warn / error / debug method filtering
+- case-insensitive text filtering across method, source, and serialized values
+- source discovery from the Console's retained structured messages
+- reset behavior
+- native HTML Popover API controls for level selection
+
+Disable the default UI while keeping the filtering behavior when a host wants to
+render its own controls:
+
+```tsx
+const filteringAddon = createConsoleFilteringAddon({
+  controls: false,
+});
+```
+
+`ConsoleFilteringControls` remains exported for custom host layouts that use
+the addon headlessly. The default registered controls inherit the standard
+`color-scheme` and use `--console-filtering-*` theme inputs.
+
+## Lifecycle
+
+The addon ID is `@moyarich/console-addon-filtering`. Its controller is also
+exposed through `consoleFilteringService` while the addon is active. Unloading
+the addon removes both the message-filter contribution and the service through
+the normal addon scope lifecycle.

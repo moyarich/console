@@ -8,6 +8,7 @@ import {
 } from "../links";
 import {
   resolveConsoleProcessOutputEntries,
+  type ConsoleProcessControlParser,
   type ConsoleProcessOutputProcessor,
   type ConsoleResolvedProcessOutputEntry,
   type ConsoleStdoutEntry,
@@ -20,6 +21,11 @@ import type { ConsoleStructuredOutputParser } from "../utils/terminal/types";
 
 export type {
   ConsoleOutputStream,
+  ConsoleProcessControlEvent,
+  ConsoleProcessControlOutput,
+  ConsoleProcessControlParser,
+  ConsoleProcessControlParserContext,
+  ConsoleProcessControlParserResult,
   ConsoleProcessOutputMetadata,
   ConsoleProcessOutputProcessor,
   ConsoleStdoutEntry,
@@ -38,6 +44,8 @@ export interface ConsoleStdoutProps {
   emptyMessage?: string;
   /** Whether complete JSON object/array lines should render as structured values. */
   parseStructuredOutput?: boolean;
+  /** Ordered raw control parsers applied before line normalization. */
+  processControlParsers?: readonly ConsoleProcessControlParser[];
   /** Ordered process-output processors applied before structured parsing. */
   processors?: readonly ConsoleProcessOutputProcessor[];
   /** Ordered custom structured-output parsers. */
@@ -52,7 +60,7 @@ export interface ConsoleStdoutProps {
 
 interface ConsoleResolvedStdoutProps extends Omit<
   ConsoleStdoutProps,
-  "entries" | "processors"
+  "entries" | "processControlParsers" | "processors"
 > {
   resolvedEntries: readonly ConsoleResolvedProcessOutputEntry[];
 }
@@ -65,7 +73,7 @@ function AnsiText({
   links,
 }: {
   data: string;
-  context: ConsoleLinkProviderContext;
+  context: Omit<ConsoleLinkProviderContext, "text">;
   detectLinks: boolean;
   linkProviders?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
@@ -156,7 +164,7 @@ export function ConsoleResolvedStdout({
                 )
               : undefined;
         const clearLine = hasAnsiClearLine(data);
-        const linkContext: ConsoleLinkProviderContext = {
+        const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
           mode: "ansi",
           index,
           ...(entry.id !== undefined ? { id: entry.id } : {}),
@@ -212,13 +220,18 @@ export function ConsoleResolvedStdout({
  */
 export function ConsoleStdout({
   entries,
+  processControlParsers,
   processors,
   ...props
 }: ConsoleStdoutProps) {
   return (
     <ConsoleResolvedStdout
       {...props}
-      resolvedEntries={resolveConsoleProcessOutputEntries(entries, processors)}
+      resolvedEntries={resolveConsoleProcessOutputEntries(
+        entries,
+        processors,
+        processControlParsers,
+      )}
     />
   );
 }

@@ -33,7 +33,7 @@ export const WarningsAndErrorsOnly: Story = {
       },
     ],
     title: "Warnings and errors",
-    filter: (message) =>
+    filter: ({ message }) =>
       message.method === "warn" || message.method === "error",
   },
 };

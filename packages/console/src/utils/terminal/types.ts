@@ -1,9 +1,8 @@
 import type Anser from "anser";
 import type {
-  ConsoleOutputStream,
-  ConsoleProcessOutputMetadata,
-  ConsoleStdoutEntry,
-} from "../../processOutput";
+  ConsoleStructuredOutputParser as CoreConsoleStructuredOutputParser,
+  ConsoleStructuredOutputParserContext as CoreConsoleStructuredOutputParserContext,
+} from "../../addons";
 
 /** One token produced by Anser's ANSI parser. */
 export type AnserToken = ReturnType<typeof Anser.ansiToJson>[number];
@@ -19,25 +18,12 @@ export interface AnsiTokenRange {
 }
 
 /** Metadata supplied to custom terminal structured-output parsers. */
-export interface ConsoleStructuredOutputParserContext {
-  /** Logical process-output entry after core CR/newline normalization. */
-  entry: ConsoleStdoutEntry | string;
-  /** Zero-based entry index. */
-  index: number;
-  /** Stable entry id when one was supplied. */
-  id?: string;
-  /** stdout/stderr metadata when one was supplied. */
-  stream?: ConsoleOutputStream;
-  /** Metadata accumulated by process-output processors. */
-  metadata?: ConsoleProcessOutputMetadata;
-}
+export type ConsoleStructuredOutputParserContext =
+  CoreConsoleStructuredOutputParserContext;
 
 /**
  * Parses an ANSI-stripped process-output line into a structured value.
  *
  * Return `undefined` to allow another parser or normal ANSI rendering.
  */
-export type ConsoleStructuredOutputParser = (
-  text: string,
-  context: ConsoleStructuredOutputParserContext,
-) => unknown | undefined;
+export type ConsoleStructuredOutputParser = CoreConsoleStructuredOutputParser;

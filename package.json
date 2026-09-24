@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @moyarich/console-playground",
-    "build": "npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
+    "build": "npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
     "build:package": "npm run build:core && npm run build --workspace @moyarich/console",
     "build:playground": "npm run build --workspace @moyarich/console-playground",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
@@ -22,7 +22,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hooks:install": "git config core.hooksPath .githooks",
-    "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-resizable",
+    "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable",
     "build:core": "npm run build --workspace @moyarich/console-core"
   },
   "engines": {

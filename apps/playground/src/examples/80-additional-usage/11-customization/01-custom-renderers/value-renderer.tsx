@@ -9,8 +9,8 @@ import { isMetric } from "./metric";
 const valueRenderers: ConsoleValueRenderer[] = [
   {
     type: "Object",
-    match: isMetric,
-    render: (value) => {
+    match: ({ value }) => isMetric(value),
+    render: ({ value }) => {
       if (!isMetric(value) || value.presentation === "default") {
         return undefined;
       }

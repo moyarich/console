@@ -32,8 +32,8 @@ describe("console links", () => {
     const text = "Open src/app.ts:42:8 or https://example.com";
     const provider: ConsoleLinkProvider = {
       id: "source",
-      provideLinks(value) {
-        const match = /src\/app\.ts:42:8/.exec(value);
+      provideLinks({ text }) {
+        const match = /src\/app\.ts:42:8/.exec(text);
 
         return match?.index === undefined
           ? undefined
