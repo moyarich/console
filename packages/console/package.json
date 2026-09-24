@@ -5,7 +5,10 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": [
-    "./src/styles.css"
+    "./src/index.ts",
+    "./src/styles.css",
+    "./dist/index.js",
+    "./dist/index.cjs"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -36,7 +39,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external @moyarich/console-core --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --inject-style --external @moyarich/console-core --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
