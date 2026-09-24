@@ -56,7 +56,14 @@ export default function FilteringAddonExample() {
   const addons = useMemo(() => [filteringAddon], [filteringAddon]);
 
   return (
-    <div style={{ display: "grid", gap: 12, width: "100%", maxWidth: 820 }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 12,
+        width: "100%",
+        maxWidth: 820,
+      }}
+    >
       <ConsoleFilteringControls
         controller={filteringAddon.controller}
         messages={messages}
