@@ -1255,7 +1255,7 @@ body {
     transparent
   );
 
-  --playground-success: light-dark(#067647, #4ade80);
+  --playground-success: light-dark(#009162, #00cb95);
   --playground-danger: light-dark(#b42318, #fb7185);
   --playground-warning: light-dark(#b54708, #fbbf24);
 
