@@ -12,6 +12,9 @@ const config: StorybookConfig = {
       worker: {
         format: "es",
       },
+      worker: {
+        format: "es",
+      },
       resolve: {
         dedupe: ["vscode"],
         alias: [
