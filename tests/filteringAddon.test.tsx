@@ -45,7 +45,6 @@ const messages: ConsoleMessageData[] = [
   },
 ];
 
-
 function filterMessages(
   filter: ReturnType<typeof createConsoleMessageFilter>,
 ): ConsoleMessageData[] {
@@ -94,9 +93,7 @@ describe("@moyarich/console-addon-filtering", () => {
     ).toHaveLength(1);
     expect(
       messages
-        .filter((message, index) =>
-          initial[0]!({ message, index, messages }),
-        )
+        .filter((message, index) => initial[0]!({ message, index, messages }))
         .map((message) => message.id),
     ).toEqual(messages.map((message) => message.id));
 
@@ -112,9 +109,7 @@ describe("@moyarich/console-addon-filtering", () => {
     expect(updated).toHaveLength(1);
     expect(
       messages
-        .filter((message, index) =>
-          updated[0]!({ message, index, messages }),
-        )
+        .filter((message, index) => updated[0]!({ message, index, messages }))
         .map((message) => message.id),
     ).toEqual(["worker-error"]);
 
