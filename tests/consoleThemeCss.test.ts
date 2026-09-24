@@ -175,6 +175,21 @@ describe("console theme CSS", () => {
     expect(styles.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThan(12);
   });
 
+  it("exposes themeable thin console scrollbars", () => {
+    expect(styles).toContain(
+      "--_console-scrollbar-width: var(--console-scrollbar-width, thin);",
+    );
+    expect(styles).toContain("rgba(60, 60, 67, 0.32) transparent");
+    expect(styles).toContain(
+      "scrollbar-width: var(--_console-scrollbar-width);",
+    );
+    expect(styles).toContain(
+      "scrollbar-color: var(--_console-scrollbar-color);",
+    );
+    expect(styles).toContain("--console-context-menu-scrollbar-width");
+    expect(styles).toContain("--console-context-menu-scrollbar-color");
+  });
+
   it("keeps console typography restrained", () => {
     expect(styles).not.toContain("font-weight: 820;");
     expect(styles).not.toContain("font-weight: 700;");
