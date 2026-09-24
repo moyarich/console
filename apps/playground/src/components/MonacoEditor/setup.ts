@@ -98,7 +98,10 @@ function configurePlaygroundWorkers() {
 }
 
 export const vscodeApiConfig: MonacoVscodeApiConfig = {
-  $type: "extended",
+  // Keep Monaco's standalone/Monarch language tokenization and themes.
+  // Extended mode replaces them with VS Code TextMate/theme services, which
+  // require separate grammar and theme extensions.
+  $type: "classic",
   viewsConfig: {
     $type: "EditorService",
   },
