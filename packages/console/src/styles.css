@@ -818,7 +818,8 @@
   pointer-events: none;
 }
 
-.console-panel .console-message-decorations-overlay
+.console-panel
+  .console-message-decorations-overlay
   .console-message-decoration {
   pointer-events: auto;
 }
