@@ -15,11 +15,20 @@ import {
   compileExampleProject,
   type CompiledExampleRuntime,
 } from "./compileExampleProject";
+import {
+  createRunnableProjectBaseline,
+  createRunnableProjectDraft,
+  createRunnableProjectSignature,
+  normalizeRunnablePath,
+  type RunnableProjectFiles,
+} from "./runnableProjectState";
+
+const EMPTY_FILES: RunnableProjectFiles = Object.freeze({});
 
 export interface RunnableExampleProps {
   source: string;
   sourcePath?: string;
-  files?: Readonly<Record<string, string>>;
+  files?: RunnableProjectFiles;
   runtimeModules?: Readonly<Record<string, unknown>>;
   title?: string;
 }
@@ -62,33 +71,6 @@ class RuntimeErrorBoundary extends Component<
   }
 }
 
-function normalizePath(path: string) {
-  return path.replaceAll("\\", "/").replace(/^\.\//, "");
-}
-
-function createCanonicalFiles(
-  source: string,
-  sourcePath: string,
-  files: Readonly<Record<string, string>>,
-) {
-  return Object.freeze({
-    ...Object.fromEntries(
-      Object.entries(files).map(([path, value]) => [normalizePath(path), value]),
-    ),
-    [normalizePath(sourcePath)]: source,
-  });
-}
-
-function cloneFiles(files: Readonly<Record<string, string>>) {
-  return { ...files };
-}
-
-function createProjectSignature(files: Readonly<Record<string, string>>) {
-  return JSON.stringify(
-    Object.entries(files).sort(([left], [right]) => left.localeCompare(right)),
-  );
-}
-
 function languageForPath(path: string) {
   if (path.endsWith(".json")) return "json";
   if (path.endsWith(".css")) return "css";
@@ -108,24 +90,24 @@ function languageForPath(path: string) {
 export function RunnableExample({
   source,
   sourcePath = "example.tsx",
-  files = {},
+  files = EMPTY_FILES,
   runtimeModules,
   title = sourcePath,
 }: RunnableExampleProps) {
   const reactId = useId();
   const instanceId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
   const previewDialogTitleId = `${instanceId}-preview-dialog-title`;
-  const entryPath = normalizePath(sourcePath);
+  const entryPath = normalizeRunnablePath(sourcePath);
   const canonicalFiles = useMemo(
-    () => createCanonicalFiles(source, entryPath, files),
+    () => createRunnableProjectBaseline(source, entryPath, files),
     [entryPath, files, source],
   );
   const canonicalSignature = useMemo(
-    () => createProjectSignature(canonicalFiles),
+    () => createRunnableProjectSignature(canonicalFiles),
     [canonicalFiles],
   );
   const [draftFiles, setDraftFiles] = useState<Record<string, string>>(() =>
-    cloneFiles(canonicalFiles),
+    createRunnableProjectDraft(canonicalFiles),
   );
   const [activePath, setActivePath] = useState(entryPath);
   const [RuntimeComponent, setRuntimeComponent] =
@@ -188,7 +170,7 @@ export function RunnableExample({
   );
 
   useEffect(() => {
-    const nextFiles = cloneFiles(canonicalFiles);
+    const nextFiles = createRunnableProjectDraft(canonicalFiles);
     const token = ++runTokenRef.current;
 
     setDraftFiles(nextFiles);
@@ -204,7 +186,7 @@ export function RunnableExample({
     return () => {
       runTokenRef.current += 1;
     };
-  }, [canonicalFiles, canonicalSignature, compileFiles, entryPath]);
+  }, [canonicalSignature, compileFiles, entryPath]);
 
   useEffect(
     () => () => {
@@ -242,20 +224,25 @@ export function RunnableExample({
     };
   }, [previewFullscreen]);
 
-  const filePaths = Object.keys(draftFiles);
+  const filePaths = [
+    entryPath,
+    ...Object.keys(draftFiles)
+      .filter((path) => path !== entryPath)
+      .sort((left, right) => left.localeCompare(right)),
+  ];
   const activeSource = draftFiles[activePath] ?? "";
-  const dirty = createProjectSignature(draftFiles) !== canonicalSignature;
+  const dirty = createRunnableProjectSignature(draftFiles) !== canonicalSignature;
   const editorPath = `${instanceId}/${activePath}`;
 
   const runSource = () => {
     const token = ++runTokenRef.current;
-    void compileFiles(cloneFiles(draftFiles), token, entryPath);
+    void compileFiles(createRunnableProjectDraft(draftFiles), token, entryPath);
   };
 
   const resetSource = () => {
     // Always clone the immutable prop-derived baseline. Draft editor state is
     // never promoted to the reset baseline.
-    const resetFiles = cloneFiles(canonicalFiles);
+    const resetFiles = createRunnableProjectDraft(canonicalFiles);
     const token = ++runTokenRef.current;
 
     setDraftFiles(resetFiles);
