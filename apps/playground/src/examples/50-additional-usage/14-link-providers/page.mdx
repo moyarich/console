@@ -3,9 +3,7 @@ label: "Link providers"
 description: "Add application-specific interactive links to structured messages or ANSI process output."
 ---
 
-import Structured from "./structured.tsx";
 import structuredSource from "./structured.tsx?raw";
-import Ansi from "./ansi.tsx";
 import ansiSource from "./ansi.tsx?raw";
 
 ## Structured messages
@@ -13,7 +11,6 @@ import ansiSource from "./ansi.tsx?raw";
 Link providers can detect source locations inside structured message values while the built-in HTTP/HTTPS detection continues to work.
 
 <RunnableExample
-  component={Structured}
   source={structuredSource}
   sourcePath="structured.tsx"
   title="Structured link provider"
@@ -24,7 +21,6 @@ Link providers can detect source locations inside structured message values whil
 The same provider contract works against terminal output, so source paths and application-specific tokens can be interactive in process logs too.
 
 <RunnableExample
-  component={Ansi}
   source={ansiSource}
   sourcePath="ansi.tsx"
   title="ANSI link provider"
