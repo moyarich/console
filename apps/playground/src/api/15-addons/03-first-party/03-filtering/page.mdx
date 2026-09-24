@@ -71,13 +71,13 @@ standalone predicate is enough.
 ## Default controls
 
 The addon registers its default control surface through
-`consoleExtensionPoints.frameDecorator`. Hosts do not need to mount a second
+`consoleExtensionPoints.panelElement`. Hosts do not need to mount a second
 component next to `<Console>`.
 
 The same addon therefore contributes both:
 
 - `consoleExtensionPoints.messageFilter` for method/text/source filtering
-- `consoleExtensionPoints.frameDecorator` for the default search/filter UI
+- `consoleExtensionPoints.panelElement` for the default search/filter UI
 
 The control surface provides:
 
