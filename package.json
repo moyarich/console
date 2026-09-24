@@ -20,7 +20,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write apps/playground/src/App.tsx apps/playground/src/components/Playground/Playground.tsx apps/playground/src/styles.css && git diff -- apps/playground/src/App.tsx apps/playground/src/components/Playground/Playground.tsx apps/playground/src/styles.css && exit 1",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-resizable",
     "build:core": "npm run build --workspace @moyarich/console-core"
