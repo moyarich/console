@@ -4,7 +4,13 @@ import type {
   EditorAppConfig,
   TextContents,
 } from "monaco-languageclient/editorApp";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   monacoThemeForColorScheme,
   useResolvedColorScheme,
