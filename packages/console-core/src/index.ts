@@ -590,11 +590,16 @@ export interface ConsoleMessageData {
   showNonenumerable?: boolean;
 }
 
+/** Context used to decide whether one structured console message is visible. */
+export interface ConsoleMessageFilterContext {
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+}
+
 /** Predicate used to decide whether a structured console message is visible. */
 export type ConsoleMessageFilter = (
-  message: ConsoleMessageData,
-  index: number,
-  messages: readonly ConsoleMessageData[],
+  context: ConsoleMessageFilterContext,
 ) => boolean;
 
 export interface RunOutput {
@@ -637,25 +642,24 @@ export interface ConsoleLink {
 }
 
 export interface ConsoleLinkProviderContext {
-  mode: ConsoleMode;
-  value?: unknown;
-  propertyKey?: string;
-  index?: number;
-  id?: string;
-  stream?: ConsoleOutputStream;
-  metadata?: Readonly<Record<string, unknown>>;
+  readonly text: string;
+  readonly mode: ConsoleMode;
+  readonly value?: unknown;
+  readonly propertyKey?: string;
+  readonly index?: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+  readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 export interface ConsoleLinkActionContext extends ConsoleLinkProviderContext {
-  link: ConsoleLink;
-  sourceText: string;
-  providerId?: string;
+  readonly link: ConsoleLink;
+  readonly providerId?: string;
 }
 
 export interface ConsoleLinkProvider {
   readonly id?: string;
   provideLinks(
-    text: string,
     context: ConsoleLinkProviderContext,
   ): readonly ConsoleLink[] | undefined | void;
 }
@@ -678,6 +682,7 @@ export interface ConsoleProcessControlOutput {
 }
 
 export interface ConsoleProcessControlParserContext {
+  readonly output: ConsoleProcessControlOutput;
   readonly entry: ConsoleStdoutEntry | string;
   readonly index: number;
   readonly id?: string;
@@ -694,13 +699,13 @@ export interface ConsoleProcessControlParserResult {
 export interface ConsoleProcessControlParser {
   readonly id?: string;
   parse(
-    output: ConsoleProcessControlOutput,
     context: ConsoleProcessControlParserContext,
   ): ConsoleProcessControlParserResult | undefined | void;
   reset?(): void;
 }
 
 export interface ConsoleProcessOutputProcessorContext {
+  readonly output: ConsoleProcessOutput;
   readonly entry: ConsoleStdoutEntry | string;
   readonly index: number;
   readonly text: string;
@@ -718,7 +723,6 @@ export interface ConsoleProcessOutputProcessorResult {
 export interface ConsoleProcessOutputProcessor {
   readonly id?: string;
   process(
-    output: ConsoleProcessOutput,
     context: ConsoleProcessOutputProcessorContext,
   ): ConsoleProcessOutputProcessorResult | undefined | void;
 }
@@ -731,15 +735,15 @@ export interface ConsoleResolvedProcessOutputEntry {
 export type ConsoleProcessViewEntry = ConsoleResolvedProcessOutputEntry;
 
 export interface ConsoleStructuredOutputParserContext {
-  entry: ConsoleStdoutEntry | string;
-  index: number;
-  id?: string;
-  stream?: ConsoleOutputStream;
-  metadata?: ConsoleProcessOutputMetadata;
+  readonly text: string;
+  readonly entry: ConsoleStdoutEntry | string;
+  readonly index: number;
+  readonly id?: string;
+  readonly stream?: ConsoleOutputStream;
+  readonly metadata?: ConsoleProcessOutputMetadata;
 }
 
 export type ConsoleStructuredOutputParser = (
-  text: string,
   context: ConsoleStructuredOutputParserContext,
 ) => unknown | undefined;
 
@@ -881,6 +885,7 @@ export type ConsoleMessageDecorationPlacement =
   "gutter" | "before" | "after" | "badge" | "overlay";
 
 export interface ConsoleMessageDecorationContext {
+  readonly message: ConsoleMessageData;
   readonly index: number;
   readonly messages: readonly ConsoleMessageData[];
   readonly placement: ConsoleMessageDecorationPlacement;
@@ -889,14 +894,8 @@ export interface ConsoleMessageDecorationContext {
 export interface ConsoleMessageDecoration<TUi = unknown> {
   readonly id: string;
   readonly placement: ConsoleMessageDecorationPlacement;
-  match?: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageDecorationContext,
-  ) => boolean;
-  render: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageDecorationContext,
-  ) => TUi | undefined;
+  match?: (context: ConsoleMessageDecorationContext) => boolean;
+  render: (context: ConsoleMessageDecorationContext) => TUi | undefined;
 }
 
 export type ConsoleOutputRendererContext<TUi = unknown> =
@@ -940,6 +939,7 @@ export interface ConsoleEmptyStateRenderer<TUi = unknown> {
 }
 
 export interface ConsoleMessageTextProviderContext {
+  readonly message: ConsoleMessageData;
   readonly index: number;
   readonly messages: readonly ConsoleMessageData[];
 }
@@ -947,46 +947,35 @@ export interface ConsoleMessageTextProviderContext {
 export interface ConsoleMessageTextProvider {
   readonly id?: string;
   provideText: (
-    message: ConsoleMessageData,
     context: ConsoleMessageTextProviderContext,
   ) => string | readonly string[] | undefined;
 }
 
 export interface ConsoleMessageRendererContext<TUi = unknown> {
-  index: number;
-  messages: readonly ConsoleMessageData[];
-  renderDefault: () => TUi;
+  readonly message: ConsoleMessageData;
+  readonly index: number;
+  readonly messages: readonly ConsoleMessageData[];
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleMessageRenderer<TUi = unknown> {
-  method?: ConsoleMethod;
-  match?: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext<TUi>,
-  ) => boolean;
-  render: (
-    message: ConsoleMessageData,
-    context: ConsoleMessageRendererContext<TUi>,
-  ) => TUi | undefined;
+  readonly method?: ConsoleMethod;
+  match?: (context: ConsoleMessageRendererContext<TUi>) => boolean;
+  render: (context: ConsoleMessageRendererContext<TUi>) => TUi | undefined;
 }
 
 export interface ConsoleValueRendererContext<TUi = unknown> {
-  propertyKey?: string;
-  depth: number;
-  type: string;
-  renderDefault: () => TUi;
+  readonly value: unknown;
+  readonly propertyKey?: string;
+  readonly depth: number;
+  readonly type: string;
+  readonly renderDefault: () => TUi;
 }
 
 export interface ConsoleValueRenderer<TUi = unknown> {
-  type?: string;
-  match?: (
-    value: unknown,
-    context: ConsoleValueRendererContext<TUi>,
-  ) => boolean;
-  render: (
-    value: unknown,
-    context: ConsoleValueRendererContext<TUi>,
-  ) => TUi | undefined;
+  readonly type?: string;
+  match?: (context: ConsoleValueRendererContext<TUi>) => boolean;
+  render: (context: ConsoleValueRendererContext<TUi>) => TUi | undefined;
 }
 
 /** Built-in capabilities understood by the standard console host. */
