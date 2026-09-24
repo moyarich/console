@@ -3,10 +3,7 @@
 Framework-agnostic CSS color parsing used by editor integrations.
 
 ```ts
-import {
-  extractCssColors,
-  parseCssColor,
-} from "@moyarich/css-color-parser";
+import { extractCssColors, parseCssColor } from "@moyarich/css-color-parser";
 
 parseCssColor("#06c");
 // {
