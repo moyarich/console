@@ -1,8 +1,5 @@
 import { useMemo } from "react";
-import {
-  Console,
-  type ConsoleMessageData,
-} from "@moyarich/console";
+import { Console, type ConsoleMessageData } from "@moyarich/console";
 import {
   ConsoleFilteringControls,
   createConsoleFilteringAddon,
