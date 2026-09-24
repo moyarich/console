@@ -1660,9 +1660,10 @@ body {
 }
 
 .example-navigation-item.active {
-  background: light-dark(
-    linear-gradient(90deg, #eef2ff, #f5f3ff),
-    linear-gradient(90deg, #252a44, #2d2542)
+  background: linear-gradient(
+    90deg,
+    light-dark(#eef2ff, #252a44),
+    light-dark(#f5f3ff, #2d2542)
   );
   color: var(--playground-accent-strong);
 }
@@ -1687,9 +1688,10 @@ body {
 }
 
 .panel-toolbar {
-  background: light-dark(
-    linear-gradient(180deg, #ffffff, #fbfcfe),
-    linear-gradient(180deg, #1c2128, #161b22)
+  background: linear-gradient(
+    180deg,
+    light-dark(#ffffff, #1c2128),
+    light-dark(#fbfcfe, #161b22)
   );
 }
 
