@@ -11,7 +11,7 @@ import {
   Waypoints,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { CONSOLE_EXAMPLE_GROUPS, type ConsoleExample } from "../../examples";
 import { buildExampleNavigation } from "./exampleNavigation";
 
@@ -19,7 +19,6 @@ interface ExampleSidebarProps {
   examples: readonly ConsoleExample[];
   value: string;
   onChange: (id: string) => void;
-  children?: ReactNode;
 }
 
 function getGroupIcon(groupId: string): LucideIcon {
@@ -58,7 +57,6 @@ export function ExampleSidebar({
   examples,
   value,
   onChange,
-  children,
 }: ExampleSidebarProps) {
   const [query, setQuery] = useState("");
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<Set<string>>(
@@ -87,13 +85,10 @@ export function ExampleSidebar({
   const searching = query.trim().length > 0;
 
   return (
-    <>
-      <div className="sidebar-header">
-        <div className="sidebar-title">
-          <div>
-            <span className="sidebar-kicker">Examples</span>
-            <strong>Playground</strong>
-          </div>
+    <section className="sidebar-section" aria-labelledby="sidebar-examples-title">
+      <div className="sidebar-section-header">
+        <div className="sidebar-section-heading">
+          <strong id="sidebar-examples-title">Examples</strong>
           <span className="sidebar-count">{examples.length}</span>
         </div>
 
@@ -109,25 +104,24 @@ export function ExampleSidebar({
         </label>
       </div>
 
-      <div className="sidebar-content">
-        {children}
+      <div className="sidebar-groups">
         {navigationGroups.map(({ group, examples: groupExamples }) => {
           const Icon = getGroupIcon(group.id);
           const expanded = searching || !collapsedGroupIds.has(group.id);
 
           return (
-            <section className="sidebar-section" key={group.id}>
+            <div className="sidebar-group" key={group.id}>
               <button
                 type="button"
-                className="sidebar-section-trigger"
+                className="sidebar-group-trigger"
                 aria-expanded={expanded}
                 onClick={() => toggleGroup(group.id)}
               >
-                <span className="sidebar-section-label">
+                <span className="sidebar-group-label">
                   <Icon aria-hidden="true" />
                   <span>{group.label}</span>
                 </span>
-                <span className="sidebar-section-meta">
+                <span className="sidebar-group-meta">
                   <span>{groupExamples.length}</span>
                   <ChevronDown
                     className={expanded ? "expanded" : undefined}
@@ -156,7 +150,7 @@ export function ExampleSidebar({
                   })}
                 </div>
               )}
-            </section>
+            </div>
           );
         })}
 
@@ -168,6 +162,6 @@ export function ExampleSidebar({
           </div>
         )}
       </div>
-    </>
+    </section>
   );
 }
