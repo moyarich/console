@@ -290,7 +290,6 @@ function ResizableConsoleFrame({
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
       >
-        <span className="console-resize-line" aria-hidden="true" />
         <span className="console-resize-grip" aria-hidden="true">
           <GripVertical size={14} />
         </span>
@@ -318,7 +317,6 @@ function ResizableConsoleFrame({
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
       >
-        <span className="console-resize-line" aria-hidden="true" />
         <span className="console-resize-grip" aria-hidden="true">
           <GripHorizontal size={14} />
         </span>
