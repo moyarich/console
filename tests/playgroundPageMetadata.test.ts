@@ -27,8 +27,8 @@ describe("playground page metadata", () => {
     [{ label: "" }, '"label" must be a non-empty string'],
     [{ label: "Example", description: 42 }, '"description" must be a string'],
   ])("rejects invalid metadata %#", (metadata, message) => {
-    expect(() =>
-      parsePageMeta(metadata, "./example/page.mdx"),
-    ).toThrow(message);
+    expect(() => parsePageMeta(metadata, "./example/page.mdx")).toThrow(
+      message,
+    );
   });
 });
