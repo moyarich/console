@@ -845,10 +845,14 @@ function ConsoleMessageMode({
           className="console-message-extension-shell"
           data-console-message-id={message.id}
         >
-          {gutter}
           {before}
-          {renderedMessage}
-          {badge}
+          <div className="console-message-extension-row">
+            {gutter}
+            <div className="console-message-extension-content">
+              {renderedMessage}
+            </div>
+            {badge}
+          </div>
           {after}
           {overlay}
         </div>
