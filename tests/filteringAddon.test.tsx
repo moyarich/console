@@ -105,6 +105,16 @@ describe("@moyarich/console-addon-filtering", () => {
     ).toEqual([]);
   });
 
+  it("returns method state to unfiltered when every method is enabled", () => {
+    const controller = createConsoleFilteringController();
+
+    controller.setMethodEnabled("warn", false);
+    expect(controller.getState().methods).not.toBeNull();
+
+    controller.setMethodEnabled("warn", true);
+    expect(controller.getState().methods).toBeNull();
+  });
+
   it("supports host-owned filter controllers", () => {
     const controller = createConsoleFilteringController({
       methods: ["error"],

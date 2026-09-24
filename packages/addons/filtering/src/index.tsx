@@ -248,7 +248,12 @@ export function createConsoleFilteringController(
         next.delete(method);
       }
 
-      controller.setMethods(Array.from(next));
+      const methods = Array.from(next);
+      const includesEveryMethod =
+        methods.length === ALL_CONSOLE_METHODS.length &&
+        ALL_CONSOLE_METHODS.every((candidate) => next.has(candidate));
+
+      controller.setMethods(includesEveryMethod ? null : methods);
     },
 
     reset() {
