@@ -11,8 +11,7 @@ import {
 import "./styles.css";
 
 /** Stable package-qualified identity for the filtering addon. */
-export const CONSOLE_FILTERING_ADDON_ID =
-  "@moyarich/console-addon-filtering";
+export const CONSOLE_FILTERING_ADDON_ID = "@moyarich/console-addon-filtering";
 
 /** Common console methods exposed by the first-party filtering controls. */
 export const CONSOLE_FILTERING_METHODS = [
@@ -23,8 +22,7 @@ export const CONSOLE_FILTERING_METHODS = [
   "debug",
 ] as const satisfies readonly ConsoleMethod[];
 
-export type ConsoleFilteringMethod =
-  (typeof CONSOLE_FILTERING_METHODS)[number];
+export type ConsoleFilteringMethod = (typeof CONSOLE_FILTERING_METHODS)[number];
 
 const ALL_CONSOLE_METHODS = [
   "log",
@@ -406,8 +404,7 @@ export function createConsoleFilteringAddon(
   options: ConsoleFilteringAddonOptions = {},
 ): ConsoleFilteringAddon {
   const controller =
-    options.controller ??
-    createConsoleFilteringController(options.initialState);
+    options.controller ?? createConsoleFilteringController(options.initialState);
 
   return {
     id: CONSOLE_FILTERING_ADDON_ID,
