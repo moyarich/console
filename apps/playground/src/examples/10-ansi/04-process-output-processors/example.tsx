@@ -81,7 +81,6 @@ export default function ProcessOutputProcessorsExample() {
         subtitle="Ordered transforms and enrichment before ANSI rendering"
         messages={messages}
         processors={processors}
-        resizable="vertical"
         style={{ height: 420, minHeight: 240, maxHeight: 720 }}
         onClear={() => setMessages([])}
       />
