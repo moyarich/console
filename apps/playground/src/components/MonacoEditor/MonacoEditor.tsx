@@ -5,6 +5,7 @@ import type {
   TextContents,
 } from "monaco-languageclient/editorApp";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { languageForPath } from "./languages";
 import { vscodeApiConfig } from "./setup";
 
 export interface MonacoEditorProps {
@@ -46,7 +47,7 @@ function toEditorUri(path: string) {
 
 export function MonacoEditor({
   path = "example.tsx",
-  language = "typescriptreact",
+  language,
   value = "",
   onChange,
   theme = "vs-dark",
@@ -55,6 +56,7 @@ export function MonacoEditor({
   height = "100%",
   width = "100%",
 }: MonacoEditorProps) {
+  const resolvedLanguage = language ?? languageForPath(path);
   const currentTextRef = useRef(value);
   const [configVersion, setConfigVersion] = useState(0);
   const [ready, setReady] = useState(false);
@@ -75,7 +77,7 @@ export function MonacoEditor({
         modified: {
           text: value,
           uri: toEditorUri(path),
-          enforceLanguageId: language,
+          enforceLanguageId: resolvedLanguage,
         },
       },
       editorOptions: {
@@ -84,7 +86,7 @@ export function MonacoEditor({
         theme,
       },
     }),
-    [language, options, path, theme, value],
+    [options, path, resolvedLanguage, theme, value],
   );
 
   const handleTextChanged = ({ modified }: TextContents) => {
