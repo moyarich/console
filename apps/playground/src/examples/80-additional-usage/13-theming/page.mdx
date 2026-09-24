@@ -1,6 +1,6 @@
 ---
 label: "Theming"
-description: "Use inherited color-scheme variables for broad theming or override individual --console-* tokens."
+description: "Use the standard color-scheme property with light-dark() defaults, or override individual --console-* tokens."
 ---
 
 import colorSchemeSource from "./color-scheme.tsx?raw";
@@ -15,7 +15,7 @@ import customTokensSource from "./custom-tokens.tsx?raw";
 
 ## Inherited color scheme
 
-Place theme variables on a host container when multiple console surfaces should inherit the same appearance. Color-scheme tokens also affect native UI and the portaled context menu.
+Set the standard `color-scheme` property on a host container when multiple console surfaces should inherit the same appearance. Built-in colors use `light-dark()`, so `light`, `dark`, and `light dark` work without a `prefers-color-scheme` media query. The portaled context menu preserves the computed scheme.
 
 <RunnableExample
   source={colorSchemeSource}
