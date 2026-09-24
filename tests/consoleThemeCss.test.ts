@@ -109,6 +109,18 @@ describe("console theme CSS", () => {
     expect(styles).toMatch(
       /--_console-panel-border:\s*var\(\s*--console-panel-border,\s*1px solid light-dark\(#dde4ef, #30363d\)\s*\);/,
     );
+    expect(styles).toContain(
+      "--_console-panel-width: var(--console-panel-width, 100%);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-height: var(--console-panel-height, auto);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-min-width: var(--console-panel-min-width, 0);",
+    );
+    expect(styles).toContain(
+      "--_console-panel-min-height: var(--console-panel-min-height, 0);",
+    );
     expect(styles).toMatch(
       /--_console-panel-header-border-bottom:\s*var\(\s*--console-panel-header-border-bottom,\s*1px solid light-dark\(#e5eaf2, #30363d\)\s*\);/,
     );
@@ -258,7 +270,7 @@ describe("console theme CSS", () => {
 
   it("keeps console content shrinkable inside narrow containers", () => {
     expect(styles).toContain(
-      ".console-panel {\n  display: flex;\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;",
+      ".console-panel {\n  display: flex;\n  width: var(--_console-panel-width);\n  height: var(--_console-panel-height);\n  min-width: var(--_console-panel-min-width);\n  min-height: var(--_console-panel-min-height);\n  max-width: 100%;",
     );
     expect(styles).toContain(
       ".console-panel .console-surface {\n  width: 100%;\n  min-width: 0;\n  max-width: 100%;",
