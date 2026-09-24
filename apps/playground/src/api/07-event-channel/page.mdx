@@ -1,0 +1,26 @@
+---
+label: "Event channel"
+description: "Publish and subscribe to typed console message and clear events."
+---
+
+`createConsoleEventEmitter()` is a small typed event bus for console producers and consumers.
+
+```ts
+const events = createConsoleEventEmitter();
+
+const { messages } = useConsoleMessages({ events });
+const runtimeConsole = createConsoleProxy({ events });
+
+runtimeConsole.log("shared event stream");
+```
+
+### Event-emitter methods
+
+| Method                      | Purpose                                                           |
+| --------------------------- | ----------------------------------------------------------------- |
+| `on("message", listener)`   | Subscribe to structured messages; returns an unsubscribe function |
+| `on("clear", listener)`     | Subscribe to clear events                                         |
+| `off(type, listener)`       | Remove one listener                                               |
+| `emit("message", message)`  | Publish one structured message                                    |
+| `emit("clear")`             | Publish a clear event                                             |
+| `removeAllListeners(type?)` | Remove listeners for one event type or all event types            |
