@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
-const readmePath = fileURLToPath(new URL("../README.md", import.meta.url));
+const themingDocsPath = fileURLToPath(
+  new URL(
+    "../apps/playground/src/api/12-theming/page.mdx",
+    import.meta.url,
+  ),
+);
 const consoleIndexPath = fileURLToPath(
   new URL("../packages/console/src/index.ts", import.meta.url),
 );
@@ -26,7 +31,7 @@ const resizableAddonPackagePath = fileURLToPath(
 );
 
 const styles = readFileSync(stylesPath, "utf8");
-const readme = readFileSync(readmePath, "utf8");
+const themingDocs = readFileSync(themingDocsPath, "utf8");
 const consoleIndex = readFileSync(consoleIndexPath, "utf8");
 const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
@@ -64,21 +69,8 @@ describe("console theme CSS", () => {
   });
 
   it("documents the public theme token surface", () => {
-    const themingStart = readme.indexOf(
-      "## Theming with CSS custom properties",
+    expect(collectPublicThemeTokens(themingDocs)).toEqual(
+      collectPublicThemeTokens(styles),
     );
-    const themingEnd = readme.indexOf(
-      "\n## Extensible panel, context, and message actions",
-      themingStart,
-    );
-
-    expect(themingStart).toBeGreaterThanOrEqual(0);
-    expect(themingEnd).toBeGreaterThan(themingStart);
-
-    const documentedTokens = collectPublicThemeTokens(
-      readme.slice(themingStart, themingEnd),
-    );
-
-    expect(documentedTokens).toEqual(collectPublicThemeTokens(styles));
   });
 });
