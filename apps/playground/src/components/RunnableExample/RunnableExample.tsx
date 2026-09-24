@@ -7,6 +7,12 @@ import {
   compileExampleProject,
   type CompiledExampleRuntime,
 } from "./compileExampleProject";
+import {
+  cloneRunnableProjectFiles,
+  createCanonicalProjectFiles,
+  createRunnableProjectSignature,
+  normalizeRunnablePath,
+} from "./runnableProject";
 
 export interface RunnableExampleProps {
   source: string;
@@ -54,33 +60,6 @@ class RuntimeErrorBoundary extends Component<
   }
 }
 
-function normalizePath(path: string) {
-  return path.replaceAll("\\", "/").replace(/^\.\//, "");
-}
-
-function createCanonicalFiles(
-  source: string,
-  sourcePath: string,
-  files: Readonly<Record<string, string>>,
-) {
-  return Object.freeze({
-    ...Object.fromEntries(
-      Object.entries(files).map(([path, value]) => [normalizePath(path), value]),
-    ),
-    [normalizePath(sourcePath)]: source,
-  });
-}
-
-function cloneFiles(files: Readonly<Record<string, string>>) {
-  return { ...files };
-}
-
-function createProjectSignature(files: Readonly<Record<string, string>>) {
-  return JSON.stringify(
-    Object.entries(files).sort(([left], [right]) => left.localeCompare(right)),
-  );
-}
-
 function languageForPath(path: string) {
   if (path.endsWith(".json")) return "json";
   if (path.endsWith(".css")) return "css";
@@ -106,17 +85,17 @@ export function RunnableExample({
   const reactId = useId();
   const instanceId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
   const previewDialogTitleId = `${instanceId}-preview-dialog-title`;
-  const entryPath = normalizePath(sourcePath);
+  const entryPath = normalizeRunnablePath(sourcePath);
   const canonicalFiles = useMemo(
-    () => createCanonicalFiles(source, entryPath, files),
+    () => createCanonicalProjectFiles(source, entryPath, files),
     [entryPath, files, source],
   );
   const canonicalSignature = useMemo(
-    () => createProjectSignature(canonicalFiles),
+    () => createRunnableProjectSignature(canonicalFiles),
     [canonicalFiles],
   );
   const [draftFiles, setDraftFiles] = useState<Record<string, string>>(() =>
-    cloneFiles(canonicalFiles),
+    cloneRunnableProjectFiles(canonicalFiles),
   );
   const [activePath, setActivePath] = useState(entryPath);
   const [RuntimeComponent, setRuntimeComponent] =
@@ -173,7 +152,7 @@ export function RunnableExample({
   };
 
   useEffect(() => {
-    const nextFiles = cloneFiles(canonicalFiles);
+    const nextFiles = cloneRunnableProjectFiles(canonicalFiles);
     const token = ++runTokenRef.current;
 
     setDraftFiles(nextFiles);
@@ -231,16 +210,16 @@ export function RunnableExample({
 
   const filePaths = Object.keys(draftFiles);
   const activeSource = draftFiles[activePath] ?? "";
-  const dirty = createProjectSignature(draftFiles) !== canonicalSignature;
+  const dirty = createRunnableProjectSignature(draftFiles) !== canonicalSignature;
   const editorPath = `${instanceId}/${activePath}`;
 
   const runSource = () => {
     const token = ++runTokenRef.current;
-    void compileFiles(cloneFiles(draftFiles), token);
+    void compileFiles(cloneRunnableProjectFiles(draftFiles), token);
   };
 
   const resetSource = () => {
-    const resetFiles = cloneFiles(canonicalFiles);
+    const resetFiles = cloneRunnableProjectFiles(canonicalFiles);
     const token = ++runTokenRef.current;
 
     setDraftFiles(resetFiles);
