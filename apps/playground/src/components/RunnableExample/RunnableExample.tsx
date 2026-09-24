@@ -110,8 +110,9 @@ export function RunnableExample({
     createRunnableProjectDraft(canonicalFiles),
   );
   const [activePath, setActivePath] = useState(entryPath);
-  const [RuntimeComponent, setRuntimeComponent] =
-    useState<ElementType | null>(null);
+  const [RuntimeComponent, setRuntimeComponent] = useState<ElementType | null>(
+    null,
+  );
   const [runVersion, setRunVersion] = useState(0);
   const [compileError, setCompileError] = useState("");
   const [isCompiling, setIsCompiling] = useState(true);
@@ -231,7 +232,8 @@ export function RunnableExample({
       .sort((left, right) => left.localeCompare(right)),
   ];
   const activeSource = draftFiles[activePath] ?? "";
-  const dirty = createRunnableProjectSignature(draftFiles) !== canonicalSignature;
+  const dirty =
+    createRunnableProjectSignature(draftFiles) !== canonicalSignature;
   const editorPath = `${instanceId}/${activePath}`;
 
   const runSource = () => {
