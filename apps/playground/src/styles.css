@@ -80,18 +80,24 @@ h3 {
 
 hr {
   --_hr-line-offset: var(--hr-line-offset, 10%);
-  --_hr-color: var(--hr-color, gold);
-
-  border-image-slice: 1;
-  border-image-source: linear-gradient(
-    to right,
-    transparent 25%,
-    var(--_hr-color) calc(50% - var(--_hr-line-offset)),
-    var(--_hr-color) calc(50% + var(--_hr-line-offset)),
-    transparent 75%
+  --_hr-accent: var(--hr-accent, var(--playground-accent));
+  --_hr-companion: var(
+    --hr-companion,
+    var(--playground-accent-companion)
   );
-  height: 0;
+
+  height: 1px;
+  border: 0;
   margin: 35px auto;
+  background: linear-gradient(
+    to right,
+    transparent 8%,
+    color-mix(in oklab, var(--_hr-accent) 24%, transparent) 30%,
+    var(--_hr-accent) calc(50% - var(--_hr-line-offset)),
+    var(--_hr-companion) calc(50% + var(--_hr-line-offset)),
+    color-mix(in oklab, var(--_hr-companion) 24%, transparent) 70%,
+    transparent 92%
+  );
 }
 
 .brand {
@@ -807,6 +813,10 @@ body {
   font-weight: 500;
 }
 
+.hero-example-path > [aria-hidden="true"] {
+  color: var(--playground-accent-companion);
+}
+
 .documentation-page {
   margin: 0 0 22px;
   color: #475467;
@@ -1221,6 +1231,9 @@ body {
   );
 
   --playground-accent: light-dark(#635bff, #8b83ff);
+  --playground-accent-soft: light-dark(#a792ff, #c5abff);
+  --playground-accent-companion: light-dark(#2d9aaa, #69baa5);
+  --playground-accent-neutral: light-dark(#aea9ba, #958bb6);
   --playground-accent-strong: color-mix(
     in oklab,
     var(--playground-accent) 78%,
