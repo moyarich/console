@@ -1,5 +1,6 @@
 import type { ConsoleDisposable } from "./addons";
 import type {
+  ConsoleProcessControlEvent,
   ConsoleResolvedProcessOutputEntry,
   ConsoleStdoutEntry,
 } from "./processOutput";
@@ -26,6 +27,8 @@ export interface ConsoleProcessDataSnapshot {
   readonly all: readonly ConsoleProcessViewEntry[];
   /** Current logical process-output view. */
   readonly visible: readonly ConsoleProcessViewEntry[];
+  /** Semantic process-control events extracted before line normalization. */
+  readonly controlEvents: readonly ConsoleProcessControlEvent[];
 }
 
 /** Current logical console data exposed through the addon service registry. */
@@ -59,6 +62,7 @@ function createEmptySnapshot(mode: ConsoleMode): ConsoleDataSnapshot {
         rawEntries: EMPTY_RAW_ENTRIES,
         all: EMPTY_PROCESS_ENTRIES,
         visible: EMPTY_PROCESS_ENTRIES,
+        controlEvents: [],
       }
     : {
         mode: "console",
