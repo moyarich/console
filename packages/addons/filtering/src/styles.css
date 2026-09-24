@@ -122,7 +122,8 @@
 }
 
 .console-filtering-method-menu {
-  display: contents;
+  display: inline-flex;
+  flex: 0 0 auto;
 }
 
 .console-filtering-trigger,
@@ -189,19 +190,25 @@
 }
 
 .console-filtering-method-popover {
-  position: fixed;
-  inset: auto;
-  top: anchor(bottom);
-  right: anchor(right);
   width: max-content;
   min-width: 160px;
-  margin: 8px 0 0;
+  max-width: calc(100vw - 24px);
   padding: 8px;
   border: 1px solid var(--_console-filtering-border-color);
   border-radius: 14px;
   background: var(--_console-filtering-background-color);
   color: var(--_console-filtering-color);
   box-shadow: 0 14px 36px var(--_console-filtering-shadow-color);
+}
+
+@supports (top: anchor(bottom)) {
+  .console-filtering-method-popover {
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin: 8px 0 0;
+  }
 }
 
 .console-filtering-method-popover:popover-open {
