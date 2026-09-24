@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CONSOLE_API_PAGES } from "../../api";
+import { CONSOLE_API_SECTION } from "../../api";
 import {
   CONSOLE_EXAMPLES,
   CONSOLE_EXAMPLE_GROUPS,
@@ -7,7 +7,7 @@ import {
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
 import { Sidebar } from "../Sidebar";
-import { ApiSection } from "../Sidebar/sections/ApiSection";
+import { MdxPageSection } from "../Sidebar/sections/MdxPageSection";
 import { ExamplesSection } from "../Sidebar/sections/ExamplesSection";
 
 type PlaygroundSelection =
@@ -26,7 +26,7 @@ export function Playground() {
         selection.type === "example" && candidate.id === selection.id,
     ) ?? DEFAULT_CONSOLE_EXAMPLE;
   const apiPage =
-    CONSOLE_API_PAGES.find(
+    CONSOLE_API_SECTION.pages.find(
       (candidate) => selection.type === "api" && candidate.id === selection.id,
     ) ?? CONSOLE_API_PAGES[0];
 
@@ -56,8 +56,8 @@ export function Playground() {
             value={selection.type === "example" ? selection.id : undefined}
             onChange={(id) => setSelection({ type: "example", id })}
           />
-          <ApiSection
-            pages={CONSOLE_API_PAGES}
+          <MdxPageSection
+            section={CONSOLE_API_SECTION}
             value={selection.type === "api" ? selection.id : undefined}
             onChange={(id) => setSelection({ type: "api", id })}
           />
