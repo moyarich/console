@@ -74,7 +74,6 @@ export default function CarriageReturnProgressExample() {
         title="Carriage-return progress"
         subtitle="Progress redraws one logical line while completed lines stay stable"
         messages={messages}
-        resizable="vertical"
         style={{ height: 420, minHeight: 240, maxHeight: 720 }}
         onClear={() => setMessages([])}
       />
