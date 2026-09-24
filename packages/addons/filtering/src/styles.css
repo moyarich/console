@@ -2,13 +2,6 @@
    Filtering addon
    ========================================================================== */
 
-.console-filtering-frame {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  gap: 12px;
-}
-
 .console-filtering-controls,
 .console-filtering-controls *,
 .console-filtering-controls *::before,
