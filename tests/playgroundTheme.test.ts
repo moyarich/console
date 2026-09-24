@@ -10,6 +10,10 @@ const playgroundStyles = readFileSync(
   fileURLToPath(new URL("../apps/playground/src/styles.css", import.meta.url)),
   "utf8",
 );
+const playgroundMain = readFileSync(
+  fileURLToPath(new URL("../apps/playground/src/main.tsx", import.meta.url)),
+  "utf8",
+);
 const resizableExample = readFileSync(
   fileURLToPath(
     new URL(
@@ -65,11 +69,12 @@ describe("playground color scheme", () => {
     );
   });
 
-  it("uses a deterministic system font stack instead of local Inter", () => {
+  it("uses bundled Inter with a deterministic system fallback stack", () => {
+    expect(playgroundMain).toContain('import "@fontsource-variable/inter";');
     expect(playgroundStyles).toContain("--font-sans:");
+    expect(playgroundStyles).toContain('"Inter Variable"');
     expect(playgroundStyles).toContain('"-apple-system-body"');
     expect(playgroundStyles).toContain("font-family: var(--font-sans);");
-    expect(playgroundStyles).not.toMatch(/\bInter,?/);
     expect(playgroundStyles).toContain("-webkit-font-smoothing: antialiased;");
     expect(playgroundStyles).toContain("-moz-osx-font-smoothing: grayscale;");
   });
