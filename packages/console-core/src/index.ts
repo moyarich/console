@@ -25,7 +25,22 @@ export interface ConsoleAddon {
 }
 
 /** Typed token identifying a multi-provider extension point. */
-/** How multiple contributions to an extension point compose at runtime. */
+/**
+ * Describes how multiple contributions to the same extension point compose.
+ *
+ * Contributions are always resolved in deterministic extension order:
+ * higher `priority` first, then registration order for equal priorities.
+ *
+ * - `"pipeline"`: every contribution runs sequentially. Each stage receives
+ *   the immutable state produced by preceding stages.
+ * - `"first-result"`: contributions are tried in order until one handles the
+ *   input and returns a result.
+ * - `"collect"`: all applicable contributions are accumulated in order.
+ * - `"all"`: every contribution must accept/pass the input. Hosts may
+ *   short-circuit once the result is known.
+ * - `"middleware"`: contributions wrap the next contribution/default
+ *   behavior, with the earliest resolved contribution forming the outer layer.
+ */
 export type ConsoleExtensionComposition =
   | "pipeline"
   | "first-result"
@@ -33,9 +48,16 @@ export type ConsoleExtensionComposition =
   | "all"
   | "middleware";
 
+/** Typed metadata token identifying one multi-provider extension contract. */
 export interface ConsoleExtensionPoint<T> {
+  /** Stable package-independent identifier used by the extension registry. */
   readonly id: string;
+  /**
+   * Declares the host's composition semantics when multiple contributions are
+   * registered for this point.
+   */
   readonly composition: ConsoleExtensionComposition;
+  /** Type-only marker for the contribution accepted by this point. */
   readonly __consoleExtensionType?: T;
 }
 
@@ -51,14 +73,32 @@ export interface ConsoleExtensionRegistrationOptions {
   readonly priority?: number;
 }
 
-/** Registry for ordered, multi-provider console extensions. */
+/**
+ * Registry for ordered, multi-provider console extensions.
+ *
+ * The registry owns ordering only. The host implements the behavior described
+ * by each extension point's `composition` metadata.
+ */
 export interface ConsoleExtensionRegistry {
+  /**
+   * Registers one contribution.
+   *
+   * Contributions with higher priorities resolve first. Equal priorities keep
+   * registration order. Disposing the returned handle removes the contribution.
+   */
   register<T>(
     point: ConsoleExtensionPoint<T>,
     contribution: T,
     options?: ConsoleExtensionRegistrationOptions,
   ): ConsoleDisposable;
+  /**
+   * Returns contributions in effective execution/rendering order.
+   *
+   * The returned order is higher priority first and stable registration order
+   * for equal priorities.
+   */
   getAll<T>(point: ConsoleExtensionPoint<T>): readonly T[];
+  /** Subscribes to extension registration and disposal changes. */
   subscribe(listener: () => void): ConsoleDisposable;
 }
 
@@ -369,7 +409,13 @@ class CapabilityRegistry implements ConsoleCapabilityRegistry {
   }
 }
 
-/** Creates a typed multi-provider extension-point token. */
+/**
+ * Creates a typed multi-provider extension-point token.
+ *
+ * @param id Stable identifier for the extension contract.
+ * @param composition How a host composes multiple registered contributions.
+ * @defaultValue composition `"collect"`
+ */
 export function createConsoleExtensionPoint<T>(
   id: string,
   composition: ConsoleExtensionComposition = "collect",
@@ -1011,74 +1057,167 @@ export const consoleServices = Object.freeze({
 });
 
 /** Shared extension-point tokens used by console hosts and addons. */
+/**
+ * Built-in extension contracts supported by Console hosts.
+ *
+ * Each point declares its composition strategy so addon authors can determine
+ * whether registration order affects transformation, matching, rendering, or
+ * collection behavior directly from IDE hover information.
+ */
 export const consoleExtensionPoints = Object.freeze({
+  /**
+   * Parses stateful controls from raw process chunks before CR/newline
+   * normalization.
+   *
+   * @composition pipeline Each parser receives the output of preceding parsers.
+   */
   processControlParser:
     createConsoleExtensionPoint<ConsoleProcessControlParser>(
       "console.process.control",
       "pipeline",
     ),
+  /**
+   * Transforms/enriches normalized process output before structured parsing.
+   *
+   * @composition pipeline Each processor receives accumulated prior output.
+   */
   processOutputProcessor:
     createConsoleExtensionPoint<ConsoleProcessOutputProcessor>(
       "console.process.output",
       "pipeline",
     ),
+  /**
+   * Promotes process text to structured values.
+   *
+   * @composition first-result The first parser returning a value wins.
+   */
   structuredOutputParser:
     createConsoleExtensionPoint<ConsoleStructuredOutputParser>(
       "console.process.structuredOutputParser",
       "first-result",
     ),
+  /**
+   * Discovers application-specific interactive link ranges.
+   *
+   * @composition collect All providers contribute; earlier overlapping ranges win.
+   */
   linkProvider: createConsoleExtensionPoint<ConsoleLinkProvider>(
     "console.linkProvider",
     "collect",
   ),
+  /**
+   * Replaces the complete output surface.
+   *
+   * @composition first-result The first renderer returning a value wins.
+   */
   outputRenderer: createConsoleExtensionPoint<ConsoleOutputRenderer>(
     "console.render.output",
     "first-result",
   ),
+  /**
+   * Structurally wraps the complete Console frame.
+   *
+   * @composition middleware Earlier contributions become outer wrappers.
+   */
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
     "middleware",
   ),
+  /**
+   * Customizes the empty-output surface without replacing normal output.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
   emptyStateRenderer: createConsoleExtensionPoint<ConsoleEmptyStateRenderer>(
     "console.render.emptyState",
     "first-result",
   ),
+  /**
+   * Adds persistent addon UI to generic panel placements.
+   *
+   * @composition collect All matching elements render in resolved order.
+   */
   panelElement: createConsoleExtensionPoint<ConsolePanelElement>(
     "console.render.panelElement",
     "collect",
   ),
+  /**
+   * Contributes structured-message visibility predicates.
+   *
+   * @composition all A message must pass every registered filter.
+   */
   messageFilter: createConsoleExtensionPoint<ConsoleMessageFilter>(
     "console.filter.message",
     "all",
   ),
+  /**
+   * Replaces one structured-message row.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
   messageRenderer: createConsoleExtensionPoint<ConsoleMessageRenderer>(
     "console.render.message",
     "first-result",
   ),
+  /**
+   * Adds UI around a structured message without replacing its renderer.
+   *
+   * @composition collect All matching decorations render in resolved order.
+   */
   messageDecoration: createConsoleExtensionPoint<ConsoleMessageDecoration>(
     "console.render.messageDecoration",
     "collect",
   ),
+  /**
+   * Contributes logical searchable/plain text for structured messages.
+   *
+   * @composition collect Text from all providers is accumulated in resolved order.
+   */
   messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
     "console.message.text",
     "collect",
   ),
+  /**
+   * Replaces rendering for an individual structured value.
+   *
+   * @composition first-result The first matching renderer returning a value wins.
+   */
   valueRenderer: createConsoleExtensionPoint<ConsoleValueRenderer>(
     "console.render.value",
     "first-result",
   ),
+  /**
+   * Contributes keyboard commands scoped to the focused Console.
+   *
+   * @composition first-result The first matching enabled shortcut handles the event.
+   */
   keyboardShortcut: createConsoleExtensionPoint<ConsoleKeyboardShortcut>(
     "console.keyboard.shortcut",
     "first-result",
   ),
+  /**
+   * Adds Console-level actions.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   panelAction: createConsoleExtensionPoint<ConsolePanelAction>(
     "console.action.panel",
     "collect",
   ),
+  /**
+   * Adds context-menu actions for Console, object, or message targets.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   contextMenuAction: createConsoleExtensionPoint<ConsoleContextMenuAction>(
     "console.action.contextMenu",
     "collect",
   ),
+  /**
+   * Adds actions scoped to one structured message.
+   *
+   * @composition collect All visible actions are accumulated in resolved order.
+   */
   messageAction: createConsoleExtensionPoint<ConsoleMessageAction>(
     "console.action.message",
     "collect",
