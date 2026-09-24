@@ -51,7 +51,10 @@ function toRgbPresentation(color: vscode.Color) {
 
 function createPresentations(
   color: vscode.Color,
-  context: vscode.ColorPresentationContext,
+  context: {
+    document: vscode.TextDocument;
+    range: vscode.Range;
+  },
 ) {
   const original = context.document.getText(context.range).trim().toLowerCase();
   const hex = toHexPresentation(color);
