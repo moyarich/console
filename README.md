@@ -552,6 +552,7 @@ Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the
 ```tsx
 import { Console } from "@moyarich/console";
 import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
+import "@moyarich/console-addon-resizable/styles.css";
 
 const resizable = createResizableConsoleAddon({
   direction: "both",
@@ -564,7 +565,7 @@ const resizable = createResizableConsoleAddon({
 <Console messages={messages} addons={[resizable]} />;
 ```
 
-The addon owns resize state, pointer handling, constraints, visible handles, and resize theming while `Console` continues to own the panel and output viewport.
+The addon owns resize state, pointer handling, constraints, edges, visible handles, and resize theming while `Console` continues to own the panel and output viewport. Its CSS is shipped separately from core through `@moyarich/console-addon-resizable/styles.css`.
 
 ### Structured-mode props
 
