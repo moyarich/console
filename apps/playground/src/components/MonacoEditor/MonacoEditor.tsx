@@ -4,17 +4,8 @@ import type {
   EditorAppConfig,
   TextContents,
 } from "monaco-languageclient/editorApp";
-import {
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  monacoThemeForColorScheme,
-  useResolvedColorScheme,
-} from "../../theme";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { monacoThemeForColorScheme, useResolvedColorScheme } from "../../theme";
 import { languageForPath } from "./languages";
 import { vscodeApiConfig } from "./setup";
 
