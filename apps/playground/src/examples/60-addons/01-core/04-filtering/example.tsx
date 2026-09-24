@@ -56,7 +56,7 @@ export default function FilteringAddonExample() {
   const addons = useMemo(() => [filteringAddon], [filteringAddon]);
 
   return (
-    <div style={{ width: "100%", maxWidth: 820 }}>
+    <div style={{ display: "grid", gap: 12, width: "100%", maxWidth: 820 }}>
       <ConsoleFilteringControls
         controller={filteringAddon.controller}
         messages={messages}
@@ -68,11 +68,7 @@ export default function FilteringAddonExample() {
         filter={(message) => message.id !== "host-hidden"}
         title="Filtered console"
         subtitle="Addon filters compose with the host predicate."
-        style={{
-          height: 320,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-        }}
+        style={{ height: 320 }}
       />
     </div>
   );
