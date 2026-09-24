@@ -1,9 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import type {
-  MdxSection,
-  MdxSectionItem,
-} from "../../../utils/mdxSection";
+import type { MdxSection, MdxSectionItem } from "../../../utils/mdxSection";
 
 interface MdxPageSectionProps {
   section: MdxSection;
