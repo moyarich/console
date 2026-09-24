@@ -404,7 +404,8 @@ export function createConsoleFilteringAddon(
   options: ConsoleFilteringAddonOptions = {},
 ): ConsoleFilteringAddon {
   const controller =
-    options.controller ?? createConsoleFilteringController(options.initialState);
+    options.controller ??
+    createConsoleFilteringController(options.initialState);
 
   return {
     id: CONSOLE_FILTERING_ADDON_ID,
