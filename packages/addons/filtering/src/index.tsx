@@ -167,13 +167,10 @@ function formatFilterValue(value: unknown): string {
 
 /** Returns the searchable text representation used by the text filter. */
 export function getConsoleMessageFilterText(
-  message: ConsoleMessageData,
+  context: ConsoleMessageTextProviderContext,
   providers: readonly ConsoleMessageTextProvider[] = [],
-  context: ConsoleMessageTextProviderContext = {
-    index: 0,
-    messages: [message],
-  },
 ): string {
+  const { message } = context;
   const text = [
     message.method,
     message.source ?? "",
@@ -182,7 +179,7 @@ export function getConsoleMessageFilterText(
 
   for (const provider of providers) {
     try {
-      const provided = provider.provideText(message, context);
+      const provided = provider.provideText(context);
 
       if (typeof provided === "string") {
         text.push(provided);
@@ -199,11 +196,12 @@ export function getConsoleMessageFilterText(
 
 /** Evaluates one message against a normalized filtering state. */
 export function matchesConsoleMessage(
-  message: ConsoleMessageData,
+  context: ConsoleMessageFilterContext,
   state: ConsoleFilteringState,
   providers: readonly ConsoleMessageTextProvider[] = [],
-  context?: ConsoleMessageTextProviderContext,
 ): boolean {
+  const { message } = context;
+
   if (state.methods && !state.methods.includes(message.method)) {
     return false;
   }
@@ -219,7 +217,7 @@ export function matchesConsoleMessage(
 
   return (
     !query ||
-    getConsoleMessageFilterText(message, providers, context).includes(query)
+    getConsoleMessageFilterText(context, providers).includes(query)
   );
 }
 
@@ -230,11 +228,7 @@ export function createConsoleMessageFilter(
 ): ConsoleMessageFilter {
   const normalized = normalizeState(state);
 
-  return (message, index, messages) =>
-    matchesConsoleMessage(message, normalized, providers, {
-      index,
-      messages,
-    });
+  return (context) => matchesConsoleMessage(context, normalized, providers);
 }
 
 /** Creates a small observable controller for headless or React filter controls. */
@@ -307,7 +301,10 @@ export function createConsoleFilteringController(
     },
 
     matches(message) {
-      return matchesConsoleMessage(message, state);
+      return matchesConsoleMessage(
+        { message, index: 0, messages: [message] },
+        state,
+      );
     },
   };
 
