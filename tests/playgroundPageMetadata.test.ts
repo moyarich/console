@@ -66,10 +66,7 @@ describe("playground page metadata", () => {
       { label: "Example", toc: { collapsible: "yes" } },
       '"toc.collapsible" must be a boolean',
     ],
-    [
-      { label: "Example", toc: { label: 42 } },
-      '"toc.label" must be a string',
-    ],
+    [{ label: "Example", toc: { label: 42 } }, '"toc.label" must be a string'],
     [
       { label: "Example", sidebarOutline: "yes" },
       '"sidebarOutline" must be a boolean',
