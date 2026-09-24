@@ -93,9 +93,7 @@ export function parsePageMeta(value: unknown, sourcePath: string): PageMeta {
   return metadata as PageMeta;
 }
 
-export function resolvePageTocOptions(
-  meta: PageMeta,
-): ResolvedPageTocOptions {
+export function resolvePageTocOptions(meta: PageMeta): ResolvedPageTocOptions {
   if (meta.toc === undefined || meta.toc === false) {
     return {
       show: false,
