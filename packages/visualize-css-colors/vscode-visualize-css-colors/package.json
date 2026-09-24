@@ -17,6 +17,10 @@
     "./extension.js": {
       "types": "./dist/extension.d.cts",
       "default": "./dist/extension.js"
+    },
+    "./extension-source": {
+      "types": "./dist/extension-source.d.ts",
+      "import": "./dist/extension-source.js"
     }
   },
   "files": [
@@ -27,7 +31,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
