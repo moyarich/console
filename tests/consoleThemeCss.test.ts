@@ -56,5 +56,4 @@ describe("console theme CSS", () => {
       "themeStyle.colorScheme = computedStyle.colorScheme",
     );
   });
-
 });
