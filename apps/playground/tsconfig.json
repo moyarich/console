@@ -16,6 +16,9 @@
       "@moyarich/console-addon-diagnostics": [
         "../../packages/addons/diagnostics/src/index.ts"
       ],
+      "@moyarich/console-addon-resizable": [
+        "../../packages/addons/resizable/src/index.tsx"
+      ],
       "@moyarich/console-core": ["../../packages/console-core/src/index.ts"]
     }
   },

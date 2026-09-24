@@ -6,17 +6,20 @@
     "baseUrl": ".",
     "paths": {
       "@moyarich/console": ["./packages/console/src/index.ts"],
-      "@moyarich/console/*": ["./packages/console/src/*"],
-      "@moyarich/console-addon-imperative-scrolling": [
-        "./packages/addons/imperative-scrolling/src/index.ts"
-      ],
       "@moyarich/console-addon-data-export": [
         "./packages/addons/data-export/src/index.ts"
       ],
       "@moyarich/console-addon-diagnostics": [
         "./packages/addons/diagnostics/src/index.ts"
       ],
-      "@moyarich/console-core": ["./packages/console-core/src/index.ts"]
+      "@moyarich/console-addon-imperative-scrolling": [
+        "./packages/addons/imperative-scrolling/src/index.ts"
+      ],
+      "@moyarich/console-addon-resizable": [
+        "./packages/addons/resizable/src/index.tsx"
+      ],
+      "@moyarich/console-core": ["./packages/console-core/src/index.ts"],
+      "@moyarich/console/*": ["./packages/console/src/*"]
     }
   },
   "include": [
@@ -26,6 +29,7 @@
     "packages/addons/imperative-scrolling/src",
     "packages/addons/data-export/src",
     "packages/addons/diagnostics/src",
+    "packages/addons/resizable/src",
     "packages/console-core/src"
   ]
 }

@@ -42,6 +42,24 @@ const config: StorybookConfig = {
             ),
           },
           {
+            find: "@moyarich/console-addon-resizable/styles.css",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/resizable/src/styles.css",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-resizable",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/resizable/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
             find: "@moyarich/console-addon-data-export",
             replacement: fileURLToPath(
               new URL(

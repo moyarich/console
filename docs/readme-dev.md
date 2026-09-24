@@ -357,7 +357,7 @@ apps/playground/src/examples/
   40-events/
     01-console-event/
       ...
-  50-additional-usage/
+  80-additional-usage/
     07-plain-messages/
       ...
 ```
