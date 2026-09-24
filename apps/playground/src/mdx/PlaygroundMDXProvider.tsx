@@ -7,20 +7,20 @@ import {
 
 interface PlaygroundMDXProviderProps {
   children: ReactNode;
-  exampleTitle: string;
+  pageTitle: string;
 }
 
 export function PlaygroundMDXProvider({
   children,
-  exampleTitle,
+  pageTitle,
 }: PlaygroundMDXProviderProps) {
   const components = useMemo(
     () => ({
       RunnableExample: (props: RunnableExampleProps) => (
-        <RunnableExample title={exampleTitle} {...props} />
+        <RunnableExample title={pageTitle} {...props} />
       ),
     }),
-    [exampleTitle],
+    [pageTitle],
   );
 
   return <MDXProvider components={components}>{children}</MDXProvider>;
