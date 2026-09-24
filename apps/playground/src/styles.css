@@ -362,12 +362,6 @@ hr {
   font-size: 0.82rem;
 }
 
-.preview-stage .console-panel {
-  min-height: 440px;
-  border-radius: 14px;
-  box-shadow: none;
-}
-
 .source-panel {
   border-color: #222b3a;
   background: #151b26;
