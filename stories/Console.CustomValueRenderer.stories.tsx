@@ -8,12 +8,12 @@ import {
 const valueRenderers: ConsoleValueRenderer[] = [
   {
     type: "Object",
-    match: (value) =>
+    match: ({ value }) =>
       typeof value === "object" &&
       value !== null &&
       "kind" in value &&
       value.kind === "status",
-    render: (value) => {
+    render: ({ value }) => {
       const status = value as { kind: "status"; label: string; state: string };
       return (
         <span
