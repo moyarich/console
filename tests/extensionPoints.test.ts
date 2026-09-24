@@ -28,6 +28,70 @@ describe("consoleExtensionPoints", () => {
     ]);
   });
 
+  it("declares how every built-in extension point composes", () => {
+    expect(
+      Object.fromEntries(
+        Object.entries(consoleExtensionPoints).map(([name, point]) => [
+          name,
+          point.composition,
+        ]),
+      ),
+    ).toEqual({
+      processControlParser: "pipeline",
+      processOutputProcessor: "pipeline",
+      structuredOutputParser: "first-result",
+      linkProvider: "collect",
+      outputRenderer: "first-result",
+      frameDecorator: "middleware",
+      emptyStateRenderer: "first-result",
+      panelElement: "collect",
+      messageFilter: "all",
+      messageRenderer: "first-result",
+      messageDecoration: "collect",
+      messageTextProvider: "collect",
+      valueRenderer: "first-result",
+      keyboardShortcut: "first-result",
+      panelAction: "collect",
+      contextMenuAction: "collect",
+      messageAction: "collect",
+    });
+  });
+
+  it("passes each processor the output produced by preceding processors", () => {
+    const seen: string[] = [];
+    const resolved = resolveConsoleProcessOutput(
+      ["foo"],
+      [
+        {
+          id: "append",
+          process({ output }) {
+            seen.push(output.data);
+            return {
+              data: `${output.data} bar`,
+              metadata: { phase: "first" },
+            };
+          },
+        },
+        {
+          id: "uppercase",
+          process({ output }) {
+            seen.push(output.data);
+            return {
+              data: output.data.toUpperCase(),
+              metadata: { phase: "second" },
+            };
+          },
+        },
+      ],
+    );
+
+    expect(seen).toEqual(["foo", "foo bar"]);
+    expect(resolved.entries[0]?.output.data).toBe("FOO BAR");
+    expect(resolved.entries[0]?.output.metadata).toMatchObject({
+      phase: "second",
+    });
+  });
+
   it("runs stateful process-control parsing before line normalization", () => {
     let buffered = "";
     const parser: ConsoleProcessControlParser = {
