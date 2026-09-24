@@ -81,9 +81,7 @@ describe("playground color scheme", () => {
 
   it("uses lighter typography weights for general playground UI", () => {
     expect(playgroundStyles).toContain("font-weight: 400;");
-    expect(playgroundStyles).toContain(
-      "strong,\nb {\n  font-weight: 500;\n}",
-    );
+    expect(playgroundStyles).toContain("strong,\nb {\n  font-weight: 500;\n}");
     expect(playgroundStyles).not.toContain("font-weight: 750;");
     expect(playgroundStyles).not.toContain("font-weight: 800;");
     expect(playgroundStyles).toContain(
