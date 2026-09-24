@@ -23,7 +23,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external @moyarich/console-core --external react",
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --inject-style --external @moyarich/console-core --external react",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -56,6 +56,9 @@
     "developer-tools"
   ],
   "sideEffects": [
-    "./src/styles.css"
+    "./src/index.tsx",
+    "./src/styles.css",
+    "./dist/index.js",
+    "./dist/index.cjs"
   ]
 }
