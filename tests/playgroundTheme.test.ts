@@ -27,10 +27,13 @@ const resizableStyles = readFileSync(
 );
 
 describe("playground color scheme", () => {
-  it("owns System, Light, and Dark theme selection at the app shell", () => {
-    expect(app).toContain('{ value: "system", label: "System" }');
-    expect(app).toContain('{ value: "light", label: "Light" }');
-    expect(app).toContain('{ value: "dark", label: "Dark" }');
+  it("owns an icon-based System, Light, and Dark appearance switcher", () => {
+    expect(app).toContain('import { Monitor, Moon, Sun } from "lucide-react";');
+    expect(app).toContain('{ value: "system", label: "System", Icon: Monitor }');
+    expect(app).toContain('{ value: "light", label: "Light", Icon: Sun }');
+    expect(app).toContain('{ value: "dark", label: "Dark", Icon: Moon }');
+    expect(app).toContain('aria-label="Appearance"');
+    expect(app).toContain("aria-pressed={isActive}");
     expect(app).toContain('themePreference === "system" ? "light dark"');
     expect(app).toContain("root.style.colorScheme = colorScheme");
     expect(app).not.toContain(
@@ -58,6 +61,16 @@ describe("playground color scheme", () => {
     expect(playgroundStyles.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThan(
       12,
     );
+  });
+
+  it("uses lighter typography weights for general playground UI", () => {
+    expect(playgroundStyles).toContain("font-weight: 400;");
+    expect(playgroundStyles).toContain(
+      "strong,\nb {\n  font-weight: 600;\n}",
+    );
+    expect(playgroundStyles).not.toContain("font-weight: 750;");
+    expect(playgroundStyles).not.toContain("font-weight: 800;");
+    expect(playgroundStyles).toContain(".theme-switcher-button[aria-pressed=\"true\"]");
   });
 
   it("renders a GitHub repository icon link", () => {
