@@ -67,7 +67,7 @@ describe("playground color scheme", () => {
 
   it("uses a deterministic system font stack instead of local Inter", () => {
     expect(playgroundStyles).toContain("--font-sans:");
-    expect(playgroundStyles).toContain('"−apple-system-body"'.replace("−", "-"));
+    expect(playgroundStyles).toContain('"-apple-system-body"');
     expect(playgroundStyles).toContain("font-family: var(--font-sans);");
     expect(playgroundStyles).not.toMatch(/\bInter,?/);
     expect(playgroundStyles).toContain(
