@@ -32,6 +32,7 @@ export type {
   ConsoleCapabilityRegistry,
   ConsoleDisposable,
   ConsoleDisposableScope,
+  ConsoleExtensionComposition,
   ConsoleExtensionPoint,
   ConsoleExtensionRegistrationOptions,
   ConsoleExtensionRegistry,
