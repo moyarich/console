@@ -82,7 +82,7 @@ describe("@moyarich/console-addon-diagnostics", () => {
   it("keeps raw ANSI chunks distinct from normalized and processed output", () => {
     const processor: ConsoleProcessOutputProcessor = {
       id: "diagnostics-transform",
-      process(output) {
+      process({ output }) {
         if (!output.data.includes("20%")) return;
 
         return {
