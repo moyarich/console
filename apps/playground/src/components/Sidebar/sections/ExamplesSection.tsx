@@ -12,10 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import type {
-  MdxSection,
-  MdxSectionItem,
-} from "../../../utils/mdxSection";
+import type { MdxSection, MdxSectionItem } from "../../../utils/mdxSection";
 
 interface ExamplesSectionProps {
   section: MdxSection;
@@ -68,8 +65,7 @@ function getGroupIcon(groupId: string): LucideIcon {
 function countPages(items: readonly MdxSectionItem[]): number {
   return items.reduce(
     (count, item) =>
-      count +
-      (item.type === "page" ? 1 : countPages(item.group.items)),
+      count + (item.type === "page" ? 1 : countPages(item.group.items)),
     0,
   );
 }
@@ -150,8 +146,7 @@ function ExampleTree({
           );
         }
 
-        const expanded =
-          searching || !collapsedGroupIds.has(item.group.id);
+        const expanded = searching || !collapsedGroupIds.has(item.group.id);
         const Icon = depth === 0 ? getGroupIcon(item.group.id) : undefined;
 
         return (
