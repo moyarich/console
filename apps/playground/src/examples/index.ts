@@ -3,8 +3,8 @@ import type { ComponentType } from "react";
 import {
   parseOrderedDirectory,
   type MdxPageModule,
-} from "../content/mdxSection";
-import { parsePageMeta, type PageMeta } from "../content/pageMetadata";
+} from "../utils/mdxSection";
+import { parsePageMeta, type PageMeta } from "../utils/pageMetadata";
 
 export type ConsoleExampleGroupId = string;
 
