@@ -28,5 +28,13 @@ export function getContextMenuThemeStyle(
     }
   }
 
+  if (
+    !themeStyle["--console-context-menu-color-scheme"] &&
+    !themeStyle["--console-color-scheme"] &&
+    computedStyle.colorScheme
+  ) {
+    themeStyle.colorScheme = computedStyle.colorScheme;
+  }
+
   return themeStyle;
 }
