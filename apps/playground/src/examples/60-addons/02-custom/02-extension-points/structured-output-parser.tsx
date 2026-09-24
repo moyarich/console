@@ -12,7 +12,7 @@ function createStructuredOutputParserAddon(): ConsoleAddon {
     activate(host) {
       host.extensions.register(
         consoleExtensionPoints.structuredOutputParser,
-        (text) => {
+        ({ text }) => {
           const match = /^METRIC\s+(.+?)=(\d+(?:\.\d+)?)(\S+)$/.exec(
             text.trim(),
           );
