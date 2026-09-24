@@ -155,12 +155,6 @@ export default function PyodideTqdmProgressExample() {
         </button>
       </div>
 
-      <p style={{ margin: 0 }}>
-        Pyodide is imported as a real browser ES module. The real tqdm formatter
-        writes to a custom Python file-like stream, and every exact write,
-        including its carriage return, is forwarded directly into the console.
-      </p>
-
       <Console
         mode="ansi"
         title="Pyodide + tqdm"

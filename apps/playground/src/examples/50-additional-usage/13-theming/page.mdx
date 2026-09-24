@@ -1,0 +1,36 @@
+---
+label: "Theming"
+description: "Use inherited color-scheme variables for broad theming or override individual --console-* tokens."
+---
+
+import colorSchemeSource from "./color-scheme.tsx?raw";
+import customTokensSource from "./custom-tokens.tsx?raw";
+
+<style>{`
+  hr {
+    --hr-line-offset: 14%;
+    --hr-color: #6366f1;
+  }
+`}</style>
+
+## Inherited color scheme
+
+Place theme variables on a host container when multiple console surfaces should inherit the same appearance. Color-scheme tokens also affect native UI and the portaled context menu.
+
+<RunnableExample
+  source={colorSchemeSource}
+  sourcePath="color-scheme.tsx"
+  title="Inherited color scheme"
+/>
+
+<hr />
+
+## Individual theme tokens
+
+Override individual `--console-*` variables when the console needs to match an existing design system. Border tokens accept complete border shorthands; color-only values end in `-color`.
+
+<RunnableExample
+  source={customTokensSource}
+  sourcePath="custom-tokens.tsx"
+  title="Custom theme tokens"
+/>

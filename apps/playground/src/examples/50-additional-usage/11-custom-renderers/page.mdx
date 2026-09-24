@@ -1,0 +1,31 @@
+---
+label: "Custom renderers"
+description: "Customize values and whole message rows independently while preserving built-in fallback behavior."
+---
+
+import valueRendererSource from "./value-renderer.tsx?raw";
+import metricSource from "./metric.ts?raw";
+import messageRendererSource from "./message-renderer.tsx?raw";
+
+## Value renderer
+
+Use a value renderer when only a particular value needs custom presentation. Returning `undefined` keeps the built-in inspector as the fallback.
+
+<RunnableExample
+  source={valueRendererSource}
+  sourcePath="value-renderer.tsx"
+  files={{ "metric.ts": metricSource }}
+  title="Value renderer"
+/>
+
+<hr />
+
+## Message renderer
+
+Use a message renderer when the whole console row needs custom presentation. `renderDefault()` lets a wrapper preserve the standard message UI.
+
+<RunnableExample
+  source={messageRendererSource}
+  sourcePath="message-renderer.tsx"
+  title="Message renderer"
+/>

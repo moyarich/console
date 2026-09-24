@@ -1,0 +1,10 @@
+---
+label: "Pyodide + tqdm progress"
+description: "Run the real Python tqdm package inside browser-based Pyodide and feed its carriage-return stderr progress directly into the ANSI console."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Pyodide is imported as a real browser ES module. The real `tqdm` formatter writes to a custom Python file-like stream, and every exact write—including its carriage return—is forwarded directly into the console.

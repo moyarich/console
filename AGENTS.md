@@ -15,9 +15,9 @@ npx --no-install prettier --write <changed-file>
 
 When several code files were changed, pass all of them to the same commands.
 
-### Markdown, JSON, CSS, HTML, YAML, and other Prettier-supported files
+### Markdown / MDX, JSON, CSS, HTML, YAML, and other Prettier-supported files
 
-Run Prettier on every changed file:
+Run Prettier on every changed file, including `.mdx` example pages:
 
 ```bash
 npx --no-install prettier --write <changed-file>

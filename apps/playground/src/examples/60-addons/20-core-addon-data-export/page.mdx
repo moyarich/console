@@ -1,0 +1,29 @@
+---
+label: "Core Addon - Data export"
+description: "Export structured messages or resolved ANSI process output as logical data."
+---
+
+import structuredSource from "./structured.tsx?raw";
+import ansiSource from "./ansi.tsx?raw";
+
+## Structured messages
+
+Structured mode exports the underlying `ConsoleMessageData`, including message metadata and values.
+
+<RunnableExample
+  source={structuredSource}
+  sourcePath="structured.tsx"
+  title="Structured data export"
+/>
+
+<hr />
+
+## ANSI process output
+
+ANSI mode exports the resolved logical process view after carriage-return normalization and process-output processors.
+
+<RunnableExample
+  source={ansiSource}
+  sourcePath="ansi.tsx"
+  title="ANSI data export"
+/>

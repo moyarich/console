@@ -166,10 +166,6 @@ export default function ResizableConsoleExample() {
             ))}
           </select>
         </label>
-
-        <span style={{ fontSize: 12 }}>
-          Drag the visible grip. The cursor changes to match the resize axis.
-        </span>
       </div>
 
       <div

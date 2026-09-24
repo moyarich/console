@@ -1,0 +1,31 @@
+---
+label: "React hooks"
+description: "Choose the convenience hook or subscribe to ConsoleEventEmitter directly when the host needs to own state."
+---
+
+import useConsoleMessagesSource from "./use-console-messages.tsx?raw";
+import eventEmitterSource from "./event-emitter.tsx?raw";
+import eventRuntimeSource from "./event-runtime.ts?raw";
+
+## Convenience hook
+
+`useConsoleMessages` owns message state, retention, the console proxy, and clear behavior for the common React case.
+
+<RunnableExample
+  source={useConsoleMessagesSource}
+  sourcePath="use-console-messages.tsx"
+  title="useConsoleMessages"
+/>
+
+<hr />
+
+## Host-owned state
+
+Subscribe to `ConsoleEventEmitter` directly when the application needs its own reducer, retention policy, persistence, or message store.
+
+<RunnableExample
+  source={eventEmitterSource}
+  sourcePath="event-emitter.tsx"
+  files={{ "event-runtime.ts": eventRuntimeSource }}
+  title="ConsoleEventEmitter with React state"
+/>
