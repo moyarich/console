@@ -1437,7 +1437,6 @@ body {
   }
 }
 
-
 .source-file-tabs {
   display: flex;
   min-width: 0;
@@ -1456,7 +1455,12 @@ body {
   padding: 7px 10px 8px;
   background: transparent;
   color: #8994a6;
-  font: 700 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+  font:
+    700 0.72rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
     monospace;
 }
 
