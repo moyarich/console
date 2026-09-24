@@ -129,31 +129,30 @@
   top: calc(var(--_console-resize-handle-size) / -2);
 }
 
-.console-resize-line {
+.console-resize-handle::before {
   position: absolute;
   background: var(--_console-resize-separator-line-background-color);
+  content: "";
   pointer-events: none;
   transition: background 120ms ease;
 }
 
-.console-resize-handle[data-console-resize-axis="horizontal"]
-  > .console-resize-line {
+.console-resize-handle[data-console-resize-axis="horizontal"]::before {
   width: 1px;
   height: 100%;
 }
 
-.console-resize-handle[data-console-resize-axis="vertical"]
-  > .console-resize-line {
+.console-resize-handle[data-console-resize-axis="vertical"]::before {
   width: 100%;
   height: 1px;
 }
 
-.console-resize-handle:hover > .console-resize-line,
-.console-resize-handle:focus-visible > .console-resize-line {
+.console-resize-handle:hover::before,
+.console-resize-handle:focus-visible::before {
   background: var(--_console-resize-separator-hover-line-background-color);
 }
 
-.console-resize-handle[data-active="true"] > .console-resize-line {
+.console-resize-handle[data-active="true"]::before {
   background: var(--_console-resize-separator-active-line-background-color);
 }
 
