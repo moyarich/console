@@ -160,7 +160,6 @@ export default function PyodideTqdmProgressExample() {
         title="Pyodide + tqdm"
         subtitle="Live tqdm carriage-return writes streamed directly into the console"
         messages={messages}
-        resizable="vertical"
         style={{ height: 420, minHeight: 240, maxHeight: 720 }}
         onClear={() => setMessages([])}
       />
