@@ -11,7 +11,8 @@ const ESC = "\u001b[";
 const processors: ConsoleProcessOutputProcessor[] = [
   {
     id: "worker-prefix",
-    process: (output, context) => {
+    process: (context) => {
+      const { output } = context;
       if (!context.text.startsWith("[worker] ")) {
         return undefined;
       }
