@@ -45,6 +45,7 @@ const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, RuntimeModule>> = {
   "@moyarich/console-addon-imperative-scrolling":
     ImperativeScrollingAddonPackage,
   "@moyarich/console-addon-resizable": ResizableAddonPackage,
+  "@moyarich/console-addon-resizable/styles.css": {},
   "lucide-react": LucideReact,
 };
 
