@@ -3,7 +3,6 @@ import {
   useMemo,
   useSyncExternalStore,
   type CSSProperties,
-  type ReactNode,
 } from "react";
 import {
   consoleExtensionPoints,
@@ -12,8 +11,10 @@ import {
   serializeConsoleValue,
   type ConsoleAddon,
   type ConsoleDataService,
-  type ConsoleFrameDecorator,
   type ConsoleMessageData,
+  type ConsoleMessageTextProvider,
+  type ConsoleMessageTextProviderContext,
+  type ConsolePanelElement,
   type ConsoleMessageFilter,
   type ConsoleMethod,
 } from "@moyarich/console-core";
@@ -168,20 +169,41 @@ function formatFilterValue(value: unknown): string {
 /** Returns the searchable text representation used by the text filter. */
 export function getConsoleMessageFilterText(
   message: ConsoleMessageData,
+  providers: readonly ConsoleMessageTextProvider[] = [],
+  context: ConsoleMessageTextProviderContext = {
+    index: 0,
+    messages: [message],
+  },
 ): string {
-  return [
+  const text = [
     message.method,
     message.source ?? "",
     ...message.data.map(formatFilterValue),
-  ]
-    .join(" ")
-    .toLocaleLowerCase();
+  ];
+
+  for (const provider of providers) {
+    try {
+      const provided = provider.provideText(message, context);
+
+      if (Array.isArray(provided)) {
+        text.push(...provided);
+      } else if (provided) {
+        text.push(provided);
+      }
+    } catch {
+      // One text provider must not prevent filtering from using base text.
+    }
+  }
+
+  return text.join(" ").toLocaleLowerCase();
 }
 
 /** Evaluates one message against a normalized filtering state. */
 export function matchesConsoleMessage(
   message: ConsoleMessageData,
   state: ConsoleFilteringState,
+  providers: readonly ConsoleMessageTextProvider[] = [],
+  context?: ConsoleMessageTextProviderContext,
 ): boolean {
   if (state.methods && !state.methods.includes(message.method)) {
     return false;
@@ -196,15 +218,24 @@ export function matchesConsoleMessage(
 
   const query = state.text.trim().toLocaleLowerCase();
 
-  return !query || getConsoleMessageFilterText(message).includes(query);
+  return (
+    !query ||
+    getConsoleMessageFilterText(message, providers, context).includes(query)
+  );
 }
 
 /** Creates a standalone predicate from fixed filtering criteria. */
 export function createConsoleMessageFilter(
   state: ConsoleFilteringStateInput = {},
+  providers: readonly ConsoleMessageTextProvider[] = [],
 ): ConsoleMessageFilter {
   const normalized = normalizeState(state);
-  return (message) => matchesConsoleMessage(message, normalized);
+
+  return (message, index, messages) =>
+    matchesConsoleMessage(message, normalized, providers, {
+      index,
+      messages,
+    });
 }
 
 /** Creates a small observable controller for headless or React filter controls. */
@@ -442,11 +473,10 @@ export function ConsoleFilteringControls({
   );
 }
 
-interface ConsoleFilteringFrameProps {
+interface ConsoleFilteringPanelProps {
   controller: ConsoleFilteringController;
   data?: ConsoleDataService;
   options: ConsoleFilteringControlsOptions;
-  children: ReactNode;
 }
 
 function useConsoleDataSnapshot(data: ConsoleDataService | undefined) {
@@ -461,29 +491,35 @@ function useConsoleDataSnapshot(data: ConsoleDataService | undefined) {
   );
 }
 
-function ConsoleFilteringFrame({
+function ConsoleFilteringPanel({
   controller,
   data,
   options,
-  children,
-}: ConsoleFilteringFrameProps) {
+}: ConsoleFilteringPanelProps) {
   const snapshot = useConsoleDataSnapshot(data);
   const messages = snapshot?.mode === "console" ? snapshot.all : undefined;
 
   return (
-    <div className="console-filtering-frame">
-      <ConsoleFilteringControls
-        controller={controller}
-        messages={messages}
-        {...options}
-      />
-      {children}
-    </div>
+    <ConsoleFilteringControls
+      controller={controller}
+      messages={messages}
+      {...options}
+    />
+  );
+}
+
+function arraysEqualByIdentity<T>(
+  left: readonly T[],
+  right: readonly T[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
   );
 }
 
 const filterRegistrationId = `${CONSOLE_FILTERING_ADDON_ID}:message-filter`;
-const frameRegistrationId = `${CONSOLE_FILTERING_ADDON_ID}:frame`;
+const panelRegistrationId = `${CONSOLE_FILTERING_ADDON_ID}:controls`;
 
 /**
  * Creates the first-party filtering addon.
@@ -508,45 +544,59 @@ export function createConsoleFilteringAddon(
     activate(host) {
       host.services.provide(consoleFilteringService, controller);
 
+      let textProviders = host.extensions.getAll(
+        consoleExtensionPoints.messageTextProvider,
+      );
       let filterRegistration = host.extensions.register(
         consoleExtensionPoints.messageFilter,
-        createConsoleMessageFilter(controller.getState()),
+        createConsoleMessageFilter(controller.getState(), textProviders),
         { id: filterRegistrationId },
       );
 
-      const unsubscribe = controller.subscribe(() => {
+      const replaceFilter = () => {
         filterRegistration.dispose();
         filterRegistration = host.extensions.register(
           consoleExtensionPoints.messageFilter,
-          createConsoleMessageFilter(controller.getState()),
+          createConsoleMessageFilter(controller.getState(), textProviders),
           { id: filterRegistrationId },
         );
-      });
+      };
 
-      host.scope.defer(unsubscribe);
+      host.scope.defer(controller.subscribe(replaceFilter));
+
+      host.extensions.subscribe(() => {
+        const nextProviders = host.extensions.getAll(
+          consoleExtensionPoints.messageTextProvider,
+        );
+
+        if (arraysEqualByIdentity(textProviders, nextProviders)) return;
+
+        textProviders = nextProviders;
+        replaceFilter();
+      });
 
       if (controls) {
         const data = host.services.get(consoleServices.data);
-        const decorator: ConsoleFrameDecorator<ReactNode> = {
+        const panelElement: ConsolePanelElement = {
+          id: panelRegistrationId,
+          placement: "before-output",
           render(context) {
             if (context.mode !== "console") return undefined;
 
             return (
-              <ConsoleFilteringFrame
+              <ConsoleFilteringPanel
                 controller={controller}
                 data={data}
                 options={controls}
-              >
-                {context.renderDefault()}
-              </ConsoleFilteringFrame>
+              />
             );
           },
         };
 
         host.extensions.register(
-          consoleExtensionPoints.frameDecorator,
-          decorator,
-          { id: frameRegistrationId },
+          consoleExtensionPoints.panelElement,
+          panelElement,
+          { id: panelRegistrationId },
         );
       }
     },
