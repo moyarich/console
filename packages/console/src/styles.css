@@ -884,8 +884,14 @@
 
 .console-panel .console-link:hover,
 .console-panel .console-link:focus-visible {
-  outline: none;
   text-decoration-thickness: 2px;
+}
+
+.console-panel .console-link:focus-visible {
+  outline: 2px solid
+    color-mix(in oklab, var(--_console-accent-color) 72%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .console-panel button.console-link-button {
@@ -898,8 +904,14 @@
 
 .console-panel button.console-link-button:hover,
 .console-panel button.console-link-button:focus-visible {
-  outline: none;
   text-decoration-thickness: 2px;
+}
+
+.console-panel button.console-link-button:focus-visible {
+  outline: 2px solid
+    color-mix(in oklab, var(--_console-accent-color) 72%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 .console-panel .console-string {
   color: var(--_console-string-color);
@@ -1014,6 +1026,10 @@
   > .console-object-copy-button {
   opacity: 0.58;
 }
+.console-panel .console-message-icon-button:focus-visible {
+  box-shadow: var(--_console-focus-ring);
+}
+
 .console-panel .console-object > summary:hover + .console-object-copy-button,
 .console-panel .console-object-copy-button:hover,
 .console-panel .console-object-copy-button:focus-visible {
