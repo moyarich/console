@@ -25,7 +25,8 @@ const processors: ConsoleProcessOutputProcessor[] = [
   },
   {
     id: "task-event",
-    process: (output, context) => {
+    process: (context) => {
+      const { output } = context;
       const match = context.text.match(/^TASK (START|DONE) (.+)$/);
 
       if (!match) {
