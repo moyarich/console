@@ -5,7 +5,7 @@ import {
   DEFAULT_CONSOLE_EXAMPLE,
 } from "../../examples";
 import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
-import { ExampleSidebar } from "../ExampleSidebar/ExampleSidebar";
+import { ExamplesSection } from "../Sidebar/sections/ExamplesSection";
 import { Sidebar } from "../Sidebar";
 
 export function Playground() {
@@ -22,7 +22,7 @@ export function Playground() {
     <div className="layout-content">
       <aside className="layout-sidebar documentation-sidebar">
         <Sidebar aria-label="Console documentation">
-          <ExampleSidebar
+          <ExamplesSection
             examples={CONSOLE_EXAMPLES}
             value={example.id}
             onChange={setExampleId}
