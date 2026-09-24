@@ -1436,3 +1436,49 @@ body {
     padding: 10px 12px;
   }
 }
+
+
+.source-file-tabs {
+  display: flex;
+  min-width: 0;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: 1px solid #283142;
+  padding: 6px 8px 0;
+  background: #151b26;
+  scrollbar-width: thin;
+}
+
+.source-file-tab {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 7px 7px 0 0;
+  padding: 7px 10px 8px;
+  background: transparent;
+  color: #8994a6;
+  font: 700 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+}
+
+.source-file-tab:hover {
+  background: #202938;
+  color: #d6deea;
+}
+
+.source-file-tab.active {
+  background: #1e1e1e;
+  color: #f8fafc;
+}
+
+.source-file-tab:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: -2px;
+}
+
+.preview-loading {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  color: #7b8496;
+  font-size: 0.84rem;
+}
