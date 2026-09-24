@@ -53,6 +53,15 @@ export default defineConfig({
         ),
       },
       {
+        find: "@moyarich/console-addon-filtering",
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/addons/filtering/src/index.tsx",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
         find: "@moyarich/console-addon-resizable/styles.css",
         replacement: fileURLToPath(
           new URL(
