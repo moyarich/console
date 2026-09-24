@@ -216,8 +216,7 @@ export function matchesConsoleMessage(
   const query = state.text.trim().toLocaleLowerCase();
 
   return (
-    !query ||
-    getConsoleMessageFilterText(context, providers).includes(query)
+    !query || getConsoleMessageFilterText(context, providers).includes(query)
   );
 }
 
