@@ -124,6 +124,31 @@ describe("runnable example project compilation", () => {
     expect(runtime.Component).toBeTypeOf("function");
   });
 
+
+  it("prevents disposed runtimes from reloading local modules", async () => {
+    const scope = globalThis as typeof globalThis & {
+      __loadRunnableModule?: () => Promise<unknown>;
+    };
+
+    const runtime = await compile("example.tsx", {
+      "example.tsx": `
+        globalThis.__loadRunnableModule = () => import("./lazy");
+        export default function Example() {
+          return <div>disposed runtime</div>;
+        }
+      `,
+      "lazy.ts": `export const value = "late";`,
+    });
+
+    const load = scope.__loadRunnableModule;
+    expect(load).toBeTypeOf("function");
+
+    runtime.dispose();
+
+    await expect(load?.()).rejects.toThrow(/disposed/);
+    delete scope.__loadRunnableModule;
+  });
+
   it("allows type-only relative imports without a runtime file", async () => {
     const runtime = await compile("example.tsx", {
       "example.tsx": `
