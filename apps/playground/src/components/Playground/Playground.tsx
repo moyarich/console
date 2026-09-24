@@ -1,8 +1,5 @@
 import { useState } from "react";
-import {
-  DOCUMENTATION_SECTIONS,
-  getDocumentationSection,
-} from "../../content/documentationSections";
+import { DOCUMENTATION_SECTIONS } from "../../utils/documentationSections";
 import {
   CONSOLE_EXAMPLES,
   CONSOLE_EXAMPLE_GROUPS,
@@ -31,7 +28,9 @@ export function Playground() {
 
   const documentationSection =
     selection.type === "documentation"
-      ? getDocumentationSection(selection.sectionId)
+      ? DOCUMENTATION_SECTIONS.find(
+          (section) => section.id === selection.sectionId,
+        )
       : undefined;
   const documentationPage =
     selection.type === "documentation"
