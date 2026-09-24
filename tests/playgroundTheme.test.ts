@@ -38,19 +38,25 @@ describe("playground color scheme", () => {
     );
   });
 
-  it("themes the playground with light-dark colors", () => {
+  it("themes the playground with a neutral accent color system", () => {
     expect(playgroundStyles).toContain("color-scheme: light dark;");
     expect(playgroundStyles).not.toContain(
       "--console-color-scheme: light dark;",
     );
     expect(playgroundStyles).toContain(
-      "--playground-background: light-dark(#f8fafc, #0d1117);",
+      "--playground-background: light-dark(#f7f7f8, #09090b);",
     );
     expect(playgroundStyles).toContain(
-      "--playground-surface: light-dark(#ffffff, #161b22);",
+      "--playground-surface: light-dark(#ffffff, #111113);",
     );
     expect(playgroundStyles).toContain(
-      "--playground-text: light-dark(#101828, #e6edf3);",
+      "--playground-text: light-dark(#111113, #f4f4f5);",
+    );
+    expect(playgroundStyles).toContain(
+      "--playground-accent: light-dark(#635bff, #8b83ff);",
+    );
+    expect(playgroundStyles.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThan(
+      12,
     );
   });
 
