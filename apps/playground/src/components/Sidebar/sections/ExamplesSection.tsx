@@ -85,7 +85,10 @@ export function ExamplesSection({
   const searching = query.trim().length > 0;
 
   return (
-    <section className="sidebar-section" aria-labelledby="sidebar-examples-title">
+    <section
+      className="sidebar-section"
+      aria-labelledby="sidebar-examples-title"
+    >
       <div className="sidebar-section-header">
         <div className="sidebar-section-heading">
           <strong id="sidebar-examples-title">Examples</strong>
