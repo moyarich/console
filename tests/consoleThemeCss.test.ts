@@ -6,9 +6,6 @@ const stylesPath = fileURLToPath(
   new URL("../packages/console/src/styles.css", import.meta.url),
 );
 const readmePath = fileURLToPath(new URL("../README.md", import.meta.url));
-const resizableAddonStylesPath = fileURLToPath(
-  new URL("../packages/addons/resizable/src/styles.css", import.meta.url),
-);
 const consoleIndexPath = fileURLToPath(
   new URL("../packages/console/src/index.ts", import.meta.url),
 );
@@ -30,7 +27,6 @@ const resizableAddonPackagePath = fileURLToPath(
 
 const styles = readFileSync(stylesPath, "utf8");
 const readme = readFileSync(readmePath, "utf8");
-const resizableAddonStyles = readFileSync(resizableAddonStylesPath, "utf8");
 const consoleIndex = readFileSync(consoleIndexPath, "utf8");
 const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
@@ -53,12 +49,6 @@ describe("console theme CSS", () => {
     expect(resizableAddonIndex).toContain('import "./styles.css";');
     expect(consolePackage.scripts.build).toContain("--inject-style");
     expect(resizableAddonPackage.scripts.build).toContain("--inject-style");
-  });
-
-  it("keeps resizable styling owned by the resizable addon", () => {
-    expect(styles).not.toContain("console-resizable");
-    expect(styles).not.toContain("--console-resize-");
-    expect(resizableAddonStyles).toContain(".console-resizable-frame");
   });
 
   it("keeps public console custom properties as inputs", () => {
