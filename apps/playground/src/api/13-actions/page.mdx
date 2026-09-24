@@ -1,0 +1,96 @@
+---
+label: "Actions"
+description: "Extend panel, context-menu, and message actions through supported extension points."
+---
+
+Use descriptor-based actions when the host application needs commands in the
+header ellipsis menu, the console context menu, or on individual structured
+messages.
+
+The three typed action surfaces are:
+
+- `panelActions` — panel-level commands in the header ellipsis menu
+- `contextMenuActions` — right-click commands for console/object/message targets
+- `messageActions` — commands specific to structured messages
+
+The existing `actions` prop remains available as an escape hatch for arbitrary
+React content in the header ellipsis popover.
+
+```tsx
+import {
+  Console,
+  type ConsoleContextMenuAction,
+  type ConsoleMessageAction,
+  type ConsoleMessageData,
+  type ConsolePanelAction,
+} from "@moyarich/console";
+
+const panelActions: ConsolePanelAction[] = [
+  {
+    id: "export-output",
+    label: "Export output",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: ({ mode }) => exportOutput(mode),
+  },
+];
+
+const contextMenuActions: ConsoleContextMenuAction[] = [
+  {
+    id: "copy-debug-context",
+    label: "Copy debug context",
+    visible: ({ kind }) => kind !== "object",
+    disabled: ({ hasMessages }) => !hasMessages,
+    onSelect: (context) => copyDebugContext(context),
+  },
+];
+
+const messageActions: ConsoleMessageAction[] = [
+  {
+    id: "bookmark",
+    label: "Bookmark",
+    onSelect: ({ message, index }) => bookmarkMessage(message, index),
+  },
+  {
+    id: "open-source",
+    label: "Open source",
+    disabled: ({ message }) => !message.source,
+    onSelect: ({ message }) => openSource(message.source!),
+  },
+];
+
+export function RuntimeConsole({
+  messages,
+}: {
+  messages: ConsoleMessageData[];
+}) {
+  return (
+    <Console
+      messages={messages}
+      panelActions={panelActions}
+      contextMenuActions={contextMenuActions}
+      messageActions={messageActions}
+    />
+  );
+}
+```
+
+Each action supports `id`, `label`, `onSelect`, optional `icon`,
+`ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and
+`disabled` can be booleans or predicates evaluated against the current
+action context.
+
+`panelActions` receive the console surface context with `mode` and
+`hasMessages`. They render before the built-in ANSI Copy output and Clear
+commands.
+
+`contextMenuActions` receive a discriminated context with
+`kind: "console" | "object" | "message"`. Object contexts include `value`;
+message contexts include `message`, its visible `index`, and the visible
+`messages` list. `messageActions` always receive the message context and are
+available in structured console mode.
+
+Custom actions appear before the built-in copy/clear commands. Enabled menu
+items participate in the existing Arrow Up/Down, Home, and End keyboard
+navigation. Messages become focusable when custom context or message actions
+are configured, so the browser context-menu keyboard command can open the same
+action menu.

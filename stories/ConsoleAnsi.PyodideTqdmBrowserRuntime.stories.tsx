@@ -1,6 +1,6 @@
 import { Console, type ConsoleAnsiModeProps } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import PyodideTqdmProgressExample from "../apps/playground/src/examples/10-ansi/06-pyodide-tqdm-progress/example";
+import PyodideTqdmProgressExample from "../apps/playground/src/examples/10-ansi/04-progress/02-pyodide-tqdm-progress/example";
 
 const meta = {
   title: "Console/ANSI Process Output",

@@ -1,0 +1,48 @@
+---
+label: "Capture console"
+description: "Capture global or custom Console objects in React and non-React code."
+---
+
+### Capture the global console from React
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  capture: true,
+  source: "current-page",
+  passThrough: true,
+});
+
+<Console messages={messages} onClear={clear} />;
+```
+
+With `passThrough: true`, calls are both captured and forwarded to the original console, so they still appear in browser DevTools.
+
+To capture a different existing `Console` object, provide `consoleTarget`:
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  capture: true,
+  consoleTarget: iframe.contentWindow.console,
+  source: "iframe",
+});
+```
+
+### Capture outside React
+
+Use `captureConsole()` when you want capture without the state hook.
+
+```ts
+const events = createConsoleEventEmitter();
+
+const restore = captureConsole({
+  events,
+  consoleTarget: previewConsole,
+  source: "preview",
+  passThrough: true,
+});
+
+// later
+restore();
+```
+
+The returned function restores the original console methods.
