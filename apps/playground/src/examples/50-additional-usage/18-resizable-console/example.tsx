@@ -5,6 +5,7 @@ import {
   type ConsoleResizeDirection,
 } from "@moyarich/console-addon-resizable";
 import "@moyarich/console/styles.css";
+import "@moyarich/console-addon-resizable/styles.css";
 
 const directions: ConsoleResizeDirection[] = [
   "vertical",
