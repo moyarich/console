@@ -3,9 +3,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const coreStyles = readFileSync(
-  fileURLToPath(
-    new URL("../packages/console/src/styles.css", import.meta.url),
-  ),
+  fileURLToPath(new URL("../packages/console/src/styles.css", import.meta.url)),
   "utf8",
 );
 
