@@ -22,6 +22,8 @@
   --_console-warning-accent-color: light-dark(#b54708, #fbbf24);
   --_console-success-color: light-dark(#009162, #00cb95);
   --_console-shadow-color: light-dark(rgb(17 24 39 / 0.1), rgb(0 0 0 / 0.46));
+  --_console-focus-ring: 0 0 0 3px
+    color-mix(in oklab, var(--_console-accent-color) 24%, transparent);
   --_console-scrollbar-width: var(--console-scrollbar-width, thin);
   --_console-scrollbar-color: var(
     --console-scrollbar-color,
@@ -462,6 +464,12 @@
         transparent
       )
   );
+  --_console-context-menu-focus-ring: 0 0 0 3px
+    color-mix(
+      in oklab,
+      light-dark(#635bff, #8b83ff) 24%,
+      transparent
+    );
   --_console-context-menu-separator-background-color: var(
     --console-context-menu-separator-background-color,
     color-mix(
@@ -595,6 +603,10 @@
   color: var(--_console-panel-control-hover-color);
 }
 
+.console-panel .console-actions-trigger:focus-visible {
+  box-shadow: var(--_console-focus-ring);
+}
+
 .console-panel .console-actions-popover[popover] {
   position: fixed;
   inset: auto;
@@ -651,6 +663,12 @@
   outline: none;
   background-color: var(--_console-panel-control-hover-background-color);
   color: var(--_console-panel-control-hover-color);
+}
+
+.console-panel .console-actions > button:focus-visible,
+.console-panel .console-actions > a:focus-visible,
+.console-panel .console-panel-action-entry > button:focus-visible {
+  box-shadow: var(--_console-focus-ring);
 }
 
 .console-panel .console-actions > button:disabled,
@@ -1004,6 +1022,10 @@
   color: var(--_console-icon-hover-color);
   opacity: 1;
 }
+.console-panel .console-object-copy-button:focus-visible {
+  box-shadow: var(--_console-focus-ring);
+}
+
 .console-panel .console-object-properties {
   min-width: 0;
   max-width: 100%;
@@ -1114,6 +1136,10 @@
   background-color: var(--_console-icon-hover-background-color);
   color: var(--_console-icon-hover-color);
 }
+.console-panel .console-table-copy-button:focus-visible {
+  box-shadow: var(--_console-focus-ring);
+}
+
 .console-panel .console-table-scroll {
   width: 100%;
   min-width: 0;
@@ -1240,6 +1266,10 @@
   background-color: var(--_console-context-menu-hover-background-color);
   color: var(--_console-context-menu-hover-color);
 }
+.console-context-menu-item:focus-visible {
+  box-shadow: var(--_console-context-menu-focus-ring);
+}
+
 .console-context-menu-item:disabled {
   color: var(--_console-context-menu-muted-color);
   cursor: default;
