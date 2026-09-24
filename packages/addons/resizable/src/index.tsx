@@ -19,7 +19,11 @@ import {
 export const RESIZABLE_CONSOLE_ADDON_ID = "@moyarich/console-addon-resizable";
 
 export type ConsoleResizeDirection =
-  "vertical" | "horizontal" | "both" | "block" | "inline";
+  | "vertical"
+  | "horizontal"
+  | "both"
+  | "block"
+  | "inline";
 
 export type ConsoleResizeEdge = "start" | "end";
 
@@ -49,7 +53,7 @@ export interface ResizableConsoleAddonOptions {
   verticalEdge?: ConsoleResizeEdge;
   /** Additional class name applied to the addon-owned frame. */
   className?: string;
-  /** Additional inline styles applied to the addon-owned frame. */
+  /** Additional inline styles and CSS custom-property overrides applied to the addon-owned frame. */
   style?: CSSProperties;
   /** Called whenever a drag updates the rendered frame size. */
   onResize?: (size: ConsoleResizeSize) => void;
@@ -80,8 +84,6 @@ interface ResizableConsoleFrameProps {
   children: ReactNode;
 }
 
-const HANDLE_SIZE = 10;
-
 export function resolveConsoleResizeAxes(
   direction: ConsoleResizeDirection,
 ): ResizeAxes {
@@ -104,6 +106,10 @@ function getCornerCursor(
   verticalEdge: ConsoleResizeEdge,
 ) {
   return horizontalEdge === verticalEdge ? "nwse-resize" : "nesw-resize";
+}
+
+function toCssSize(value: number | string) {
+  return typeof value === "number" ? `${value}px` : value;
 }
 
 function ResizableConsoleFrame({
@@ -133,7 +139,6 @@ function ResizableConsoleFrame({
   );
   const [width, setWidth] = useState<number | string>(defaultWidth);
   const [height, setHeight] = useState<number | string>(defaultHeight);
-  const [hoveredAxis, setHoveredAxis] = useState<ResizeAxis | null>(null);
   const [activeAxis, setActiveAxis] = useState<ResizeAxis | null>(null);
 
   const restoreBodyStyles = useCallback(() => {
@@ -272,88 +277,23 @@ function ResizableConsoleFrame({
       return null;
     }
 
-    const active = activeAxis === "horizontal";
-    const hovered = hoveredAxis === "horizontal";
-
     return (
       <div
+        className="console-resize-handle"
         role="separator"
         aria-orientation="vertical"
         aria-label="Resize console horizontally"
         title="Drag to resize horizontally"
         tabIndex={0}
         data-console-resize-axis="horizontal"
+        data-active={activeAxis === "horizontal" || undefined}
         onPointerDown={(event) => startResize(event, "horizontal")}
         onPointerMove={moveResize}
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
-        onPointerEnter={() => setHoveredAxis("horizontal")}
-        onPointerLeave={() => setHoveredAxis(null)}
-        onFocus={() => setHoveredAxis("horizontal")}
-        onBlur={() => setHoveredAxis(null)}
-        style={{
-          position: "absolute",
-          top: 0,
-          [horizontalEdge === "end" ? "right" : "left"]: -HANDLE_SIZE / 2,
-          zIndex: 3,
-          display: "flex",
-          width: HANDLE_SIZE,
-          height: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--console-resize-separator-grip-color, currentColor)",
-          cursor: "col-resize",
-          outline: "none",
-          touchAction: "none",
-        }}
       >
-        <span
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            width: 1,
-            height: "100%",
-            background: active
-              ? "var(--console-resize-separator-active-line-background-color, currentColor)"
-              : hovered
-                ? "var(--console-resize-separator-hover-line-background-color, currentColor)"
-                : "var(--console-resize-separator-line-background-color, currentColor)",
-            pointerEvents: "none",
-            transition: "background 120ms ease",
-          }}
-        />
-        <span
-          aria-hidden="true"
-          style={{
-            position: "relative",
-            display: "inline-flex",
-            width: 22,
-            height: 34,
-            alignItems: "center",
-            justifyContent: "center",
-            border:
-              hovered || active
-                ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
-                : "1px solid transparent",
-            borderRadius:
-              "var(--console-resize-separator-grip-border-radius, 999px)",
-            background:
-              hovered || active
-                ? "var(--console-resize-separator-grip-background-color, transparent)"
-                : "transparent",
-            boxShadow:
-              hovered || active
-                ? "var(--console-resize-separator-grip-box-shadow, none)"
-                : "none",
-            color: active
-              ? "var(--console-resize-separator-active-grip-color, currentColor)"
-              : "inherit",
-            opacity: hovered || active ? 1 : 0.55,
-            pointerEvents: "none",
-            transition:
-              "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
-          }}
-        >
+        <span className="console-resize-line" aria-hidden="true" />
+        <span className="console-resize-grip" aria-hidden="true">
           <GripVertical size={14} />
         </span>
       </div>
@@ -365,88 +305,23 @@ function ResizableConsoleFrame({
       return null;
     }
 
-    const active = activeAxis === "vertical";
-    const hovered = hoveredAxis === "vertical";
-
     return (
       <div
+        className="console-resize-handle"
         role="separator"
         aria-orientation="horizontal"
         aria-label="Resize console vertically"
         title="Drag to resize vertically"
         tabIndex={0}
         data-console-resize-axis="vertical"
+        data-active={activeAxis === "vertical" || undefined}
         onPointerDown={(event) => startResize(event, "vertical")}
         onPointerMove={moveResize}
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
-        onPointerEnter={() => setHoveredAxis("vertical")}
-        onPointerLeave={() => setHoveredAxis(null)}
-        onFocus={() => setHoveredAxis("vertical")}
-        onBlur={() => setHoveredAxis(null)}
-        style={{
-          position: "absolute",
-          [verticalEdge === "end" ? "bottom" : "top"]: -HANDLE_SIZE / 2,
-          left: 0,
-          zIndex: 3,
-          display: "flex",
-          width: "100%",
-          height: HANDLE_SIZE,
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--console-resize-separator-grip-color, currentColor)",
-          cursor: "row-resize",
-          outline: "none",
-          touchAction: "none",
-        }}
       >
-        <span
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: 1,
-            background: active
-              ? "var(--console-resize-separator-active-line-background-color, currentColor)"
-              : hovered
-                ? "var(--console-resize-separator-hover-line-background-color, currentColor)"
-                : "var(--console-resize-separator-line-background-color, currentColor)",
-            pointerEvents: "none",
-            transition: "background 120ms ease",
-          }}
-        />
-        <span
-          aria-hidden="true"
-          style={{
-            position: "relative",
-            display: "inline-flex",
-            width: 34,
-            height: 22,
-            alignItems: "center",
-            justifyContent: "center",
-            border:
-              hovered || active
-                ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
-                : "1px solid transparent",
-            borderRadius:
-              "var(--console-resize-separator-grip-border-radius, 999px)",
-            background:
-              hovered || active
-                ? "var(--console-resize-separator-grip-background-color, transparent)"
-                : "transparent",
-            boxShadow:
-              hovered || active
-                ? "var(--console-resize-separator-grip-box-shadow, none)"
-                : "none",
-            color: active
-              ? "var(--console-resize-separator-active-grip-color, currentColor)"
-              : "inherit",
-            opacity: hovered || active ? 1 : 0.55,
-            pointerEvents: "none",
-            transition:
-              "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
-          }}
-        >
+        <span className="console-resize-line" aria-hidden="true" />
+        <span className="console-resize-grip" aria-hidden="true">
           <GripHorizontal size={14} />
         </span>
       </div>
@@ -458,57 +333,19 @@ function ResizableConsoleFrame({
       return null;
     }
 
-    const active = activeAxis === "both";
-    const hovered = hoveredAxis === "both";
-
     return (
       <div
+        className="console-resize-corner-handle"
         role="separator"
         aria-label="Resize console in both directions"
         title="Drag to resize width and height"
         tabIndex={0}
         data-console-resize-axis="both"
+        data-active={activeAxis === "both" || undefined}
         onPointerDown={(event) => startResize(event, "both")}
         onPointerMove={moveResize}
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
-        onPointerEnter={() => setHoveredAxis("both")}
-        onPointerLeave={() => setHoveredAxis(null)}
-        onFocus={() => setHoveredAxis("both")}
-        onBlur={() => setHoveredAxis(null)}
-        style={{
-          position: "absolute",
-          [horizontalEdge === "end" ? "right" : "left"]: -4,
-          [verticalEdge === "end" ? "bottom" : "top"]: -4,
-          zIndex: 4,
-          display: "flex",
-          width: 28,
-          height: 28,
-          alignItems: "center",
-          justifyContent: "center",
-          border:
-            hovered || active
-              ? "var(--console-resize-separator-grip-border, 1px solid currentColor)"
-              : "1px solid transparent",
-          borderRadius: 8,
-          background:
-            hovered || active
-              ? "var(--console-resize-separator-grip-background-color, transparent)"
-              : "transparent",
-          boxShadow:
-            hovered || active
-              ? "var(--console-resize-separator-grip-box-shadow, none)"
-              : "none",
-          color: active
-            ? "var(--console-resize-separator-active-grip-color, currentColor)"
-            : "var(--console-resize-separator-grip-color, currentColor)",
-          cursor: getCornerCursor(horizontalEdge, verticalEdge),
-          opacity: hovered || active ? 1 : 0.65,
-          outline: "none",
-          touchAction: "none",
-          transition:
-            "opacity 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease",
-        }}
       >
         <MoveDiagonal2 size={15} aria-hidden="true" />
       </div>
@@ -520,31 +357,24 @@ function ResizableConsoleFrame({
       ref={frameRef}
       className={`console-resizable-frame ${className}`.trim()}
       data-console-resize-direction={direction}
+      data-console-resize-horizontal-edge={horizontalEdge}
+      data-console-resize-vertical-edge={verticalEdge}
       data-console-mode={mode}
-      style={{
-        position: "relative",
-        display: "flex",
-        width: axes.horizontal ? width : "100%",
-        maxWidth: axes.horizontal ? (maxWidth ?? "100%") : "100%",
-        minWidth: axes.horizontal ? minWidth : 0,
-        height: axes.vertical ? height : "100%",
-        maxHeight: axes.vertical ? maxHeight : "100%",
-        minHeight: axes.vertical ? minHeight : 0,
-        ...style,
-      }}
+      style={
+        {
+          "--_console-resizable-width": toCssSize(width),
+          "--_console-resizable-height": toCssSize(height),
+          "--_console-resizable-min-width": `${minWidth}px`,
+          "--_console-resizable-min-height": `${minHeight}px`,
+          "--_console-resizable-max-width":
+            maxWidth === undefined ? "100%" : `${maxWidth}px`,
+          "--_console-resizable-max-height":
+            maxHeight === undefined ? "100%" : `${maxHeight}px`,
+          ...style,
+        } as CSSProperties
+      }
     >
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          height: "100%",
-          minWidth: 0,
-          minHeight: 0,
-          overflow: "hidden",
-        }}
-      >
-        {children}
-      </div>
+      <div className="console-resizable-frame-content">{children}</div>
 
       {renderHorizontalHandle()}
       {renderVerticalHandle()}
