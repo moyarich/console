@@ -754,7 +754,7 @@ export interface ConsoleProcessDataSnapshot {
   readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
   readonly all: readonly ConsoleProcessViewEntry[];
   readonly visible: readonly ConsoleProcessViewEntry[];
-  readonly controlEvents: readonly ConsoleProcessControlEvent[];
+  readonly controlEvents?: readonly ConsoleProcessControlEvent[];
 }
 
 export type ConsoleDataSnapshot =
