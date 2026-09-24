@@ -1,9 +1,6 @@
 import { useMemo } from "react";
 import { Console, type ConsoleMessageData } from "@moyarich/console";
-import {
-  ConsoleFilteringControls,
-  createConsoleFilteringAddon,
-} from "@moyarich/console-addon-filtering";
+import { createConsoleFilteringAddon } from "@moyarich/console-addon-filtering";
 import "@moyarich/console/styles.css";
 
 const messages: ConsoleMessageData[] = [
@@ -56,19 +53,7 @@ export default function FilteringAddonExample() {
   const addons = useMemo(() => [filteringAddon], [filteringAddon]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 12,
-        width: "100%",
-        maxWidth: 820,
-      }}
-    >
-      <ConsoleFilteringControls
-        controller={filteringAddon.controller}
-        messages={messages}
-      />
-
+    <div style={{ width: "100%", maxWidth: 820 }}>
       <Console
         messages={messages}
         addons={addons}
