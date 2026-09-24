@@ -124,7 +124,6 @@ describe("runnable example project compilation", () => {
     expect(runtime.Component).toBeTypeOf("function");
   });
 
-
   it("prevents disposed runtimes from reloading local modules", async () => {
     const scope = globalThis as typeof globalThis & {
       __loadRunnableModule?: () => Promise<unknown>;
@@ -143,9 +142,13 @@ describe("runnable example project compilation", () => {
     const load = scope.__loadRunnableModule;
     expect(load).toBeTypeOf("function");
 
+    if (!load) {
+      throw new Error("Expected a delayed runnable import.");
+    }
+
     runtime.dispose();
 
-    await expect(load?.()).rejects.toThrow(/disposed/);
+    await expect(load()).rejects.toThrow(/disposed/);
     delete scope.__loadRunnableModule;
   });
 
