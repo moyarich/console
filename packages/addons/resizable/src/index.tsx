@@ -4,6 +4,7 @@ import {
   MoveDiagonal2,
 } from "lucide-react";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -146,7 +147,7 @@ function ResizableConsoleFrame({
   const [hoveredAxis, setHoveredAxis] = useState<ResizeAxis | null>(null);
   const [activeAxis, setActiveAxis] = useState<ResizeAxis | null>(null);
 
-  const restoreBodyStyles = () => {
+  const restoreBodyStyles = useCallback(() => {
     if (typeof document === "undefined" || !bodyStyleRef.current) {
       return;
     }
@@ -154,42 +155,45 @@ function ResizableConsoleFrame({
     document.body.style.cursor = bodyStyleRef.current.cursor;
     document.body.style.userSelect = bodyStyleRef.current.userSelect;
     bodyStyleRef.current = null;
-  };
+  }, []);
 
-  const stopResize = (event?: PointerEvent<HTMLElement>) => {
-    const drag = dragRef.current;
+  const stopResize = useCallback(
+    (event?: PointerEvent<HTMLElement>) => {
+      const drag = dragRef.current;
 
-    if (
-      drag &&
-      event &&
-      drag.pointerId === event.pointerId &&
-      drag.target.hasPointerCapture(event.pointerId)
-    ) {
-      drag.target.releasePointerCapture(event.pointerId);
-    }
+      if (
+        drag &&
+        event &&
+        drag.pointerId === event.pointerId &&
+        drag.target.hasPointerCapture(event.pointerId)
+      ) {
+        drag.target.releasePointerCapture(event.pointerId);
+      }
 
-    dragRef.current = null;
-    setActiveAxis(null);
-    restoreBodyStyles();
-  };
+      dragRef.current = null;
+      setActiveAxis(null);
+      restoreBodyStyles();
+    },
+    [restoreBodyStyles],
+  );
 
   useEffect(
     () => () => {
       dragRef.current = null;
       restoreBodyStyles();
     },
-    [],
+    [restoreBodyStyles],
   );
 
   useEffect(() => {
-    if (!activeAxis) {
+    if (!dragRef.current) {
       return;
     }
 
     dragRef.current = null;
     setActiveAxis(null);
     restoreBodyStyles();
-  }, [direction]);
+  }, [direction, restoreBodyStyles]);
 
   const startResize = (
     event: PointerEvent<HTMLElement>,
