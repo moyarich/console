@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { runProcess } from "./vscode-runtime.mjs";
+import { runProcess } from "../process.mjs";
 
 const delay = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -28,7 +28,6 @@ export function createFrameRecorder({ page, framesDirectory, frameRate }) {
       writeQueue = writeQueue.then(() =>
         writeFile(path.join(framesDirectory, fileName), data, "base64"),
       );
-
       frameNumber += 1;
     }
   }

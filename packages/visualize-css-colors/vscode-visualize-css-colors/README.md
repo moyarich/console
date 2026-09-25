@@ -96,34 +96,20 @@ host setup; this extension contributes color information and presentations only.
 
 ## Desktop demos
 
-The demo system is organized by responsibility under `demo/`:
-
-- `scenarios/` contains directly runnable demo scenarios.
-- `scenarios/generated/` contains runnable scenarios captured with Playwright
-  Inspector.
-- `runtime/` contains shared VS Code, Playwright, video, and codegen plumbing.
-- `ui/` contains demo-only workbench overlays such as the caption and
-  magnifier.
-- `cli/` contains multi-scenario, GIF, and interactive entrypoints.
-- `dev/` contains fixtures used by manual extension-development workflows.
-
-See [demo/README.md](./demo/README.md) for the full directory map and runtime
-contract.
+Reusable VS Code development infrastructure is provided by
+`@moyarich/vscode-dev-toolkit`. This extension keeps its own scenarios and
+configuration in `demo/` and `vscode-dev.config.mjs`; the toolkit owns VS Code
+launching, Playwright/CDP integration, recording, codegen conversion, demo UI,
+GIF generation, VSIX staging/packaging, development launching, and Open VSX
+publishing.
 
 The handwritten scenarios are **basic-colors**, **color-mix**,
-**relative-colors**, and **source-colors**. Each scenario owns its metadata,
-source fixture, and Playwright interaction steps.
-
-A scenario can be executed directly from the package root:
+**relative-colors**, and **source-colors**.
 
 ```sh
 node demo/scenarios/basic-colors.mjs
-node demo/scenarios/color-mix.mjs
-```
+node demo/scenarios/color-mix.mjs --codegen
 
-The package scripts provide multi-scenario workflows:
-
-```sh
 npm run demo:list --workspace @moyarich/vscode-visualize-css-colors
 npm run dev:extension --workspace @moyarich/vscode-visualize-css-colors
 npm run demo:record --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
@@ -131,52 +117,18 @@ npm run demo:all --workspace @moyarich/vscode-visualize-css-colors
 npm run demo:gif --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
 ```
 
-Recording requires a graphical desktop and `ffmpeg` on PATH. The runtime
-downloads VS Code using `@vscode/test-electron`; set `VSCODE_VERSION` to
-select a version. The interactive menu additionally requires `fzf`, and the
-development launcher requires the VS Code `code` command (or
-`CODE_COMMAND`). The Bash launchers target macOS/Linux. Recordings and
-screenshots go to `demo/artifacts/<scenario>/`; GIFs go to `media/`. No
-recordings or developer tools are included in the VSIX.
+Recording requires a graphical desktop and `ffmpeg` on PATH. The interactive
+menu additionally requires `fzf`. Generated scenarios are written to
+`demo/scenarios/generated/`; recordings and screenshots go to
+`demo/artifacts/<scenario>/`; GIFs go to `media/`.
 
-### Capture a runnable scenario with Playwright Inspector
+See [demo/README.md](./demo/README.md) and
+[`@moyarich/vscode-dev-toolkit`](../../vscode-dev-toolkit/README.md) for the
+scenario contract and shared runtime architecture.
 
-```sh
-# One-time install of the browser used for the Inspector window.
-npm run demo:setup --workspace @moyarich/vscode-visualize-css-colors
-
-npm run demo:codegen --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
-```
-
-You can also start codegen directly from a scenario:
-
-```sh
-node demo/scenarios/color-mix.mjs --codegen
-```
-
-This opens an isolated VS Code window with the built extension and selected
-fixture, plus Playwright Inspector in recording mode. Click and type in VS Code,
-then press Enter in the launching terminal when finished. Codegen converts
-Playwright's JavaScript recorder output into the same runnable scenario contract
-used by handwritten demos and saves it under
-`demo/scenarios/generated/<scenario>-<UTC timestamp>.mjs`.
-
-Generated scenarios can then be called directly with Node, or selected through
-the normal scenario registry. Monaco color swatches receive stable
-`data-testid` attributes such as `color-swatch-0` while recording. The
-private Playwright recorder adapter is isolated in
-`demo/runtime/codegen-recorder.mjs` and the Playwright version is pinned
-because recording an already attached VS Code/Electron page relies on an
-internal API.
-
-Video demos use the magnifier UI in `demo/ui/magnifier/` to enlarge the real
-pointer target. The lens preserves computed token styles, ignores clicks, and is
-removed before the final screenshot. Each video run also saves
-`<scenario>-magnifier.png` for checking the lens and native color picker.
-
-For GIF conversion of existing recordings use `--no-record`. Optional
-settings: `CSS_COLORS_GIF_FPS`, `CSS_COLORS_GIF_WIDTH`, and
-`CSS_COLORS_GIF_TRIM_START`.
+Optional GIF settings are now toolkit-wide:
+`VSCODE_DEMO_GIF_FPS`, `VSCODE_DEMO_GIF_WIDTH`, and
+`VSCODE_DEMO_GIF_TRIM_START`.
 
 ## Publish to Open VSX
 

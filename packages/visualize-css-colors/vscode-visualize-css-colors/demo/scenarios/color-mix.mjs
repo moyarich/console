@@ -1,5 +1,6 @@
 import path from "node:path";
-import { runScenarioModule } from "../runtime/run-scenario.mjs";
+import { runScenarioModule } from "@moyarich/vscode-dev-toolkit/demo";
+import config from "../../vscode-dev.config.mjs";
 
 const scenario = {
   name: "color-mix",
@@ -63,6 +64,7 @@ const scenario = {
 export default scenario;
 
 await runScenarioModule({
+  config,
   moduleUrl: import.meta.url,
   name: scenario.name,
   scenario,

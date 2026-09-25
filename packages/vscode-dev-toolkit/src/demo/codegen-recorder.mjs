@@ -6,6 +6,10 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline/promises";
+import {
+  resolveProjectPath,
+  toFilePath,
+} from "../config.mjs";
 
 function dedent(source) {
   const lines = source.replace(/^\n+|\n+$/g, "").split("\n");
@@ -46,16 +50,46 @@ function indent(source, spaces) {
     .join("\n");
 }
 
+function importSpecifier(fromFile, targetFile) {
+  let relative = path
+    .relative(path.dirname(fromFile), targetFile)
+    .split(path.sep)
+    .join("/");
+
+  if (!relative.startsWith(".")) {
+    relative = `./${relative}`;
+  }
+
+  return relative;
+}
+
 async function convertRecording({
+  config,
   outputFile,
   scenarioName,
   baseScenarioName,
   timestamp,
 }) {
+  if (!config.configFile) {
+    throw new Error(
+      "Codegen requires config.configFile so generated scenarios can import the extension configuration.",
+    );
+  }
+
   const generated = await readFile(outputFile, "utf8");
   const actions = extractPageActions(generated);
-  const content = `import baseScenario from "../${baseScenarioName}.mjs";
-import { runScenarioModule } from "../../runtime/run-scenario.mjs";
+  const scenariosDirectory = resolveProjectPath(
+    config,
+    config.demo?.scenariosDirectory ?? "demo/scenarios",
+  );
+  const baseScenarioFile = path.join(
+    scenariosDirectory,
+    `${baseScenarioName}.mjs`,
+  );
+  const configFile = toFilePath(config.configFile);
+  const content = `import config from "${importSpecifier(outputFile, configFile)}";
+import { runScenarioModule } from "@moyarich/vscode-dev-toolkit/demo";
+import baseScenario from "${importSpecifier(outputFile, baseScenarioFile)}";
 
 const scenario = {
   ...baseScenario,
@@ -71,6 +105,7 @@ ${indent(actions, 4)}
 export default scenario;
 
 await runScenarioModule({
+  config,
   moduleUrl: import.meta.url,
   name: scenario.name,
   scenario,
@@ -81,14 +116,15 @@ await runScenarioModule({
 }
 
 export async function captureScenario({
+  config,
   page,
   name,
   baseScenarioName = name,
-  projectDirectory,
 }) {
-  const directory = path.join(
-    projectDirectory,
-    "demo/scenarios/generated",
+  const directory = resolveProjectPath(
+    config,
+    config.demo?.generatedScenariosDirectory ??
+      "demo/scenarios/generated",
   );
 
   await mkdir(directory, { recursive: true });
@@ -104,32 +140,17 @@ export async function captureScenario({
     );
   }
 
-  await page.evaluate(() => {
-    const labelSwatches = () => {
-      document
-        .querySelectorAll(".monaco-editor .colorpicker-color-decoration")
-        .forEach((element, index) => {
-          const id = `color-swatch-${index}`;
-
-          if (element.getAttribute("data-testid") !== id) {
-            element.setAttribute("data-testid", id);
-          }
-        });
-    };
-
-    labelSwatches();
-
-    const observer = new MutationObserver(labelSwatches);
-    observer.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener("pagehide", () => observer.disconnect(), {
-      once: true,
-    });
+  await config.demo?.prepareCodegenPage?.({
+    page,
+    name,
+    baseScenarioName,
   });
 
   await context._enableRecorder({
     language: "javascript",
     mode: "recording",
-    testIdAttributeName: "data-testid",
+    testIdAttributeName:
+      config.demo?.testIdAttributeName ?? "data-testid",
     outputFile,
     handleSIGINT: false,
   });
@@ -168,6 +189,7 @@ export async function captureScenario({
   await access(outputFile);
 
   await convertRecording({
+    config,
     outputFile,
     scenarioName,
     baseScenarioName,

@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import {
   access,
   mkdtemp,
@@ -12,55 +11,47 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { downloadAndUnzipVSCode, runTests } from "@vscode/test-electron";
 import { chromium } from "playwright-core";
+import { resolveProjectPath, toFilePath } from "../config.mjs";
+import { runProcess } from "../process.mjs";
 
-export const projectDirectory = fileURLToPath(
-  new URL("../../", import.meta.url),
+const extensionHostPath = fileURLToPath(
+  new URL("./extension-host.cjs", import.meta.url),
 );
 
 export const pause = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-export function runProcess(
-  command,
-  args,
-  { cwd = projectDirectory, stdio = "inherit", ...options } = {},
-) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio,
-      ...options,
-    });
-
-    child.on("error", reject);
-    child.on("exit", (code) =>
-      code === 0
-        ? resolve()
-        : reject(new Error(`${command} exited with ${code}`)),
-    );
-  });
-}
-
-async function ensureBuiltExtension() {
-  const packageFile = path.join(
-    projectDirectory,
-    "dist/vscode-extension/package.json",
+async function ensureBuiltExtension(config) {
+  const developmentPath = resolveProjectPath(
+    config,
+    config.extension.developmentPath ?? "dist/vscode-extension",
   );
+  const packageFile = path.join(developmentPath, "package.json");
 
   try {
     await access(packageFile);
   } catch {
-    await runProcess("npm", ["run", "build"]);
+    const command = config.extension.buildCommand ?? {
+      command: "npm",
+      args: ["run", "build"],
+    };
+
+    await runProcess(command.command, command.args ?? [], {
+      cwd: toFilePath(config.projectDirectory),
+    });
     await access(packageFile);
   }
 }
 
-export async function prepareVSCodeRuntime() {
-  await ensureBuiltExtension();
+export async function prepareVSCodeRuntime({ config }) {
+  await ensureBuiltExtension(config);
 
   return downloadAndUnzipVSCode({
     version: process.env.VSCODE_VERSION ?? "stable",
-    cachePath: path.join(projectDirectory, ".vscode-test"),
+    cachePath: resolveProjectPath(
+      config,
+      config.demo?.vscodeCacheDirectory ?? ".vscode-test",
+    ),
   });
 }
 
@@ -124,14 +115,16 @@ async function findVSCodeWorkbenchPage(browser) {
 }
 
 export async function createVSCodeRuntime({
+  config,
   scenario,
   vscodeExecutablePath,
   codegen = false,
 }) {
+  const projectDirectory = toFilePath(config.projectDirectory);
   const temporaryDirectory = await mkdtemp(
     path.join(
       process.platform === "darwin" ? "/tmp" : os.tmpdir(),
-      "css-demo-",
+      "vscode-demo-",
     ),
   );
   const workspaceDirectory = path.join(temporaryDirectory, "workspace");
@@ -151,37 +144,30 @@ export async function createVSCodeRuntime({
 
     await writeFile(
       path.join(userDataDirectory, "User/settings.json"),
-      JSON.stringify({
-        "workbench.colorTheme": "Default Dark Modern",
-        "workbench.startupEditor": "none",
-        "editor.colorDecorators": true,
-        "editor.defaultColorDecorators": "never",
-        "editor.minimap.enabled": false,
-        "editor.fontSize": 18,
-        "window.restoreWindows": "none",
-        "workbench.editor.enablePreview": false,
-        "telemetry.telemetryLevel": "off",
-        "chat.disableAIFeatures": true,
-      }),
+      JSON.stringify(config.demo?.settings ?? {}, null, 2),
     );
 
     const sourceFile = path.join(workspaceDirectory, scenario.fileName);
+    await mkdir(path.dirname(sourceFile), { recursive: true });
     await writeFile(sourceFile, scenario.source);
+
+    const hostSetup = config.demo?.extensionHostSetup
+      ? resolveProjectPath(config, config.demo.extensionHostSetup)
+      : "";
 
     testRun = runTests({
       vscodeExecutablePath,
-      extensionDevelopmentPath: path.join(
-        projectDirectory,
-        "dist/vscode-extension",
+      extensionDevelopmentPath: resolveProjectPath(
+        config,
+        config.extension.developmentPath ?? "dist/vscode-extension",
       ),
-      extensionTestsPath: path.join(
-        projectDirectory,
-        "demo/runtime/extension-host.cjs",
-      ),
+      extensionTestsPath: extensionHostPath,
       extensionTestsEnv: {
-        EXTENSION_DEMO_COMPLETION_FILE: completionFile,
-        EXTENSION_DEMO_SOURCE_FILE: sourceFile,
-        EXTENSION_DEMO_CODEGEN: codegen ? "1" : "0",
+        VSCODE_DEV_TOOLKIT_COMPLETION_FILE: completionFile,
+        VSCODE_DEV_TOOLKIT_SOURCE_FILE: sourceFile,
+        VSCODE_DEV_TOOLKIT_EXTENSION_ID: config.extension.id,
+        VSCODE_DEV_TOOLKIT_HOST_SETUP: hostSetup,
+        VSCODE_DEV_TOOLKIT_CODEGEN: codegen ? "1" : "0",
       },
       launchArgs: [
         workspaceDirectory,
@@ -189,10 +175,7 @@ export async function createVSCodeRuntime({
         `--user-data-dir=${userDataDirectory}`,
         `--extensions-dir=${path.join(temporaryDirectory, "extensions")}`,
         `--remote-debugging-port=${remoteDebuggingPort}`,
-        "--disable-extension=vscode.css-language-features",
-        "--new-window",
-        "--skip-welcome",
-        "--skip-release-notes",
+        ...(config.demo?.launchArgs ?? []),
       ],
     });
 
@@ -209,18 +192,26 @@ export async function createVSCodeRuntime({
 
     browser = await chromium.connectOverCDP(endpoint);
     const page = await findVSCodeWorkbenchPage(browser);
+    const viewport = config.demo?.viewport ?? {
+      width: 1280,
+      height: 900,
+    };
 
     await page.bringToFront();
-    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.setViewportSize(viewport);
 
-    await page
-      .locator(".colorpicker-color-decoration")
-      .first()
-      .waitFor({ state: "visible", timeout: 30_000 });
+    await config.demo?.waitForReady?.({
+      page,
+      scenario,
+      sourceFile,
+      workspaceDirectory,
+      temporaryDirectory,
+    });
 
     return {
       page,
       browser,
+      sourceFile,
       workspaceDirectory,
       temporaryDirectory,
 

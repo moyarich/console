@@ -1,12 +1,12 @@
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveProjectPath } from "../config.mjs";
 import { captureScenario } from "./codegen-recorder.mjs";
 import {
   createVSCodeRuntime,
   pause,
   prepareVSCodeRuntime,
-  projectDirectory,
 } from "./vscode-runtime.mjs";
 import {
   createFrameRecorder,
@@ -16,29 +16,31 @@ import {
 import {
   hideDemoCaption,
   showDemoCaption,
-} from "../ui/caption/install.mjs";
+} from "./ui/caption/install.mjs";
 import {
   installDemoMagnifierCursorOverlay,
   pointDemoMagnifierCursorAt,
   removeDemoMagnifierCursorOverlay,
-} from "../ui/magnifier/install.mjs";
+} from "./ui/magnifier/install.mjs";
 
 export function isDirectScenario(moduleUrl) {
   return Boolean(
     process.argv[1] &&
-      path.resolve(process.argv[1]) === path.resolve(fileURLToPath(moduleUrl)),
+      path.resolve(process.argv[1]) ===
+        path.resolve(fileURLToPath(moduleUrl)),
   );
 }
 
-export async function prepareDemoRuntime({ codegen = false } = {}) {
+export async function prepareDemoRuntime({ config, codegen = false }) {
   if (!codegen) {
     await ensureVideoEncoder();
   }
 
-  return prepareVSCodeRuntime();
+  return prepareVSCodeRuntime({ config });
 }
 
 export async function runScenario({
+  config,
   name,
   scenario,
   vscodeExecutablePath,
@@ -55,10 +57,19 @@ export async function runScenario({
   }
 
   const executable =
-    vscodeExecutablePath ?? (await prepareDemoRuntime({ codegen }));
-  const outputDirectory = path.join(projectDirectory, "demo/artifacts", name);
+    vscodeExecutablePath ??
+    (await prepareDemoRuntime({
+      config,
+      codegen,
+    }));
+  const artifactsDirectory = resolveProjectPath(
+    config,
+    config.demo?.artifactsDirectory ?? "demo/artifacts",
+  );
+  const outputDirectory = path.join(artifactsDirectory, name);
   const framesDirectory = path.join(outputDirectory, "frames");
   const runtime = await createVSCodeRuntime({
+    config,
     scenario,
     vscodeExecutablePath: executable,
     codegen,
@@ -69,10 +80,10 @@ export async function runScenario({
   try {
     if (codegen) {
       await captureScenario({
+        config,
         page: runtime.page,
         name,
         baseScenarioName: scenario.baseScenarioName ?? scenario.name ?? name,
-        projectDirectory,
       });
 
       return;
@@ -84,7 +95,7 @@ export async function runScenario({
     recorder = createFrameRecorder({
       page: runtime.page,
       framesDirectory,
-      frameRate: 10,
+      frameRate: config.demo?.frameRate ?? 10,
     });
 
     await recorder.start();
@@ -96,7 +107,7 @@ export async function runScenario({
       workspaceDirectory: runtime.workspaceDirectory,
       temporaryDirectory: runtime.temporaryDirectory,
       outputDirectory,
-      projectDirectory,
+      projectDirectory: resolveProjectPath(config, "."),
       pause,
       showDemoCaption,
       hideDemoCaption,
@@ -110,7 +121,7 @@ export async function runScenario({
     await encodeRecording({
       framesDirectory,
       recordingPath: path.join(outputDirectory, `${name}.webm`),
-      frameRate: 10,
+      frameRate: config.demo?.frameRate ?? 10,
     });
 
     await runtime.complete();
@@ -122,15 +133,24 @@ export async function runScenario({
   }
 }
 
-export async function runScenarioModule({ moduleUrl, name, scenario }) {
+export async function runScenarioModule({
+  config,
+  moduleUrl,
+  name,
+  scenario,
+}) {
   if (!isDirectScenario(moduleUrl)) {
     return;
   }
 
   const codegen = process.argv.includes("--codegen");
-  const executable = await prepareDemoRuntime({ codegen });
+  const executable = await prepareDemoRuntime({
+    config,
+    codegen,
+  });
 
   await runScenario({
+    config,
     name,
     scenario,
     vscodeExecutablePath: executable,
