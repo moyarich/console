@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   deploy:
-    uses: moyarich/moyaforge/.github/workflows/pages.yml@migrate/console-playground
+    uses: moyarich/moyaforge/.github/workflows/pages.yml@main
     permissions:
       contents: read
       pages: write
