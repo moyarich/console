@@ -90,7 +90,7 @@ export async function captureScenario({
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const scenarioName = `${path.basename(name)}-${timestamp}`;
-  const outputFile = path.join(directory, `${scenarioName}.mjs`);
+  const outputFile = path.join(directory, `${scenarioName}.scenario.mjs`);
   const context = page.context();
 
   if (typeof context._enableRecorder !== "function") {
