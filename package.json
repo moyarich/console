@@ -4,15 +4,17 @@
   "version": "0.0.0",
   "workspaces": [
     "packages/*",
+    "packages/visualize-css-colors/*",
     "packages/addons/*",
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @moyarich/console-playground",
-    "build": "npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
+    "dev": "npm run build:vscode-colors && npm run dev --workspace @moyarich/console-playground",
+    "build": "npm run build --workspace @moyarich/css-color-parser && npm run build --workspace @moyarich/vscode-visualize-css-colors && npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
     "build:package": "npm run build:core && npm run build --workspace @moyarich/console",
-    "build:playground": "npm run build --workspace @moyarich/console-playground",
-    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
+    "build:playground": "npm run build:vscode-colors && npm run build --workspace @moyarich/console-playground",
+    "build:vscode-colors": "npm run build --workspace @moyarich/css-color-parser && npm run build --workspace @moyarich/vscode-visualize-css-colors",
+    "typecheck": "npm run build:vscode-colors && npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
@@ -52,6 +54,9 @@
     "typescript-eslint": "^8.70.0",
     "vite": "^7.1.5",
     "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@^37.1.0"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx}": [

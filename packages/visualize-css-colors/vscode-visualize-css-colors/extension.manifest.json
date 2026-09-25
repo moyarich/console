@@ -1,0 +1,24 @@
+{
+  "name": "visualize-css-colors",
+  "displayName": "Visualize CSS Colors",
+  "description": "Visualizes CSS color literals using the native VS Code document color provider API.",
+  "publisher": "moyarich",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "browser": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:less",
+    "onLanguage:html",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:svelte"
+  ]
+}

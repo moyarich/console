@@ -1,0 +1,61 @@
+{
+  "name": "@moyarich/vscode-visualize-css-colors",
+  "version": "0.1.0",
+  "description": "VS Code web extension that visualizes CSS color literals with native editor color providers.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./manifest.json": "./extension.manifest.json",
+    "./extension.js": {
+      "types": "./dist/extension.d.cts",
+      "default": "./dist/extension.js"
+    },
+    "./extension-source": {
+      "types": "./dist/extension-source.d.ts",
+      "import": "./dist/extension-source.js"
+    }
+  },
+  "files": [
+    "dist",
+    "extension.manifest.json"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@moyarich/css-color-parser": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.138.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyarich/console.git",
+    "directory": "packages/visualize-css-colors/vscode-visualize-css-colors"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
+  "homepage": "https://github.com/moyarich/console#readme",
+  "keywords": [
+    "vscode",
+    "monaco",
+    "web-extension",
+    "css",
+    "color"
+  ]
+}

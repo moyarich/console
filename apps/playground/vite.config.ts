@@ -11,6 +11,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/",
+  worker: {
+    format: "es",
+  },
   plugins: [
     {
       enforce: "pre",
@@ -27,6 +30,7 @@ export default defineConfig({
     react({ include: /\.(?:js|jsx|md|mdx|ts|tsx)$/ }),
   ],
   resolve: {
+    dedupe: ["vscode"],
     alias: [
       {
         find: "@moyarich/console-core",

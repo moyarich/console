@@ -1,4 +1,3 @@
-import Editor from "@monaco-editor/react";
 import {
   Minimize2,
   PanelBottom,
@@ -17,6 +16,7 @@ import {
   createResizableConsoleAddon,
   type ConsoleResizeDirection,
 } from "@moyarich/console-addon-resizable";
+import { MonacoEditor } from "../apps/playground/src/components/MonacoEditor";
 import ResizableConsoleExample from "../apps/playground/src/examples/80-additional-usage/18-resizable-console/example";
 
 type DockPosition = "top" | "right" | "bottom" | "left";
@@ -222,9 +222,9 @@ function EditorShell() {
           overflow: "hidden",
         }}
       >
-        <Editor
-          path="file:///src/App.tsx"
-          language="typescript"
+        <MonacoEditor
+          path="src/App.tsx"
+          language="typescriptreact"
           value={source}
           width="100%"
           height="100%"
