@@ -114,3 +114,59 @@ await runScenarioModule({
 
 The same scenario can be imported by a multi-scenario runner or executed
 directly with Node.
+
+## Thin extension entrypoints
+
+The toolkit is intended to leave extension packages with small adapters rather
+than copied infrastructure.
+
+### Demo runner
+
+```js
+import { runDemoCli } from "@moyarich/vscode-dev-toolkit/demo";
+import config from "../vscode-dev.config.mjs";
+
+await runDemoCli({ config });
+```
+
+### README GIFs
+
+```js
+import { runGifCli } from "@moyarich/vscode-dev-toolkit/demo";
+import config from "../vscode-dev.config.mjs";
+
+await runGifCli({ config });
+```
+
+### Interactive demo chooser
+
+```js
+import { runInteractiveDemoCli } from "@moyarich/vscode-dev-toolkit/demo";
+import config from "../vscode-dev.config.mjs";
+
+await runInteractiveDemoCli({ config });
+```
+
+### VSIX packaging
+
+```js
+import { packageExtension } from "@moyarich/vscode-dev-toolkit/extension";
+import config from "../vscode-dev.config.mjs";
+
+await packageExtension(config, {
+  list: process.argv.includes("--list"),
+});
+```
+
+### Open VSX publishing
+
+```js
+import { publishOpenVSX } from "@moyarich/vscode-dev-toolkit/extension";
+import config from "../vscode-dev.config.mjs";
+
+await publishOpenVSX(config);
+```
+
+The package keeps these workflows configurable while preserving one
+implementation across multiple extensions.
+
