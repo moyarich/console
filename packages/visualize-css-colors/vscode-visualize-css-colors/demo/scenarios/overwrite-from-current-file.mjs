@@ -1,0 +1,45 @@
+export default function createScenario({
+  assertFileContains,
+  createPairedAnalysis,
+  path,
+  pause,
+  runVSCodeCommand,
+  updatePairedPythonInput,
+}) {
+  return {
+    recordingFile: "overwrite-from-current-file.webm",
+    introCaption: {
+      placement: "bottom-right",
+      title: "Use this file as the source",
+      description:
+        "Intentionally overwrite every paired destination with the active file's content.",
+    },
+
+    async prepareWorkspace({ workspaceDirectory }) {
+      const pair = await createPairedAnalysis(workspaceDirectory);
+      await pause(1_100);
+      await updatePairedPythonInput(pair.pythonFile);
+      return pair.pythonFile;
+    },
+
+    async run({ page }) {
+      await pause(4_000);
+      await runVSCodeCommand(
+        page,
+        "JotebookSync: Overwrite Paired Files from This File",
+      );
+      await pause(4_000);
+    },
+
+    async verify({ workspaceDirectory }) {
+      await assertFileContains({
+        filePath: path.join(workspaceDirectory, "analysis.md"),
+        expectedText: "190, 220",
+      });
+      await assertFileContains({
+        filePath: path.join(workspaceDirectory, "analysis.ipynb"),
+        expectedText: "220",
+      });
+    },
+  };
+}

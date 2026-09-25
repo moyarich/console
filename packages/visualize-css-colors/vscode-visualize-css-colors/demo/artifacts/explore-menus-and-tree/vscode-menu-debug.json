@@ -1,0 +1,1538 @@
+[
+  {
+    "index": 0,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "[Extension Development Host] w[Extension Development Host] w",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 370.796875,
+      "y": 5,
+      "width": 538.3984375,
+      "height": 24
+    },
+    "visible": true
+  },
+  {
+    "index": 1,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item disabled menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 370.796875,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 2,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item disabled menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 396.796875,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 3,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item command-center-center",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "[Extension Development Host] w",
+    "style": {
+      "display": "none",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 4,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "[Extension Development Host] w",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 5,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item command-center-quick-pick compact-mode",
+    "role": "button",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "[Extension Development Host] w",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 6,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item agent-status-container",
+    "role": "toolbar",
+    "ariaLabel": "Agent Status",
+    "ariaHidden": null,
+    "text": "[Extension Development Host] w",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 422.796875,
+      "y": 5,
+      "width": 486.3984375,
+      "height": 24
+    },
+    "visible": true
+  },
+  {
+    "index": 7,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "Open in AgentsSign In",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 919.1953125,
+      "y": 6,
+      "width": 84.515625,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 8,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item open-in-agents-titlebar-widget",
+    "role": "button",
+    "ariaLabel": "Open in Agents Window (⇧⌘A)",
+    "ariaHidden": null,
+    "text": "Open in Agents",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 919.1953125,
+      "y": 6,
+      "width": 24,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 9,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "button",
+    "ariaLabel": "Sign In",
+    "ariaHidden": null,
+    "text": "Sign In",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 947.1953125,
+      "y": 6,
+      "width": 56.515625,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 10,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 11,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Title actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1168,
+      "y": 0,
+      "width": 100,
+      "height": 34
+    },
+    "visible": true
+  },
+  {
+    "index": 12,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1168,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 13,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1194,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 14,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1220,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 15,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1246,
+      "y": 6,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 16,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "tablist",
+    "ariaLabel": "Active View Switcher",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "inline-block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 35,
+      "width": 48,
+      "height": 288
+    },
+    "visible": true
+  },
+  {
+    "index": 17,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon checked",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 35,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 18,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 83,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 19,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 131,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 20,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 179,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 21,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 227,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 22,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "tab",
+    "ariaLabel": "",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 275,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 23,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Manage",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "inline-block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 782,
+      "width": 48,
+      "height": 96
+    },
+    "visible": true
+  },
+  {
+    "index": 24,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "button",
+    "ariaLabel": "Accounts",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 782,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 25,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item icon",
+    "role": "button",
+    "ariaLabel": "Manage",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 830,
+      "width": 48,
+      "height": 48
+    },
+    "visible": true
+  },
+  {
+    "index": 26,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Explorer actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 132.859375,
+      "y": 35,
+      "width": 206.140625,
+      "height": 35
+    },
+    "visible": true
+  },
+  {
+    "index": 27,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 313,
+      "y": 41.5,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 28,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 339,
+      "y": 35,
+      "width": 0,
+      "height": 35
+    },
+    "visible": false
+  },
+  {
+    "index": 29,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "w actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 244,
+      "y": 71,
+      "width": 96,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 30,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 244,
+      "y": 71,
+      "width": 20,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 31,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 268,
+      "y": 71,
+      "width": 20,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 32,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 292,
+      "y": 71,
+      "width": 20,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 33,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 316,
+      "y": 71,
+      "width": 20,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 34,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Outline actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 35,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 36,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 37,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Timeline actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 38,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 39,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 40,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 41,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 42,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "JotebookSync: Paired Files actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 43,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 44,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": "Empty editor group actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 45,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 46,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": "Tab actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 446.671875,
+      "y": 42.5,
+      "width": 28,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 47,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 450.671875,
+      "y": 42.5,
+      "width": 20,
+      "height": 20
+    },
+    "visible": true
+  },
+  {
+    "index": 48,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": "Editor actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1181,
+      "y": 35,
+      "width": 91,
+      "height": 35
+    },
+    "visible": true
+  },
+  {
+    "index": 49,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item monaco-dropdown-with-default",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1181,
+      "y": 41.5,
+      "width": 35,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 50,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1220,
+      "y": 41.5,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 51,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 1246,
+      "y": 41.5,
+      "width": 22,
+      "height": 22
+    },
+    "visible": true
+  },
+  {
+    "index": 52,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": "Editor layout actions",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 53,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "tablist",
+    "ariaLabel": "Active View Switcher",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 54,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 55,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 56,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 57,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 58,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "tablist",
+    "ariaLabel": "Active View Switcher",
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 59,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 60,
+    "tagName": "UL",
+    "id": null,
+    "className": "actions-container highlight-toggled",
+    "role": "toolbar",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "flex",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 61,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 62,
+    "tagName": "LI",
+    "id": null,
+    "className": "action-item menu-entry",
+    "role": "presentation",
+    "ariaLabel": null,
+    "ariaHidden": null,
+    "text": "",
+    "style": {
+      "display": "block",
+      "visibility": "hidden",
+      "opacity": "1",
+      "position": "relative",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  },
+  {
+    "index": 63,
+    "tagName": "DIV",
+    "id": null,
+    "className": "context-view",
+    "role": null,
+    "ariaLabel": null,
+    "ariaHidden": "true",
+    "text": "",
+    "style": {
+      "display": "none",
+      "visibility": "visible",
+      "opacity": "1",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "visible": false
+  }
+]

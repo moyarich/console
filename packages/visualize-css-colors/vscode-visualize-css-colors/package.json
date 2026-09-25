@@ -31,13 +31,43 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
-    "typecheck": "tsc --noEmit"
+    "clean:extension": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\"",
+    "compile": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
+    "typecheck": "tsc --noEmit",
+    "dev": "npm --prefix webviews-ui run dev --",
+    "vscode:prepublish": "npm run compile",
+    "compile": "npm run clean:extension && tsc -p ./",
+    "build": "npm run compile",
+    "build:webviews": "npm --prefix webviews-ui run build",
+    "compile:tests": "node -e \"require('node:fs').rmSync('out-test', { recursive: true, force: true })\" && tsc -p tsconfig.tests.json && node -e \"require('node:fs').cpSync('resources', 'out-test/resources', { recursive: true })\"",
+    "watch": "concurrently -k -n webviews,extension \"npm --prefix webviews-ui run build -- --watch\" \"tsc -watch -p ./\"",
+    "watch:extension": "tsc -watch -p ./",
+    "watch:webviews": "npm --prefix webviews-ui run build -- --watch",
+    "dev:extension": "./scripts/run-extension-dev.sh",
+    "demo": "./scripts/run-demo-interactive.sh",
+    "demo:record": "node ./demo/extension.smoke.mjs --demo",
+    "demo:interactive": "./scripts/run-demo-interactive.sh",
+    "demo:all": "node ./demo/extension.smoke.mjs --demo --scenario=all",
+    "demo:freshness": "node ./demo/extension.smoke.mjs --demo --scenario=review-pair-freshness",
+    "demo:round-trip": "node ./demo/extension.smoke.mjs --demo --scenario=test-round-trip-conversion",
+    "demo:formats": "node ./demo/extension.smoke.mjs --demo --scenario=show-available-formats",
+    "demo:advanced": "node ./demo/extension.smoke.mjs --demo --scenario=advanced-pipe-external-command,advanced-check-external-command,advanced-set-notebook-kernel,advanced-execute-notebook,advanced-update-notebook-metadata,advanced-set-format-options,advanced-run-pre-commit-workflow,advanced-run-jupytext-command",
+    "demo:gif": "node ./demo/create-readme-gif.mjs",
+    "pretest": "npm run compile && npm run compile:tests && npm run lint",
+    "lint": "eslint src test demo",
+    "test": "npm run test:webviews && vscode-test",
+    "test:webviews": "tsc -p tsconfig.webview-tests.json && vitest run test/webviews",
+    "zip": "npm run compile && vite build --mode zip",
+    "package": "npm run compile && npx vsce package --allow-missing-repository --no-rewrite-relative-links",
+    "publish:extension": "./scripts/publish_ext.sh",
+    "package:ls": "npm run compile && npx @vscode/vsce ls --tree"
   },
   "dependencies": {
-    "@moyarich/css-color-parser": "0.1.0"
+    "@moyarich/css-color-parser": "0.1.0",
+    "archiver": "^8.0.0"
   },
   "devDependencies": {
+    "@rolldown/pluginutils": "^1.0.0-rc.3",
     "@types/vscode": "^1.138.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
