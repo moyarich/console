@@ -23,7 +23,9 @@
     "format:check": "prettier --check .",
     "hooks:install": "git config core.hooksPath .githooks",
     "build:addons": "npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable",
-    "build:core": "npm run build --workspace @moyarich/console-core"
+    "build:core": "npm run build --workspace @moyarich/console-core",
+    "build:packages": "npm run build:core && npm run build --workspace @moyarich/console && npm run build:addons",
+    "pack:packages": "npm pack --workspace @moyarich/console-core --dry-run && npm pack --workspace @moyarich/console --dry-run && npm pack --workspace @moyarich/console-addon-imperative-scrolling --dry-run && npm pack --workspace @moyarich/console-addon-data-export --dry-run && npm pack --workspace @moyarich/console-addon-diagnostics --dry-run && npm pack --workspace @moyarich/console-addon-filtering --dry-run && npm pack --workspace @moyarich/console-addon-resizable --dry-run"
   },
   "engines": {
     "node": "^22.13.0 || >=24"
