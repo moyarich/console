@@ -11,7 +11,6 @@ This directory contains the runnable demo framework for
 - `runtime/` — shared Node, VS Code, Playwright, recording, and codegen
   infrastructure.
 - `ui/` — visual helpers injected into the VS Code workbench while recording.
-- `helpers/` — reusable scenario-authoring helpers.
 - `cli/` — multi-scenario, GIF, and interactive command-line entrypoints.
 - `dev/` — fixtures used by manual extension-development workflows.
 - `artifacts/` — generated screenshots, frames, and videos.
