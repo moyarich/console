@@ -4,6 +4,7 @@ set -euo pipefail
 
 project_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 scenarios_directory="${project_directory}/demo/scenarios"
+generated_scenarios_directory="${project_directory}/demo/generated-scenarios"
 demo_recorder="${project_directory}/demo/extension.smoke.mjs"
 gif_creator="${project_directory}/demo/create-readme-gif.mjs"
 
@@ -41,10 +42,9 @@ install_fzf() {
 
 list_scenarios() {
   printf '%s\n' "all"
-  find "${scenarios_directory}" -maxdepth 4 -type f -name '*.mjs' ! -name 'index.mjs' -print |
-    sed -E 's#^.*/##; s#\.mjs$##' |
-    LC_ALL=C sort
-}
+  find "${scenarios_directory}" -maxdepth 1 -type f -name '*.mjs' ! -name 'index.mjs' -print
+  find "${generated_scenarios_directory}" -maxdepth 1 -type f -name '*.scenario.mjs' -print
+} | sed -E 's#^.*/##; s#\.scenario\.mjs$##; s#\.mjs$##' | LC_ALL=C sort
 
 install_fzf
 
