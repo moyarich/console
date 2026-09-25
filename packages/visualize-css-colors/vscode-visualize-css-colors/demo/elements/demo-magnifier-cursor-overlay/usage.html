@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Demo Cursor Overlay usage</title>
-    <script type="module" src="./demo-cursor-overlay-element.mjs"></script>
+    <title>Demo Magnifier Cursor Overlay usage</title>
+    <script
+      type="module"
+      src="./demo-magnifier-cursor-overlay-element.mjs"
+    ></script>
     <style>
       :root {
         color-scheme: light;
@@ -229,16 +232,16 @@
       </section>
       <section class="example" aria-labelledby="example-title">
         <h2 id="example-title">Usage</h2>
-        <pre><code>&lt;script type="module" src="./demo-cursor-overlay-element.mjs"&gt;&lt;/script&gt;
+        <pre><code>&lt;script type="module" src="./demo-magnifier-cursor-overlay-element.mjs"&gt;&lt;/script&gt;
 
-&lt;demo-cursor-overlay
+&lt;demo-magnifier-cursor-overlay
   style="--cursor-size: 56px"
-&gt;&lt;/demo-cursor-overlay&gt;</code></pre>
+&gt;&lt;/demo-magnifier-cursor-overlay&gt;</code></pre>
       </section>
     </main>
-    <demo-cursor-overlay></demo-cursor-overlay>
+    <demo-magnifier-cursor-overlay></demo-magnifier-cursor-overlay>
     <script type="module">
-      const overlay = document.querySelector("demo-cursor-overlay");
+      const overlay = document.querySelector("demo-magnifier-cursor-overlay");
       const sizeInput = document.querySelector("[data-size]");
       const sizeOutput = document.querySelector("[data-size-output]");
       const status = document.querySelector("[data-status]");

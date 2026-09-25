@@ -8,10 +8,11 @@ import { downloadAndUnzipVSCode, runTests } from "@vscode/test-electron";
 import { chromium } from "playwright-core";
 import { hideDemoCaption, showDemoCaption } from "./demo-caption.mjs";
 import {
-  installDemoCursorOverlay,
-  pointDemoCursorAt,
-  removeDemoCursorOverlay,
-} from "./demo-cursor-overlay.mjs";
+  installDemoMagnifierCursorOverlay,
+  pointDemoMagnifierCursorAt,
+  removeDemoMagnifierCursorOverlay,
+} from "./demo-magnifier-cursor-overlay.mjs";
+import { captureScenario } from "./inspector.mjs";
 import { scenarios, selectScenarios } from "./scenarios/index.mjs";
 
 const codegen = process.argv.includes("--codegen");
@@ -143,6 +144,8 @@ function createFrameRecorder({ page, framesDirectory, frameRate }) {
       await session.send("Page.startScreencast", {
         format: "png",
         everyNthFrame: 1,
+        maxWidth: 1280,
+        maxHeight: 900,
       });
       await Promise.race([
         firstFrame,
@@ -225,7 +228,7 @@ async function recordScenario(name, scenario, vscodeExecutablePath) {
     await mkdir(path.join(temporaryDirectory, "extensions"), {
       recursive: true,
     });
-    await rm(framesDirectory, { recursive: true, force: true });
+    if (!codegen) await rm(framesDirectory, { recursive: true, force: true });
     await mkdir(framesDirectory, { recursive: true });
     await writeFile(
       path.join(userDataDirectory, "User/settings.json"),
@@ -280,14 +283,12 @@ async function recordScenario(name, scenario, vscodeExecutablePath) {
     if (hostFailure) throw hostFailure;
     browser = await chromium.connectOverCDP(endpoint);
     const page = await findVSCodeWorkbenchPage(browser);
+    await page.bringToFront();
     await page.setViewportSize({ width: 1280, height: 900 });
     const swatch = page.locator(".colorpicker-color-decoration").first();
     await swatch.waitFor({ state: "visible", timeout: 30000 });
     if (codegen) {
-      console.log(
-        "Playwright Inspector is ready. Click Record, interact with VS Code, then copy the generated actions. Click Resume when finished.",
-      );
-      await page.pause();
+      await captureScenario({ page, name, projectDirectory });
       return;
     }
     recorder = createFrameRecorder({ page, framesDirectory, frameRate: 10 });
@@ -302,13 +303,23 @@ async function recordScenario(name, scenario, vscodeExecutablePath) {
     });
     await pause(2500);
     await hideDemoCaption({ page });
-    await installDemoCursorOverlay({ page });
-    await pointDemoCursorAt({ page, locator: swatch });
-    await swatch.click();
-    await page.locator(".colorpicker").first().waitFor({ state: "visible" });
+    await installDemoMagnifierCursorOverlay({ page });
+    await pointDemoMagnifierCursorAt({ page, locator: swatch });
+    await swatch.hover();
+    await page
+      .locator(".colorpicker-widget")
+      .first()
+      .waitFor({ state: "visible", timeout: 10000 });
+    await page
+      .locator("demo-magnifier-cursor-overlay .cursor.visible")
+      .waitFor({ state: "visible" });
+    await pause(500);
+    await page.screenshot({
+      path: path.join(outputDirectory, `${name}-magnifier.png`),
+    });
     await pause(2200);
     await page.keyboard.press("Escape");
-    await removeDemoCursorOverlay({ page });
+    await removeDemoMagnifierCursorOverlay({ page });
     await pause(1000);
     await page.screenshot({ path: path.join(outputDirectory, `${name}.png`) });
     await recorder.stop();
@@ -347,9 +358,10 @@ if (process.argv.includes("--list")) {
   await readFile(
     path.join(projectDirectory, "dist/vscode-extension/package.json"),
   );
-  const executable = await downloadAndUnzipVSCode(
-    process.env.VSCODE_VERSION ?? "stable",
-  );
+  const executable = await downloadAndUnzipVSCode({
+    version: process.env.VSCODE_VERSION ?? "stable",
+    cachePath: path.join(projectDirectory, ".vscode-test"),
+  });
   for (const name of selected)
     await recordScenario(name, scenarios[name], executable);
 }

@@ -1,18 +1,34 @@
-import basicColors from "./basic-colors.mjs";
-import colorMix from "./color-mix.mjs";
-import relativeColors from "./relative-colors.mjs";
-import sourceColors from "./source-colors.mjs";
+import { globSync } from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-export const scenarios = Object.freeze({
-  "basic-colors": basicColors,
-  "color-mix": colorMix,
-  "relative-colors": relativeColors,
-  "source-colors": sourceColors,
+const scenarioFiles = globSync("**/*.mjs", {
+  cwd: import.meta.dirname,
+  exclude: ["**/index.mjs"],
 });
+
+console.log("sdsds===>", scenarioFiles);
+
+export const scenarios = Object.freeze(
+  Object.fromEntries(
+    await Promise.all(
+      scenarioFiles.map(async (file) => {
+        const name = file.slice(0, -".mjs".length);
+        const filePath = path.join(import.meta.dirname, file);
+        const module = await import(pathToFileURL(filePath).href);
+
+        return [name, module.default];
+      }),
+    ),
+  ),
+);
+
 export function selectScenarios(selection = "all") {
+  const available = Object.keys(scenarios);
+
   const names =
     selection === "all"
-      ? Object.keys(scenarios)
+      ? available
       : [
           ...new Set(
             selection
@@ -21,10 +37,12 @@ export function selectScenarios(selection = "all") {
               .filter(Boolean),
           ),
         ];
+
   if (!names.length || names.some((name) => !Object.hasOwn(scenarios, name))) {
     throw new Error(
-      `Unknown demo scenario: ${selection}. Available: ${Object.keys(scenarios).join(", ")}`,
+      `Unknown demo scenario: ${selection}. Available: ${available.join(", ")}`,
     );
   }
+
   return names;
 }

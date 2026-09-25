@@ -41,7 +41,7 @@ install_fzf() {
 
 list_scenarios() {
   printf '%s\n' "all"
-  find "${scenarios_directory}" -maxdepth 1 -type f -name '*.mjs' ! -name 'index.mjs' -print |
+  find "${scenarios_directory}" -maxdepth 4 -type f -name '*.mjs' ! -name 'index.mjs' -print |
     sed -E 's#^.*/##; s#\.mjs$##' |
     LC_ALL=C sort
 }

@@ -9,6 +9,8 @@ export default tseslint.config(
     ignores: [
       "**/node_modules/**",
       "**/dist/**",
+      "**/.vscode-test/**",
+      "**/demo/artifacts/**",
       "storybook-static/**",
       "coverage/**",
     ],
@@ -17,7 +19,10 @@ export default tseslint.config(
   tseslint.configs.recommended,
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
+    },
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",

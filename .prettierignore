@@ -3,3 +3,6 @@ node_modules/
 storybook-static/
 coverage/
 package-lock.json
+
+**/.vscode-test/**
+**/demo/artifacts/**

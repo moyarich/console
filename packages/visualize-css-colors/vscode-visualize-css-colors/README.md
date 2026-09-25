@@ -116,6 +116,36 @@ requires the VS Code `code` command (or `CODE_COMMAND`). The Bash launchers targ
 macOS/Linux. Recordings and screenshots go to `demo/artifacts/<scenario>/`; GIFs go
 to `media/`. No recordings or developer tools are included in the VSIX.
 
+### Capture a scenario with Playwright Inspector
+
+```sh
+# One-time install of the browser used for the Inspector window.
+npm run demo:setup --workspace @moyarich/vscode-visualize-css-colors
+npm run demo:inspector --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
+```
+
+`demo:codegen` is an alias. This opens an isolated VS Code window with the built
+extension and selected fixture, plus Playwright Inspector in recording mode.
+Click and type in VS Code; use Inspector to inspect locators and add assertions.
+Press Enter in the launching terminal when finished (Ctrl+C also finishes the
+capture). Codegen automatically saves to
+`demo/artifacts/scenarios/<scenario>-<UTC timestamp>.spec.js`.
+No clipboard step or ffmpeg is needed. The interactive session has no recording
+time limit. Select `basic-colors`, `relative-colors`, or `source-colors` to start
+from another fixture.
+
+The saved file is Playwright's generated test scaffold. Its actions target the
+VS Code workbench: reuse the action body in a test fixture connected to VS Code rather than
+a normal browser page. Swatches receive stable `data-testid` attributes such as
+`color-swatch-0` during capture; a replay fixture must apply the same labels. Playwright's
+recorder adapter is isolated in `demo/inspector.mjs` and its version is pinned
+because automatic output for an attached Electron window uses an internal API.
+
+Video demos use `DemoMagnifierCursorOverlay` to magnify the real pointer target.
+The lens preserves computed token styles, ignores clicks, and is removed before
+the final screenshot. Each video run also saves `<scenario>-magnifier.png` for
+checking the lens and native color picker.
+
 For GIF conversion of existing recordings use `--no-record`. Optional settings:
 `CSS_COLORS_GIF_FPS`, `CSS_COLORS_GIF_WIDTH`, and `CSS_COLORS_GIF_TRIM_START`.
 

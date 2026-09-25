@@ -2,22 +2,22 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const DEMO_CURSOR_TAG_NAME = "demo-cursor-overlay";
+const DEMO_CURSOR_TAG_NAME = "demo-magnifier-cursor-overlay";
 const componentPath = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   "elements",
-  "demo-cursor-overlay",
-  "demo-cursor-overlay-element.mjs",
+  "demo-magnifier-cursor-overlay",
+  "demo-magnifier-cursor-overlay-element.mjs",
 );
 const stylesheetPath = path.join(
   path.dirname(componentPath),
-  "demo-cursor-overlay-element-style.css",
+  "demo-magnifier-cursor-overlay-element-style.css",
 );
 const componentSource = readFile(componentPath, "utf8");
 const stylesheetSource = readFile(stylesheetPath, "utf8");
 
 /** Installs the visible cursor halo over the VS Code workbench. */
-export async function installDemoCursorOverlay({ page }) {
+export async function installDemoMagnifierCursorOverlay({ page }) {
   const isRegistered = await page.evaluate(
     (tagName) => Boolean(customElements.get(tagName)),
     DEMO_CURSOR_TAG_NAME,
@@ -29,12 +29,12 @@ export async function installDemoCursorOverlay({ page }) {
       const result = await session.send("Runtime.evaluate", {
         expression: `{\n${(await componentSource)
           .replace(
-            'import styleSheet from "./demo-cursor-overlay-element-style.css" with { type: "css" };',
+            'import styleSheet from "./demo-magnifier-cursor-overlay-element-style.css" with { type: "css" };',
             `const styleSheet = new CSSStyleSheet();\nstyleSheet.replaceSync(${JSON.stringify(await stylesheetSource)});`,
           )
           .replace(
-            "export class DemoCursorOverlay",
-            "class DemoCursorOverlay",
+            "export class DemoMagnifierCursorOverlay",
+            "class DemoMagnifierCursorOverlay",
           )}\n}
 //# sourceURL=${componentPath}`,
         awaitPromise: true,
@@ -44,7 +44,7 @@ export async function installDemoCursorOverlay({ page }) {
         throw new Error(
           result.exceptionDetails.exception?.description ??
             result.exceptionDetails.text ??
-            "Could not register DemoCursorOverlay.",
+            "Could not register DemoMagnifierCursorOverlay.",
         );
       }
     } finally {
@@ -62,32 +62,25 @@ export async function installDemoCursorOverlay({ page }) {
  * Moves the visible halo to the center of a Playwright target, including a
  * target inside a webview iframe.
  */
-export async function pointDemoCursorAt({ page, locator, pause = 500 }) {
+export async function pointDemoMagnifierCursorAt({
+  page,
+  locator,
+  pause = 500,
+}) {
   const bounds = await locator.boundingBox();
   if (!bounds) {
     throw new Error("Could not position the demo cursor on a hidden control.");
   }
 
-  await page.evaluate(
-    ({ tagName, position }) => {
-      const element = document.querySelector(tagName);
-      if (element) {
-        element.cursor = position;
-      }
-    },
-    {
-      tagName: DEMO_CURSOR_TAG_NAME,
-      position: {
-        x: bounds.x + bounds.width / 2,
-        y: bounds.y + bounds.height / 2,
-      },
-    },
+  await page.mouse.move(
+    bounds.x + bounds.width / 2,
+    bounds.y + bounds.height / 2,
   );
   await new Promise((resolve) => setTimeout(resolve, pause));
 }
 
 /** Removes the cursor halo before keyboard input or unobstructed result shots. */
-export async function removeDemoCursorOverlay({ page }) {
+export async function removeDemoMagnifierCursorOverlay({ page }) {
   await page.evaluate((tagName) => {
     document.querySelector(tagName)?.remove();
   }, DEMO_CURSOR_TAG_NAME);
