@@ -56,7 +56,7 @@ export type {
 } from "./addons";
 export { Console } from "./components/Console";
 export type {
-  ConsoleAnsiModeProps,
+  ConsoleTerminalModeProps,
   ConsoleHandle,
   ConsoleMessageFilter,
   ConsoleMessageModeProps,
@@ -86,10 +86,8 @@ export type {
   ConsoleSurfaceActionContext,
 } from "./actions";
 export { ConsoleStdout } from "./components/ConsoleStdout";
-export { ProcessOutput } from "./components/ProcessOutput";
-export type { ProcessOutputProps } from "./components/ProcessOutput";
-export { RunnableConsole } from "./components/RunnableConsole";
-export type { RunnableConsoleProps } from "./components/RunnableConsole";
+export { Terminal } from "./components/Terminal";
+export type { TerminalOutputEntry, TerminalProps } from "./components/Terminal";
 export type {
   ConsoleOutputStream,
   ConsoleStdoutEntry,
