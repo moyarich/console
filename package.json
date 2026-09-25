@@ -10,10 +10,10 @@
   ],
   "scripts": {
     "dev": "npm run build:vscode-colors && npm run dev --workspace @moyarich/console-playground",
-    "build": "npm run build --workspace @moyarich/css-color-parser && npm run build --workspace @moyarich/vscode-visualize-css-colors && npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
+    "build": "npm run build --workspace @moyarich/vscode-visualize-css-colors && npm run build --workspace @moyarich/console-core && npm run build --workspace @moyarich/console && npm run build --workspace @moyarich/console-addon-imperative-scrolling && npm run build --workspace @moyarich/console-addon-data-export && npm run build --workspace @moyarich/console-addon-diagnostics && npm run build --workspace @moyarich/console-addon-filtering && npm run build --workspace @moyarich/console-addon-resizable && npm run build --workspace @moyarich/console-playground",
     "build:package": "npm run build:core && npm run build --workspace @moyarich/console",
     "build:playground": "npm run build:vscode-colors && npm run build --workspace @moyarich/console-playground",
-    "build:vscode-colors": "npm run build --workspace @moyarich/css-color-parser && npm run build --workspace @moyarich/vscode-visualize-css-colors",
+    "build:vscode-colors": "npm run build --workspace @moyarich/vscode-visualize-css-colors",
     "typecheck": "npm run build:vscode-colors && npm run typecheck --workspaces --if-present && tsc -p tsconfig.tests.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
