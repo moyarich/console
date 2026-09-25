@@ -8,10 +8,12 @@ demo_recorder="${project_directory}/demo/extension.smoke.mjs"
 gif_creator="${project_directory}/demo/create-readme-gif.mjs"
 
 record_demo() {
+  npm --prefix "${project_directory}" run build
   node "${demo_recorder}" --demo "$@"
 }
 
 create_demo_gifs() {
+  npm --prefix "${project_directory}" run build
   node "${gif_creator}" "$@"
 }
 
@@ -33,20 +35,13 @@ install_fzf() {
     return
   fi
 
-  if is_command_present "brew"; then
-    printf 'Installing fzf via Homebrew...\n'
-    brew install fzf
-    return
-  fi
-
-  printf 'Error: fzf is required, and Homebrew is not available to install it.\n' >&2
-  printf 'Install fzf using your package manager, then run this command again.\n' >&2
+  printf 'Install fzf using your package manager, or use npm run demo:record -- --scenario=all.\n' >&2
   exit 1
 }
 
 list_scenarios() {
   printf '%s\n' "all"
-  find "${scenarios_directory}" -maxdepth 1 -type f -name '*.mjs' -print |
+  find "${scenarios_directory}" -maxdepth 1 -type f -name '*.mjs' ! -name 'index.mjs' -print |
     sed -E 's#^.*/##; s#\.mjs$##' |
     LC_ALL=C sort
 }

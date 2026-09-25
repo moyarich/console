@@ -1,7 +1,7 @@
 {
   "name": "@moyarich/vscode-visualize-css-colors",
   "version": "0.1.0",
-  "description": "VS Code web extension that visualizes CSS color literals with native editor color providers.",
+  "description": "CSS color visualization for desktop VS Code, web VS Code, and Monaco extension hosts.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -16,7 +16,7 @@
     "./manifest.json": "./extension.manifest.json",
     "./extension.js": {
       "types": "./dist/extension.d.cts",
-      "default": "./dist/extension.js"
+      "default": "./dist/extension.cjs"
     },
     "./extension-source": {
       "types": "./dist/extension-source.d.ts",
@@ -24,51 +24,51 @@
     }
   },
   "files": [
-    "dist",
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/index.d.cts",
+    "dist/extension.cjs",
+    "dist/extension.d.cts",
+    "dist/extension-source.js",
+    "dist/extension-source.d.ts",
     "extension.manifest.json"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "clean:extension": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\"",
-    "compile": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
+    "build": "npm run build --workspace @moyarich/css-color-parser && node ./scripts/build.mjs",
+    "compile": "npm run build",
+    "vscode:prepublish": "npm run build",
+    "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
-    "dev": "npm --prefix webviews-ui run dev --",
-    "vscode:prepublish": "npm run compile",
-    "compile": "npm run clean:extension && tsc -p ./",
-    "build": "npm run compile",
-    "build:webviews": "npm --prefix webviews-ui run build",
-    "compile:tests": "node -e \"require('node:fs').rmSync('out-test', { recursive: true, force: true })\" && tsc -p tsconfig.tests.json && node -e \"require('node:fs').cpSync('resources', 'out-test/resources', { recursive: true })\"",
-    "watch": "concurrently -k -n webviews,extension \"npm --prefix webviews-ui run build -- --watch\" \"tsc -watch -p ./\"",
-    "watch:extension": "tsc -watch -p ./",
-    "watch:webviews": "npm --prefix webviews-ui run build -- --watch",
-    "dev:extension": "./scripts/run-extension-dev.sh",
-    "demo": "./scripts/run-demo-interactive.sh",
-    "demo:record": "node ./demo/extension.smoke.mjs --demo",
-    "demo:interactive": "./scripts/run-demo-interactive.sh",
-    "demo:all": "node ./demo/extension.smoke.mjs --demo --scenario=all",
-    "demo:freshness": "node ./demo/extension.smoke.mjs --demo --scenario=review-pair-freshness",
-    "demo:round-trip": "node ./demo/extension.smoke.mjs --demo --scenario=test-round-trip-conversion",
-    "demo:formats": "node ./demo/extension.smoke.mjs --demo --scenario=show-available-formats",
-    "demo:advanced": "node ./demo/extension.smoke.mjs --demo --scenario=advanced-pipe-external-command,advanced-check-external-command,advanced-set-notebook-kernel,advanced-execute-notebook,advanced-update-notebook-metadata,advanced-set-format-options,advanced-run-pre-commit-workflow,advanced-run-jupytext-command",
-    "demo:gif": "node ./demo/create-readme-gif.mjs",
-    "pretest": "npm run compile && npm run compile:tests && npm run lint",
-    "lint": "eslint src test demo",
-    "test": "npm run test:webviews && vscode-test",
-    "test:webviews": "tsc -p tsconfig.webview-tests.json && vitest run test/webviews",
-    "zip": "npm run compile && vite build --mode zip",
-    "package": "npm run compile && npx vsce package --allow-missing-repository --no-rewrite-relative-links",
-    "publish:extension": "./scripts/publish_ext.sh",
-    "package:ls": "npm run compile && npx @vscode/vsce ls --tree"
+    "lint": "eslint src scripts demo test tsup.config.ts --max-warnings 0",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "package": "npm run build && node ./scripts/package-extension.mjs",
+    "package:ls": "npm run build && node ./scripts/package-extension.mjs --list",
+    "publish:openvsx": "npm run package && node --test test/*.test.mjs && node ./scripts/publish-extension.mjs",
+    "publish:extension": "npm run publish:openvsx",
+    "dev:extension": "npm run build && bash ./scripts/run-extension-dev.sh",
+    "demo": "npm run demo:record",
+    "demo:interactive": "bash ./scripts/run-demo-interactive.sh",
+    "demo:record": "npm run build && node ./demo/extension.smoke.mjs --demo",
+    "demo:all": "npm run demo:record -- --scenario=all",
+    "demo:mix": "npm run demo:record -- --scenario=color-mix",
+    "demo:relative": "npm run demo:record -- --scenario=relative-colors",
+    "demo:list": "node ./demo/extension.smoke.mjs --list",
+    "demo:gif": "npm run build && node ./demo/create-readme-gif.mjs",
+    "demo:codegen": "npm run build && node ./demo/extension.smoke.mjs --codegen"
   },
   "dependencies": {
-    "@moyarich/css-color-parser": "0.1.0",
-    "archiver": "^8.0.0"
+    "@moyarich/css-color-parser": "0.1.0"
   },
   "devDependencies": {
-    "@rolldown/pluginutils": "^1.0.0-rc.3",
     "@types/vscode": "^1.138.0",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.0.0",
+    "ovsx": "^1.2.0",
+    "playwright-core": "^1.63.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },

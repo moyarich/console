@@ -15,17 +15,17 @@ function positiveNumber({ value, fallback, minimum }) {
 }
 
 const fps = positiveNumber({
-  value: process.env.JOTEBOOKSYNC_GIF_FPS,
+  value: process.env.CSS_COLORS_GIF_FPS,
   fallback: 12,
   minimum: 1,
 });
 const width = positiveNumber({
-  value: process.env.JOTEBOOKSYNC_GIF_WIDTH,
+  value: process.env.CSS_COLORS_GIF_WIDTH,
   fallback: 960,
   minimum: 320,
 });
 const trimStart = positiveNumber({
-  value: process.env.JOTEBOOKSYNC_GIF_TRIM_START,
+  value: process.env.CSS_COLORS_GIF_TRIM_START,
   fallback: 1,
   minimum: 0,
 });

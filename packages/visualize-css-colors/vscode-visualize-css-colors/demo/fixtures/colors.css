@@ -1,0 +1,198 @@
+:root {
+  --secondary: #ff6b3580;
+  --rgb: rgb(255 0 127 / 75%);
+  --rgba: rgba(34, 197, 94, 0.7);
+  --hsl: hsl(265 60% 50% / 85%);
+  --clear: transparent;
+  --surface: #f8fafc;
+  --surface-border: rgb(148 163 184 / 35%);
+  --text: #172033;
+
+  --brand: #06c;
+  --alpha: rgba(34, 197, 94, 0.7);
+  --accent: hsl(265 60% 50% / 85%);
+  --named: rebeccapurple;
+  --mix: color-mix(in oklch, red 40%, blue);
+  --hue: color-mix(in hsl longer hue, red, blue);
+  --nested: color-mix(in srgb, color-mix(in srgb, red, blue), white);
+  --relative: hsl(from red calc(h + 120) s l);
+  --alpha: oklab(from green l a b / 0.5);
+  --oklch: oklch(60% 0.15 250);
+  --p3: color(display-p3 0.9 0.2 0.4);
+
+  /* Computable color functions: each expression gets a single editor swatch. */
+  --mix-oklch: color-mix(in oklch, red 40%, blue);
+  --mix-hue: color-mix(in hsl longer hue, red, blue);
+  --mix-alpha: color-mix(in srgb, rebeccapurple 60%, transparent);
+  --mix-nested: color-mix(in srgb, color-mix(in srgb, red, blue), white);
+  --relative-oklab: oklab(from green l a b / 0.5);
+  --relative-hsl: hsl(from red calc(h + 120) s l);
+  --hwb: hwb(190 10% 15%);
+  --lab: lab(60% 35 -40);
+  --lch: lch(60% 50 300);
+  --oklch: oklch(60% 0.15 250);
+  --p3: color(display-p3 0.9 0.2 0.4);
+
+  --playground-background: light-dark(#f7f7f8, #09090b);
+  --playground-surface: light-dark(#ffffff, #111113);
+  --playground-text: light-dark(#111113, #f4f4f5);
+
+  --playground-surface-subtle: color-mix(
+    in oklab,
+    var(--playground-surface) 96%,
+    var(--playground-text) 4%
+  );
+
+  --transparent-background:
+    linear-gradient(45deg, #cbd5e1 25%, transparent 25%) 0 0 / 12px 12px,
+    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%) 0 6px / 12px 12px,
+    linear-gradient(45deg, transparent 75%, #cbd5e1 75%) 6px -6px / 12px 12px,
+    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%) -6px 0 / 12px 12px;
+}
+
+.color-example {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px;
+  border: 1px solid var(--surface-border);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.color-example header {
+  margin-bottom: 24px;
+}
+
+.color-example h2 {
+  margin: 4px 0 8px;
+  color: var(--brand);
+}
+
+.color-example p {
+  max-width: 620px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  color: var(--named);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.color-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.color-card strong,
+.color-card code {
+  display: block;
+}
+
+.color-card code {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  color: #475569;
+  font-size: 12px;
+}
+
+.color-preview {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgb(15 23 42 / 18%);
+  border-radius: 10px;
+  background-color: var(--clear);
+}
+
+.swatch-brand {
+  background-color: var(--brand);
+}
+
+.swatch-alpha {
+  background-color: var(--alpha);
+}
+
+.swatch-rgb {
+  background-color: var(--rgb);
+}
+
+.swatch-rgba {
+  background-color: var(--rgba);
+}
+
+.swatch-hsl {
+  background-color: var(--hsl);
+}
+
+.swatch-named {
+  background-color: var(--named);
+}
+
+.swatch-color-mix {
+  background-color: var(--playground-surface-subtle);
+}
+
+.swatch-transparent {
+  background: var(--transparent-background);
+}
+
+.swatch-mix-oklch {
+  background-color: var(--mix-oklch);
+}
+
+.swatch-mix-hue {
+  background-color: var(--mix-hue);
+}
+
+.swatch-mix-alpha {
+  background-color: var(--mix-alpha);
+}
+
+.swatch-mix-nested {
+  background-color: var(--mix-nested);
+}
+
+.swatch-relative-oklab {
+  background-color: var(--relative-oklab);
+}
+
+.swatch-relative-hsl {
+  background-color: var(--relative-hsl);
+}
+
+.swatch-hwb {
+  background-color: var(--hwb);
+}
+
+.swatch-lab {
+  background-color: var(--lab);
+}
+
+.swatch-lch {
+  background-color: var(--lch);
+}
+
+.swatch-oklch {
+  background-color: var(--oklch);
+}
+
+.swatch-p3 {
+  background-color: var(--p3);
+}

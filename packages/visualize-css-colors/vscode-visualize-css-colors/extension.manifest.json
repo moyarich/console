@@ -1,24 +1,32 @@
 {
   "name": "visualize-css-colors",
   "displayName": "Visualize CSS Colors",
-  "description": "Visualizes CSS color literals using the native VS Code document color provider API.",
+  "description": "Visualize CSS colors, color-mix(), and relative colors with native swatches and the color picker.",
   "publisher": "moyarich",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.74.0"
   },
-  "browser": "./dist/extension.js",
-  "activationEvents": [
-    "onStartupFinished",
-    "onLanguage:css",
-    "onLanguage:scss",
-    "onLanguage:less",
-    "onLanguage:html",
-    "onLanguage:javascript",
-    "onLanguage:javascriptreact",
-    "onLanguage:typescript",
-    "onLanguage:typescriptreact",
-    "onLanguage:vue",
-    "onLanguage:svelte"
-  ]
+  "browser": "./dist/extension.cjs",
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.cjs",
+  "categories": ["Other"],
+  "keywords": ["css", "color", "color-mix", "oklch"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moyarich/console.git",
+    "directory": "packages/visualize-css-colors/vscode-visualize-css-colors"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
+  "homepage": "https://github.com/moyarich/console/tree/main/packages/visualize-css-colors/vscode-visualize-css-colors",
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "files": ["dist/extension.cjs", "README.md", "CHANGELOG.md", "LICENSE"]
 }
