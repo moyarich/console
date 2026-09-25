@@ -13,8 +13,19 @@ Open **styles.css** in the source tabs. Supported color literals are surfaced th
 the native VS Code `DocumentColorProvider` path, so the editor owns the color
 decorator and color picker rather than the example adding Monaco decorations itself.
 
-The stylesheet includes short and alpha hex, modern RGB, legacy RGBA, HSL with alpha,
-a CSS named color, and `transparent`.
+The stylesheet includes hex, RGB, HSL, named colors, `transparent`, HWB, Lab, LCH,
+OKLCH, and Display P3. It also demonstrates `color-mix()` in different color spaces,
+hue interpolation, transparency, nested mixes, and relative colors with `calc()`.
+Select a swatch next to a complete function to inspect its resolved color. Applying
+a picker edit replaces the whole function with a hex or RGB literal.
+
+Advanced functions are evaluated with [color-bits](https://github.com/romgrk/color-bits)
+and shown as 8-bit sRGB colors. Wide-gamut colors may be clipped in the picker.
+
+The theme-aware declarations using `var()` and `light-dark()` are evaluated by the
+browser in context. The source editor does not resolve the CSS cascade, active
+color scheme, `currentColor`, or system colors, so it does not show a computed swatch
+for those expressions. Fixed color literals inside `light-dark()` remain inspectable.
 
 <RunnableExample
   source={source}

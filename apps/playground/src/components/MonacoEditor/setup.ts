@@ -118,10 +118,10 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
     }),
   },
   extensions: [
-    /*     {
+    {
       config: vscodeVisualizeCssColorsManifest,
       filesOrContents: extensionFiles,
-    }, */
+    },
   ],
   monacoWorkerFactory: configurePlaygroundWorkers,
 };
