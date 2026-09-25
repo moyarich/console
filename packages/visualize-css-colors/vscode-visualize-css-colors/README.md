@@ -123,7 +123,7 @@ menu additionally requires `fzf`. Generated scenarios are written to
 `demo/artifacts/<scenario>/`; GIFs go to `media/`.
 
 See [demo/README.md](./demo/README.md) and
-[`@moyarich/vscode-dev-toolkit`](../../vscode-dev-toolkit/README.md) for the
+[`@moyarich/vscode-dev-toolkit`](https://github.com/moyarich/vscode-dev-toolkit) for the
 scenario contract and shared runtime architecture.
 
 Optional GIF settings are now toolkit-wide:

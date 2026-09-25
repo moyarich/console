@@ -67,7 +67,7 @@
     "@types/vscode": "^1.138.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "@moyarich/vscode-dev-toolkit": "0.1.0"
+    "@moyarich/vscode-dev-toolkit": "git+https://github.com/moyarich/vscode-dev-toolkit.git#99eeda9f02d808a20a4789a5377361c13247b810"
   },
   "repository": {
     "type": "git",
