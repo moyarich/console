@@ -56,46 +56,31 @@ export default defineConfig({
       {
         find: "@moyarich/console-addon-diagnostics",
         replacement: fileURLToPath(
-          new URL(
-            "../addons/diagnostics/src/index.ts",
-            import.meta.url,
-          ),
+          new URL("../addons/diagnostics/src/index.ts", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console-addon-filtering",
         replacement: fileURLToPath(
-          new URL(
-            "../addons/filtering/src/index.tsx",
-            import.meta.url,
-          ),
+          new URL("../addons/filtering/src/index.tsx", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console-addon-resizable/styles.css",
         replacement: fileURLToPath(
-          new URL(
-            "../addons/resizable/src/styles.css",
-            import.meta.url,
-          ),
+          new URL("../addons/resizable/src/styles.css", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console-addon-resizable",
         replacement: fileURLToPath(
-          new URL(
-            "../addons/resizable/src/index.tsx",
-            import.meta.url,
-          ),
+          new URL("../addons/resizable/src/index.tsx", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console-addon-data-export",
         replacement: fileURLToPath(
-          new URL(
-            "../addons/data-export/src/index.ts",
-            import.meta.url,
-          ),
+          new URL("../addons/data-export/src/index.ts", import.meta.url),
         ),
       },
       {
