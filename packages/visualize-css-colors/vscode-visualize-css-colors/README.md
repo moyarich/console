@@ -96,10 +96,32 @@ host setup; this extension contributes color information and presentations only.
 
 ## Desktop demos
 
-The demo scenarios are **basic-colors**, **color-mix**, **relative-colors**, and
-**source-colors**. They run against the staged extension in disposable workspaces
-and isolated editor profiles. Each recording checks activation, provider output,
-and native picker presentations before completing.
+The demo system is organized by responsibility under `demo/`:
+
+- `scenarios/` contains directly runnable demo scenarios.
+- `scenarios/generated/` contains runnable scenarios captured with Playwright
+  Inspector.
+- `runtime/` contains shared VS Code, Playwright, video, and codegen plumbing.
+- `ui/` contains demo-only workbench overlays such as the caption and
+  magnifier.
+- `cli/` contains multi-scenario, GIF, and interactive entrypoints.
+- `dev/` contains fixtures used by manual extension-development workflows.
+
+See [demo/README.md](./demo/README.md) for the full directory map and runtime
+contract.
+
+The handwritten scenarios are **basic-colors**, **color-mix**,
+**relative-colors**, and **source-colors**. Each scenario owns its metadata,
+source fixture, and Playwright interaction steps.
+
+A scenario can be executed directly from the package root:
+
+```sh
+node demo/scenarios/basic-colors.mjs
+node demo/scenarios/color-mix.mjs
+```
+
+The package scripts provide multi-scenario workflows:
 
 ```sh
 npm run demo:list --workspace @moyarich/vscode-visualize-css-colors
@@ -109,45 +131,52 @@ npm run demo:all --workspace @moyarich/vscode-visualize-css-colors
 npm run demo:gif --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
 ```
 
-Recording requires a graphical desktop and `ffmpeg` on PATH. The recorder downloads
-VS Code using `@vscode/test-electron`; set `VSCODE_VERSION` to select a version.
-The interactive menu additionally requires `fzf`, and the development launcher
-requires the VS Code `code` command (or `CODE_COMMAND`). The Bash launchers target
-macOS/Linux. Recordings and screenshots go to `demo/artifacts/<scenario>/`; GIFs go
-to `media/`. No recordings or developer tools are included in the VSIX.
+Recording requires a graphical desktop and `ffmpeg` on PATH. The runtime
+downloads VS Code using `@vscode/test-electron`; set `VSCODE_VERSION` to
+select a version. The interactive menu additionally requires `fzf`, and the
+development launcher requires the VS Code `code` command (or
+`CODE_COMMAND`). The Bash launchers target macOS/Linux. Recordings and
+screenshots go to `demo/artifacts/<scenario>/`; GIFs go to `media/`. No
+recordings or developer tools are included in the VSIX.
 
-### Capture a scenario with Playwright Inspector
+### Capture a runnable scenario with Playwright Inspector
 
 ```sh
 # One-time install of the browser used for the Inspector window.
 npm run demo:setup --workspace @moyarich/vscode-visualize-css-colors
-npm run demo:inspector --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
+
+npm run demo:codegen --workspace @moyarich/vscode-visualize-css-colors -- --scenario=color-mix
 ```
 
-`demo:codegen` is an alias. This opens an isolated VS Code window with the built
-extension and selected fixture, plus Playwright Inspector in recording mode.
-Click and type in VS Code; use Inspector to inspect locators and add assertions.
-Press Enter in the launching terminal when finished (Ctrl+C also finishes the
-capture). Codegen automatically saves to
-`demo/artifacts/scenarios/<scenario>-<UTC timestamp>.spec.js`.
-No clipboard step or ffmpeg is needed. The interactive session has no recording
-time limit. Select `basic-colors`, `relative-colors`, or `source-colors` to start
-from another fixture.
+You can also start codegen directly from a scenario:
 
-The saved file is Playwright's generated test scaffold. Its actions target the
-VS Code workbench: reuse the action body in a test fixture connected to VS Code rather than
-a normal browser page. Swatches receive stable `data-testid` attributes such as
-`color-swatch-0` during capture; a replay fixture must apply the same labels. Playwright's
-recorder adapter is isolated in `demo/inspector.mjs` and its version is pinned
-because automatic output for an attached Electron window uses an internal API.
+```sh
+node demo/scenarios/color-mix.mjs --codegen
+```
 
-Video demos use `DemoMagnifierCursorOverlay` to magnify the real pointer target.
-The lens preserves computed token styles, ignores clicks, and is removed before
-the final screenshot. Each video run also saves `<scenario>-magnifier.png` for
-checking the lens and native color picker.
+This opens an isolated VS Code window with the built extension and selected
+fixture, plus Playwright Inspector in recording mode. Click and type in VS Code,
+then press Enter in the launching terminal when finished. Codegen converts
+Playwright's JavaScript recorder output into the same runnable scenario contract
+used by handwritten demos and saves it under
+`demo/scenarios/generated/<scenario>-<UTC timestamp>.mjs`.
 
-For GIF conversion of existing recordings use `--no-record`. Optional settings:
-`CSS_COLORS_GIF_FPS`, `CSS_COLORS_GIF_WIDTH`, and `CSS_COLORS_GIF_TRIM_START`.
+Generated scenarios can then be called directly with Node, or selected through
+the normal scenario registry. Monaco color swatches receive stable
+`data-testid` attributes such as `color-swatch-0` while recording. The
+private Playwright recorder adapter is isolated in
+`demo/runtime/codegen-recorder.mjs` and the Playwright version is pinned
+because recording an already attached VS Code/Electron page relies on an
+internal API.
+
+Video demos use the magnifier UI in `demo/ui/magnifier/` to enlarge the real
+pointer target. The lens preserves computed token styles, ignores clicks, and is
+removed before the final screenshot. Each video run also saves
+`<scenario>-magnifier.png` for checking the lens and native color picker.
+
+For GIF conversion of existing recordings use `--no-record`. Optional
+settings: `CSS_COLORS_GIF_FPS`, `CSS_COLORS_GIF_WIDTH`, and
+`CSS_COLORS_GIF_TRIM_START`.
 
 ## Publish to Open VSX
 
