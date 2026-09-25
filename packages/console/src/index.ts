@@ -86,6 +86,8 @@ export type {
   ConsoleSurfaceActionContext,
 } from "./actions";
 export { ConsoleStdout } from "./components/ConsoleStdout";
+export { ProcessOutput } from "./components/ProcessOutput";
+export type { ProcessOutputProps } from "./components/ProcessOutput";
 export type {
   ConsoleOutputStream,
   ConsoleStdoutEntry,
