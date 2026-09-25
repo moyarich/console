@@ -26,7 +26,6 @@
     "@moyarich/console-addon-imperative-scrolling": "*",
     "@moyarich/console-addon-resizable": "*",
     "@moyarich/console-core": "*",
-    "@moyarich/vscode-visualize-css-colors": "*",
     "@typefox/monaco-editor-react": "^8.0.2",
     "change-case": "^5.4.4",
     "lucide-react": "^1.47.0",

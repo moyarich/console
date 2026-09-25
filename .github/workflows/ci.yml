@@ -30,10 +30,6 @@ jobs:
         run: npm test
       - name: Build package and playground
         run: npm run build
-      - name: Validate desktop and web color extension bundle
-        run: npm test --workspace @moyarich/vscode-visualize-css-colors
-      - name: Package color extension
-        run: npm run package --workspace @moyarich/vscode-visualize-css-colors
       - name: Build Storybook
         run: npm run build-storybook
       - name: Validate package archive
