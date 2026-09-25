@@ -1,8 +1,8 @@
 import {
-  prepareScenarioRuntime,
+  prepareDemoRuntime,
   runScenario,
-} from "./scenario-runner.mjs";
-import { scenarios, selectScenarios } from "./scenarios/index.mjs";
+} from "../runtime/run-scenario.mjs";
+import { scenarios, selectScenarios } from "../scenarios/index.mjs";
 
 const codegen = process.argv.includes("--codegen");
 const selection =
@@ -23,7 +23,7 @@ if (process.argv.includes("--list")) {
     );
   }
 
-  const executable = await prepareScenarioRuntime({ codegen });
+  const executable = await prepareDemoRuntime({ codegen });
 
   for (const name of selected) {
     await runScenario({

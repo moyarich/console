@@ -23,7 +23,7 @@
  * @property {boolean} [visible]
  */
 
-import styleSheet from "./demo-caption-element-style.css" with { type: "css" };
+import styleSheet from "./styles.css" with { type: "css" };
 
 export class DemoCaptionElement extends HTMLElement {
   static tagName = "demo-caption";

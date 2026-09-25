@@ -1,5 +1,5 @@
 import path from "node:path";
-import { runScenarioModule } from "../scenario-runner.mjs";
+import { runScenarioModule } from "../runtime/run-scenario.mjs";
 
 const scenario = {
   name: "relative-colors",

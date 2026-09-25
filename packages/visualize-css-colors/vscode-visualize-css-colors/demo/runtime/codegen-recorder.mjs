@@ -39,6 +39,7 @@ function extractPageActions(source) {
 
 function indent(source, spaces) {
   const prefix = " ".repeat(spaces);
+
   return source
     .split("\n")
     .map((line) => (line ? `${prefix}${line}` : ""))
@@ -53,8 +54,8 @@ async function convertRecording({
 }) {
   const generated = await readFile(outputFile, "utf8");
   const actions = extractPageActions(generated);
-  const content = `import baseScenario from "../scenarios/${baseScenarioName}.mjs";
-import { runScenarioModule } from "../scenario-runner.mjs";
+  const content = `import baseScenario from "../${baseScenarioName}.mjs";
+import { runScenarioModule } from "../../runtime/run-scenario.mjs";
 
 const scenario = {
   ...baseScenario,
@@ -85,12 +86,16 @@ export async function captureScenario({
   baseScenarioName = name,
   projectDirectory,
 }) {
-  const directory = path.join(projectDirectory, "demo/generated-scenarios");
+  const directory = path.join(
+    projectDirectory,
+    "demo/scenarios/generated",
+  );
+
   await mkdir(directory, { recursive: true });
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const scenarioName = `${path.basename(name)}-${timestamp}`;
-  const outputFile = path.join(directory, `${scenarioName}.scenario.mjs`);
+  const outputFile = path.join(directory, `${scenarioName}.mjs`);
   const context = page.context();
 
   if (typeof context._enableRecorder !== "function") {
@@ -105,6 +110,7 @@ export async function captureScenario({
         .querySelectorAll(".monaco-editor .colorpicker-color-decoration")
         .forEach((element, index) => {
           const id = `color-swatch-${index}`;
+
           if (element.getAttribute("data-testid") !== id) {
             element.setAttribute("data-testid", id);
           }
@@ -157,6 +163,7 @@ export async function captureScenario({
     await context._disableRecorder().catch(() => undefined);
   }
 
+  // Codegen batches file writes for 250 ms. Allow its last action to flush.
   await new Promise((resolve) => setTimeout(resolve, 300));
   await access(outputFile);
 

@@ -1,4 +1,4 @@
-import styleSheet from "./demo-magnifier-cursor-overlay-element-style.css" with { type: "css" };
+import styleSheet from "./styles.css" with { type: "css" };
 
 /**
  * Cursor magnifier overlay that mirrors and magnifies the DOM content

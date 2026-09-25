@@ -10,7 +10,7 @@ fi
 demo_dir="$(mktemp -d /tmp/css-colors-dev.XXXXXX)"
 trap 'rm -rf "$demo_dir"' EXIT
 mkdir -p "$demo_dir/workspace" "$demo_dir/extensions" "$demo_dir/user/User"
-cp "$project_dir/demo/fixtures/colors.css" "$demo_dir/workspace/colors.css"
+cp "$project_dir/demo/dev/fixtures/colors.css" "$demo_dir/workspace/colors.css"
 printf '%s\n' '{"editor.colorDecorators":true,"telemetry.telemetryLevel":"off"}' > "$demo_dir/user/User/settings.json"
 "$code_command" --new-window --wait --disable-extension=vscode.css-language-features \
   --extensionDevelopmentPath="$project_dir/dist/vscode-extension" \

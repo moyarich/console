@@ -5,14 +5,9 @@ import { fileURLToPath } from "node:url";
 const DEMO_CAPTION_TAG_NAME = "demo-caption";
 const componentPath = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  "elements",
-  "demo-caption",
-  "demo-caption-element.mjs",
+  "element.mjs",
 );
-const stylesheetPath = path.join(
-  path.dirname(componentPath),
-  "demo-caption-element-style.css",
-);
+const stylesheetPath = path.join(path.dirname(componentPath), "styles.css");
 const componentSource = readFile(componentPath, "utf8");
 const stylesheetSource = readFile(stylesheetPath, "utf8");
 
@@ -24,7 +19,7 @@ async function registerDemoCaptionElement(page) {
     const result = await session.send("Runtime.evaluate", {
       expression: `{\n${(await componentSource)
         .replace(
-          'import styleSheet from "./demo-caption-element-style.css" with { type: "css" };',
+          'import styleSheet from "./styles.css" with { type: "css" };',
           `const styleSheet = new CSSStyleSheet();\nstyleSheet.replaceSync(${JSON.stringify(await stylesheetSource)});`,
         )
         .replace(

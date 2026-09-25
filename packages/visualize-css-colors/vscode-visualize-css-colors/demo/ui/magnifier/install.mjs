@@ -5,14 +5,9 @@ import { fileURLToPath } from "node:url";
 const DEMO_CURSOR_TAG_NAME = "demo-magnifier-cursor-overlay";
 const componentPath = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  "elements",
-  "demo-magnifier-cursor-overlay",
-  "demo-magnifier-cursor-overlay-element.mjs",
+  "element.mjs",
 );
-const stylesheetPath = path.join(
-  path.dirname(componentPath),
-  "demo-magnifier-cursor-overlay-element-style.css",
-);
+const stylesheetPath = path.join(path.dirname(componentPath), "styles.css");
 const componentSource = readFile(componentPath, "utf8");
 const stylesheetSource = readFile(stylesheetPath, "utf8");
 
@@ -29,7 +24,7 @@ export async function installDemoMagnifierCursorOverlay({ page }) {
       const result = await session.send("Runtime.evaluate", {
         expression: `{\n${(await componentSource)
           .replace(
-            'import styleSheet from "./demo-magnifier-cursor-overlay-element-style.css" with { type: "css" };',
+            'import styleSheet from "./styles.css" with { type: "css" };',
             `const styleSheet = new CSSStyleSheet();\nstyleSheet.replaceSync(${JSON.stringify(await stylesheetSource)});`,
           )
           .replace(

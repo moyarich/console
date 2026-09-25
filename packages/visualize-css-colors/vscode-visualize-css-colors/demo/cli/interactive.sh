@@ -2,15 +2,13 @@
 
 set -euo pipefail
 
-project_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-scenarios_directory="${project_directory}/demo/scenarios"
-generated_scenarios_directory="${project_directory}/demo/generated-scenarios"
-demo_recorder="${project_directory}/demo/extension.smoke.mjs"
-gif_creator="${project_directory}/demo/create-readme-gif.mjs"
+project_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+demo_runner="${project_directory}/demo/cli/run.mjs"
+gif_creator="${project_directory}/demo/cli/create-gif.mjs"
 
 record_demo() {
   npm --prefix "${project_directory}" run build
-  node "${demo_recorder}" --demo "$@"
+  node "${demo_runner}" --demo "$@"
 }
 
 create_demo_gifs() {
@@ -41,11 +39,8 @@ install_fzf() {
 }
 
 list_scenarios() {
-  {
-    printf '%s\n' "all"
-    find "${scenarios_directory}" -maxdepth 1 -type f -name '*.mjs' ! -name 'index.mjs' -print
-    find "${generated_scenarios_directory}" -maxdepth 1 -type f -name '*.scenario.mjs' -print
-  } | sed -E 's#^.*/##; s#\.scenario\.mjs$##; s#\.mjs$##' | LC_ALL=C sort
+  printf '%s\n' "all"
+  node "${demo_runner}" --list | sed -E 's/:.*$//'
 }
 
 install_fzf

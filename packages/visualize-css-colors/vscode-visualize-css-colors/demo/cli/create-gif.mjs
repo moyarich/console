@@ -4,10 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-const projectDirectory = path.dirname(currentDirectory);
+const projectDirectory = path.dirname(path.dirname(currentDirectory));
 const demoDirectory = path.join(projectDirectory, "demo", "artifacts");
 const readmeMediaDirectory = path.join(projectDirectory, "media");
-const smokeDemo = path.join(currentDirectory, "extension.smoke.mjs");
+const demoRunner = path.join(currentDirectory, "run.mjs");
 
 function positiveNumber({ value, fallback, minimum }) {
   const parsed = Number(value ?? fallback);
@@ -72,13 +72,13 @@ async function exists(filePath) {
 await mkdir(demoDirectory, { recursive: true });
 await mkdir(readmeMediaDirectory, { recursive: true });
 
-if (!process.argv.includes("--no-record") && (await exists(smokeDemo))) {
+if (!process.argv.includes("--no-record") && (await exists(demoRunner))) {
   const recorderArguments = process.argv
     .slice(2)
     .filter((argument) => argument !== "--no-record");
   await run({
     command: process.execPath,
-    args: [smokeDemo, "--demo", ...recorderArguments],
+    args: [demoRunner, "--demo", ...recorderArguments],
     failureMessage: selectedScenario
       ? `Demo recording failed for scenario selection: ${selectedScenario}`
       : "Demo recording failed while running all scenarios",
