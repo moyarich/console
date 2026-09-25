@@ -4,7 +4,7 @@ import {
   type MdxSectionPage,
 } from "../utils/mdxSection";
 
-const pageModules = import.meta.glob("./**/page.mdx", {
+const pageModules = import.meta.glob("../../../../docs/examples/**/page.mdx", {
   eager: true,
 }) as Record<string, MdxPageModule>;
 

@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-API documentation source lives in [`apps/playground/src/api`](https://github.com/moyarich/console/tree/main/apps/playground/src/api), and runnable examples live in [`apps/playground/src/examples`](https://github.com/moyarich/console/tree/main/apps/playground/src/examples).
+API documentation source lives in [`api`](https://github.com/moyarich/console/tree/main/api), and runnable examples live in [`docs/examples`](https://github.com/moyarich/console/tree/main/docs/examples).
 
 ## Packages
 

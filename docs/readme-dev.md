@@ -338,7 +338,7 @@ npm run dev
 Examples use numbered directories as the source of truth for grouping and order:
 
 ```text
-apps/playground/src/examples/
+docs/examples/
   00-ansi/
     01-terminal/
       example.tsx
@@ -407,7 +407,7 @@ Workspace addon packages publish from their built `dist/` output, but the playgr
 A common symptom is:
 
 ```text
-failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
+failed to resolve import "@moyarich/console-addon-..." from ".../packages/playground/..."
 ```
 
 If the addon already exists in `packages/` and is listed as a workspace dependency, this usually means Vite is resolving the package's `exports` field to `dist/`, but that addon has not been built yet. Do **not** fix this by weakening runnable-example import validation or by requiring a manual addon build before `npm run dev`.
@@ -416,7 +416,7 @@ For every first-party workspace addon that is imported by the playground or Stor
 
 1. keep the published package `exports` pointed at `dist/`
 2. add the addon to the consuming workspace's dependencies
-3. alias the package name to its source entry point in `apps/playground/vite.config.ts`
+3. alias the package name to its source entry point in `packages/playground/vite.config.ts`
 4. add the same source alias in `.storybook/main.ts`
 5. if runnable examples can import the addon, also register it in `compileExampleSource.ts` as a supported runtime module
 6. keep test/type-resolution aliases in sync when the test configuration needs them
