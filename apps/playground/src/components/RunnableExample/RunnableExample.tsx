@@ -70,22 +70,6 @@ class RuntimeErrorBoundary extends Component<
   }
 }
 
-function languageForPath(path: string) {
-  if (path.endsWith(".json")) return "json";
-  if (path.endsWith(".css")) return "css";
-
-  if (
-    path.endsWith(".js") ||
-    path.endsWith(".jsx") ||
-    path.endsWith(".mjs") ||
-    path.endsWith(".cjs")
-  ) {
-    return "javascript";
-  }
-
-  return "typescript";
-}
-
 export function RunnableExample({
   source,
   sourcePath = "example.tsx",
@@ -379,7 +363,6 @@ export function RunnableExample({
             <MonacoEditor
               key={editorPath}
               path={editorPath}
-              language={languageForPath(activePath)}
               value={activeSource}
               onChange={(value) =>
                 setDraftFiles((current) => ({

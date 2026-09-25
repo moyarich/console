@@ -1267,6 +1267,74 @@ body,
   color: var(--playground-text);
 }
 
+.source-panel {
+  border-color: light-dark(var(--playground-border), #2c3545);
+  background: light-dark(#ffffff, #151b26);
+}
+
+.source-toolbar {
+  border-bottom-color: light-dark(var(--playground-border), #283142);
+  background: light-dark(var(--playground-surface-subtle), #1b2230);
+}
+
+.source-toolbar strong {
+  color: light-dark(var(--playground-text), #f8fafc);
+}
+
+.source-toolbar .panel-kicker {
+  color: light-dark(var(--playground-text-muted), #8994a6);
+}
+
+.source-action-button {
+  border-color: light-dark(var(--playground-border-strong), #3b4658);
+  background: light-dark(var(--playground-surface-muted), #252e3d);
+  color: light-dark(var(--playground-text-secondary), #d6deea);
+}
+
+.source-action-button:hover:not(:disabled) {
+  border-color: light-dark(var(--playground-border-strong), #52627a);
+  background: light-dark(var(--playground-surface-subtle), #2c3647);
+}
+
+.run-source-button {
+  border-color: var(--playground-accent);
+  background: var(--playground-accent);
+  color: #fff;
+}
+
+.run-source-button:hover:not(:disabled) {
+  border-color: var(--playground-accent-strong);
+  background: var(--playground-accent-strong);
+}
+
+.source-file-tabs {
+  border-bottom-color: light-dark(var(--playground-border), #283142);
+  background: light-dark(var(--playground-surface-subtle), #151b26);
+}
+
+.source-file-tab {
+  color: light-dark(var(--playground-text-muted), #8994a6);
+}
+
+.source-file-tab:hover {
+  background: light-dark(var(--playground-surface-muted), #202938);
+  color: light-dark(var(--playground-text), #d6deea);
+}
+
+.source-file-tab.active {
+  background: light-dark(#ffffff, #1e1e1e);
+  color: light-dark(var(--playground-text), #f8fafc);
+}
+
+.example-source-editor,
+.editor-loading {
+  background: light-dark(#ffffff, #1e1e1e);
+}
+
+.editor-loading {
+  color: light-dark(var(--playground-text-muted), #cbd5e1);
+}
+
 .topbar {
   border-bottom-color: var(--playground-border);
   background: color-mix(in oklab, var(--playground-surface) 92%, transparent);

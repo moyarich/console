@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Playground } from "./components/Playground";
+import {
+  ResolvedColorScheme,
+  ResolvedColorSchemeContext,
+} from "./context/theme";
 
 type ThemePreference = "system" | "light" | "dark";
 
@@ -10,6 +14,40 @@ const themeOptions = [
   { value: "light", label: "Light", Icon: Sun },
   { value: "dark", label: "Dark", Icon: Moon },
 ] as const;
+
+function getSystemColorScheme(): ResolvedColorScheme {
+  if (typeof window === "undefined" || !window.matchMedia) {
+    return "light";
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function useSystemColorScheme() {
+  const [colorScheme, setColorScheme] =
+    useState<ResolvedColorScheme>(getSystemColorScheme);
+
+  useEffect(() => {
+    if (!window.matchMedia) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateColorScheme = () =>
+      setColorScheme(mediaQuery.matches ? "dark" : "light");
+
+    updateColorScheme();
+    mediaQuery.addEventListener("change", updateColorScheme);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateColorScheme);
+    };
+  }, []);
+
+  return colorScheme;
+}
 
 function GitHubIcon() {
   return (
@@ -25,6 +63,9 @@ function GitHubIcon() {
 export function App() {
   const [themePreference, setThemePreference] =
     useState<ThemePreference>("system");
+  const systemColorScheme = useSystemColorScheme();
+  const resolvedColorScheme =
+    themePreference === "system" ? systemColorScheme : themePreference;
 
   const colorScheme =
     themePreference === "system" ? "light dark" : themePreference;
@@ -39,58 +80,64 @@ export function App() {
   }, [colorScheme]);
 
   return (
-    <div className="layout" data-theme={themePreference}>
-      <header className="layout-header topbar">
-        <Link className="brand" to="/">
-          <span className="brand-mark" aria-hidden="true">
-            &gt;_
-          </span>
-          <span className="brand-copy">
-            <strong>@moyarich/console</strong>
-            <small>React developer console</small>
-          </span>
-        </Link>
+    <ResolvedColorSchemeContext.Provider value={resolvedColorScheme}>
+      <div className="layout" data-theme={themePreference}>
+        <header className="layout-header topbar">
+          <Link className="brand" to="/">
+            <span className="brand-mark" aria-hidden="true">
+              &gt;_
+            </span>
+            <span className="brand-copy">
+              <strong>@moyarich/console</strong>
+              <small>React developer console</small>
+            </span>
+          </Link>
 
-        <div className="topbar-actions">
-          <div className="theme-switcher" role="group" aria-label="Appearance">
-            {themeOptions.map(({ value, label, Icon }) => {
-              const isActive = themePreference === value;
+          <div className="topbar-actions">
+            <div
+              className="theme-switcher"
+              role="group"
+              aria-label="Appearance"
+            >
+              {themeOptions.map(({ value, label, Icon }) => {
+                const isActive = themePreference === value;
 
-              return (
-                <button
-                  key={value}
-                  className="theme-switcher-button"
-                  type="button"
-                  aria-label={`${label} theme`}
-                  aria-pressed={isActive}
-                  title={label}
-                  onClick={() => setThemePreference(value)}
-                >
-                  <Icon aria-hidden="true" />
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={value}
+                    className="theme-switcher-button"
+                    type="button"
+                    aria-label={`${label} theme`}
+                    aria-pressed={isActive}
+                    title={label}
+                    onClick={() => setThemePreference(value)}
+                  >
+                    <Icon aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+
+            <a
+              className="topbar-icon-link"
+              href="https://github.com/moyarich/console"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open @moyarich/console on GitHub"
+              title="GitHub repository"
+            >
+              <GitHubIcon />
+            </a>
           </div>
+        </header>
 
-          <a
-            className="topbar-icon-link"
-            href="https://github.com/moyarich/console"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open @moyarich/console on GitHub"
-            title="GitHub repository"
-          >
-            <GitHubIcon />
-          </a>
-        </div>
-      </header>
+        <Playground />
 
-      <Playground />
-
-      <footer className="layout-footer site-footer">
-        <span>@moyarich/console</span>
-        <span>React console UI and transport adapters</span>
-      </footer>
-    </div>
+        <footer className="layout-footer site-footer">
+          <span>@moyarich/console</span>
+          <span>React console UI and transport adapters</span>
+        </footer>
+      </div>
+    </ResolvedColorSchemeContext.Provider>
   );
 }
