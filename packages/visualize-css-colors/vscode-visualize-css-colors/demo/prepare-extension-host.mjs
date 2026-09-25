@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 
-export async function prepare({
-  vscode,
-  sourceFile,
-}) {
+export async function prepare({ vscode, sourceFile }) {
   const document = await vscode.workspace.openTextDocument(
     vscode.Uri.file(sourceFile),
   );

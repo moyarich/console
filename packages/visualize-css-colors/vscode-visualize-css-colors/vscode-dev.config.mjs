@@ -28,9 +28,7 @@ const config = defineVSCodeDevConfig({
         "editor.colorDecorators": true,
         "telemetry.telemetryLevel": "off",
       },
-      launchArgs: [
-        "--disable-extension=vscode.css-language-features",
-      ],
+      launchArgs: ["--disable-extension=vscode.css-language-features"],
     },
   },
 
@@ -61,28 +59,21 @@ const config = defineVSCodeDevConfig({
     extensionHostSetup: "demo/prepare-extension-host.mjs",
 
     async waitForReady({ page }) {
-      await page
-        .locator(".colorpicker-color-decoration")
-        .first()
-        .waitFor({
-          state: "visible",
-          timeout: 30_000,
-        });
+      await page.locator(".colorpicker-color-decoration").first().waitFor({
+        state: "visible",
+        timeout: 30_000,
+      });
     },
 
     async prepareCodegenPage({ page }) {
       await page.evaluate(() => {
         const labelSwatches = () => {
           document
-            .querySelectorAll(
-              ".monaco-editor .colorpicker-color-decoration",
-            )
+            .querySelectorAll(".monaco-editor .colorpicker-color-decoration")
             .forEach((element, index) => {
               const id = `color-swatch-${index}`;
 
-              if (
-                element.getAttribute("data-testid") !== id
-              ) {
+              if (element.getAttribute("data-testid") !== id) {
                 element.setAttribute("data-testid", id);
               }
             });
@@ -95,11 +86,9 @@ const config = defineVSCodeDevConfig({
           childList: true,
           subtree: true,
         });
-        window.addEventListener(
-          "pagehide",
-          () => observer.disconnect(),
-          { once: true },
-        );
+        window.addEventListener("pagehide", () => observer.disconnect(), {
+          once: true,
+        });
       });
     },
   },

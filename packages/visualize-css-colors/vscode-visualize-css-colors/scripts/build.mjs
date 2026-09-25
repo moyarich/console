@@ -8,9 +8,7 @@ import {
 } from "@moyarich/vscode-dev-toolkit/extension";
 import config from "../vscode-dev.config.mjs";
 
-const projectDirectory = fileURLToPath(
-  new URL("../", import.meta.url),
-);
+const projectDirectory = fileURLToPath(new URL("../", import.meta.url));
 
 await rm(new URL("../dist/", import.meta.url), {
   recursive: true,
@@ -19,11 +17,7 @@ await rm(new URL("../dist/", import.meta.url), {
 
 execFileSync(
   process.execPath,
-  [
-    createRequire(import.meta.url).resolve(
-      "tsup/dist/cli-default.js",
-    ),
-  ],
+  [createRequire(import.meta.url).resolve("tsup/dist/cli-default.js")],
   {
     cwd: projectDirectory,
     stdio: "inherit",
