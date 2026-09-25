@@ -34,7 +34,8 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.4",
-    "vscode": "npm:@codingame/monaco-vscode-extension-api@^37.1.0"
+    "vscode": "npm:@codingame/monaco-vscode-extension-api@^37.1.0",
+    "@moyarich/moyaforge": "github:moyarich/moyaforge#feature/mdx-component-registry"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",

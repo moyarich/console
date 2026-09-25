@@ -88,7 +88,7 @@ export interface ConsoleHandle {
  */
 export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
-/** Props shared by structured and ANSI console modes. */
+/** Props shared by structured and terminal console modes. */
 interface ConsoleSharedProps {
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
@@ -150,10 +150,10 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   messageActions?: readonly ConsoleMessageAction[];
 }
 
-/** Props for terminal-style ANSI/process-output rendering. */
-export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
-  /** Selects ANSI/process-output mode. */
-  mode: "ansi";
+/** Props for terminal-style terminal rendering. */
+export interface ConsoleTerminalModeProps extends ConsoleSharedProps {
+  /** Selects terminal mode. */
+  mode: "terminal";
   /** ANSI-aware stdout/stderr entries or raw strings to render. */
   messages?: readonly (ConsoleStdoutEntry | string)[];
   /** Parse complete JSON object/array lines into structured value inspectors. */
@@ -172,7 +172,7 @@ export interface ConsoleAnsiModeProps extends ConsoleSharedProps {
 }
 
 /** Discriminated prop union for the top-level {@link Console} component. */
-export type ConsoleProps = ConsoleMessageModeProps | ConsoleAnsiModeProps;
+export type ConsoleProps = ConsoleMessageModeProps | ConsoleTerminalModeProps;
 
 interface ConsoleFrameProps extends ConsoleSharedProps {
   mode: ConsoleMode;
@@ -190,7 +190,7 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
 }
 
 const EMPTY_MESSAGES: ConsoleMessageData[] = [];
-const EMPTY_ANSI_MESSAGES: readonly (ConsoleStdoutEntry | string)[] = [];
+const EMPTY_TERMINAL_OUTPUT: readonly (ConsoleStdoutEntry | string)[] = [];
 interface ConsoleResolvedAddonProps {
   addonExtensions: ConsoleExtensionRegistry;
   data: ConsoleDataController;
@@ -442,7 +442,7 @@ function ConsoleFrame({
     },
     [keyboardShortcutContext, keyboardShortcuts],
   );
-  const showCopyButton = mode === "ansi";
+  const showCopyButton = mode === "terminal";
   const showActions =
     actions ||
     resolvedPanelActions.length > 0 ||
@@ -896,8 +896,8 @@ function ConsoleMessageMode({
 }
 
 /** Renders ANSI-aware process output with optional structured parsing. */
-function ConsoleAnsiMode({
-  messages = EMPTY_ANSI_MESSAGES,
+function ConsoleTerminalMode({
+  messages = EMPTY_TERMINAL_OUTPUT,
   parseStructuredOutput = false,
   processControlParsers,
   processors,
@@ -913,7 +913,7 @@ function ConsoleAnsiMode({
   subtitle = "ANSI-aware process output",
   emptyMessage = "No process output yet.",
   ...frameProps
-}: ConsoleAnsiModeProps & ConsoleResolvedAddonProps) {
+}: ConsoleTerminalModeProps & ConsoleResolvedAddonProps) {
   const resolvedProcessControlParsers = mergeContributions(
     processControlParsers,
     addonExtensions.getAll(consoleExtensionPoints.processControlParser),
@@ -939,7 +939,7 @@ function ConsoleAnsiMode({
 
   useEffect(() => {
     data.setSnapshot({
-      mode: "ansi",
+      mode: "terminal",
       rawEntries: messages,
       all: resolvedEntries,
       visible: resolvedEntries,
@@ -997,7 +997,7 @@ function ConsoleAnsiMode({
     />
   );
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
-    mode: "ansi",
+    mode: "terminal",
     entries: messages,
     renderDefault: renderDefaultOutput,
   });
@@ -1031,7 +1031,7 @@ function ConsoleAnsiMode({
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
 export function Console({ ref, ...props }: ConsoleProps) {
-  const mode: ConsoleMode = props.mode === "ansi" ? "ansi" : "console";
+  const mode: ConsoleMode = props.mode === "terminal" ? "ansi" : "console";
   const surfaceRef = useRef<HTMLDivElement>(null);
   const viewport = useMemo(
     () => createConsoleViewportController(() => surfaceRef.current),
@@ -1050,8 +1050,8 @@ export function Console({ ref, ...props }: ConsoleProps) {
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
-  if (props.mode === "ansi") {
-    return <ConsoleAnsiMode {...props} {...resolvedProps} />;
+  if (props.mode === "terminal") {
+    return <ConsoleTerminalMode {...props} {...resolvedProps} />;
   }
 
   return <ConsoleMessageMode {...props} {...resolvedProps} />;
