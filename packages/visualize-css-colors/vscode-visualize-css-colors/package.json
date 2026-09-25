@@ -1,7 +1,7 @@
 {
   "name": "@moyarich/vscode-visualize-css-colors",
   "version": "0.1.0",
-  "description": "VS Code web extension that visualizes CSS color literals with native editor color providers.",
+  "description": "CSS color visualization for desktop VS Code, web VS Code, and Monaco extension hosts.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -16,7 +16,7 @@
     "./manifest.json": "./extension.manifest.json",
     "./extension.js": {
       "types": "./dist/extension.d.cts",
-      "default": "./dist/extension.js"
+      "default": "./dist/extension.cjs"
     },
     "./extension-source": {
       "types": "./dist/extension-source.d.ts",
@@ -24,23 +24,50 @@
     }
   },
   "files": [
-    "dist",
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/index.d.cts",
+    "dist/extension.cjs",
+    "dist/extension.d.cts",
+    "dist/extension-source.js",
+    "dist/extension-source.d.ts",
     "extension.manifest.json"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup && node ./scripts/write-extension-source.mjs",
-    "typecheck": "tsc --noEmit"
+    "build": "node ./scripts/build.mjs",
+    "compile": "npm run build",
+    "vscode:prepublish": "npm run build",
+    "prepack": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src scripts demo test tsup.config.ts --max-warnings 0",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "package": "npm run build && node ./scripts/package-extension.mjs",
+    "package:ls": "npm run build && node ./scripts/package-extension.mjs --list",
+    "publish:openvsx": "npm run package && node --test test/*.test.mjs && node ./scripts/publish-extension.mjs",
+    "publish:extension": "npm run publish:openvsx",
+    "dev:extension": "npm run build && node ./demo/dev.mjs",
+    "demo": "npm run build && node ./demo/interactive.mjs",
+    "demo:record": "npm run build && node ./demo/run.mjs --demo",
+    "demo:all": "npm run demo:record -- --scenario=all",
+    "demo:mix": "npm run demo:record -- --scenario=color-mix",
+    "demo:relative": "npm run demo:record -- --scenario=relative-colors",
+    "demo:list": "node ./demo/run.mjs --list",
+    "demo:gif": "npm run build && node ./demo/gif.mjs",
+    "demo:codegen": "npm run build && node ./demo/run.mjs --codegen",
+    "demo:setup": "node ./demo/setup.mjs"
   },
   "dependencies": {
-    "@moyarich/css-color-parser": "0.1.0"
+    "@moyarich/css-color-parser": "git+https://github.com/moyarich/css-color-parser.git#2e01de793423d7f8f62e13eaf5c21c917cea9260"
   },
   "devDependencies": {
     "@types/vscode": "^1.138.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "@moyarich/vscode-dev-toolkit": "git+https://github.com/moyarich/vscode-dev-toolkit.git#39103eb672f5fde5e1483d7220c8909c08aef595"
   },
   "repository": {
     "type": "git",

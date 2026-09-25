@@ -23,7 +23,7 @@ export default defineConfig([
     external: ["vscode"],
     noExternal: ["@moyarich/css-color-parser", /^color-bits(?:\/|$)/],
     outExtension() {
-      return { js: ".js" };
+      return { js: ".cjs" };
     },
   },
 ]);
