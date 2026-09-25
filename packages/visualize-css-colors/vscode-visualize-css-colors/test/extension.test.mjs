@@ -4,9 +4,10 @@ import { runInNewContext } from "node:vm";
 import { test } from "node:test";
 import { scenarios, selectScenarios } from "../demo/scenarios/index.mjs";
 import {
-  extensionDirectory,
-  readManifest,
-} from "../scripts/stage-extension.mjs";
+  readExtensionManifest,
+  stageExtension,
+} from "@moyarich/vscode-dev-toolkit/extension";
+import config from "../vscode-dev.config.mjs";
 
 const source = await readFile(
   new URL("../dist/extension.cjs", import.meta.url),
@@ -75,7 +76,8 @@ function documentFor(text) {
 }
 
 test("desktop and web entries share a standalone CommonJS bundle", async () => {
-  const manifest = await readManifest();
+  const manifest = await readExtensionManifest(config);
+  const { extensionDirectory } = await stageExtension(config);
   const staged = JSON.parse(
     await readFile(`${extensionDirectory}/package.json`, "utf8"),
   );
