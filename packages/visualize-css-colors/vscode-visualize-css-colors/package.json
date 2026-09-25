@@ -58,7 +58,7 @@
     "demo:list": "node ./demo/run.mjs --list",
     "demo:gif": "npm run build && node ./demo/gif.mjs",
     "demo:codegen": "npm run build && node ./demo/run.mjs --codegen",
-    "demo:setup": "playwright-core install chromium"
+    "demo:setup": "node ./demo/setup.mjs"
   },
   "dependencies": {
     "@moyarich/css-color-parser": "0.1.0"
