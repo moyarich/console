@@ -16,8 +16,8 @@ import {
   createResizableConsoleAddon,
   type ConsoleResizeDirection,
 } from "@moyarich/console-addon-resizable";
-import { MonacoEditor } from "../apps/playground/src/components/MonacoEditor";
-import ResizableConsoleExample from "../apps/playground/src/examples/80-additional-usage/18-resizable-console/example";
+import { MonacoEditor } from "../packages/playground/src/components/MonacoEditor";
+import ResizableConsoleExample from "../docs/examples/80-additional-usage/18-resizable-console/example";
 
 type DockPosition = "top" | "right" | "bottom" | "left";
 
