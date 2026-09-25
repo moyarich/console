@@ -28,7 +28,7 @@ export function PlaygroundMDXProvider({
         RunnableExample: (props: RunnableExampleProps) => (
           <RunnableExample title={pageTitle} {...props} />
         ),
-      })
+      }),
     [pageTitle],
   );
 
