@@ -5,13 +5,15 @@
   --cursor-halo-border-width: 1px;
 
   --cursor-halo-border-color: #0f0f0fd1;
+  --cursor-halo-backgound: transparent;
   --cursor-halo-inner-ring: rgba(255, 252, 204, 0.458);
   --cursor-halo-inner-border-width: 1px;
-  --cursor-halo-inner-background: #ffffff;
+  --cursor-halo-inner-background: transparent;
 
   --cursor-halo-outer-ring: rgba(2, 2, 132, 0.794);
   --cursor-halo-outer-border-width: 5px;
   --cursor-halo-outer-background: transparent;
+  --mix-blend-mode: normal;
 
   position: fixed;
   inset: 0;
@@ -28,7 +30,7 @@
   pointer-events: none;
   cursor: none;
   will-change: translate;
-  mix-blend-mode: difference;
+  mix-blend-mode: var(--mix-blend-mode);
 }
 
 .cursor {
@@ -60,7 +62,7 @@
 
   border-radius: 50%;
   translate: -50% -50%;
-  background: transparent;
+  background: var(--cursor-halo-backgound);
   pointer-events: none;
 }
 
