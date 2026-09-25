@@ -1,6 +1,6 @@
 import { MDXProvider } from "@mdx-js/react";
 import { createMdxComponents, moyaForgeComponents } from "@moyarich/moyaforge";
-import { ProcessOutput, RunnableConsole } from "@moyarich/console";
+import { Terminal } from "@moyarich/console";
 import { useMemo, type ReactNode } from "react";
 import {
   RunnableExample,
@@ -22,8 +22,7 @@ export function PlaygroundMDXProvider({
   const components = useMemo(
     () =>
       createMdxComponents(moyaForgeComponents, {
-        ProcessOutput,
-        RunnableConsole,
+        Terminal,
         pre: MdxCodeBlock,
         table: MdxTable,
         RunnableExample: (props: RunnableExampleProps) => (
