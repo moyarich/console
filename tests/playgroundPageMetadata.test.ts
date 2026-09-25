@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parsePageMeta,
   resolvePageTocOptions,
-} from "../apps/playground/src/utils/pageMetadata";
+} from "../packages/playground/src/utils/pageMetadata";
 
 describe("playground page metadata", () => {
   it("requires only a label and preserves additional frontmatter", () => {

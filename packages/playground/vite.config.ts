@@ -9,6 +9,10 @@ import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
 
+function workspaceSource(path: string) {
+  return fileURLToPath(new URL(`../${path}`, import.meta.url));
+}
+
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/",
   worker: {
@@ -34,75 +38,41 @@ export default defineConfig({
     alias: [
       {
         find: "@moyarich/console-core",
-        replacement: fileURLToPath(
-          new URL("../../packages/console-core/src/index.ts", import.meta.url),
-        ),
+        replacement: workspaceSource("console-core/src/index.ts"),
       },
       {
         find: "@moyarich/console/styles.css",
-        replacement: fileURLToPath(
-          new URL("../../packages/console/src/styles.css", import.meta.url),
-        ),
+        replacement: workspaceSource("console/src/styles.css"),
       },
       {
         find: "@moyarich/console-addon-imperative-scrolling",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/imperative-scrolling/src/index.ts",
-            import.meta.url,
-          ),
+        replacement: workspaceSource(
+          "addons/imperative-scrolling/src/index.ts",
         ),
       },
       {
         find: "@moyarich/console-addon-diagnostics",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/diagnostics/src/index.ts",
-            import.meta.url,
-          ),
-        ),
+        replacement: workspaceSource("addons/diagnostics/src/index.ts"),
       },
       {
         find: "@moyarich/console-addon-filtering",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/filtering/src/index.tsx",
-            import.meta.url,
-          ),
-        ),
+        replacement: workspaceSource("addons/filtering/src/index.tsx"),
       },
       {
         find: "@moyarich/console-addon-resizable/styles.css",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/resizable/src/styles.css",
-            import.meta.url,
-          ),
-        ),
+        replacement: workspaceSource("addons/resizable/src/styles.css"),
       },
       {
         find: "@moyarich/console-addon-resizable",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/resizable/src/index.tsx",
-            import.meta.url,
-          ),
-        ),
+        replacement: workspaceSource("addons/resizable/src/index.tsx"),
       },
       {
         find: "@moyarich/console-addon-data-export",
-        replacement: fileURLToPath(
-          new URL(
-            "../../packages/addons/data-export/src/index.ts",
-            import.meta.url,
-          ),
-        ),
+        replacement: workspaceSource("addons/data-export/src/index.ts"),
       },
       {
         find: "@moyarich/console",
-        replacement: fileURLToPath(
-          new URL("../../packages/console/src/index.ts", import.meta.url),
-        ),
+        replacement: workspaceSource("console/src/index.ts"),
       },
     ],
   },

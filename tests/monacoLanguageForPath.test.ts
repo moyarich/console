@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { languageForPath } from "../apps/playground/src/components/MonacoEditor/languages";
+import { languageForPath } from "../packages/playground/src/components/MonacoEditor/languages";
 
 describe("languageForPath", () => {
   it.each([
