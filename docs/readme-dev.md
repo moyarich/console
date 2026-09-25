@@ -428,7 +428,7 @@ Example:
   find: "@moyarich/console-addon-imperative-scrolling",
   replacement: fileURLToPath(
     new URL(
-      "../../packages/addons/imperative-scrolling/src/index.ts",
+      "../addons/imperative-scrolling/src/index.ts",
       import.meta.url,
     ),
   ),
