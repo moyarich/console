@@ -8,7 +8,3 @@ export const ResolvedColorSchemeContext =
 export function useResolvedColorScheme() {
   return useContext(ResolvedColorSchemeContext);
 }
-
-export function monacoThemeForColorScheme(colorScheme: ResolvedColorScheme) {
-  return colorScheme === "dark" ? "vs-dark" : "vs";
-}

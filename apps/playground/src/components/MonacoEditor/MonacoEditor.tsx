@@ -5,7 +5,10 @@ import type {
   TextContents,
 } from "monaco-languageclient/editorApp";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { monacoThemeForColorScheme, useResolvedColorScheme } from "../../theme";
+import {
+  ResolvedColorScheme,
+  useResolvedColorScheme,
+} from "../../context/theme";
 import { languageForPath } from "./languages";
 import { vscodeApiConfig } from "./setup";
 
@@ -44,6 +47,10 @@ const DEFAULT_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
 
 function toEditorUri(path: string) {
   return `file:///workspace/${path.replace(/^\/+/, "")}`;
+}
+
+function monacoThemeForColorScheme(colorScheme: ResolvedColorScheme) {
+  return colorScheme === "dark" ? "vs-dark" : "vs";
 }
 
 export function MonacoEditor({
