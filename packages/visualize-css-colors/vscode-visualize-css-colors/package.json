@@ -38,7 +38,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "npm run build --workspace @moyarich/css-color-parser && node ./scripts/build.mjs",
+    "build": "node ./scripts/build.mjs",
     "compile": "npm run build",
     "vscode:prepublish": "npm run build",
     "prepack": "npm run build",
@@ -61,7 +61,7 @@
     "demo:setup": "node ./demo/setup.mjs"
   },
   "dependencies": {
-    "@moyarich/css-color-parser": "0.1.0"
+    "@moyarich/css-color-parser": "git+https://github.com/moyarich/css-color-parser.git#2e01de793423d7f8f62e13eaf5c21c917cea9260"
   },
   "devDependencies": {
     "@types/vscode": "^1.138.0",
