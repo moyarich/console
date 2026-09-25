@@ -4,9 +4,16 @@ import {
   type MdxSectionPage,
 } from "../utils/mdxSection";
 
-const pageModules = import.meta.glob("../../../../docs/examples/**/page.mdx", {
-  eager: true,
-}) as Record<string, MdxPageModule>;
+const pageModules = Object.fromEntries(
+  Object.entries(
+    import.meta.glob("../../../../docs/examples/**/page.mdx", {
+      eager: true,
+    }) as Record<string, MdxPageModule>,
+  ).map(([path, pageModule]) => [
+    `./${path.slice("../../../../docs/examples/".length)}`,
+    pageModule,
+  ]),
+);
 
 export const CONSOLE_EXAMPLE_SECTION = createMdxSection({
   id: "examples",
