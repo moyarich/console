@@ -88,6 +88,8 @@ export type {
 export { ConsoleStdout } from "./components/ConsoleStdout";
 export { ProcessOutput } from "./components/ProcessOutput";
 export type { ProcessOutputProps } from "./components/ProcessOutput";
+export { RunnableConsole } from "./components/RunnableConsole";
+export type { RunnableConsoleProps } from "./components/RunnableConsole";
 export type {
   ConsoleOutputStream,
   ConsoleStdoutEntry,
