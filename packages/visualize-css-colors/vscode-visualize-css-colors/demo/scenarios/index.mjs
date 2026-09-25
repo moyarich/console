@@ -2,19 +2,27 @@ import { globSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const scenarioFiles = globSync("**/*.mjs", {
-  cwd: import.meta.dirname,
-  exclude: ["**/index.mjs"],
-});
+const scenarioDirectories = [
+  import.meta.dirname,
+  path.join(import.meta.dirname, "../generated-scenarios"),
+];
 
-console.log("sdsds===>", scenarioFiles);
+const scenarioFiles = scenarioDirectories.flatMap((directory) =>
+  globSync("*.mjs", {
+    cwd: directory,
+    exclude: ["index.mjs"],
+  }).map((file) => ({
+    directory,
+    file,
+  })),
+);
 
 export const scenarios = Object.freeze(
   Object.fromEntries(
     await Promise.all(
-      scenarioFiles.map(async (file) => {
-        const name = file.slice(0, -".mjs".length);
-        const filePath = path.join(import.meta.dirname, file);
+      scenarioFiles.map(async ({ directory, file }) => {
+        const name = path.basename(file).replace(/(?:\.spec)?\.mjs$/, "");
+        const filePath = path.join(directory, file);
         const module = await import(pathToFileURL(filePath).href);
 
         return [name, module.default];
