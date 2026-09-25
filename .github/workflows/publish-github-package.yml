@@ -1,4 +1,4 @@
-name: Publish GitHub Package
+name: Publish GitHub Packages
 
 on:
   release:
@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: publish-github-package
+  group: publish-github-packages
   cancel-in-progress: false
 
 jobs:
@@ -25,18 +25,23 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: "@moyarich"
       - name: Install dependencies
-        run: npm install --include=optional
-      - name: Validate
-        run: npm run typecheck && npm test && npm run build:package
-      - name: Show versions
+        run: npm ci --include=optional
+      - name: Validate publishable packages
+        run: npm run typecheck && npm test && npm run build:packages && npm run pack:packages
+      - name: Show package versions
         run: |
           node -p "'Publishing @moyarich/console-core@' + require('./packages/console-core/package.json').version"
           node -p "'Publishing @moyarich/console@' + require('./packages/console/package.json').version"
-      - name: Publish core
-        run: npm publish --workspace @moyarich/console-core
+          node -p "'Publishing @moyarich/console-addon-imperative-scrolling@' + require('./packages/addons/imperative-scrolling/package.json').version"
+          node -p "'Publishing @moyarich/console-addon-data-export@' + require('./packages/addons/data-export/package.json').version"
+          node -p "'Publishing @moyarich/console-addon-diagnostics@' + require('./packages/addons/diagnostics/package.json').version"
+          node -p "'Publishing @moyarich/console-addon-filtering@' + require('./packages/addons/filtering/package.json').version"
+          node -p "'Publishing @moyarich/console-addon-resizable@' + require('./packages/addons/resizable/package.json').version"
+      - name: Publish packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish console
-        run: npm publish --workspace @moyarich/console
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for workspace in             @moyarich/console-core             @moyarich/console             @moyarich/console-addon-imperative-scrolling             @moyarich/console-addon-data-export             @moyarich/console-addon-diagnostics             @moyarich/console-addon-filtering             @moyarich/console-addon-resizable
+          do
+            npm publish --workspace "$workspace"
+          done
