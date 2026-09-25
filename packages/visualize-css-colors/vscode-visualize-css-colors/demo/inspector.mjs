@@ -60,7 +60,7 @@ const scenario = {
   ...baseScenario,
   name: ${JSON.stringify(scenarioName)},
   baseScenarioName: ${JSON.stringify(baseScenarioName)},
-  title: \`${baseScenario.title} — recorded ${timestamp}\`,
+  title: \`\${baseScenario.title} — recorded ${timestamp}\`,
 
   async run({ page }) {
 ${indent(actions, 4)}
