@@ -14,6 +14,7 @@ import {
   typescriptDefaults,
 } from "@codingame/monaco-vscode-standalone-typescript-language-features";
 import getKeybindingsServiceOverride from "@codingame/monaco-vscode-keybindings-service-override";
+import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-service-override";
 import {
   vscodeVisualizeCssColorsBrowserPath,
   vscodeVisualizeCssColorsManifest,
@@ -58,7 +59,7 @@ function configurePlaygroundWorkers() {
   const typeScriptWorker = () =>
     new Worker(
       new URL(
-        "@codingame/monaco-vscode-standalone-typescript-language-features",
+        "@codingame/monaco-vscode-standalone-typescript-language-features/worker",
         import.meta.url,
       ),
       { type: "module" },
@@ -70,7 +71,7 @@ function configurePlaygroundWorkers() {
       css: () =>
         new Worker(
           new URL(
-            "@codingame/monaco-vscode-standalone-css-language-features",
+            "@codingame/monaco-vscode-standalone-css-language-features/worker",
             import.meta.url,
           ),
           { type: "module" },
@@ -78,7 +79,7 @@ function configurePlaygroundWorkers() {
       html: () =>
         new Worker(
           new URL(
-            "@codingame/monaco-vscode-standalone-html-language-features",
+            "@codingame/monaco-vscode-standalone-html-language-features/worker",
             import.meta.url,
           ),
           { type: "module" },
@@ -86,7 +87,7 @@ function configurePlaygroundWorkers() {
       json: () =>
         new Worker(
           new URL(
-            "@codingame/monaco-vscode-standalone-json-language-features",
+            "@codingame/monaco-vscode-standalone-json-language-features/worker",
             import.meta.url,
           ),
           { type: "module" },
@@ -98,7 +99,9 @@ function configurePlaygroundWorkers() {
 }
 
 export const vscodeApiConfig: MonacoVscodeApiConfig = {
-  // Keep Monaco's standalone/Monarch language tokenization and themes.
+  // Classic controls tokenization, not extension support: the VS Code extension
+  // host below still runs our DocumentColorProvider. Keep Monaco's Monarch
+  // language tokenization and themes.
   // Extended mode replaces them with VS Code TextMate/theme services, which
   // require separate grammar and theme extensions.
   $type: "classic",
@@ -107,6 +110,7 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
   },
   serviceOverrides: {
     ...getKeybindingsServiceOverride(),
+    ...getLanguagesServiceOverride(),
   },
   userConfiguration: {
     json: JSON.stringify({
@@ -114,10 +118,10 @@ export const vscodeApiConfig: MonacoVscodeApiConfig = {
     }),
   },
   extensions: [
-    {
+    /*     {
       config: vscodeVisualizeCssColorsManifest,
       filesOrContents: extensionFiles,
-    },
+    }, */
   ],
   monacoWorkerFactory: configurePlaygroundWorkers,
 };

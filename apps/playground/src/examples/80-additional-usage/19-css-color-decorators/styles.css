@@ -9,6 +9,22 @@
   --surface: #f8fafc;
   --surface-border: rgb(148 163 184 / 35%);
   --text: #172033;
+
+  --playground-background: light-dark(#f7f7f8, #09090b);
+  --playground-surface: light-dark(#ffffff, #111113);
+  --playground-text: light-dark(#111113, #f4f4f5);
+
+  --playground-surface-subtle: color-mix(
+    in oklab,
+    var(--playground-surface) 96%,
+    var(--playground-text) 4%
+  );
+
+  --transparent-background:
+    linear-gradient(45deg, #cbd5e1 25%, transparent 25%) 0 0 / 12px 12px,
+    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%) 0 6px / 12px 12px,
+    linear-gradient(45deg, transparent 75%, #cbd5e1 75%) 6px -6px / 12px 12px,
+    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%) -6px 0 / 12px 12px;
 }
 
 .color-example {
@@ -106,10 +122,10 @@
   background-color: var(--named);
 }
 
+.swatch-color-mix {
+  background-color: var(--playground-surface-subtle);
+}
+
 .swatch-transparent {
-  background:
-    linear-gradient(45deg, #cbd5e1 25%, transparent 25%) 0 0 / 12px 12px,
-    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%) 0 6px / 12px 12px,
-    linear-gradient(45deg, transparent 75%, #cbd5e1 75%) 6px -6px / 12px 12px,
-    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%) -6px 0 / 12px 12px;
+  background: var(--transparent-background);
 }
