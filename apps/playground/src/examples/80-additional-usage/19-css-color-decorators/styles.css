@@ -10,6 +10,19 @@
   --surface-border: rgb(148 163 184 / 35%);
   --text: #172033;
 
+  /* Computable color functions: each expression gets a single editor swatch. */
+  --mix-oklch: color-mix(in oklch, red 40%, blue);
+  --mix-hue: color-mix(in hsl longer hue, red, blue);
+  --mix-alpha: color-mix(in srgb, rebeccapurple 60%, transparent);
+  --mix-nested: color-mix(in srgb, color-mix(in srgb, red, blue), white);
+  --relative-oklab: oklab(from green l a b / 0.5);
+  --relative-hsl: hsl(from red calc(h + 120) s l);
+  --hwb: hwb(190 10% 15%);
+  --lab: lab(60% 35 -40);
+  --lch: lch(60% 50 300);
+  --oklch: oklch(60% 0.15 250);
+  --p3: color(display-p3 0.9 0.2 0.4);
+
   --playground-background: light-dark(#f7f7f8, #09090b);
   --playground-surface: light-dark(#ffffff, #111113);
   --playground-text: light-dark(#111113, #f4f4f5);
@@ -128,4 +141,48 @@
 
 .swatch-transparent {
   background: var(--transparent-background);
+}
+
+.swatch-mix-oklch {
+  background-color: var(--mix-oklch);
+}
+
+.swatch-mix-hue {
+  background-color: var(--mix-hue);
+}
+
+.swatch-mix-alpha {
+  background-color: var(--mix-alpha);
+}
+
+.swatch-mix-nested {
+  background-color: var(--mix-nested);
+}
+
+.swatch-relative-oklab {
+  background-color: var(--relative-oklab);
+}
+
+.swatch-relative-hsl {
+  background-color: var(--relative-hsl);
+}
+
+.swatch-hwb {
+  background-color: var(--hwb);
+}
+
+.swatch-lab {
+  background-color: var(--lab);
+}
+
+.swatch-lch {
+  background-color: var(--lch);
+}
+
+.swatch-oklch {
+  background-color: var(--oklch);
+}
+
+.swatch-p3 {
+  background-color: var(--p3);
 }

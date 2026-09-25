@@ -43,5 +43,8 @@
     "parser",
     "developer-tools",
     "typescript"
-  ]
+  ],
+  "dependencies": {
+    "color-bits": "^1.2.0"
+  }
 }

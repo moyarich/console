@@ -1,3 +1,6 @@
+import { getAlpha, getBlue, getGreen, getRed } from "color-bits";
+import { parseCSS } from "color-bits/css";
+import { CSS_COLOR_FUNCTION_FORMATS } from "./colorFunctions";
 import { CSS_NAMED_COLORS } from "./namedColors";
 import type { CssColorFormat, RgbaColor } from "./types";
 
@@ -8,8 +11,8 @@ export interface ParsedCssColor {
 }
 
 const HEX_COLOR_PATTERN = /^#([\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i;
-const RGB_COLOR_PATTERN = /^rgba?\((.*)\)$/i;
-const HSL_COLOR_PATTERN = /^hsla?\((.*)\)$/i;
+const RGB_COLOR_PATTERN = /^rgba?\(([\s\S]*)\)$/i;
+const HSL_COLOR_PATTERN = /^hsla?\(([\s\S]*)\)$/i;
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -273,8 +276,8 @@ function parseNamedColor(value: string): RgbaColor | null {
 /**
  * Parses one complete CSS color literal.
  *
- * Supported forms are CSS hex colors, rgb()/rgba(), hsl()/hsla(),
- * transparent, and CSS named colors.
+ * Supports absolute and relative CSS color functions, color-mix(), hex,
+ * transparent, and named colors. Context-dependent expressions return null.
  */
 export function parseCssColor(value: string): ParsedCssColor | null {
   const trimmed = value.trim();
@@ -305,6 +308,31 @@ export function parseCssColor(value: string): ParsedCssColor | null {
 
   if (named) {
     return { value: trimmed, format: "named", color: named };
+  }
+
+  const functionName = /^([a-z-]+)\(/i.exec(trimmed)?.[1]?.toLowerCase();
+  const format = functionName && CSS_COLOR_FUNCTION_FORMATS.get(functionName);
+
+  const advancedRgbOrHsl = /\b(?:from|none)\b|\([^()]*\(/i.test(trimmed);
+  if (format && ((format !== "rgb" && format !== "hsl") || advancedRgbOrHsl)) {
+    try {
+      // Retain the existing floating-point precision for simple RGB/HSL above.
+      // Advanced colors use color-bits' 8-bit sRGB representation.
+      const color = parseCSS(trimmed);
+      return {
+        value: trimmed,
+        format,
+        color: {
+          red: getRed(color),
+          green: getGreen(color),
+          blue: getBlue(color),
+          alpha: getAlpha(color) / 255,
+        },
+      };
+    } catch {
+      // Incomplete edits and colors requiring a CSS cascade are not resolvable.
+      return null;
+    }
   }
 
   return null;

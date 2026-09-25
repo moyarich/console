@@ -28,6 +28,45 @@ const colors = [
     value: "transparent",
     className: "swatch-transparent",
   },
+  {
+    label: "OKLCH mix",
+    value: "color-mix(in oklch, red 40%, blue)",
+    className: "swatch-mix-oklch",
+  },
+  {
+    label: "Hue interpolation",
+    value: "color-mix(in hsl longer hue, red, blue)",
+    className: "swatch-mix-hue",
+  },
+  {
+    label: "Mix with transparency",
+    value: "color-mix(in srgb, rebeccapurple 60%, transparent)",
+    className: "swatch-mix-alpha",
+  },
+  {
+    label: "Nested mix",
+    value: "color-mix(in srgb, color-mix(in srgb, red, blue), white)",
+    className: "swatch-mix-nested",
+  },
+  {
+    label: "Relative OKLab",
+    value: "oklab(from green l a b / 0.5)",
+    className: "swatch-relative-oklab",
+  },
+  {
+    label: "Relative HSL + calc",
+    value: "hsl(from red calc(h + 120) s l)",
+    className: "swatch-relative-hsl",
+  },
+  { label: "HWB", value: "hwb(190 10% 15%)", className: "swatch-hwb" },
+  { label: "Lab", value: "lab(60% 35 -40)", className: "swatch-lab" },
+  { label: "LCH", value: "lch(60% 50 300)", className: "swatch-lch" },
+  { label: "OKLCH", value: "oklch(60% 0.15 250)", className: "swatch-oklch" },
+  {
+    label: "Display P3",
+    value: "color(display-p3 0.9 0.2 0.4)",
+    className: "swatch-p3",
+  },
 ];
 
 export default function CssColorDecoratorsExample() {

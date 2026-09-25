@@ -1,4 +1,15 @@
-export type CssColorFormat = "hex" | "rgb" | "hsl" | "named";
+export type CssColorFormat =
+  | "hex"
+  | "rgb"
+  | "hsl"
+  | "hwb"
+  | "lab"
+  | "lch"
+  | "oklab"
+  | "oklch"
+  | "color"
+  | "color-mix"
+  | "named";
 
 export interface RgbaColor {
   red: number;

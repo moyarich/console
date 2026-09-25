@@ -1,18 +1,6 @@
 import { extractCssColors } from "@moyarich/css-color-parser";
 import * as vscode from "vscode";
-
-const SUPPORTED_LANGUAGE_IDS = [
-  "css",
-  "scss",
-  "less",
-  "html",
-  "javascript",
-  "javascriptreact",
-  "typescript",
-  "typescriptreact",
-  "vue",
-  "svelte",
-] as const;
+import { SUPPORTED_LANGUAGE_IDS } from "./languages";
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));

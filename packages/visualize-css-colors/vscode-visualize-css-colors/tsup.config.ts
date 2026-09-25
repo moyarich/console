@@ -21,7 +21,7 @@ export default defineConfig([
     dts: true,
     clean: false,
     external: ["vscode"],
-    noExternal: ["@moyarich/css-color-parser"],
+    noExternal: ["@moyarich/css-color-parser", /^color-bits(?:\/|$)/],
     outExtension() {
       return { js: ".js" };
     },

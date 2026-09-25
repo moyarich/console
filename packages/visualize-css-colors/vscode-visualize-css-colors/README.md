@@ -83,3 +83,17 @@ expects a bundled extension module rather than application ESM. The package also
 generates the typed `extension-source` export so browser hosts can register that
 bundle without bundler-specific asset import syntax. The extension imports only the
 `vscode` API and the parser package; it does not use Node-only APIs.
+
+## CSS color functions
+
+The provider supports the parser's absolute and relative color functions, including
+`color-mix()`, `calc()` channels, HWB, Lab/LCH, OKLab/OKLCH, and `color(display-p3 …)`.
+A complete function receives one color range; picking a new color replaces that
+expression with a hex or RGB literal. Nested argument colors are not separate,
+overlapping edit targets.
+
+Advanced colors are converted to 8-bit sRGB. Expressions that need a CSS cascade or
+active theme (for example `color-mix(in srgb, var(--brand), white)`) have no computed
+swatch. See the [parser documentation](../css-color-parser/README.md) for details.
+The browser extension bundle includes the parser and `color-bits`, so the extension
+host needs no additional runtime module loader.
