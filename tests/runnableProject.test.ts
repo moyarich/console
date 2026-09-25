@@ -3,7 +3,7 @@ import {
   cloneRunnableProjectFiles,
   createCanonicalProjectFiles,
   createRunnableProjectSignature,
-} from "../apps/playground/src/components/RunnableExample/runnableProject";
+} from "../packages/playground/src/components/RunnableExample/runnableProject";
 
 describe("runnable project reset state", () => {
   it("keeps canonical reset files separate from editor drafts", () => {

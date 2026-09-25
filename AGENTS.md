@@ -166,7 +166,7 @@ Workspace addon packages publish from their built `dist/` output, but the playgr
 A common symptom is:
 
 ```text
-failed to resolve import "@moyarich/console-addon-..." from ".../apps/playground/..."
+failed to resolve import "@moyarich/console-addon-..." from ".../packages/playground/..."
 ```
 
 When a first-party addon exists under `packages/addons/` and is already a workspace dependency, this usually means Vite is following the package `exports` to `dist/` before the addon has been built.
@@ -175,7 +175,7 @@ For every first-party workspace addon used by the playground or Storybook:
 
 1. Keep published package `exports` pointed at `dist/`.
 2. Add the addon to the consuming workspace dependencies.
-3. Alias the addon package name to its source entry point in `apps/playground/vite.config.ts`.
+3. Alias the addon package name to its source entry point in `packages/playground/vite.config.ts`.
 4. Add the equivalent source alias in `.storybook/main.ts`.
 5. If runnable examples may import the addon, also register it in `compileExampleSource.ts` as a supported runtime module.
 6. Keep test and TypeScript path aliases in sync when required.

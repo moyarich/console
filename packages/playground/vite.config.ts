@@ -35,20 +35,20 @@ export default defineConfig({
       {
         find: "@moyarich/console-core",
         replacement: fileURLToPath(
-          new URL("../../packages/console-core/src/index.ts", import.meta.url),
+          new URL("../console-core/src/index.ts", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console/styles.css",
         replacement: fileURLToPath(
-          new URL("../../packages/console/src/styles.css", import.meta.url),
+          new URL("../console/src/styles.css", import.meta.url),
         ),
       },
       {
         find: "@moyarich/console-addon-imperative-scrolling",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/imperative-scrolling/src/index.ts",
+            "../addons/imperative-scrolling/src/index.ts",
             import.meta.url,
           ),
         ),
@@ -57,7 +57,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-diagnostics",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/diagnostics/src/index.ts",
+            "../addons/diagnostics/src/index.ts",
             import.meta.url,
           ),
         ),
@@ -66,7 +66,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-filtering",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/filtering/src/index.tsx",
+            "../addons/filtering/src/index.tsx",
             import.meta.url,
           ),
         ),
@@ -75,7 +75,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-resizable/styles.css",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/resizable/src/styles.css",
+            "../addons/resizable/src/styles.css",
             import.meta.url,
           ),
         ),
@@ -84,7 +84,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-resizable",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/resizable/src/index.tsx",
+            "../addons/resizable/src/index.tsx",
             import.meta.url,
           ),
         ),
@@ -93,7 +93,7 @@ export default defineConfig({
         find: "@moyarich/console-addon-data-export",
         replacement: fileURLToPath(
           new URL(
-            "../../packages/addons/data-export/src/index.ts",
+            "../addons/data-export/src/index.ts",
             import.meta.url,
           ),
         ),
@@ -101,7 +101,7 @@ export default defineConfig({
       {
         find: "@moyarich/console",
         replacement: fileURLToPath(
-          new URL("../../packages/console/src/index.ts", import.meta.url),
+          new URL("../console/src/index.ts", import.meta.url),
         ),
       },
     ],
