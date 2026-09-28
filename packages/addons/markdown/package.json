@@ -1,0 +1,66 @@
+{
+  "name": "@moyarich/console-addon-markdown",
+  "version": "0.1.0",
+  "description": "First-party automatic Markdown rendering for string values in @moyarich/console.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --inject-style --external @moyarich/console-core --external react --external react/jsx-runtime",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@moyarich/console-core": "^0.1.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@moyarich/console-core": "0.1.0",
+    "@types/react": "^19.1.12",
+    "hast-util-to-jsx-runtime": "^2.3.6",
+    "react": "^19.2.7",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyarich/console.git",
+    "directory": "packages/addons/markdown"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
+  "homepage": "https://github.com/moyarich/console#readme",
+  "keywords": [
+    "console",
+    "addon",
+    "markdown",
+    "gfm",
+    "developer-tools"
+  ],
+  "sideEffects": [
+    "./src/index.tsx",
+    "./src/styles.css",
+    "./dist/index.js",
+    "./dist/index.cjs"
+  ]
+}

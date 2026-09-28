@@ -109,6 +109,7 @@ The workspace contains the core contracts, React console package, and first-part
 | `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls                                                |
 | `@moyarich/console-addon-data-export`          | Data-level output export                                                    |
 | `@moyarich/console-addon-diagnostics`          | Console diagnostics                                                         |
+| `@moyarich/console-addon-markdown`             | Automatic GitHub Flavored Markdown rendering for string values              |
 | `@moyarich/console-addon-resizable`            | Resizable console behavior                                                  |
 
 ## Scope

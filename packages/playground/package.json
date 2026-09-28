@@ -24,6 +24,7 @@
     "@moyarich/console-addon-diagnostics": "*",
     "@moyarich/console-addon-filtering": "*",
     "@moyarich/console-addon-imperative-scrolling": "*",
+    "@moyarich/console-addon-markdown": "*",
     "@moyarich/console-addon-resizable": "*",
     "@moyarich/console-core": "*",
     "@typefox/monaco-editor-react": "^8.0.2",
