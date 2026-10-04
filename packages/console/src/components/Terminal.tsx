@@ -29,9 +29,6 @@ function childrenToOutput(children: ReactNode): readonly string[] {
  */
 export function Terminal({ output, children, ...props }: TerminalProps) {
   return (
-    <ConsoleStdout
-      {...props}
-      entries={output ?? childrenToOutput(children)}
-    />
+    <ConsoleStdout {...props} entries={output ?? childrenToOutput(children)} />
   );
 }
