@@ -10,7 +10,5 @@
     "declarationDir": "./dist",
     "paths": {}
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
