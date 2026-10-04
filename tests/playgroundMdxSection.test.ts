@@ -14,6 +14,43 @@ function module(label: string): MdxPageModule {
 }
 
 describe("playground MDX sections", () => {
+  it("supports a root page.mdx as the section overview and default page", () => {
+    const section = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules: {
+        "./page.mdx": module("Overview"),
+        "./01-getting-started/page.mdx": module("Getting started"),
+      },
+    });
+
+    expect(section.pages.map((page) => page.id)).toEqual([
+      "overview",
+      "getting-started",
+    ]);
+    expect(section.defaultPage?.id).toBe("overview");
+    expect(section.getPage("overview")?.label).toBe("Overview");
+  });
+
+  it("accepts unnumbered directories and sorts them after explicitly ordered siblings", () => {
+    const section = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules: {
+        "./02-reference/page.mdx": module("Reference"),
+        "./guides/page.mdx": module("Guides"),
+        "./01-getting-started/page.mdx": module("Getting started"),
+      },
+    });
+
+    expect(section.pages.map((page) => page.id)).toEqual([
+      "getting-started",
+      "reference",
+      "guides",
+    ]);
+    expect(section.getPage("guides")?.label).toBe("Guides");
+  });
+
   it("builds ordered page IDs through arbitrarily nested groups", () => {
     const section = createMdxSection({
       id: "api",
