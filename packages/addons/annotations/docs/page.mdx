@@ -1,0 +1,23 @@
+---
+label: Annotations
+title: "@moyarich/console-addon-annotations"
+description: Message annotations and bookmarks keyed by stable Console message IDs.
+---
+
+# @moyarich/console-addon-annotations
+
+Adds host-owned annotation and bookmark state for structured Console messages.
+
+Annotations are stored separately from `ConsoleMessageData`, can coexist on the same message, and are exposed through the addon controller/service.
+
+## Create the addon
+
+```tsx
+import { createConsoleAnnotationsAddon } from "@moyarich/console-addon-annotations";
+
+const annotations = createConsoleAnnotationsAddon();
+
+<Console messages={messages} addons={[annotations]} />;
+```
+
+Use `annotations.controller` to add, remove, toggle, or inspect annotations by stable message ID.

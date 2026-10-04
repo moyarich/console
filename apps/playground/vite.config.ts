@@ -71,6 +71,10 @@ export default defineConfig({
         replacement: workspaceSource("addons/resizable/src/index.tsx"),
       },
       {
+        find: "@moyarich/console-addon-annotations",
+        replacement: workspaceSource("addons/annotations/src/index.tsx"),
+      },
+      {
         find: "@moyarich/console-addon-data-export",
         replacement: workspaceSource("addons/data-export/src/index.ts"),
       },
