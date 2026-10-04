@@ -67,9 +67,115 @@ jobs:
         run: |
           set -euo pipefail
 
+          current_branch="$(git branch --show-current)"
+
           git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin |
-            grep -v '^HEAD$' |
+            grep -v '^HEAD
+
+      - name: Install git-filter-repo
+        run: python3 -m pip install --user git-filter-repo
+
+      - name: Report repository size before rewrite
+        run: |
+          {
+            echo "## Git history cleanup"
+            echo
+            echo "### Before rewrite"
+            echo
+            echo '~~~text'
+            git count-objects -vH
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Rewrite history
+        env:
+          TARGET_PATH: ${{ inputs.path }}
+        run: |
+          set -euo pipefail
+
+          "$HOME/.local/bin/git-filter-repo"             --path "$TARGET_PATH"             --invert-paths             --force
+
+      - name: Verify removed path
+        env:
+          TARGET_PATH: ${{ inputs.path }}
+        run: |
+          set -euo pipefail
+
+          if git rev-list --objects --all | grep -F -- "$TARGET_PATH"; then
+            echo "::error::Historical objects still reference $TARGET_PATH"
+            exit 1
+          fi
+
+      - name: Repack rewritten repository
+        run: |
+          set -euo pipefail
+          git reflog expire --expire=now --all
+          git gc --prune=now --aggressive
+
+      - name: Report repository size after rewrite
+        env:
+          TARGET_PATH: ${{ inputs.path }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          {
+            echo
+            echo "### After rewrite"
+            echo
+            echo "| Setting | Value |"
+            echo "| --- | --- |"
+            echo "| Removed path | `$TARGET_PATH` |"
+            echo "| Dry run | `$DRY_RUN` |"
+            echo
+            echo '~~~text'
+            git count-objects -vH
+            echo '~~~'
+            echo
+            echo "### Largest remaining blobs"
+            echo
+            echo '~~~text'
+            git rev-list --objects --all |
+              git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
+              sed -n 's/^blob //p' |
+              sort -k2nr |
+              head -50
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Restore origin
+        if: ${{ !inputs.dry-run }}
+        run: git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+
+      - name: Push rewritten branches
+        if: ${{ !inputs.dry-run }}
+        run: git push --force --all origin
+
+      - name: Push rewritten tags
+        if: ${{ !inputs.dry-run }}
+        run: git push --force --tags origin
+
+      - name: Final summary
+        if: always()
+        env:
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          {
+            echo
+            echo "---"
+            echo
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "Dry run only: GitHub refs were not changed."
+            else
+              echo "Rewritten branches and tags were force-pushed."
+              echo
+              echo "Existing clones should be discarded and re-cloned."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+ |
             while read -r branch; do
+              if [ "$branch" = "$current_branch" ]; then
+                continue
+              fi
+
               git branch --force "$branch" "refs/remotes/origin/$branch"
             done
 
