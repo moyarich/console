@@ -78,7 +78,7 @@ export interface ConsoleStructuredDiagnosticsReport {
 export interface ConsoleProcessDiagnosticsReport {
   readonly type: typeof CONSOLE_DIAGNOSTICS_TYPE;
   readonly version: typeof CONSOLE_DIAGNOSTICS_VERSION;
-  readonly mode: "ansi";
+  readonly mode: "terminal";
   readonly counts: {
     readonly raw: number;
     readonly all: number;
@@ -216,7 +216,7 @@ export function createConsoleDiagnosticsReport(
   return {
     type: CONSOLE_DIAGNOSTICS_TYPE,
     version: CONSOLE_DIAGNOSTICS_VERSION,
-    mode: "ansi",
+    mode: "terminal",
     counts: {
       raw: snapshot.rawEntries.length,
       all: snapshot.all.length,

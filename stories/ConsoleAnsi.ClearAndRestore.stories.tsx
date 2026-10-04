@@ -1,8 +1,8 @@
-import { Console, type ConsoleAnsiModeProps } from "@moyarich/console";
+import { Console, type ConsoleTerminalModeProps } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-function ClearableOutputStory(args: ConsoleAnsiModeProps) {
+function ClearableOutputStory(args: ConsoleTerminalModeProps) {
   const [messages, setMessages] = useState(args.messages ?? []);
 
   return (
@@ -19,7 +19,7 @@ const meta = {
   title: "Console/ANSI Process Output",
   component: Console,
   args: {
-    mode: "ansi",
+    mode: "terminal",
     onClear: () => undefined,
     style: { height: 360, minHeight: 240, maxHeight: 640 },
   },
@@ -30,7 +30,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<ConsoleAnsiModeProps>;
+} satisfies Meta<ConsoleTerminalModeProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

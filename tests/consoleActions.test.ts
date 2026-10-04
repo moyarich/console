@@ -89,7 +89,7 @@ describe("console actions", () => {
   it("fails closed when host predicates throw", () => {
     const context: ConsoleContextMenuActionContext = {
       kind: "console",
-      mode: "ansi",
+      mode: "terminal",
       hasMessages: true,
     };
     const actions: ConsoleContextMenuAction[] = [

@@ -1,6 +1,6 @@
 import {
   Console,
-  type ConsoleAnsiModeProps,
+  type ConsoleTerminalModeProps,
   type ConsoleStdoutEntry,
 } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -76,7 +76,7 @@ function LiveTqdmRedrawStory() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Live tqdm-style redraw"
         subtitle="Each leading carriage return replaces the current logical line"
         messages={messages}
@@ -91,7 +91,7 @@ const meta = {
   title: "Console/ANSI Process Output",
   component: Console,
   args: {
-    mode: "ansi",
+    mode: "terminal",
     onClear: () => undefined,
     style: { height: 360, minHeight: 240, maxHeight: 640 },
   },
@@ -102,7 +102,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<ConsoleAnsiModeProps>;
+} satisfies Meta<ConsoleTerminalModeProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

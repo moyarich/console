@@ -44,9 +44,9 @@ function createTerminalSurfaceAddon(): ConsoleAddon {
       host.extensions.register(
         consoleExtensionPoints.outputRenderer,
         {
-          mode: "ansi",
+          mode: "terminal",
           render(context) {
-            if (context.mode !== "ansi") return undefined;
+            if (context.mode !== "terminal") return undefined;
 
             return <TerminalSurface entries={context.entries} />;
           },
@@ -83,7 +83,7 @@ export default function OutputSurfaceAddonExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={entries}
       addons={addons}
       subtitle="An addon replaces the built-in ConsoleStdout surface"

@@ -78,7 +78,7 @@ export default function ProcessOutputProcessorsExample() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Process-output processors"
         subtitle="Ordered transforms and enrichment before ANSI rendering"
         messages={messages}

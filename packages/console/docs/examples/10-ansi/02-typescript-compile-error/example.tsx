@@ -76,7 +76,7 @@ export default function TypeScriptCompileErrorExample() {
       </section>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Terminal"
         subtitle="TypeScript compiler diagnostics"
         messages={messages}
