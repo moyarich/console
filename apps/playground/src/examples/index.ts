@@ -72,6 +72,14 @@ const pageModules = Object.fromEntries([
   ),
   ...mapModules(
     import.meta.glob(
+      "../../../../packages/addons/navigation/docs/examples/**/page.mdx",
+      { eager: true },
+    ) as Record<string, MdxPageModule>,
+    "../../../../packages/addons/navigation/docs/examples/",
+    "60-addons/01-core/07-navigation/",
+  ),
+  ...mapModules(
+    import.meta.glob(
       "../../../../packages/addons/resizable/docs/examples/**/page.mdx",
       { eager: true },
     ) as Record<string, MdxPageModule>,

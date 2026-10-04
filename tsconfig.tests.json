@@ -2,15 +2,10 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": [
-      "node",
-      "vitest/globals"
-    ],
+    "types": ["node", "vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "@moyarich/console": [
-        "./packages/console/src/index.ts"
-      ],
+      "@moyarich/console": ["./packages/console/src/index.ts"],
       "@moyarich/console-addon-data-export": [
         "./packages/addons/data-export/src/index.ts"
       ],
@@ -29,14 +24,13 @@
       "@moyarich/console-addon-resizable": [
         "./packages/addons/resizable/src/index.tsx"
       ],
-      "@moyarich/console-core": [
-        "./packages/console-core/src/index.ts"
-      ],
-      "@moyarich/console/*": [
-        "./packages/console/src/*"
-      ],
+      "@moyarich/console-core": ["./packages/console-core/src/index.ts"],
+      "@moyarich/console/*": ["./packages/console/src/*"],
       "@moyarich/console-addon-annotations": [
         "./packages/addons/annotations/src/index.tsx"
+      ],
+      "@moyarich/console-addon-navigation": [
+        "./packages/addons/navigation/src/index.ts"
       ]
     }
   },
@@ -50,6 +44,7 @@
     "packages/addons/diagnostics/src",
     "packages/addons/filtering/src",
     "packages/addons/markdown/src",
+    "packages/addons/navigation/src",
     "packages/addons/resizable/src",
     "packages/console-core/src"
   ]
