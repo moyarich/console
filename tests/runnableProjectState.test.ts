@@ -3,7 +3,7 @@ import {
   createRunnableProjectBaseline,
   createRunnableProjectDraft,
   createRunnableProjectSignature,
-} from "../packages/playground/src/components/RunnableExample/runnableProjectState";
+} from "../apps/playground/src/components/RunnableExample/runnableProjectState";
 
 describe("runnable example project state", () => {
   it("keeps the reset baseline immutable when the editor changes a draft", () => {
