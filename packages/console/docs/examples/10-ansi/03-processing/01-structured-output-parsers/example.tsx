@@ -88,7 +88,7 @@ export default function StructuredOutputParsersExample() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Structured output parsers"
         subtitle="Custom parsers run before built-in strict JSON parsing"
         messages={messages}
