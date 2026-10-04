@@ -38,6 +38,15 @@ export const CONSOLE_CORE_PACKAGE_SECTION = packageSection(
 
 export const ADDON_PACKAGE_SECTIONS = [
   packageSection(
+    "package-addon-annotations",
+    "Annotations",
+    import.meta.glob(
+      "../../../../packages/addons/annotations/docs/**/page.mdx",
+      { eager: true },
+    ) as Record<string, MdxPageModule>,
+    "../../../../packages/addons/annotations/docs/",
+  ),
+  packageSection(
     "package-addon-imperative-scrolling",
     "Imperative Scrolling",
     import.meta.glob(
