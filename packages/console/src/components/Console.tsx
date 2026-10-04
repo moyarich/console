@@ -1006,7 +1006,7 @@ function ConsoleTerminalMode({
   return (
     <ConsoleFrame
       {...frameProps}
-      mode="ansi"
+      mode="terminal"
       subtitle={subtitle}
       emptyMessage={emptyMessage}
       hasMessages={messages.length > 0}
@@ -1027,11 +1027,11 @@ function ConsoleTerminalMode({
 /**
  * Renders either structured browser-console output or ANSI process output.
  *
- * Set `mode="ansi"` for terminal-style entries; omit `mode` (or use
+ * Set `mode="terminal"` for terminal-style entries; omit `mode` (or use
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
 export function Console({ ref, ...props }: ConsoleProps) {
-  const mode: ConsoleMode = props.mode === "terminal" ? "ansi" : "console";
+  const mode: ConsoleMode = props.mode === "terminal" ? "terminal" : "console";
   const surfaceRef = useRef<HTMLDivElement>(null);
   const viewport = useMemo(
     () => createConsoleViewportController(() => surfaceRef.current),
