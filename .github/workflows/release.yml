@@ -1,15 +1,14 @@
-name: Release
+name: Release package
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: Exact Console package-family version to release
+      package:
+        description: Package name or package directory
         required: true
-        default: "0.1.0"
         type: string
       dry-run:
-        description: Validate the release without creating tags, packages, or releases
+        description: Validate without creating tags, packages, or releases
         required: true
         default: true
         type: boolean
@@ -19,26 +18,23 @@ permissions:
   packages: write
 
 concurrency:
-  group: release-${{ inputs.version }}
+  group: release-package-${{ inputs.package }}
   cancel-in-progress: false
 
 jobs:
   release:
-    name: Release Console ${{ inputs.version }}
     runs-on: ubuntu-latest
     environment: release
-
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -48,284 +44,253 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: "@moyarich"
 
-      - name: Validate package-family version
-        id: version
+      - name: Resolve package
+        id: package
         env:
-          REQUESTED_VERSION: ${{ inputs.version }}
+          SELECTOR: ${{ inputs.package }}
         shell: bash
         run: |
           set -euo pipefail
 
-          node --input-type=module - "$REQUESTED_VERSION" <<'NODE'
+          RESULT="$(
+            SELECTOR="$SELECTOR" node --input-type=module <<'NODE'
           import fs from "node:fs";
+          import path from "node:path";
 
-          const requested = process.argv[2];
-          const manifests = [
-            "packages/console-core/package.json",
-            "packages/console/package.json",
-            "packages/addons/imperative-scrolling/package.json",
-            "packages/addons/data-export/package.json",
-            "packages/addons/diagnostics/package.json",
-            "packages/addons/filtering/package.json",
-            "packages/addons/resizable/package.json",
-          ];
-
-          for (const manifest of manifests) {
-            const pkg = JSON.parse(fs.readFileSync(manifest, "utf8"));
-            if (pkg.version !== requested) {
-              console.error(
-                `::error::${pkg.name} is ${pkg.version}; requested release is ${requested}.`,
-              );
-              process.exitCode = 1;
-            }
+          function walk(directory) {
+            return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+              const target = path.join(directory, entry.name);
+              if (entry.isDirectory()) return walk(target);
+              return entry.name === "package.json" ? [target] : [];
+            });
           }
+
+          const packages = walk("packages")
+            .map((manifestPath) => {
+              const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+              return {
+                name: manifest.name,
+                version: manifest.version,
+                directory: path.dirname(manifestPath).replaceAll("\\", "/"),
+                private: manifest.private === true,
+              };
+            })
+            .filter((pkg) => pkg.name && pkg.version && !pkg.private);
+
+          const selected = packages.filter(
+            (pkg) => pkg.name === process.env.SELECTOR || pkg.directory === process.env.SELECTOR,
+          );
+
+          if (selected.length !== 1) {
+            console.error(`Expected exactly one package for selector "${process.env.SELECTOR}", found ${selected.length}.`);
+            process.exit(1);
+          }
+
+          process.stdout.write(JSON.stringify(selected[0]));
           NODE
+          )"
 
-          TAG="v$REQUESTED_VERSION"
-          RELEASE_NAME="@moyarich/console v$REQUESTED_VERSION"
+          NAME="$(jq -r '.name' <<< "$RESULT")"
+          DIRECTORY="$(jq -r '.directory' <<< "$RESULT")"
+          VERSION="$(jq -r '.version' <<< "$RESULT")"
+          TAG="$DIRECTORY@$VERSION"
+          RELEASE_NAME="$NAME v$VERSION"
 
-          echo "version=$REQUESTED_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "release-name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
-
-          if git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
-            TAG_SHA="$(git rev-list -n 1 "$TAG")"
-            HEAD_SHA="$(git rev-parse HEAD)"
-            if [ "$TAG_SHA" != "$HEAD_SHA" ]; then
-              echo "::error::$TAG already exists on $TAG_SHA, not HEAD $HEAD_SHA."
-              exit 1
-            fi
-            echo "tag-exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag-exists=false" >> "$GITHUB_OUTPUT"
-          fi
+          {
+            echo "name=$NAME"
+            echo "directory=$DIRECTORY"
+            echo "version=$VERSION"
+            echo "tag=$TAG"
+            echo "release-name=$RELEASE_NAME"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
         run: npm ci --include=optional
 
-      - name: Validate repository
+      - name: Validate repository and target package
+        env:
+          PACKAGE_NAME: ${{ steps.package.outputs.name }}
         run: |
           npm run lint
           npm run format:check
           npm run typecheck
           npm test
-          npm run build:packages
-          npm run pack:packages
+          npm run build --workspace "$PACKAGE_NAME"
+          npm pack --workspace "$PACKAGE_NAME" --dry-run
 
-      - name: Check package registry state
-        id: registry
+      - name: Resolve public release notes
+        id: notes
         env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
+          DIRECTORY: ${{ steps.package.outputs.directory }}
+          VERSION: ${{ steps.package.outputs.version }}
+          NAME: ${{ steps.package.outputs.name }}
         shell: bash
         run: |
           set -euo pipefail
 
-          packages=(
-            "@moyarich/console-core"
-            "@moyarich/console"
-            "@moyarich/console-addon-imperative-scrolling"
-            "@moyarich/console-addon-data-export"
-            "@moyarich/console-addon-diagnostics"
-            "@moyarich/console-addon-filtering"
-            "@moyarich/console-addon-resizable"
-          )
+          CHANGELOG="$DIRECTORY/CHANGELOG.md"
 
-          all_published=true
-          {
-            echo "## Package registry state"
-            echo
-            echo "| Package | $VERSION |"
-            echo "| --- | --- |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          NOTES="$(
+            CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE'
+          import fs from "node:fs";
 
-          for package in "${packages[@]}"; do
-            if npm view "$package@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
-              status="published"
-            else
-              status="missing"
-              all_published=false
-            fi
+          const lines = fs.readFileSync(process.env.CHANGELOG, "utf8").split("\n");
+          const heading = `## ${process.env.VERSION}`;
+          const notes = [];
+          let collecting = false;
 
-            echo "| `$package` | **$status** |" >> "$GITHUB_STEP_SUMMARY"
-          done
+          for (const line of lines) {
+            if (line.trim() === heading) {
+              collecting = true;
+              continue;
+            }
+            if (collecting && /^##\s+/.test(line)) break;
+            if (collecting) notes.push(line);
+          }
 
-          echo "all-published=$all_published" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve existing GitHub Release
-        id: existing-release
-        env:
-          TAG: ${{ steps.version.outputs.tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          RELEASE="$(
-            gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100"               | jq -c --arg tag "$TAG" '[.[][] | select(.tag_name == $tag)] | first // empty'
+          process.stdout.write(notes.join("\n").trim());
+          NODE
           )"
 
-          if [ -z "$RELEASE" ]; then
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ -z "$NOTES" ]; then
+            echo "::error::$CHANGELOG has no public notes for $VERSION."
+            exit 1
           fi
 
-          echo "exists=true" >> "$GITHUB_OUTPUT"
-          echo "id=$(jq -r '.id' <<< "$RELEASE")" >> "$GITHUB_OUTPUT"
-          echo "draft=$(jq -r '.draft' <<< "$RELEASE")" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<EOF"
+            echo "## Release notes"
+            echo
+            echo "$NOTES"
+            echo
+            echo "## Install"
+            echo
+            echo '~~~sh'
+            echo "npm install $NAME@$VERSION --registry=https://npm.pkg.github.com"
+            echo '~~~'
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-          if [ "$(jq -r '.draft' <<< "$RELEASE")" != "true" ]; then
+      - name: Inspect release state
+        id: state
+        env:
+          TAG: ${{ steps.package.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RELEASES="$(gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100")"
+          DRAFT="$(
+            jq -c --arg tag "$TAG" '
+              [.[][] | select(.draft == true and .tag_name == $tag)]
+              | first // empty
+            ' <<< "$RELEASES"
+          )"
+          PUBLISHED="$(
+            jq -c --arg tag "$TAG" '
+              [.[][] | select(.draft == false and .tag_name == $tag)]
+              | first // empty
+            ' <<< "$RELEASES"
+          )"
+
+          if [ -n "$PUBLISHED" ]; then
             echo "::error::A published GitHub Release already exists for $TAG."
             exit 1
           fi
 
+          if [ -n "$DRAFT" ]; then
+            echo "draft-id=$(jq -r '.id' <<< "$DRAFT")" >> "$GITHUB_OUTPUT"
+            echo "draft-exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "draft-exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
+            echo "tag-exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag-exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Release preview
         if: ${{ inputs.dry-run }}
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-          TAG: ${{ steps.version.outputs.tag }}
-          RELEASE_NAME: ${{ steps.version.outputs.release-name }}
         shell: bash
         run: |
           {
-            echo "## Release preview"
+            echo "# Package release preview"
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Package family | `@moyarich/console` |"
-            echo "| Version | `$VERSION` |"
-            echo "| Git tag | `$TAG` |"
-            echo "| Release name | `$RELEASE_NAME` |"
-            echo "| Existing draft | **${{ steps.existing-release.outputs.exists }}** |"
-            echo "| Tag already exists | **${{ steps.version.outputs.tag-exists }}** |"
-            echo "| All packages already published | **${{ steps.registry.outputs.all-published }}** |"
+            echo "| Package | `${{ steps.package.outputs.name }}` |"
+            echo "| Directory | `${{ steps.package.outputs.directory }}` |"
+            echo "| Version | `${{ steps.package.outputs.version }}` |"
+            echo "| Tag | `${{ steps.package.outputs.tag }}` |"
+            echo "| Existing draft | **${{ steps.state.outputs.draft-exists }}** |"
+            echo "| Existing tag | **${{ steps.state.outputs.tag-exists }}** |"
             echo
             echo "Dry run made no release mutations."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Create or update GitHub Release draft
+      - name: Ensure matching draft
         id: draft
         if: ${{ !inputs.dry-run }}
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-          TAG: ${{ steps.version.outputs.tag }}
-          RELEASE_NAME: ${{ steps.version.outputs.release-name }}
+          TAG: ${{ steps.package.outputs.tag }}
+          RELEASE_NAME: ${{ steps.package.outputs.release-name }}
+          BODY: ${{ steps.notes.outputs.body }}
         shell: bash
         run: |
           set -euo pipefail
 
-          NOTES="$(
-            awk '
-              $0 == "## " ENVIRON["VERSION"] { capture=1; next }
-              capture && /^## / { exit }
-              capture { print }
-            ' CHANGELOG.md
-          )"
-
-          if [ -z "$NOTES" ]; then
-            echo "::error::CHANGELOG.md has no public release notes for $VERSION."
-            exit 1
-          fi
-
-          BODY="$(
-            {
-              echo "## Release notes"
-              echo
-              echo "$NOTES"
-              echo
-              echo "## Install"
-              echo
-              echo '~~~sh'
-              echo "npm install @moyarich/console@$VERSION"
-              echo '~~~'
-            }
-          )"
-
-          if [ "${{ steps.existing-release.outputs.exists }}" = "true" ]; then
+          if [ "${{ steps.state.outputs.draft-exists }}" = "true" ]; then
+            RELEASE_ID="${{ steps.state.outputs.draft-id }}"
             RELEASE="$(
-              gh api --method PATCH                 "repos/$GH_REPO/releases/${{ steps.existing-release.outputs.id }}"                 -f tag_name="$TAG"                 -f target_commitish="main"                 -f name="$RELEASE_NAME"                 -f body="$BODY"                 -F draft=true
+              gh api --method PATCH                 "repos/$GH_REPO/releases/$RELEASE_ID"                 -f name="$RELEASE_NAME"                 -f body="$BODY"                 -F draft=true
             )"
-            ACTION="updated"
           else
             RELEASE="$(
               gh api --method POST                 "repos/$GH_REPO/releases"                 -f tag_name="$TAG"                 -f target_commitish="main"                 -f name="$RELEASE_NAME"                 -f body="$BODY"                 -F draft=true
             )"
-            ACTION="created"
+            RELEASE_ID="$(jq -r '.id' <<< "$RELEASE")"
           fi
 
-          echo "id=$(jq -r '.id' <<< "$RELEASE")" >> "$GITHUB_OUTPUT"
-          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
-      - name: Create and push Git tag
-        if: ${{ !inputs.dry-run && steps.version.outputs.tag-exists == 'false' }}
+      - name: Create package tag
+        if: ${{ !inputs.dry-run && steps.state.outputs.tag-exists == 'false' }}
         env:
-          TAG: ${{ steps.version.outputs.tag }}
-          VERSION: ${{ steps.version.outputs.version }}
-        shell: bash
+          TAG: ${{ steps.package.outputs.tag }}
+          NAME: ${{ steps.package.outputs.name }}
+          VERSION: ${{ steps.package.outputs.version }}
         run: |
-          set -euo pipefail
-          git tag -a "$TAG" -m "@moyarich/console $VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "$NAME $VERSION"
           git push origin "$TAG"
 
-      - name: Publish missing GitHub Packages
+      - name: Publish package
         if: ${{ !inputs.dry-run }}
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
+          NAME: ${{ steps.package.outputs.name }}
+          VERSION: ${{ steps.package.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
 
-          packages=(
-            "@moyarich/console-core"
-            "@moyarich/console"
-            "@moyarich/console-addon-imperative-scrolling"
-            "@moyarich/console-addon-data-export"
-            "@moyarich/console-addon-diagnostics"
-            "@moyarich/console-addon-filtering"
-            "@moyarich/console-addon-resizable"
-          )
+          if npm view "$NAME@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "$NAME@$VERSION already exists; skipping package publish."
+          else
+            npm publish --workspace "$NAME" --registry=https://npm.pkg.github.com
+          fi
 
-          for package in "${packages[@]}"; do
-            if npm view "$package@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
-              echo "$package@$VERSION already exists; skipping."
-              continue
-            fi
-
-            npm publish --workspace "$package" --registry=https://npm.pkg.github.com
-          done
-
-      - name: Verify published package family
-        id: verify
-        if: ${{ !inputs.dry-run }}
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          packages=(
-            "@moyarich/console-core"
-            "@moyarich/console"
-            "@moyarich/console-addon-imperative-scrolling"
-            "@moyarich/console-addon-data-export"
-            "@moyarich/console-addon-diagnostics"
-            "@moyarich/console-addon-filtering"
-            "@moyarich/console-addon-resizable"
-          )
-
-          for package in "${packages[@]}"; do
-            npm view "$package@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null
-          done
-
-          echo "published=true" >> "$GITHUB_OUTPUT"
+          npm view "$NAME@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null
 
       - name: Publish GitHub Release
-        if: ${{ !inputs.dry-run && steps.verify.outputs.published == 'true' }}
+        if: ${{ !inputs.dry-run }}
         env:
-          RELEASE_ID: ${{ steps.draft.outputs.id || steps.existing-release.outputs.id }}
+          RELEASE_ID: ${{ steps.draft.outputs.id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -334,23 +299,4 @@ jobs:
             gh api --method PATCH               "repos/$GH_REPO/releases/$RELEASE_ID"               -F draft=false
           )"
 
-          if [ "$(jq -r '.draft' <<< "$RELEASE")" != "false" ]; then
-            echo "::error::GitHub Release remained in draft state."
-            exit 1
-          fi
-
-      - name: Release summary
-        if: ${{ always() }}
-        shell: bash
-        run: |
-          {
-            echo "## Console release"
-            echo
-            echo "| Setting | Value |"
-            echo "| --- | --- |"
-            echo "| Version | `${{ steps.version.outputs.version || 'unresolved' }}` |"
-            echo "| Tag | `${{ steps.version.outputs.tag || 'unresolved' }}` |"
-            echo "| Dry run | **${{ inputs.dry-run }}** |"
-            echo "| Draft action | **${{ steps.draft.outputs.action || 'none' }}** |"
-            echo "| Result | **${{ job.status }}** |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          test "$(jq -r '.draft' <<< "$RELEASE")" = "false"
