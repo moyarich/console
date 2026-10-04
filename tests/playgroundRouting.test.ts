@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   createMdxSection,
   type MdxPageModule,
-} from "../packages/playground/src/utils/mdxSection";
+} from "../apps/playground/src/utils/mdxSection";
 import {
   buildPlaygroundPath,
   resolvePlaygroundPath,
-} from "../packages/playground/src/utils/playgroundRouting";
+} from "../apps/playground/src/utils/playgroundRouting";
 
 const Page = () => null;
 

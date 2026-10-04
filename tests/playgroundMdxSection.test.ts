@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createMdxSection,
   type MdxPageModule,
-} from "../packages/playground/src/utils/mdxSection";
+} from "../apps/playground/src/utils/mdxSection";
 
 const Page = () => null;
 

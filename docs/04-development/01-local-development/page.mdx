@@ -1,0 +1,47 @@
+---
+title: Local Development
+description: Install, run, and build Console locally with the Vite playground.
+---
+
+# Local development
+
+Install dependencies from the repository root:
+
+```sh
+npm ci --include=optional
+```
+
+Run the Vite documentation playground:
+
+```sh
+npm run dev
+```
+
+The private playground lives under:
+
+```text
+apps/playground/
+```
+
+It renders MDX documentation and examples from outside the app directory:
+
+```text
+docs/
+├── 03-reference/
+├── 04-development/
+└── examples/
+```
+
+Build the playground:
+
+```sh
+npm run build:playground
+```
+
+Build all publishable packages and the playground:
+
+```sh
+npm run build
+```
+
+The playground is a repository development/documentation surface and is never published as a package.
