@@ -1,48 +1,76 @@
 ---
 title: Release Process
-description: Validate, draft, publish, and finalize Console releases.
+description: Draft and publish Console packages independently.
 ---
 
 # Release process
 
-The repository uses a draft-first release flow for the Console package family.
+Each publishable workspace under `packages/*` owns its release identity, public changelog, documentation, and examples.
+
+A package release uses:
+
+```text
+package directory + package.json version
+        ↓
+packages/<path>@<version> Git tag
+        ↓
+<package-name> v<version> GitHub Release
+```
+
+Examples:
+
+```text
+packages/console-core@0.1.0
+packages/console@0.1.0
+packages/addons/filtering@0.1.0
+```
+
+## Draft releases
+
+`.github/workflows/release-drafter.yml` watches changes under `packages/**`.
+
+Only changed publishable packages are selected. Each selected package:
+
+1. reads its own `package.json`
+2. reads the matching version section from its own `CHANGELOG.md`
+3. creates or updates that package's GitHub Release draft
+4. keeps unrelated package changes out of the draft
+
+The public draft body is sourced from the package changelog. Commit messages, CI changes, repository moves, and implementation-only refactors are not used as release notes.
+
+## Publish a package
+
+Run **Release package** manually with a package name or directory. Dry run is enabled by default.
 
 The workflow:
 
 ```text
-validate package-family version
-→ install dependencies
+resolve one package
+→ npm ci
 → lint / format / typecheck
 → Vitest
-→ Vite package builds
-→ npm pack validation
-→ create or update GitHub Release draft
-→ create the version tag
-→ publish missing GitHub Packages in dependency order
-→ verify every package is available
-→ publish the GitHub Release
+→ Vite build for the target package
+→ npm pack --dry-run
+→ resolve package changelog notes
+→ ensure matching GitHub Release draft
+→ create package-scoped Git tag
+→ publish the package
+→ verify registry availability
+→ publish that package's GitHub Release
 ```
 
-Run the workflow manually with **dry run** enabled first. Dry run validates the complete release without creating tags, publishing packages, or changing the GitHub Release.
+Packages can therefore release independently instead of requiring the entire Console package family to share one release event.
 
-## Public release notes
+## Public release-note boundary
 
-`CHANGELOG.md` is the source for the GitHub Release body.
+Package `CHANGELOG.md` files contain only end-user package capabilities and behavior.
 
-Keep it limited to end-user capabilities and behavior:
+Good release-note content includes:
 
-- public components and APIs
+- public APIs and components
 - addon capabilities
 - rendering behavior
 - transport behavior
 - user-visible fixes and compatibility changes
 
-Do not put repository moves, CI changes, build-tool migrations, documentation restructuring, or other implementation-only work in the public changelog.
-
-Those details belong in pull requests and Development documentation.
-
-## Package order
-
-The release publishes the package family in dependency order, starting with `@moyarich/console-core`, followed by `@moyarich/console` and the first-party addons.
-
-The GitHub Release is only published after every package for the requested version can be resolved from GitHub Packages.
+Keep repository layout changes, CI implementation, build-tool migrations, documentation restructuring, and other implementation-only work in pull requests and Development documentation.
