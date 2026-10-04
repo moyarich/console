@@ -19,16 +19,15 @@ export function PlaygroundMDXProvider({
   pageTitle,
 }: PlaygroundMDXProviderProps) {
   const components = useMemo(
-    () =>
-      ({
-        Console,
-        Terminal,
-        pre: MdxCodeBlock,
-        table: MdxTable,
-        RunnableExample: (props: RunnableExampleProps) => (
-          <RunnableExample title={pageTitle} {...props} />
-        ),
-      }),
+    () => ({
+      Console,
+      Terminal,
+      pre: MdxCodeBlock,
+      table: MdxTable,
+      RunnableExample: (props: RunnableExampleProps) => (
+        <RunnableExample title={pageTitle} {...props} />
+      ),
+    }),
     [pageTitle],
   );
 
