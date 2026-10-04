@@ -31,6 +31,9 @@
       ],
       "@moyarich/console-addon-navigation": [
         "../../packages/addons/navigation/src/index.ts"
+      ],
+      "@moyarich/console-addon-selection": [
+        "../../packages/addons/selection/src/index.tsx"
       ]
     }
   },

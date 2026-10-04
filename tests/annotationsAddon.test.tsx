@@ -120,16 +120,19 @@ describe("@moyarich/console-addon-annotations", () => {
       consoleExtensionPoints.messageAction,
     )[0]!;
 
-    expect(
-      action.visible?.({
-        kind: "message",
-        mode: "console",
-        hasMessages: true,
-        message,
-        index: 0,
-        messages: [message],
-      }),
-    ).toBe(true);
+    const visible =
+      typeof action.visible === "function"
+        ? action.visible({
+            kind: "message",
+            mode: "console",
+            hasMessages: true,
+            message,
+            index: 0,
+            messages: [message],
+          })
+        : action.visible;
+
+    expect(visible).toBe(true);
 
     action.onSelect({
       kind: "message",
