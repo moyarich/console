@@ -1,0 +1,52 @@
+{
+  "name": "@moyarich/console-addon-navigation",
+  "version": "0.1.0",
+  "description": "First-party stable-ID message navigation for @moyarich/console hosts.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@moyarich/console-core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@moyarich/console-core": "0.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyarich/console.git",
+    "directory": "packages/addons/navigation"
+  },
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  },
+  "homepage": "https://github.com/moyarich/console#readme",
+  "keywords": [
+    "console",
+    "addon",
+    "navigation",
+    "errors",
+    "warnings",
+    "developer-tools"
+  ]
+}

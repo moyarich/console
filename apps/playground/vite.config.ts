@@ -63,6 +63,10 @@ export default defineConfig({
         replacement: workspaceSource("addons/markdown/src/index.tsx"),
       },
       {
+        find: "@moyarich/console-addon-navigation",
+        replacement: workspaceSource("addons/navigation/src/index.ts"),
+      },
+      {
         find: "@moyarich/console-addon-resizable/styles.css",
         replacement: workspaceSource("addons/resizable/src/styles.css"),
       },

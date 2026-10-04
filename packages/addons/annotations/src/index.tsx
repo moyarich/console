@@ -73,7 +73,9 @@ function normalizeAnnotation(
   return Object.freeze({
     id,
     ...(annotation.label ? { label: annotation.label } : {}),
-    ...(annotation.metadata ? { metadata: Object.freeze({ ...annotation.metadata }) } : {}),
+    ...(annotation.metadata
+      ? { metadata: Object.freeze({ ...annotation.metadata }) }
+      : {}),
   });
 }
 
@@ -237,7 +239,10 @@ function createDecoration(
     render({ message }) {
       if (!message.id) return undefined;
       return (
-        <ConsoleAnnotationBadge controller={controller} messageId={message.id} />
+        <ConsoleAnnotationBadge
+          controller={controller}
+          messageId={message.id}
+        />
       );
     },
   };
@@ -264,8 +269,7 @@ function createBookmarkAction(
 export function createConsoleAnnotationsAddon(
   options: ConsoleAnnotationsAddonOptions = {},
 ): ConsoleAnnotationsAddon {
-  const controller =
-    options.controller ?? createConsoleAnnotationsController();
+  const controller = options.controller ?? createConsoleAnnotationsController();
   const withDecoration = options.decoration !== false;
   const withBookmarkAction = options.bookmarkAction !== false;
 
@@ -277,11 +281,9 @@ export function createConsoleAnnotationsAddon(
       host.services.provide(consoleAnnotationsService, controller);
 
       let decorationRegistration:
-        | ReturnType<typeof host.extensions.register>
-        | undefined;
+        ReturnType<typeof host.extensions.register> | undefined;
       let actionRegistration:
-        | ReturnType<typeof host.extensions.register>
-        | undefined;
+        ReturnType<typeof host.extensions.register> | undefined;
 
       const registerContributions = () => {
         decorationRegistration?.dispose();
