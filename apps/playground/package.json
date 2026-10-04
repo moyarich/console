@@ -35,7 +35,8 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.4",
     "vscode": "npm:@codingame/monaco-vscode-extension-api@^37.1.0",
-    "@moyarich/console-addon-markdown": "*"
+    "@moyarich/console-addon-markdown": "*",
+    "@moyarich/console-addon-annotations": "*"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",
