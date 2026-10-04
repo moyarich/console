@@ -19,7 +19,7 @@ function ProcessState({ data }: { data: ConsoleDataService }) {
     data.getSnapshot,
   );
   const cwdEvent =
-    snapshot.mode === "ansi"
+    snapshot.mode === "terminal"
       ? snapshot.controlEvents?.find((event) => event.type === "cwd")
       : undefined;
 
@@ -82,7 +82,7 @@ export default function ProcessControlParserExample() {
               id: "process-state",
               placement: "before-output",
               render: (context) =>
-                context.mode === "ansi" ? (
+                context.mode === "terminal" ? (
                   <ProcessState data={data} />
                 ) : undefined,
             },
@@ -96,7 +96,7 @@ export default function ProcessControlParserExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={["[[cwd:/work", "space]]Build complete\n"]}
       addons={addons}
       title="processControlParser"
