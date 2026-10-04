@@ -34,7 +34,7 @@ function validateAddons(addons: readonly ConsoleAddon[]): void {
 function createManager(mode: ConsoleMode): ConsoleAddonManager {
   const manager = createConsoleAddonManager({
     capabilities:
-      mode === "ansi"
+      mode === "terminal"
         ? [
             consoleCapabilities.react,
             consoleCapabilities.dom,
