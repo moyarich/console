@@ -17,5 +17,7 @@ export default function AnnotationsExample() {
     return next;
   }, []);
 
-  return <Console messages={messages} addons={[addon]} style={{ height: 260 }} />;
+  return (
+    <Console messages={messages} addons={[addon]} style={{ height: 260 }} />
+  );
 }
