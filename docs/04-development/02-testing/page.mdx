@@ -47,3 +47,14 @@ npm run pack:packages
 ```
 
 CI runs the same lint, formatting, typecheck, Vitest, build, Storybook, and package-archive checks before changes are merged.
+
+## Self-healing checks
+
+Feature-branch pushes run repository-local repair workflows:
+
+- **Self-heal formatting** runs Prettier, verifies formatting, and commits the repair when files changed.
+- **Self-heal package lock** recreates and validates `package-lock.json` when workspace manifests change, then commits the repaired lockfile.
+
+Bot-generated repair commits are ignored by the self-healers to prevent workflow loops.
+
+CI remains authoritative: lint, formatting, typecheck, Vitest, builds, Storybook, and package archive checks must still pass after any repair commit.

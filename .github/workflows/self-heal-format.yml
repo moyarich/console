@@ -1,0 +1,78 @@
+name: Self-heal formatting
+
+on:
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit formatting changes
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: self-heal-format-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Format repository
+        id: format
+        run: |
+          npm run format
+
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify formatting
+        run: npm run format:check
+
+      - name: Commit formatting repair
+        if: >-
+          ${{ steps.format.outputs.changed == 'true' &&
+              (github.event_name == 'push' || inputs.commit) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "style: self-heal formatting"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      - name: Summary
+        if: ${{ always() }}
+        run: |
+          {
+            echo "# Self-heal formatting"
+            echo
+            echo "| Setting | Value |"
+            echo "| --- | --- |"
+            echo "| Branch | `${{ github.ref_name }}` |"
+            echo "| Changes detected | **${{ steps.format.outputs.changed || 'unknown' }}** |"
+            echo "| Result | **${{ job.status }}** |"
+          } >> "$GITHUB_STEP_SUMMARY"
