@@ -36,7 +36,7 @@ export default function ProcessOutputProcessorExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={messages}
       addons={addons}
       title="processOutputProcessor"
