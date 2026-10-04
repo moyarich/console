@@ -15,6 +15,18 @@ describe("playground page metadata", () => {
     expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(metadata);
   });
 
+  it("uses title as the label when label is omitted", () => {
+    const metadata = {
+      title: "Console",
+      description: "Console documentation.",
+    };
+
+    expect(parsePageMeta(metadata, "./page.mdx")).toEqual({
+      ...metadata,
+      label: "Console",
+    });
+  });
+
   it("accepts page title, description, TOC, and sidebar outline options", () => {
     const metadata = {
       label: "Extension points",
@@ -57,8 +69,9 @@ describe("playground page metadata", () => {
 
   it.each([
     [undefined, "Missing frontmatter metadata"],
-    [{}, '"label" must be a non-empty string'],
-    [{ label: "" }, '"label" must be a non-empty string'],
+    [{}, 'expected a non-empty "label" or "title"'],
+    [{ label: "" }, 'expected a non-empty "label" or "title"'],
+    [{ title: "" }, 'expected a non-empty "label" or "title"'],
     [{ label: "Example", title: 42 }, '"title" must be a string'],
     [{ label: "Example", description: 42 }, '"description" must be a string'],
     [{ label: "Example", toc: "yes" }, '"toc" must be a boolean or object'],
