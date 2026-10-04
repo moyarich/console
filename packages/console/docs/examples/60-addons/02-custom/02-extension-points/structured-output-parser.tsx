@@ -40,7 +40,7 @@ export default function StructuredOutputParserExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={messages}
       addons={addons}
       title="structuredOutputParser"
