@@ -32,6 +32,25 @@ describe("playground MDX sections", () => {
     expect(section.getPage("overview")?.label).toBe("Overview");
   });
 
+  it("accepts unnumbered directories and sorts them after explicitly ordered siblings", () => {
+    const section = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules: {
+        "./02-reference/page.mdx": module("Reference"),
+        "./guides/page.mdx": module("Guides"),
+        "./01-getting-started/page.mdx": module("Getting started"),
+      },
+    });
+
+    expect(section.pages.map((page) => page.id)).toEqual([
+      "getting-started",
+      "reference",
+      "guides",
+    ]);
+    expect(section.getPage("guides")?.label).toBe("Guides");
+  });
+
   it("builds ordered page IDs through arbitrarily nested groups", () => {
     const section = createMdxSection({
       id: "api",
