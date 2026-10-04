@@ -16,8 +16,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: self-heal-format-${{ github.ref }}
-  cancel-in-progress: true
+  group: self-heal-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   format:
@@ -66,13 +66,17 @@ jobs:
 
       - name: Summary
         if: ${{ always() }}
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          CHANGES_DETECTED: ${{ steps.format.outputs.changed || 'unknown' }}
+          RESULT: ${{ job.status }}
         run: |
           {
             echo "# Self-heal formatting"
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Branch | `${{ github.ref_name }}` |"
-            echo "| Changes detected | **${{ steps.format.outputs.changed || 'unknown' }}** |"
-            echo "| Result | **${{ job.status }}** |"
+            printf '| Branch | `%s` |\n' "$BRANCH_NAME"
+            printf '| Changes detected | **%s** |\n' "$CHANGES_DETECTED"
+            printf '| Result | **%s** |\n' "$RESULT"
           } >> "$GITHUB_STEP_SUMMARY"
