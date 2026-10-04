@@ -222,10 +222,10 @@ jobs:
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Package | `${{ steps.package.outputs.name }}` |"
-            echo "| Directory | `${{ steps.package.outputs.directory }}` |"
-            echo "| Version | `${{ steps.package.outputs.version }}` |"
-            echo "| Tag | `${{ steps.package.outputs.tag }}` |"
+            printf '| Package | `%s` |\\n' "${{ steps.package.outputs.name }}"
+            printf '| Directory | `%s` |\\n' "${{ steps.package.outputs.directory }}"
+            printf '| Version | `%s` |\\n' "${{ steps.package.outputs.version }}"
+            printf '| Tag | `%s` |\\n' "${{ steps.package.outputs.tag }}"
             echo "| Existing draft | **${{ steps.state.outputs.draft-exists }}** |"
             echo "| Existing tag | **${{ steps.state.outputs.tag-exists }}** |"
             echo
