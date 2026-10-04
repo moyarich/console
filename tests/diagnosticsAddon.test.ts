@@ -96,7 +96,7 @@ describe("@moyarich/console-addon-diagnostics", () => {
       processor,
     ]);
     const snapshot: ConsoleDataSnapshot = {
-      mode: "ansi",
+      mode: "terminal",
       rawEntries,
       all: resolved,
       visible: resolved,
@@ -105,7 +105,7 @@ describe("@moyarich/console-addon-diagnostics", () => {
     const report = createConsoleDiagnosticsReport(snapshot);
 
     expect(report.mode).toBe("ansi");
-    if (report.mode !== "ansi") throw new Error("Expected ANSI report.");
+    if (report.mode !== "terminal") throw new Error("Expected ANSI report.");
 
     expect(report.counts).toEqual({ raw: 2, all: 1, visible: 1 });
     expect(report.rawEntries).toEqual([
