@@ -37,7 +37,8 @@
     "vscode": "npm:@codingame/monaco-vscode-extension-api@^37.1.0",
     "@moyarich/console-addon-markdown": "*",
     "@moyarich/console-addon-annotations": "*",
-    "@moyarich/console-addon-navigation": "*"
+    "@moyarich/console-addon-navigation": "*",
+    "@moyarich/console-addon-selection": "*"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",
