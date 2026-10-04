@@ -157,7 +157,7 @@ export default function TerminalExample() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Terminal"
         subtitle="ANSI process output with expandable strict JSON"
         messages={messages}

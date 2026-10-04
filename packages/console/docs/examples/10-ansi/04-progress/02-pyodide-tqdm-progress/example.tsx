@@ -156,7 +156,7 @@ export default function PyodideTqdmProgressExample() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Pyodide + tqdm"
         subtitle="Live tqdm carriage-return writes streamed directly into the console"
         messages={messages}

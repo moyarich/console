@@ -362,14 +362,14 @@ describe("console addon API", () => {
   it("allows an output renderer to replace the built-in ANSI surface", () => {
     const markup = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[]}
         showHeader={false}
         outputRenderers={[
           {
-            mode: "ansi",
+            mode: "terminal",
             render: (context) => {
-              if (context.mode !== "ansi") return undefined;
+              if (context.mode !== "terminal") return undefined;
 
               return (
                 <div data-testid="custom-terminal">
@@ -390,12 +390,12 @@ describe("console addon API", () => {
   it("falls back to the built-in ANSI surface when output renderers delegate", () => {
     const markup = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={["hello from stdout"]}
         showHeader={false}
         outputRenderers={[
           {
-            mode: "ansi",
+            mode: "terminal",
             render: () => undefined,
           },
         ]}
@@ -408,7 +408,7 @@ describe("console addon API", () => {
   it("exposes the output renderer as an addon extension point", () => {
     const manager = createConsoleAddonManager();
     const renderer = {
-      mode: "ansi" as const,
+      mode: "terminal" as const,
       render: () => <div>terminal surface</div>,
     };
 

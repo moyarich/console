@@ -4,6 +4,8 @@
 
 ### Added
 
+- Add a `Terminal` output surface for sequential stdout/stderr, ANSI styling, process-control handling, links, and structured terminal values.
+
 - Render structured browser-style console messages with inspectable JavaScript values.
 - Render ANSI-aware stdout and stderr output for embedded developer tools.
 - Capture existing console calls or create isolated console-compatible producers.

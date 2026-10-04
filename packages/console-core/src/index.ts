@@ -634,7 +634,7 @@ export type ConsoleMethod =
   | "groupCollapsed";
 
 /** Rendering/data mode understood by console hosts. */
-export type ConsoleMode = "console" | "ansi";
+export type ConsoleMode = "console" | "terminal";
 
 /** Structured message shared by hosts, transports, and addons. */
 export interface ConsoleMessageData {
@@ -813,7 +813,7 @@ export interface ConsoleStructuredDataSnapshot {
 }
 
 export interface ConsoleProcessDataSnapshot {
-  readonly mode: "ansi";
+  readonly mode: "terminal";
   readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
   readonly all: readonly ConsoleProcessViewEntry[];
   readonly visible: readonly ConsoleProcessViewEntry[];
@@ -964,7 +964,7 @@ export type ConsoleOutputRendererContext<TUi = unknown> =
       readonly renderDefault: () => TUi;
     }
   | {
-      readonly mode: "ansi";
+      readonly mode: "terminal";
       readonly entries: readonly (ConsoleStdoutEntry | string)[];
       readonly renderDefault: () => TUi;
     };

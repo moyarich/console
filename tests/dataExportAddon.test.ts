@@ -130,7 +130,7 @@ describe("@moyarich/console-addon-data-export", () => {
       processor,
     ]);
     const snapshot: ConsoleDataSnapshot = {
-      mode: "ansi",
+      mode: "terminal",
       rawEntries,
       all: resolved,
       visible: resolved,
