@@ -295,7 +295,9 @@ describe("Console rendering", () => {
   });
 
   it("renders the ANSI empty state through Console", () => {
-    const html = renderToStaticMarkup(<Console mode="terminal" messages={[]} />);
+    const html = renderToStaticMarkup(
+      <Console mode="terminal" messages={[]} />,
+    );
 
     expect(html).toContain("No process output yet.");
   });
