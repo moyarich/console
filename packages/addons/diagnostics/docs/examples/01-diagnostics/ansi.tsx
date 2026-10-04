@@ -24,7 +24,7 @@ export default function AnsiDiagnosticsExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={messages}
       processors={processors}
       addons={addons}
