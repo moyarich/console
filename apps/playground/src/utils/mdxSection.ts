@@ -146,10 +146,36 @@ export function createMdxSection({
   for (const [path, pageModule] of Object.entries(modules)) {
     const parts = path.replace(/^\.\//, "").split("/");
 
-    if (parts.length < 2 || parts.at(-1) !== "page.mdx") {
+    if (parts.at(-1) !== "page.mdx") {
       throw new Error(
-        `Invalid ${label} page path "${path}". Expected ordered directories ending in page.mdx.`,
+        `Invalid ${label} page path "${path}". Expected page.mdx.`,
       );
+    }
+
+    if (parts.length === 1) {
+      const meta = parsePageMeta(pageModule.meta, path);
+      const page: MdxSectionPage = {
+        id: "overview",
+        order: Number.MIN_SAFE_INTEGER,
+        label: meta.label,
+        description: meta.description,
+        outline: pageModule.tableOfContents ?? [],
+        meta,
+        Page: pageModule.default,
+      };
+
+      if (root.has("page:overview")) {
+        throw new Error(`Duplicate ${label} root page.`);
+      }
+
+      root.set("page:overview", {
+        type: "page",
+        id: page.id,
+        order: page.order,
+        page,
+      });
+
+      continue;
     }
 
     const directories = parts
