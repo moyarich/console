@@ -73,6 +73,14 @@ export const ADDON_PACKAGE_SECTIONS = [
     "../../../../packages/addons/filtering/docs/",
   ),
   packageSection(
+    "package-addon-markdown",
+    "Markdown",
+    import.meta.glob("../../../../packages/addons/markdown/docs/**/page.mdx", {
+      eager: true,
+    }) as Record<string, MdxPageModule>,
+    "../../../../packages/addons/markdown/docs/",
+  ),
+  packageSection(
     "package-addon-resizable",
     "Resizable",
     import.meta.glob("../../../../packages/addons/resizable/docs/**/page.mdx", {
