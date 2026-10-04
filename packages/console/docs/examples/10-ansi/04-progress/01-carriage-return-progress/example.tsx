@@ -70,7 +70,7 @@ export default function CarriageReturnProgressExample() {
       </div>
 
       <Console
-        mode="ansi"
+        mode="terminal"
         title="Carriage-return progress"
         subtitle="Progress redraws one logical line while completed lines stay stable"
         messages={messages}
