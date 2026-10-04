@@ -43,13 +43,21 @@ export function parsePageMeta(value: unknown, sourcePath: string): PageMeta {
 
   const metadata = value as Record<string, unknown>;
 
-  if (typeof metadata.label !== "string" || metadata.label.trim() === "") {
+  assertOptionalString(metadata, "label", sourcePath);
+  assertOptionalString(metadata, "title", sourcePath);
+
+  const label =
+    typeof metadata.label === "string" && metadata.label.trim() !== ""
+      ? metadata.label
+      : typeof metadata.title === "string" && metadata.title.trim() !== ""
+        ? metadata.title
+        : undefined;
+
+  if (!label) {
     throw new Error(
-      `Invalid frontmatter metadata in ${sourcePath}: "label" must be a non-empty string.`,
+      `Invalid frontmatter metadata in ${sourcePath}: expected a non-empty "label" or "title".`,
     );
   }
-
-  assertOptionalString(metadata, "title", sourcePath);
   assertOptionalString(metadata, "description", sourcePath);
   assertOptionalString(metadata, "outlineLabelPrefix", sourcePath);
 
@@ -90,7 +98,10 @@ export function parsePageMeta(value: unknown, sourcePath: string): PageMeta {
     }
   }
 
-  return metadata as PageMeta;
+  return {
+    ...metadata,
+    label,
+  } as PageMeta;
 }
 
 export function resolvePageTocOptions(meta: PageMeta): ResolvedPageTocOptions {
