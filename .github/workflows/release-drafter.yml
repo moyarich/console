@@ -91,22 +91,17 @@ jobs:
             fi
 
             SELECTED="$(
-              PACKAGES_JSON="$(cat /tmp/packages.json)"               CHANGED_FILES="$(cat /tmp/changed-files.txt)"               node --input-type=module <<'NODE'
-            const packages = JSON.parse(process.env.PACKAGES_JSON || "[]");
-            const files = (process.env.CHANGED_FILES || "")
-              .split("\n")
-              .map((file) => file.trim())
-              .filter(Boolean);
-
-            const selected = packages.filter((pkg) =>
-              files.some(
-                (file) =>
-                  file === pkg.directory || file.startsWith(`${pkg.directory}/`),
-              ),
-            );
-
-            process.stdout.write(JSON.stringify(selected));
-            NODE
+              jq -c --rawfile changed /tmp/changed-files.txt '
+                ($changed | split("\n") | map(select(length > 0))) as $files
+                | [
+                    .[]
+                    | . as $pkg
+                    | select(
+                        $files
+                        | any(. == $pkg.directory or startswith($pkg.directory + "/"))
+                      )
+                  ]
+              ' /tmp/packages.json
             )"
           fi
 
@@ -178,8 +173,7 @@ jobs:
             exit 1
           fi
 
-          NOTES="$(
-            CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE'
+          CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE' > /tmp/release-notes.txt
           import fs from "node:fs";
 
           const lines = fs.readFileSync(process.env.CHANGELOG, "utf8").split("\n");
@@ -198,7 +192,8 @@ jobs:
 
           process.stdout.write(notes.join("\n").trim());
           NODE
-          )"
+
+          NOTES="$(cat /tmp/release-notes.txt)"
 
           if [ -z "$NOTES" ]; then
             echo "::error::$CHANGELOG has no public notes for $VERSION."
@@ -282,8 +277,8 @@ jobs:
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Package | `$PACKAGE_NAME` |"
-            echo "| Tag | `$TAG` |"
+            printf '| Package | `%s` |\\n' "$PACKAGE_NAME"
+            printf '| Tag | `%s` |\\n' "$TAG"
             echo "| Action | **$ACTION** |"
             echo "| Draft | [Open release draft]($(jq -r '.html_url' <<< "$RELEASE")) |"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -84,17 +84,20 @@ type MutableMdxSectionItem =
     };
 
 const ORDERED_DIRECTORY_PATTERN = /^(\d+)-(.+)$/;
+const UNORDERED_DIRECTORY_ORDER = Number.MAX_SAFE_INTEGER;
 
 export function parseOrderedDirectory(
   directory: string,
-  kind = "page",
+  _kind = "page",
 ): OrderedDirectory {
   const match = ORDERED_DIRECTORY_PATTERN.exec(directory);
 
   if (!match) {
-    throw new Error(
-      `Invalid ${kind} directory "${directory}". Expected NN-name.`,
-    );
+    return {
+      directory,
+      order: UNORDERED_DIRECTORY_ORDER,
+      id: directory,
+    };
   }
 
   return {
@@ -146,10 +149,36 @@ export function createMdxSection({
   for (const [path, pageModule] of Object.entries(modules)) {
     const parts = path.replace(/^\.\//, "").split("/");
 
-    if (parts.length < 2 || parts.at(-1) !== "page.mdx") {
+    if (parts.at(-1) !== "page.mdx") {
       throw new Error(
-        `Invalid ${label} page path "${path}". Expected ordered directories ending in page.mdx.`,
+        `Invalid ${label} page path "${path}". Expected page.mdx.`,
       );
+    }
+
+    if (parts.length === 1) {
+      const meta = parsePageMeta(pageModule.meta, path);
+      const page: MdxSectionPage = {
+        id: "overview",
+        order: Number.MIN_SAFE_INTEGER,
+        label: meta.label,
+        description: meta.description,
+        outline: pageModule.tableOfContents ?? [],
+        meta,
+        Page: pageModule.default,
+      };
+
+      if (root.has("page:overview")) {
+        throw new Error(`Duplicate ${label} root page.`);
+      }
+
+      root.set("page:overview", {
+        type: "page",
+        id: page.id,
+        order: page.order,
+        page,
+      });
+
+      continue;
     }
 
     const directories = parts
@@ -191,7 +220,9 @@ export function createMdxSection({
 
       if (
         existing?.type === "group" &&
-        existing.order !== groupDirectory.order
+        existing.order !== groupDirectory.order &&
+        existing.order !== UNORDERED_DIRECTORY_ORDER &&
+        groupDirectory.order !== UNORDERED_DIRECTORY_ORDER
       ) {
         throw new Error(
           `${label} group "${groupId}" uses multiple numeric prefixes.`,

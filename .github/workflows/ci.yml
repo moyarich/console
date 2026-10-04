@@ -26,10 +26,15 @@ jobs:
         run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
+      # Tests import workspace packages through their public package entries.
+      # Build package dist outputs first, matching the workspace CI contract used
+      # in dev-toolkit instead of relying on test-only source aliases.
+      - name: Build workspace packages
+        run: npm run build:packages
       - name: Test
         run: npm test
-      - name: Build packages and playground
-        run: npm run build
+      - name: Build playground
+        run: npm run build:playground
       - name: Build Storybook
         run: npm run build-storybook
       - name: Validate package archives

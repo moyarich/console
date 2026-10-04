@@ -52,8 +52,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          RESULT="$(
-            SELECTOR="$SELECTOR" node --input-type=module <<'NODE'
+          SELECTOR="$SELECTOR" node --input-type=module <<'NODE' > /tmp/package.json
           import fs from "node:fs";
           import path from "node:path";
 
@@ -88,7 +87,8 @@ jobs:
 
           process.stdout.write(JSON.stringify(selected[0]));
           NODE
-          )"
+
+          RESULT="$(cat /tmp/package.json)"
 
           NAME="$(jq -r '.name' <<< "$RESULT")"
           DIRECTORY="$(jq -r '.directory' <<< "$RESULT")"
@@ -132,8 +132,7 @@ jobs:
 
           CHANGELOG="$DIRECTORY/CHANGELOG.md"
 
-          NOTES="$(
-            CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE'
+          CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE' > /tmp/release-notes.txt
           import fs from "node:fs";
 
           const lines = fs.readFileSync(process.env.CHANGELOG, "utf8").split("\n");
@@ -152,7 +151,8 @@ jobs:
 
           process.stdout.write(notes.join("\n").trim());
           NODE
-          )"
+
+          NOTES="$(cat /tmp/release-notes.txt)"
 
           if [ -z "$NOTES" ]; then
             echo "::error::$CHANGELOG has no public notes for $VERSION."
@@ -222,10 +222,10 @@ jobs:
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Package | `${{ steps.package.outputs.name }}` |"
-            echo "| Directory | `${{ steps.package.outputs.directory }}` |"
-            echo "| Version | `${{ steps.package.outputs.version }}` |"
-            echo "| Tag | `${{ steps.package.outputs.tag }}` |"
+            printf '| Package | `%s` |\\n' "${{ steps.package.outputs.name }}"
+            printf '| Directory | `%s` |\\n' "${{ steps.package.outputs.directory }}"
+            printf '| Version | `%s` |\\n' "${{ steps.package.outputs.version }}"
+            printf '| Tag | `%s` |\\n' "${{ steps.package.outputs.tag }}"
             echo "| Existing draft | **${{ steps.state.outputs.draft-exists }}** |"
             echo "| Existing tag | **${{ steps.state.outputs.tag-exists }}** |"
             echo
