@@ -55,6 +55,15 @@ const config: StorybookConfig = {
             ),
           },
           {
+            find: "@moyarich/console-addon-markdown",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/markdown/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
             find: "@moyarich/console-addon-resizable/styles.css",
             replacement: fileURLToPath(
               new URL(
