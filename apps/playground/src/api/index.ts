@@ -2,11 +2,11 @@ import { createMdxSection, type MdxPageModule } from "../utils/mdxSection";
 
 const pageModules = Object.fromEntries(
   Object.entries(
-    import.meta.glob("../../../../api/**/page.mdx", {
+    import.meta.glob("../../../../docs/03-reference/**/page.mdx", {
       eager: true,
     }) as Record<string, MdxPageModule>,
   ).map(([path, pageModule]) => [
-    `./${path.slice("../../../../api/".length)}`,
+    `./${path.slice("../../../../docs/03-reference/".length)}`,
     pageModule,
   ]),
 );

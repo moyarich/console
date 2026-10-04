@@ -1,0 +1,47 @@
+---
+title: Testing
+description: Validate Console packages, examples, and documentation locally.
+---
+
+# Testing
+
+Console uses **Vitest** for its test suite.
+
+Run the complete test suite:
+
+```sh
+npm test
+```
+
+Run tests in watch mode:
+
+```sh
+npm run test:watch
+```
+
+Run TypeScript validation:
+
+```sh
+npm run typecheck
+```
+
+Run lint and formatting checks:
+
+```sh
+npm run lint
+npm run format:check
+```
+
+Build the Vite playground and publishable packages:
+
+```sh
+npm run build
+```
+
+Validate the package archives:
+
+```sh
+npm run pack:packages
+```
+
+CI runs the same lint, formatting, typecheck, Vitest, build, Storybook, and package-archive checks before changes are merged.

@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-API documentation source lives in [`api`](https://github.com/moyarich/console/tree/main/api), and runnable examples live in [`docs/examples`](https://github.com/moyarich/console/tree/main/docs/examples).
+Reference documentation lives in [`docs/03-reference`](docs/03-reference), runnable examples live in [`docs/examples`](docs/examples), and contributor documentation lives in [`docs/04-development`](docs/04-development). The private Vite playground under `apps/playground` renders those repository docs for local development and GitHub Pages.
 
 ## Packages
 
@@ -119,7 +119,7 @@ It does not provide a JavaScript/Python runtime, shell or PTY, full terminal emu
 
 ## Development
 
-Repository setup, architecture, testing, CI, publishing, and package-maintenance notes are documented in [`docs/readme-dev.md`](docs/readme-dev.md).
+Repository setup and testing are documented in the [Development section](docs/04-development/page.mdx).
 
 The root `README.md` is the canonical package README used when publishing `@moyarich/console`.
 
