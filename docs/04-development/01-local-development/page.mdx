@@ -44,4 +44,8 @@ Build all publishable packages and the playground:
 npm run build
 ```
 
+Publishable packages use package-local Vite library configs. Vite produces the ESM/CommonJS JavaScript outputs, and TypeScript emits declaration files into each package's `dist/*` directory.
+
+Vitest remains the repository test runner.
+
 The playground is a repository development/documentation surface and is never published as a package.

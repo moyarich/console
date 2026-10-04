@@ -23,7 +23,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --inject-style --external @moyarich/console-core --external react",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -37,8 +37,8 @@
     "@moyarich/console-core": "0.1.0",
     "@types/react": "^19.1.12",
     "react": "^19.2.7",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
   },
   "repository": {
     "type": "git",
