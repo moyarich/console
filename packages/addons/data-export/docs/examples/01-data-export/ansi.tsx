@@ -33,7 +33,7 @@ export default function AnsiDataExportExample() {
 
   return (
     <Console
-      mode="ansi"
+      mode="terminal"
       messages={messages}
       processors={processors}
       addons={addons}
