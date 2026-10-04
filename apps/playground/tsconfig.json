@@ -25,5 +25,11 @@
       "@moyarich/console-core": ["../../packages/console-core/src/index.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", "../../docs"]
+  "include": [
+    "src",
+    "vite.config.ts",
+    "../../docs",
+    "../../packages/*/docs",
+    "../../packages/addons/*/docs"
+  ]
 }
