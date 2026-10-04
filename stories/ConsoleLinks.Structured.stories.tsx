@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import StructuredLinkProviderExample from "../docs/examples/80-additional-usage/11-customization/04-link-providers/structured";
+import StructuredLinkProviderExample from "../packages/console/docs/examples/80-additional-usage/11-customization/04-link-providers/structured";
 
 const meta = {
   title: "Console/Link Providers/Structured",
