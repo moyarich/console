@@ -12,7 +12,7 @@ describe("playground page metadata", () => {
       nested: { enabled: true },
     };
 
-    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(metadata);
+    expect(parsePageMeta(metadata, "./example/page.mdx")).toStrictEqual(metadata);
   });
 
   it("uses title as the label when label is omitted", () => {
@@ -42,7 +42,7 @@ describe("playground page metadata", () => {
       outlineLabelPrefix: "consoleExtensionPoints.",
     };
 
-    expect(parsePageMeta(metadata, "./example/page.mdx")).toBe(metadata);
+    expect(parsePageMeta(metadata, "./example/page.mdx")).toStrictEqual(metadata);
     expect(resolvePageTocOptions(metadata)).toEqual({
       show: true,
       collapsible: true,
