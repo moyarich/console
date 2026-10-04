@@ -104,8 +104,8 @@ describe("@moyarich/console-addon-diagnostics", () => {
 
     const report = createConsoleDiagnosticsReport(snapshot);
 
-    expect(report.mode).toBe("ansi");
-    if (report.mode !== "terminal") throw new Error("Expected ANSI report.");
+    expect(report.mode).toBe("terminal");
+    if (report.mode !== "terminal") throw new Error("Expected Terminal report.");
 
     expect(report.counts).toEqual({ raw: 2, all: 1, visible: 1 });
     expect(report.rawEntries).toEqual([
