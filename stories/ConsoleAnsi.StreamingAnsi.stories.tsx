@@ -1,6 +1,6 @@
 import {
   Console,
-  type ConsoleAnsiModeProps,
+  type ConsoleTerminalModeProps,
   type ConsoleStdoutEntry,
 } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -25,7 +25,7 @@ const streamingAnsiChunks: ConsoleStdoutEntry[] = [
   { data: "\u001b[1;32mBuild complete\u001b[0m\n", stream: "stdout" },
 ];
 
-function StreamingAnsiStory(args: ConsoleAnsiModeProps) {
+function StreamingAnsiStory(args: ConsoleTerminalModeProps) {
   const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
   const [running, setRunning] = useState(false);
   const nextChunk = useRef(0);
@@ -101,7 +101,7 @@ const meta = {
   title: "Console/ANSI Process Output",
   component: Console,
   args: {
-    mode: "ansi",
+    mode: "terminal",
     onClear: () => undefined,
     style: { height: 360, minHeight: 240, maxHeight: 640 },
   },
@@ -112,7 +112,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<ConsoleAnsiModeProps>;
+} satisfies Meta<ConsoleTerminalModeProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
