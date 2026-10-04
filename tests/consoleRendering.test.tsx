@@ -558,7 +558,11 @@ describe("Console rendering", () => {
     ];
 
     const html = renderToStaticMarkup(
-      <Console mode="terminal" messages={["hello"]} processors={processors} />,
+      <Console
+        mode="terminal"
+        messages={["hello"]}
+        processors={processors}
+      />,
     );
 
     expect(observations).toEqual([["first: hello", "first"]]);
@@ -584,7 +588,11 @@ describe("Console rendering", () => {
     ];
 
     const html = renderToStaticMarkup(
-      <Console mode="terminal" messages={["value"]} processors={processors} />,
+      <Console
+        mode="terminal"
+        messages={["value"]}
+        processors={processors}
+      />,
     );
 
     expect(html).toContain("before value after");
