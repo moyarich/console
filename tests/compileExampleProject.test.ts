@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   compileExampleProject,
   type CompiledExampleRuntime,
-} from "../packages/playground/src/components/RunnableExample/compileExampleProject";
+} from "../apps/playground/src/components/RunnableExample/compileExampleProject";
 
 const runtimes: CompiledExampleRuntime[] = [];
 

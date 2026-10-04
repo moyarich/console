@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "workspaces": [
     "packages/*",
-    "packages/addons/*"
+    "packages/addons/*",
+    "apps/*"
   ],
   "scripts": {
     "dev": "npm run dev --workspace @moyarich/console-playground",

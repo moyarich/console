@@ -10,7 +10,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
 
 function workspaceSource(path: string) {
-  return fileURLToPath(new URL(`../${path}`, import.meta.url));
+  return fileURLToPath(new URL(`../../packages/${path}`, import.meta.url));
 }
 
 export default defineConfig({
