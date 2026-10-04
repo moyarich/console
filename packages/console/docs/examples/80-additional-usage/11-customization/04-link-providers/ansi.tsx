@@ -41,7 +41,7 @@ export default function AnsiLinkProviderExample() {
   return (
     <div style={{ display: "grid", gap: 8 }}>
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={messages}
         linkProviders={[sourceProvider]}
         title="ANSI link provider"
