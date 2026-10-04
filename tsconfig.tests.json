@@ -2,15 +2,10 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": [
-      "node",
-      "vitest/globals"
-    ],
+    "types": ["node", "vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "@moyarich/console": [
-        "./packages/console/src/index.ts"
-      ],
+      "@moyarich/console": ["./packages/console/src/index.ts"],
       "@moyarich/console-addon-data-export": [
         "./packages/addons/data-export/src/index.ts"
       ],
@@ -23,18 +18,14 @@
       "@moyarich/console-addon-imperative-scrolling": [
         "./packages/addons/imperative-scrolling/src/index.ts"
       ],
+      "@moyarich/console-addon-markdown": [
+        "./packages/addons/markdown/src/index.tsx"
+      ],
       "@moyarich/console-addon-resizable": [
         "./packages/addons/resizable/src/index.tsx"
       ],
-      "@moyarich/console-core": [
-        "./packages/console-core/src/index.ts"
-      ],
-      "@moyarich/console/*": [
-        "./packages/console/src/*"
-      ],
-      "@moyarich/console-addon-markdown": [
-        "./packages/addons/markdown/src/index.tsx"
-      ]
+      "@moyarich/console-core": ["./packages/console-core/src/index.ts"],
+      "@moyarich/console/*": ["./packages/console/src/*"]
     }
   },
   "include": [
