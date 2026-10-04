@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-Reference documentation lives in [`docs/03-reference`](docs/03-reference), runnable examples live in [`docs/examples`](docs/examples), and contributor documentation lives in [`docs/04-development`](docs/04-development). The private Vite playground under `apps/playground` renders those repository docs for local development and GitHub Pages.
+Each publishable package owns its public documentation and examples under its own `docs/` directory. Repository-level contributor documentation lives under [`docs/04-development`](docs/04-development). The private Vite playground in `apps/playground` aggregates those package docs/examples and repository Development docs for local development and GitHub Pages.
 
 ## Packages
 
