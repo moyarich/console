@@ -84,17 +84,20 @@ type MutableMdxSectionItem =
     };
 
 const ORDERED_DIRECTORY_PATTERN = /^(\d+)-(.+)$/;
+const UNORDERED_DIRECTORY_ORDER = Number.MAX_SAFE_INTEGER;
 
 export function parseOrderedDirectory(
   directory: string,
-  kind = "page",
+  _kind = "page",
 ): OrderedDirectory {
   const match = ORDERED_DIRECTORY_PATTERN.exec(directory);
 
   if (!match) {
-    throw new Error(
-      `Invalid ${kind} directory "${directory}". Expected NN-name.`,
-    );
+    return {
+      directory,
+      order: UNORDERED_DIRECTORY_ORDER,
+      id: directory,
+    };
   }
 
   return {
@@ -217,7 +220,9 @@ export function createMdxSection({
 
       if (
         existing?.type === "group" &&
-        existing.order !== groupDirectory.order
+        existing.order !== groupDirectory.order &&
+        existing.order !== UNORDERED_DIRECTORY_ORDER &&
+        groupDirectory.order !== UNORDERED_DIRECTORY_ORDER
       ) {
         throw new Error(
           `${label} group "${groupId}" uses multiple numeric prefixes.`,
