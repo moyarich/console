@@ -18,9 +18,9 @@ export interface ConsoleStructuredDataSnapshot {
   readonly visible: readonly ConsoleMessageData[];
 }
 
-/** Read-only ANSI/process-output data exposed to addons. */
+/** Read-only terminal/process-output data exposed to addons. */
 export interface ConsoleProcessDataSnapshot {
-  readonly mode: "ansi";
+  readonly mode: "terminal";
   /** Original process-output chunks supplied to the console. */
   readonly rawEntries: readonly (ConsoleStdoutEntry | string)[];
   /** All retained resolved logical process-output entries. */
@@ -56,9 +56,9 @@ const EMPTY_PROCESS_ENTRIES: readonly ConsoleProcessViewEntry[] = [];
 const EMPTY_RAW_ENTRIES: readonly (ConsoleStdoutEntry | string)[] = [];
 
 function createEmptySnapshot(mode: ConsoleMode): ConsoleDataSnapshot {
-  return mode === "ansi"
+  return mode === "terminal"
     ? {
-        mode: "ansi",
+        mode: "terminal",
         rawEntries: EMPTY_RAW_ENTRIES,
         all: EMPTY_PROCESS_ENTRIES,
         visible: EMPTY_PROCESS_ENTRIES,
