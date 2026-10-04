@@ -3,7 +3,7 @@ import type { ConsoleMethod } from "./consoleMethods";
 export type { ConsoleMethod } from "./consoleMethods";
 
 /** Rendering mode supported by the top-level Console component. */
-export type ConsoleMode = "console" | "ansi";
+export type ConsoleMode = "console" | "terminal";
 
 /** Serializable structured message consumed by the browser-style console renderer. */
 export interface ConsoleMessageData {

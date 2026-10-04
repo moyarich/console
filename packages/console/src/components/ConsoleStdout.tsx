@@ -165,7 +165,7 @@ export function ConsoleResolvedStdout({
               : undefined;
         const clearLine = hasAnsiClearLine(data);
         const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
-          mode: "ansi",
+          mode: "terminal",
           index,
           ...(entry.id !== undefined ? { id: entry.id } : {}),
           ...(entry.stream !== undefined ? { stream: entry.stream } : {}),

@@ -1,4 +1,5 @@
 import { MDXProvider } from "@mdx-js/react";
+import { Console, Terminal } from "@moyarich/console";
 import { useMemo, type ReactNode } from "react";
 import {
   RunnableExample,
@@ -18,13 +19,16 @@ export function PlaygroundMDXProvider({
   pageTitle,
 }: PlaygroundMDXProviderProps) {
   const components = useMemo(
-    () => ({
-      pre: MdxCodeBlock,
-      table: MdxTable,
-      RunnableExample: (props: RunnableExampleProps) => (
-        <RunnableExample title={pageTitle} {...props} />
-      ),
-    }),
+    () =>
+      ({
+        Console,
+        Terminal,
+        pre: MdxCodeBlock,
+        table: MdxTable,
+        RunnableExample: (props: RunnableExampleProps) => (
+          <RunnableExample title={pageTitle} {...props} />
+        ),
+      }),
     [pageTitle],
   );
 
