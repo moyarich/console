@@ -39,7 +39,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean --inject-style --external @moyarich/console-core --external react --external react-dom && tsup src/utils/console/index.ts --out-dir dist/utils/console --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom && tsup src/utils/terminal/index.ts --out-dir dist/utils/terminal --format esm,cjs --dts --external @moyarich/console-core --external react --external react-dom",
+    "build": "vite build && vite build --config vite.utils-console.config.ts && vite build --config vite.utils-terminal.config.ts && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
@@ -58,8 +58,8 @@
     "@types/react-dom": "^19.1.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
   },
   "repository": {
     "type": "git",
