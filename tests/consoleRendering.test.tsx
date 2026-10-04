@@ -40,7 +40,7 @@ describe("Console rendering", () => {
   it("renders ANSI entry ids as viewport targets", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[{ id: "stdout-42", data: "target", stream: "stdout" }]}
       />,
     );
@@ -266,7 +266,7 @@ describe("Console rendering", () => {
   it("renders ANSI messages through Console mode", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[
           `${escape}[38;5;196mred${escape}[0m`,
           { id: "plain", data: "plain stdout" },
@@ -282,7 +282,7 @@ describe("Console rendering", () => {
     expect(html).toContain('data-stream="stderr"');
     expect(html).toContain("console-copy-output-button");
     expect(html).toContain("Copy output");
-    expect(html).toContain('data-console-mode="ansi"');
+    expect(html).toContain('data-console-mode="terminal"');
   });
 
   it("does not add the ANSI copy action in console mode", () => {
@@ -295,7 +295,7 @@ describe("Console rendering", () => {
   });
 
   it("renders the ANSI empty state through Console", () => {
-    const html = renderToStaticMarkup(<Console mode="ansi" messages={[]} />);
+    const html = renderToStaticMarkup(<Console mode="terminal" messages={[]} />);
 
     expect(html).toContain("No process output yet.");
   });
@@ -432,7 +432,7 @@ describe("Console rendering", () => {
   it("promotes strict JSON ANSI output to expandable objects", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         parseStructuredOutput
         messages={[
           `${escape}[36m{"user":{"id":42,"name":"Ada"},"roles":["admin"]}${escape}[0m`,
@@ -455,7 +455,7 @@ describe("Console rendering", () => {
 
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[
           {
             id: "diagnostic-1",
@@ -503,7 +503,7 @@ describe("Console rendering", () => {
   it("uses undefined as the parser opt-out sentinel", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={["zero"]}
         structuredOutputParsers={[() => undefined, () => 0]}
       />,
@@ -516,7 +516,7 @@ describe("Console rendering", () => {
   it("falls back to ANSI text when a structured output parser throws", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={["plain fallback"]}
         structuredOutputParsers={[
           () => {
@@ -558,7 +558,7 @@ describe("Console rendering", () => {
     ];
 
     const html = renderToStaticMarkup(
-      <Console mode="ansi" messages={["hello"]} processors={processors} />,
+      <Console mode="terminal" messages={["hello"]} processors={processors} />,
     );
 
     expect(observations).toEqual([["first: hello", "first"]]);
@@ -584,7 +584,7 @@ describe("Console rendering", () => {
     ];
 
     const html = renderToStaticMarkup(
-      <Console mode="ansi" messages={["value"]} processors={processors} />,
+      <Console mode="terminal" messages={["value"]} processors={processors} />,
     );
 
     expect(html).toContain("before value after");
@@ -595,7 +595,7 @@ describe("Console rendering", () => {
 
     renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={["EVENT ready"]}
         processors={[
           {
@@ -618,7 +618,7 @@ describe("Console rendering", () => {
   it("leaves JavaScript-like terminal objects as text", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         parseStructuredOutput
         messages={["{ name: 'Ada', score: 42 }"]}
       />,
@@ -762,7 +762,7 @@ describe("Console rendering", () => {
     renderToStaticMarkup(
       <ConsoleLinkedText
         text={text}
-        context={{ mode: "ansi" }}
+        context={{ mode: "terminal" }}
         renderText={(value, _key, start, end) => {
           ranges.push([value, start, end]);
           return value;
@@ -813,7 +813,7 @@ describe("Console rendering", () => {
     );
     const ansiHtml = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={["Failure at src/app.ts:42:8"]}
         linkProviders={[provider]}
       />,
@@ -846,7 +846,7 @@ describe("Console rendering", () => {
 
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[text]}
         processors={processors}
         detectLinks={false}
@@ -878,7 +878,7 @@ describe("Console rendering", () => {
 
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[
           {
             id: "docs",
@@ -903,7 +903,7 @@ describe("Console rendering", () => {
   it("detects one ANSI link across style-token boundaries", () => {
     const html = renderToStaticMarkup(
       <Console
-        mode="ansi"
+        mode="terminal"
         messages={[`Visit ${escape}[36mhttps://example${escape}[0m.com/docs`]}
       />,
     );
