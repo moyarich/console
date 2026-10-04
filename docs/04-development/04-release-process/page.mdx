@@ -1,0 +1,48 @@
+---
+title: Release Process
+description: Validate, draft, publish, and finalize Console releases.
+---
+
+# Release process
+
+The repository uses a draft-first release flow for the Console package family.
+
+The workflow:
+
+```text
+validate package-family version
+→ install dependencies
+→ lint / format / typecheck
+→ Vitest
+→ Vite package builds
+→ npm pack validation
+→ create or update GitHub Release draft
+→ create the version tag
+→ publish missing GitHub Packages in dependency order
+→ verify every package is available
+→ publish the GitHub Release
+```
+
+Run the workflow manually with **dry run** enabled first. Dry run validates the complete release without creating tags, publishing packages, or changing the GitHub Release.
+
+## Public release notes
+
+`CHANGELOG.md` is the source for the GitHub Release body.
+
+Keep it limited to end-user capabilities and behavior:
+
+- public components and APIs
+- addon capabilities
+- rendering behavior
+- transport behavior
+- user-visible fixes and compatibility changes
+
+Do not put repository moves, CI changes, build-tool migrations, documentation restructuring, or other implementation-only work in the public changelog.
+
+Those details belong in pull requests and Development documentation.
+
+## Package order
+
+The release publishes the package family in dependency order, starting with `@moyarich/console-core`, followed by `@moyarich/console` and the first-party addons.
+
+The GitHub Release is only published after every package for the requested version can be resolved from GitHub Packages.
