@@ -56,6 +56,14 @@ const pageModules = Object.fromEntries([
   ),
   ...mapModules(
     import.meta.glob(
+      "../../../../packages/addons/markdown/docs/examples/**/page.mdx",
+      { eager: true },
+    ) as Record<string, MdxPageModule>,
+    "../../../../packages/addons/markdown/docs/examples/",
+    "60-addons/01-core/05-markdown/",
+  ),
+  ...mapModules(
+    import.meta.glob(
       "../../../../packages/addons/resizable/docs/examples/**/page.mdx",
       { eager: true },
     ) as Record<string, MdxPageModule>,

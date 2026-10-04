@@ -1,0 +1,83 @@
+.console-markdown-value {
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.console-markdown-value > :first-child {
+  margin-top: 0;
+}
+
+.console-markdown-value > :last-child {
+  margin-bottom: 0;
+}
+
+.console-markdown-value h1,
+.console-markdown-value h2,
+.console-markdown-value h3,
+.console-markdown-value h4,
+.console-markdown-value h5,
+.console-markdown-value h6 {
+  margin: 0.8em 0 0.35em;
+  line-height: 1.25;
+}
+
+.console-markdown-value p,
+.console-markdown-value ul,
+.console-markdown-value ol,
+.console-markdown-value blockquote,
+.console-markdown-value pre,
+.console-markdown-value table {
+  margin: 0.55em 0;
+}
+
+.console-markdown-value ul,
+.console-markdown-value ol {
+  padding-left: 1.5em;
+}
+
+.console-markdown-value blockquote {
+  margin-left: 0;
+  padding-left: 0.8em;
+  border-left: 3px solid currentColor;
+  opacity: 0.85;
+}
+
+.console-markdown-value code {
+  font-family: var(--console-font-family, ui-monospace, monospace);
+}
+
+.console-markdown-value :not(pre) > code {
+  padding: 0.08em 0.3em;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.console-markdown-value pre {
+  max-width: 100%;
+  padding: 0.7em;
+  overflow: auto;
+  border-radius: 6px;
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
+.console-markdown-value table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.console-markdown-value th,
+.console-markdown-value td {
+  padding: 0.3em 0.55em;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  text-align: left;
+}
+
+.console-markdown-value a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}

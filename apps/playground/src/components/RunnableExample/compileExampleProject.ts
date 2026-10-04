@@ -4,6 +4,7 @@ import * as DataExportAddonPackage from "@moyarich/console-addon-data-export";
 import * as DiagnosticsAddonPackage from "@moyarich/console-addon-diagnostics";
 import * as FilteringAddonPackage from "@moyarich/console-addon-filtering";
 import * as ImperativeScrollingAddonPackage from "@moyarich/console-addon-imperative-scrolling";
+import * as MarkdownAddonPackage from "@moyarich/console-addon-markdown";
 import * as ResizableAddonPackage from "@moyarich/console-addon-resizable";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
@@ -46,6 +47,7 @@ const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, RuntimeModule>> = {
   "@moyarich/console-addon-filtering": FilteringAddonPackage,
   "@moyarich/console-addon-imperative-scrolling":
     ImperativeScrollingAddonPackage,
+  "@moyarich/console-addon-markdown": MarkdownAddonPackage,
   "@moyarich/console-addon-resizable": ResizableAddonPackage,
   "@moyarich/console-addon-resizable/styles.css": {},
   "lucide-react": LucideReact,

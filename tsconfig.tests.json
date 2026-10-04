@@ -18,6 +18,9 @@
       "@moyarich/console-addon-imperative-scrolling": [
         "./packages/addons/imperative-scrolling/src/index.ts"
       ],
+      "@moyarich/console-addon-markdown": [
+        "./packages/addons/markdown/src/index.tsx"
+      ],
       "@moyarich/console-addon-resizable": [
         "./packages/addons/resizable/src/index.tsx"
       ],
@@ -33,6 +36,7 @@
     "packages/addons/data-export/src",
     "packages/addons/diagnostics/src",
     "packages/addons/filtering/src",
+    "packages/addons/markdown/src",
     "packages/addons/resizable/src",
     "packages/console-core/src"
   ]
