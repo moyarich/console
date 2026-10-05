@@ -8,13 +8,13 @@ on:
         required: true
         default: packages/visualize-css-colors/
         type: string
-      dry-run:
+      dry_run:
         description: Analyze and verify without pushing rewritten refs
         required: true
         default: true
         type: boolean
       confirmation:
-        description: Type REWRITE HISTORY when dry-run is false
+        description: Type REWRITE HISTORY when dry_run is false
         required: true
         default: ""
         type: string
@@ -28,6 +28,7 @@ concurrency:
 
 jobs:
   rewrite-history:
+    name: Rewrite Git history
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -41,15 +42,15 @@ jobs:
       - name: Validate inputs
         env:
           TARGET_PATH: ${{ inputs.path }}
-          DRY_RUN: ${{ inputs.dry-run }}
+          DRY_RUN: ${{ inputs.dry_run }}
           CONFIRMATION: ${{ inputs.confirmation }}
         run: |
           set -euo pipefail
 
-          [ -n "$TARGET_PATH" ] || {
+          if [ -z "$TARGET_PATH" ]; then
             echo "::error::path must not be empty"
             exit 1
-          }
+          fi
 
           case "$TARGET_PATH" in
             /|/*|.|..|../*|*/../*|*/..)
@@ -59,7 +60,7 @@ jobs:
           esac
 
           if [ "$DRY_RUN" != "true" ] && [ "$CONFIRMATION" != "REWRITE HISTORY" ]; then
-            echo "::error::Set confirmation to REWRITE HISTORY when dry-run is false"
+            echo "::error::Set confirmation to REWRITE HISTORY when dry_run is false"
             exit 1
           fi
 
@@ -70,109 +71,9 @@ jobs:
           current_branch="$(git branch --show-current)"
 
           git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin |
-            grep -v '^HEAD
-
-      - name: Install git-filter-repo
-        run: python3 -m pip install --user git-filter-repo
-
-      - name: Report repository size before rewrite
-        run: |
-          {
-            echo "## Git history cleanup"
-            echo
-            echo "### Before rewrite"
-            echo
-            echo '~~~text'
-            git count-objects -vH
-            echo '~~~'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Rewrite history
-        env:
-          TARGET_PATH: ${{ inputs.path }}
-        run: |
-          set -euo pipefail
-
-          "$HOME/.local/bin/git-filter-repo"             --path "$TARGET_PATH"             --invert-paths             --force
-
-      - name: Verify removed path
-        env:
-          TARGET_PATH: ${{ inputs.path }}
-        run: |
-          set -euo pipefail
-
-          if git rev-list --objects --all | grep -F -- "$TARGET_PATH"; then
-            echo "::error::Historical objects still reference $TARGET_PATH"
-            exit 1
-          fi
-
-      - name: Repack rewritten repository
-        run: |
-          set -euo pipefail
-          git reflog expire --expire=now --all
-          git gc --prune=now --aggressive
-
-      - name: Report repository size after rewrite
-        env:
-          TARGET_PATH: ${{ inputs.path }}
-          DRY_RUN: ${{ inputs.dry-run }}
-        run: |
-          {
-            echo
-            echo "### After rewrite"
-            echo
-            echo "| Setting | Value |"
-            echo "| --- | --- |"
-            echo "| Removed path | `$TARGET_PATH` |"
-            echo "| Dry run | `$DRY_RUN` |"
-            echo
-            echo '~~~text'
-            git count-objects -vH
-            echo '~~~'
-            echo
-            echo "### Largest remaining blobs"
-            echo
-            echo '~~~text'
-            git rev-list --objects --all |
-              git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
-              sed -n 's/^blob //p' |
-              sort -k2nr |
-              head -50
-            echo '~~~'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Restore origin
-        if: ${{ !inputs.dry-run }}
-        run: git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-
-      - name: Push rewritten branches
-        if: ${{ !inputs.dry-run }}
-        run: git push --force --all origin
-
-      - name: Push rewritten tags
-        if: ${{ !inputs.dry-run }}
-        run: git push --force --tags origin
-
-      - name: Final summary
-        if: always()
-        env:
-          DRY_RUN: ${{ inputs.dry-run }}
-        run: |
-          {
-            echo
-            echo "---"
-            echo
-            if [ "$DRY_RUN" = "true" ]; then
-              echo "Dry run only: GitHub refs were not changed."
-            else
-              echo "Rewritten branches and tags were force-pushed."
-              echo
-              echo "Existing clones should be discarded and re-cloned."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
- |
+            grep -v '^HEAD$' |
             while read -r branch; do
-              if [ "$branch" = "$current_branch" ]; then
+              if [ -z "$branch" ] || [ "$branch" = "$current_branch" ]; then
                 continue
               fi
 
@@ -180,7 +81,10 @@ jobs:
             done
 
       - name: Install git-filter-repo
-        run: python3 -m pip install --user git-filter-repo
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user git-filter-repo
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Report repository size before rewrite
         run: |
@@ -200,7 +104,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          "$HOME/.local/bin/git-filter-repo"             --path "$TARGET_PATH"             --invert-paths             --force
+          git filter-repo             --path "$TARGET_PATH"             --invert-paths             --force
 
       - name: Verify removed path
         env:
@@ -213,16 +117,18 @@ jobs:
             exit 1
           fi
 
+          echo "Verified: no reachable Git objects reference $TARGET_PATH"
+
       - name: Repack rewritten repository
         run: |
           set -euo pipefail
-          git reflog expire --expire=now --all
+          git reflog expire --expire=now --all || true
           git gc --prune=now --aggressive
 
       - name: Report repository size after rewrite
         env:
           TARGET_PATH: ${{ inputs.path }}
-          DRY_RUN: ${{ inputs.dry-run }}
+          DRY_RUN: ${{ inputs.dry_run }}
         run: |
           {
             echo
@@ -249,21 +155,23 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Restore origin
-        if: ${{ !inputs.dry-run }}
-        run: git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          set -euo pipefail
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
       - name: Push rewritten branches
-        if: ${{ !inputs.dry-run }}
+        if: ${{ inputs.dry_run == false }}
         run: git push --force --all origin
 
       - name: Push rewritten tags
-        if: ${{ !inputs.dry-run }}
+        if: ${{ inputs.dry_run == false }}
         run: git push --force --tags origin
 
       - name: Final summary
         if: always()
         env:
-          DRY_RUN: ${{ inputs.dry-run }}
+          DRY_RUN: ${{ inputs.dry_run }}
         run: |
           {
             echo
