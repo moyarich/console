@@ -13,11 +13,6 @@ on:
         required: true
         default: true
         type: boolean
-      confirmation:
-        description: Type REWRITE HISTORY when dry_run is false
-        required: true
-        default: ""
-        type: string
 
 permissions:
   contents: write
@@ -43,7 +38,6 @@ jobs:
         env:
           TARGET_PATH: ${{ inputs.path }}
           DRY_RUN: ${{ inputs.dry_run }}
-          CONFIRMATION: ${{ inputs.confirmation }}
         run: |
           set -euo pipefail
 
@@ -58,11 +52,6 @@ jobs:
               exit 1
               ;;
           esac
-
-          if [ "$DRY_RUN" != "true" ] && [ "$CONFIRMATION" != "REWRITE HISTORY" ]; then
-            echo "::error::Set confirmation to REWRITE HISTORY when dry_run is false"
-            exit 1
-          fi
 
       - name: Materialize remote branches locally
         run: |
