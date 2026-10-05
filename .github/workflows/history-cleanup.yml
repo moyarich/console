@@ -125,8 +125,8 @@ jobs:
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            echo "| Removed path | `$TARGET_PATH` |"
-            echo "| Dry run | `$DRY_RUN` |"
+            printf '| Removed path | `%s` |\n' "$TARGET_PATH"
+            printf '| Dry run | `%s` |\n' "$DRY_RUN"
             echo
             echo '~~~text'
             git count-objects -vH
@@ -139,7 +139,7 @@ jobs:
               git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
               sed -n 's/^blob //p' |
               sort -k2nr |
-              head -50
+              sed -n '1,50p'
             echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
 
