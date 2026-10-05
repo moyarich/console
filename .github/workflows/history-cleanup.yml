@@ -13,6 +13,11 @@ on:
         required: true
         default: true
         type: boolean
+      inspect_largest_blobs:
+        description: Include the 50 largest historical blobs in the workflow summary
+        required: true
+        default: true
+        type: boolean
 
 permissions:
   contents: write
@@ -196,8 +201,14 @@ jobs:
               sort -nr |
               sed -n '1,50p'
             echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Inspect largest historical blobs
+        if: ${{ inputs.inspect_largest_blobs }}
+        run: |
+          {
             echo
-            echo "### Largest remaining blobs"
+            echo "### Largest historical blobs"
             echo
             echo '~~~text'
             git rev-list --objects --all |
