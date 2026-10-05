@@ -1,4 +1,4 @@
-name: Maintenance · Rewrite Git History
+name: History Cleanup . Maintenance · Rewrite Git History
 
 on:
   workflow_dispatch:

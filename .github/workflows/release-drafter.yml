@@ -1,4 +1,4 @@
-name: Draft package releases
+name: Release Drafter . Draft package releases
 
 on:
   push:
