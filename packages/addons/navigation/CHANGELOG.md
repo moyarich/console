@@ -4,8 +4,8 @@
 
 ### Added
 
-- Navigate next/previous errors and warnings in the current visible message set.
-- Navigate annotated/bookmarked messages when an annotation service is available.
-- Jump to stable message IDs through the Console viewport service.
-- Expose current target and start/end boundary state through a headless controller.
-- Register keyboard shortcuts for error and warning navigation.
+- Navigate forward and backward among visible errors and warnings.
+- Jump between annotated or bookmarked messages when an annotation controller is present.
+- Jump directly to a stable message ID through the viewport service.
+- Expose the current navigation target and start/end boundary state for custom host controls.
+- Register keyboard shortcuts for navigating error and warning messages.
