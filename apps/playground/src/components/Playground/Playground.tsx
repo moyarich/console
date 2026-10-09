@@ -1,3 +1,4 @@
+import "./Playground.css";
 import { useEffect, useRef } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { CONSOLE_EXAMPLE_SECTION } from "@src/playground-registry/examples";

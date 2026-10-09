@@ -1,3 +1,4 @@
+import "./MonacoEditor.css";
 import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
 import * as monaco from "monaco-editor";
 import type {
@@ -117,7 +118,7 @@ export function MonacoEditor({
   };
 
   return (
-    <div style={{ height, width, position: "relative" }}>
+    <div className="monaco-editor-container" style={{ height, width, position: "relative" }}>
       {!ready && !error && (
         <div
           style={{
