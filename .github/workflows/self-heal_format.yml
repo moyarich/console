@@ -28,6 +28,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.ref_name }}
+          # The default GitHub App token cannot push edits to .github/workflows.
+          # Supply a workflow-authorized token when automatic workflow repairs are needed.
+          token: ${{ secrets.WORKFLOW_TOKEN || github.token }}
           persist-credentials: true
 
       - name: Setup Node
@@ -54,15 +57,47 @@ jobs:
         run: npm run format:check
 
       - name: Commit formatting repair
+        id: repair
+        env:
+          WORKFLOW_TOKEN_AVAILABLE: ${{ secrets.WORKFLOW_TOKEN != '' && 'true' || '' }}
+          TARGET_BRANCH: ${{ github.ref_name }}
         if: >-
           ${{ steps.format.outputs.changed == 'true' &&
               (github.event_name == 'push' || inputs.commit) }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -euo pipefail
+
           git add --all
+
+          # GitHub refuses workflow-file updates from an App token without
+          # workflow-editing permission. Avoid failing a source-only repair
+          # simply because a workflow file was also reformatted.
+          if [ -z "${WORKFLOW_TOKEN_AVAILABLE}" ]; then
+            if git diff --cached --name-only -- .github/workflows/ | grep -q .; then
+              echo "::warning::Formatting changes to .github/workflows need a WORKFLOW_TOKEN secret with workflow-editing permission."
+              git restore --staged -- .github/workflows/
+              echo "workflow-changes-skipped=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+          if git diff --cached --quiet; then
+            if git diff --name-only -- .github/workflows/ | grep -q .; then
+              echo "::error::Workflow formatting needs a WORKFLOW_TOKEN secret with workflow-editing permission."
+              exit 1
+            fi
+            echo "No committable formatting changes."
+            exit 0
+          fi
+
           git commit -m "style: self-heal formatting"
-          git push origin "HEAD:${{ github.ref_name }}"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+          if git diff --name-only -- .github/workflows/ | grep -q .; then
+            echo "::error::Some workflow formatting changes remain; configure WORKFLOW_TOKEN to commit them."
+            exit 1
+          fi
 
       - name: Summary
         if: ${{ always() }}
