@@ -1,0 +1,20 @@
+.mdx-code-block {
+  --_mdx-code-block-border: var(--mdx-code-block-border, var(--playground-border, #d7deea));
+  --_mdx-code-block-surface: var(--mdx-code-block-surface, var(--playground-surface, #fff));
+}
+
+.mdx-code-block {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--_mdx-code-block-border);
+  border-radius: 10px;
+  background: var(--_mdx-code-block-surface);
+}
+
+.documentation-page .mdx-code-block code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+

@@ -1,0 +1,68 @@
+.mdx-table {
+  --_mdx-table-border: var(--mdx-table-border, var(--playground-border, #d7deea));
+  --_mdx-table-surface: var(--mdx-table-surface, var(--playground-surface, #fff));
+  --_mdx-table-accent: var(--mdx-table-accent, var(--playground-accent, #635bff));
+  --_mdx-table-accent-soft: var(--mdx-table-accent-soft, var(--playground-accent-soft, #635bff));
+  --_mdx-table-surface-subtle: var(--mdx-table-surface-subtle, var(--playground-surface-subtle, #fff));
+  --_mdx-table-text: var(--mdx-table-text, var(--playground-text, #334155));
+  --_mdx-table-text-secondary: var(--mdx-table-text-secondary, var(--playground-text-secondary, #334155));
+}
+
+.mdx-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--_mdx-table-border);
+  border-radius: 10px;
+  background: var(--_mdx-table-surface);
+  scrollbar-gutter: stable;
+}
+
+.mdx-table-scroll:focus-visible {
+  outline: 2px solid var(--_mdx-table-accent);
+  outline-offset: 2px;
+}
+
+.documentation-page .mdx-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.documentation-page .mdx-table-scroll th,
+.documentation-page .mdx-table-scroll td {
+  min-width: 140px;
+  padding: 10px 12px;
+  border-right: 1px solid var(--_mdx-table-border);
+  border-bottom: 1px solid var(--_mdx-table-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.documentation-page .mdx-table-scroll th {
+  background: color-mix(
+    in oklab,
+    var(--_mdx-table-accent-soft) 7%,
+    var(--_mdx-table-surface-subtle) 93%
+  );
+  color: var(--_mdx-table-text);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.documentation-page .mdx-table-scroll td {
+  color: var(--_mdx-table-text-secondary);
+}
+
+.documentation-page .mdx-table-scroll tr:last-child td {
+  border-bottom: 0;
+}
+
+.documentation-page .mdx-table-scroll th:last-child,
+.documentation-page .mdx-table-scroll td:last-child {
+  border-right: 0;
+}
+
