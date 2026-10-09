@@ -144,7 +144,7 @@ jobs:
     concurrency:
       group: draft-package-${{ github.repository }}-${{ matrix.directory }}
       cancel-in-progress: true
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_release-drafter.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_release-drafter.yml@v0
     with:
       target-branch: main
       version-mode: exact
