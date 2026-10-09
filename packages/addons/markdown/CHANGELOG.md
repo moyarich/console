@@ -4,6 +4,7 @@
 
 ### Added
 
-- Automatically detect meaningful Markdown in Console string values.
-- Render detected Markdown as GitHub Flavored Markdown through the Console value-renderer extension point.
-- Keep ordinary text, multiline logs, and bare URLs on the default Console rendering path.
+- Automatically recognize Markdown content in Console string values.
+- Render recognized content as GitHub Flavored Markdown in structured console messages.
+- Leave plain text, ordinary multiline logs, and standalone URLs on the normal text-rendering path.
+- Integrate Markdown rendering through the Console value-renderer extension point.
