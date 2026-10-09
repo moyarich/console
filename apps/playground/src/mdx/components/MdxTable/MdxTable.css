@@ -1,29 +1,11 @@
 .mdx-table {
-  --_mdx-table-border: var(
-    --mdx-table-border,
-    #d7deea
-  );
-  --_mdx-table-surface: var(
-    --mdx-table-surface,
-    #fff
-  );
-  --_mdx-table-accent: var(
-    --mdx-table-accent,
-    #635bff
-  );
-  --_mdx-table-accent-soft: var(
-    --mdx-table-accent-soft,
-    #a792ff
-  );
-  --_mdx-table-surface-subtle: var(
-    --mdx-table-surface-subtle,
-    #f8fafc
-  );
+  --_mdx-table-border: var(--mdx-table-border, #d7deea);
+  --_mdx-table-surface: var(--mdx-table-surface, #fff);
+  --_mdx-table-accent: var(--mdx-table-accent, #635bff);
+  --_mdx-table-accent-soft: var(--mdx-table-accent-soft, #a792ff);
+  --_mdx-table-surface-subtle: var(--mdx-table-surface-subtle, #f8fafc);
   --_mdx-table-text: var(--mdx-table-text, #172033);
-  --_mdx-table-text-secondary: var(
-    --mdx-table-text-secondary,
-    #475467
-  );
+  --_mdx-table-text-secondary: var(--mdx-table-text-secondary, #475467);
 }
 
 .mdx-table-scroll {

@@ -1,8 +1,5 @@
 :where(.layout-content, .site-footer, .playground-shell) {
-  --_playground-component-border: var(
-    --playground-component-border,
-    #d7deea
-  );
+  --_playground-component-border: var(--playground-component-border, #d7deea);
   --_playground-component-accent-companion: var(
     --playground-component-accent-companion,
     #2d9aaa
@@ -18,8 +15,7 @@
 }
 
 .site-footer {
-  border-top: 1px solid
-    var(--_playground-component-border, #d7deea);
+  border-top: 1px solid var(--_playground-component-border, #d7deea);
   color: #8a94a6;
   font-size: 0.74rem;
 }
@@ -105,10 +101,7 @@
 }
 
 .hero-example-path > [aria-hidden="true"] {
-  color: var(
-    --_playground-component-accent-companion,
-    #2d9aaa
-  );
+  color: var(--_playground-component-accent-companion, #2d9aaa);
 }
 
 .documentation-page {
@@ -186,15 +179,9 @@
 }
 
 .hero-example-path {
-  color: var(
-    --_playground-component-text-subtle,
-    #7b8496
-  );
+  color: var(--_playground-component-text-subtle, #7b8496);
 }
 
 .documentation-page a:hover {
-  color: var(
-    --_playground-component-accent-strong,
-    #4f46e5
-  );
+  color: var(--_playground-component-accent-strong, #4f46e5);
 }

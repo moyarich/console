@@ -1,44 +1,17 @@
 .sidebar {
-  --_sidebar-text-secondary: var(
-    --sidebar-text-secondary,
-    #475467
-  );
-  --_sidebar-accent-surface: var(
-    --sidebar-accent-surface,
-    #eef2ff
-  );
-  --_sidebar-accent-strong: var(
-    --sidebar-accent-strong,
-    #4f46e5
-  );
+  --_sidebar-text-secondary: var(--sidebar-text-secondary, #475467);
+  --_sidebar-accent-surface: var(--sidebar-accent-surface, #eef2ff);
+  --_sidebar-accent-strong: var(--sidebar-accent-strong, #4f46e5);
   --_sidebar-border: var(--sidebar-border, #d7deea);
-  --_sidebar-surface-subtle: var(
-    --sidebar-surface-subtle,
-    #f8fafc
-  );
-  --_sidebar-text-subtle: var(
-    --sidebar-text-subtle,
-    #7b8496
-  );
+  --_sidebar-surface-subtle: var(--sidebar-surface-subtle, #f8fafc);
+  --_sidebar-text-subtle: var(--sidebar-text-subtle, #7b8496);
   --_sidebar-accent: var(--sidebar-accent, #635bff);
   --_sidebar-surface: var(--sidebar-surface, #fff);
-  --_sidebar-focus-ring: var(
-    --sidebar-focus-ring,
-    rgb(99 91 255 / 0.22)
-  );
+  --_sidebar-focus-ring: var(--sidebar-focus-ring, rgb(99 91 255 / 0.22));
   --_sidebar-text: var(--sidebar-text, #172033);
-  --_sidebar-accent-neutral: var(
-    --sidebar-accent-neutral,
-    #aea9ba
-  );
-  --_sidebar-text-muted: var(
-    --sidebar-text-muted,
-    #667085
-  );
-  --_sidebar-accent-companion: var(
-    --sidebar-accent-companion,
-    #2d9aaa
-  );
+  --_sidebar-accent-neutral: var(--sidebar-accent-neutral, #aea9ba);
+  --_sidebar-text-muted: var(--sidebar-text-muted, #667085);
+  --_sidebar-accent-companion: var(--sidebar-accent-companion, #2d9aaa);
   display: flex;
   height: 100%;
   min-height: 0;

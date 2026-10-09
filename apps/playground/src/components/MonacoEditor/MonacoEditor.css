@@ -1,12 +1,6 @@
 .monaco-editor-container {
-  --_monaco-loading-background: var(
-    --monaco-loading-background,
-    #fff
-  );
-  --_monaco-loading-color: var(
-    --monaco-loading-color,
-    #667085
-  );
+  --_monaco-loading-background: var(--monaco-loading-background, #fff);
+  --_monaco-loading-color: var(--monaco-loading-color, #667085);
 }
 
 .monaco-editor-container .editor-loading {

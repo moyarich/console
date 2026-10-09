@@ -1,12 +1,6 @@
 .mdx-code-block {
-  --_mdx-code-block-border: var(
-    --mdx-code-block-border,
-    #d7deea
-  );
-  --_mdx-code-block-surface: var(
-    --mdx-code-block-surface,
-    #fff
-  );
+  --_mdx-code-block-border: var(--mdx-code-block-border, #d7deea);
+  --_mdx-code-block-surface: var(--mdx-code-block-surface, #fff);
 }
 
 .mdx-code-block {

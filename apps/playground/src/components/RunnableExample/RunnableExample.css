@@ -1,20 +1,11 @@
 :where(.content-stack, .preview-modal, .playground-panel) {
-  --_runnable-example-border: var(
-    --runnable-example-border,
-    #d7deea
-  );
+  --_runnable-example-border: var(--runnable-example-border, #d7deea);
   --_runnable-example-surface-subtle: var(
     --runnable-example-surface-subtle,
     #f8fafc
   );
-  --_runnable-example-text: var(
-    --runnable-example-text,
-    #172033
-  );
-  --_runnable-example-text-muted: var(
-    --runnable-example-text-muted,
-    #667085
-  );
+  --_runnable-example-text: var(--runnable-example-text, #172033);
+  --_runnable-example-text-muted: var(--runnable-example-text-muted, #667085);
   --_runnable-example-border-strong: var(
     --runnable-example-border-strong,
     #aeb9ca
@@ -27,34 +18,19 @@
     --runnable-example-text-secondary,
     #475467
   );
-  --_runnable-example-accent: var(
-    --runnable-example-accent,
-    #635bff
-  );
+  --_runnable-example-accent: var(--runnable-example-accent, #635bff);
   --_runnable-example-accent-strong: var(
     --runnable-example-accent-strong,
     #4f46e5
   );
-  --_runnable-example-surface: var(
-    --runnable-example-surface,
-    #fff
-  );
+  --_runnable-example-surface: var(--runnable-example-surface, #fff);
   --_runnable-example-shadow-color: var(
     --runnable-example-shadow-color,
     rgb(17 24 39 / 0.1)
   );
-  --_runnable-example-success: var(
-    --runnable-example-success,
-    #009162
-  );
-  --_runnable-example-danger: var(
-    --runnable-example-danger,
-    #b42318
-  );
-  --_runnable-example-warning: var(
-    --runnable-example-warning,
-    #b54708
-  );
+  --_runnable-example-success: var(--runnable-example-success, #009162);
+  --_runnable-example-danger: var(--runnable-example-danger, #b42318);
+  --_runnable-example-warning: var(--runnable-example-warning, #b54708);
 }
 
 .content-stack {
@@ -687,10 +663,7 @@
 }
 
 .source-panel {
-  border-color: light-dark(
-    var(--_runnable-example-border, #d7deea),
-    #2c3545
-  );
+  border-color: light-dark(var(--_runnable-example-border, #d7deea), #2c3545);
   background: light-dark(#ffffff, #151b26);
 }
 
@@ -700,90 +673,51 @@
     #283142
   );
   background: light-dark(
-    var(
-      --_runnable-example-surface-subtle,
-      #f8fafc
-    ),
+    var(--_runnable-example-surface-subtle, #f8fafc),
     #1b2230
   );
 }
 
 .source-toolbar strong {
-  color: light-dark(
-    var(--_runnable-example-text, #172033),
-    #f8fafc
-  );
+  color: light-dark(var(--_runnable-example-text, #172033), #f8fafc);
 }
 
 .source-toolbar .panel-kicker {
-  color: light-dark(
-    var(--_runnable-example-text-muted, #667085),
-    #8994a6
-  );
+  color: light-dark(var(--_runnable-example-text-muted, #667085), #8994a6);
 }
 
 .source-action-button {
   border-color: light-dark(
-    var(
-      --_runnable-example-border-strong,
-      #aeb9ca
-    ),
+    var(--_runnable-example-border-strong, #aeb9ca),
     #3b4658
   );
   background: light-dark(
-    var(
-      --_runnable-example-surface-muted,
-      #f1f5f9
-    ),
+    var(--_runnable-example-surface-muted, #f1f5f9),
     #252e3d
   );
-  color: light-dark(
-    var(
-      --_runnable-example-text-secondary,
-      #475467
-    ),
-    #d6deea
-  );
+  color: light-dark(var(--_runnable-example-text-secondary, #475467), #d6deea);
 }
 
 .source-action-button:hover:not(:disabled) {
   border-color: light-dark(
-    var(
-      --_runnable-example-border-strong,
-      #aeb9ca
-    ),
+    var(--_runnable-example-border-strong, #aeb9ca),
     #52627a
   );
   background: light-dark(
-    var(
-      --_runnable-example-surface-subtle,
-      #f8fafc
-    ),
+    var(--_runnable-example-surface-subtle, #f8fafc),
     #2c3647
   );
 }
 
 .run-source-button {
-  border-color: var(
-    --_runnable-example-accent,
-    #635bff
-  );
-  background: var(
-    --_runnable-example-accent,
-    #635bff
-  );
+  border-color: var(--_runnable-example-accent, #635bff);
+  background: var(--_runnable-example-accent, #635bff);
   color: #fff;
 }
 
 .run-source-button:hover:not(:disabled) {
-  border-color: var(
-    --_runnable-example-accent-strong,
-    #4f46e5
-  );
-  background: var(
-    --_runnable-example-accent-strong,
-    #4f46e5
-  );
+  border-color: var(--_runnable-example-accent-strong, #4f46e5);
+  background: var(--_runnable-example-accent-strong, #4f46e5);
 }
 
 .source-file-tabs {
@@ -792,41 +726,26 @@
     #283142
   );
   background: light-dark(
-    var(
-      --_runnable-example-surface-subtle,
-      #f8fafc
-    ),
+    var(--_runnable-example-surface-subtle, #f8fafc),
     #151b26
   );
 }
 
 .source-file-tab {
-  color: light-dark(
-    var(--_runnable-example-text-muted, #667085),
-    #8994a6
-  );
+  color: light-dark(var(--_runnable-example-text-muted, #667085), #8994a6);
 }
 
 .source-file-tab:hover {
   background: light-dark(
-    var(
-      --_runnable-example-surface-muted,
-      #f1f5f9
-    ),
+    var(--_runnable-example-surface-muted, #f1f5f9),
     #202938
   );
-  color: light-dark(
-    var(--_runnable-example-text, #172033),
-    #d6deea
-  );
+  color: light-dark(var(--_runnable-example-text, #172033), #d6deea);
 }
 
 .source-file-tab.active {
   background: light-dark(#ffffff, #1e1e1e);
-  color: light-dark(
-    var(--_runnable-example-text, #172033),
-    #f8fafc
-  );
+  color: light-dark(var(--_runnable-example-text, #172033), #f8fafc);
 }
 
 .example-source-editor,
@@ -835,10 +754,7 @@
 }
 
 .editor-loading {
-  color: light-dark(
-    var(--_runnable-example-text-muted, #667085),
-    #cbd5e1
-  );
+  color: light-dark(var(--_runnable-example-text-muted, #667085), #cbd5e1);
 }
 
 .preview-stage {
@@ -852,22 +768,13 @@
       ),
       transparent 24rem
     ),
-    var(
-      --_runnable-example-surface-subtle,
-      #f8fafc
-    );
+    var(--_runnable-example-surface-subtle, #f8fafc);
 }
 
 .preview-stage button:not([class^="console-"]):not([class*=" console-"]) {
-  border-color: var(
-    --_runnable-example-border,
-    #d7deea
-  );
+  border-color: var(--_runnable-example-border, #d7deea);
   background: var(--_runnable-example-surface, #fff);
-  color: var(
-    --_runnable-example-text-secondary,
-    #475467
-  );
+  color: var(--_runnable-example-text-secondary, #475467);
   box-shadow: 0 1px 2px
     var(--_runnable-example-shadow-color, rgb(17 24 39 / 0.1));
 }
@@ -876,14 +783,8 @@
   button:not([class^="console-"]):not([class*=" console-"]):hover:not(
     :disabled
   ) {
-  border-color: var(
-    --_runnable-example-border-strong,
-    #aeb9ca
-  );
-  background: var(
-    --_runnable-example-surface-muted,
-    #f1f5f9
-  );
+  border-color: var(--_runnable-example-border-strong, #aeb9ca);
+  background: var(--_runnable-example-surface-muted, #f1f5f9);
   color: var(--_runnable-example-text, #172033);
 }
 
@@ -913,10 +814,7 @@
 
 .preview-modal .preview-panel,
 .preview-modal .panel-icon-button {
-  border-color: var(
-    --_runnable-example-border,
-    #d7deea
-  );
+  border-color: var(--_runnable-example-border, #d7deea);
 }
 
 .preview-modal .preview-panel {
@@ -925,10 +823,7 @@
 
 .preview-modal .panel-icon-button {
   background: var(--_runnable-example-surface, #fff);
-  color: var(
-    --_runnable-example-text-secondary,
-    #475467
-  );
+  color: var(--_runnable-example-text-secondary, #475467);
 }
 
 .preview-modal .panel-icon-button:hover {
