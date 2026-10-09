@@ -1,28 +1,28 @@
 .mdx-table {
   --_mdx-table-border: var(
     --mdx-table-border,
-    var(--playground-border, #d7deea)
+    #d7deea
   );
   --_mdx-table-surface: var(
     --mdx-table-surface,
-    var(--playground-surface, #fff)
+    #fff
   );
   --_mdx-table-accent: var(
     --mdx-table-accent,
-    var(--playground-accent, #635bff)
+    #635bff
   );
   --_mdx-table-accent-soft: var(
     --mdx-table-accent-soft,
-    var(--playground-accent-soft, #635bff)
+    #a792ff
   );
   --_mdx-table-surface-subtle: var(
     --mdx-table-surface-subtle,
-    var(--playground-surface-subtle, #fff)
+    #f8fafc
   );
-  --_mdx-table-text: var(--mdx-table-text, var(--playground-text, #334155));
+  --_mdx-table-text: var(--mdx-table-text, #172033);
   --_mdx-table-text-secondary: var(
     --mdx-table-text-secondary,
-    var(--playground-text-secondary, #334155)
+    #475467
   );
 }
 

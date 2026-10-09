@@ -1,11 +1,11 @@
 .mdx-code-block {
   --_mdx-code-block-border: var(
     --mdx-code-block-border,
-    var(--playground-border, #d7deea)
+    #d7deea
   );
   --_mdx-code-block-surface: var(
     --mdx-code-block-surface,
-    var(--playground-surface, #fff)
+    #fff
   );
 }
 

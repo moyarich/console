@@ -1,0 +1,45 @@
+/* Playground host theme bindings. Component CSS does not depend on these. */
+:root {
+  --sidebar-text-secondary: var(--playground-text-secondary);
+  --sidebar-accent-surface: var(--playground-accent-surface);
+  --sidebar-accent-strong: var(--playground-accent-strong);
+  --sidebar-border: var(--playground-border);
+  --sidebar-surface-subtle: var(--playground-surface-subtle);
+  --sidebar-text-subtle: var(--playground-text-subtle);
+  --sidebar-accent: var(--playground-accent);
+  --sidebar-surface: var(--playground-surface);
+  --sidebar-focus-ring: var(--playground-focus-ring);
+  --sidebar-text: var(--playground-text);
+  --sidebar-accent-neutral: var(--playground-accent-neutral);
+  --sidebar-text-muted: var(--playground-text-muted);
+  --sidebar-accent-companion: var(--playground-accent-companion);
+  --playground-component-border: var(--playground-border);
+  --playground-component-accent-companion: var(--playground-accent-companion);
+  --playground-component-text-subtle: var(--playground-text-subtle);
+  --playground-component-accent-strong: var(--playground-accent-strong);
+  --runnable-example-border: var(--playground-border);
+  --runnable-example-surface-subtle: var(--playground-surface-subtle);
+  --runnable-example-text: var(--playground-text);
+  --runnable-example-text-muted: var(--playground-text-muted);
+  --runnable-example-border-strong: var(--playground-border-strong);
+  --runnable-example-surface-muted: var(--playground-surface-muted);
+  --runnable-example-text-secondary: var(--playground-text-secondary);
+  --runnable-example-accent: var(--playground-accent);
+  --runnable-example-accent-strong: var(--playground-accent-strong);
+  --runnable-example-surface: var(--playground-surface);
+  --runnable-example-shadow-color: var(--playground-shadow-color);
+  --runnable-example-success: var(--playground-success);
+  --runnable-example-danger: var(--playground-danger);
+  --runnable-example-warning: var(--playground-warning);
+  --monaco-loading-background: var(--playground-loading-background);
+  --monaco-loading-color: var(--playground-loading-color);
+  --mdx-table-border: var(--playground-border);
+  --mdx-table-surface: var(--playground-surface);
+  --mdx-table-accent: var(--playground-accent);
+  --mdx-table-accent-soft: var(--playground-accent-soft);
+  --mdx-table-surface-subtle: var(--playground-surface-subtle);
+  --mdx-table-text: var(--playground-text);
+  --mdx-table-text-secondary: var(--playground-text-secondary);
+  --mdx-code-block-border: var(--playground-border);
+  --mdx-code-block-surface: var(--playground-surface);
+}

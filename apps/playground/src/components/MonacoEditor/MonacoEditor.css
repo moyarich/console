@@ -1,11 +1,11 @@
 .monaco-editor-container {
   --_monaco-loading-background: var(
     --monaco-loading-background,
-    var(--playground-surface, #fff)
+    #fff
   );
   --_monaco-loading-color: var(
     --monaco-loading-color,
-    var(--playground-text-muted, #667085)
+    #667085
   );
 }
 

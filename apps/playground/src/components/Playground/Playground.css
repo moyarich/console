@@ -1,25 +1,25 @@
 :where(.layout-content, .site-footer, .playground-shell) {
   --_playground-component-border: var(
     --playground-component-border,
-    var(--playground-border, #d7deea)
+    #d7deea
   );
   --_playground-component-accent-companion: var(
     --playground-component-accent-companion,
-    var(--playground-accent-companion, #635bff)
+    #2d9aaa
   );
   --_playground-component-text-subtle: var(
     --playground-component-text-subtle,
-    var(--playground-text-subtle, #334155)
+    #7b8496
   );
   --_playground-component-accent-strong: var(
     --playground-component-accent-strong,
-    var(--playground-accent-strong, #635bff)
+    #4f46e5
   );
 }
 
 .site-footer {
   border-top: 1px solid
-    var(--_playground-component-border, var(--playground-border, #d7deea));
+    var(--_playground-component-border, #d7deea);
   color: #8a94a6;
   font-size: 0.74rem;
 }
@@ -107,7 +107,7 @@
 .hero-example-path > [aria-hidden="true"] {
   color: var(
     --_playground-component-accent-companion,
-    var(--playground-accent-companion, #635bff)
+    #2d9aaa
   );
 }
 
@@ -188,13 +188,13 @@
 .hero-example-path {
   color: var(
     --_playground-component-text-subtle,
-    var(--playground-text-subtle, #334155)
+    #7b8496
   );
 }
 
 .documentation-page a:hover {
   color: var(
     --_playground-component-accent-strong,
-    var(--playground-accent-strong, #635bff)
+    #4f46e5
   );
 }
