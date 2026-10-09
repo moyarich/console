@@ -28,6 +28,41 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --include=optional
+      - name: Validate package changelogs
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdirSync, readFileSync, existsSync } from 'node:fs';
+          import { join } from 'node:path';
+
+          const directories = [
+            ...readdirSync('packages', { withFileTypes: true })
+              .filter((entry) => entry.isDirectory() && entry.name !== 'addons')
+              .map((entry) => join('packages', entry.name)),
+            ...readdirSync('packages/addons', { withFileTypes: true })
+              .filter((entry) => entry.isDirectory())
+              .map((entry) => join('packages/addons', entry.name)),
+          ];
+
+          let count = 0;
+          for (const directory of directories) {
+            const manifestPath = join(directory, 'package.json');
+            if (!existsSync(manifestPath)) continue;
+            const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+            if (manifest.private === true) continue;
+            const changelogPath = join(directory, 'CHANGELOG.md');
+            if (!existsSync(changelogPath)) {
+              throw new Error(`${manifest.name}: missing ${changelogPath}`);
+            }
+            const content = readFileSync(changelogPath, 'utf8');
+            const expected = `## ${manifest.version}`;
+            if (!content.split(/\r?\n/).some((line) => line.trim() === expected)) {
+              throw new Error(`${manifest.name}: ${changelogPath} must contain "${expected}"`);
+            }
+            count++;
+          }
+          console.log(`Validated independent changelogs for ${count} publishable packages.`);
+          NODE
       - run: npm run format:check
       - run: npm run build:packages
       - run: npm run build:playground
