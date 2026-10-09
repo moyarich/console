@@ -27,3 +27,18 @@ ANSI mode exports the resolved logical process view after carriage-return normal
   sourcePath="ansi.tsx"
   title="ANSI data export"
 />
+
+## Configure data export
+
+See the [API reference](#/addons/data-export/reference/data-export) for the contract and options.
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDataExportAddon } from "@moyarich/console-addon-data-export";
+
+const exportAddon = createConsoleDataExportAddon({
+  fileName: "runtime-output",
+});
+
+<Console messages={messages} addons={[exportAddon]} />;
+```

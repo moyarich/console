@@ -6,3 +6,38 @@ description: "Parse ANSI-stripped compiler and test-runner lines into inspectabl
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
+
+## Structured output parsing
+
+See the [API reference](#/package-console/reference/rendering-modes) for the contract and options.
+
+```tsx
+import type { ConsoleStructuredOutputParser } from "@moyarich/console";
+
+const diagnosticParser: ConsoleStructuredOutputParser = (text, context) => {
+  const match = text.match(/^ERROR\s+(TS\d+):\s+(.+)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    kind: "diagnostic",
+    code: match[1],
+    message: match[2],
+    stream: context.stream,
+  };
+};
+
+<Console
+  mode="ansi"
+  messages={[
+    {
+      id: "diagnostic-1",
+      data: "\u001b[31mERROR TS2322: invalid value\u001b[0m",
+      stream: "stderr",
+    },
+  ]}
+  structuredOutputParsers={[diagnosticParser]}
+/>;
+```

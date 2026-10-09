@@ -1,0 +1,16 @@
+---
+label: "Capture the global console"
+description: "Usage example for capture the global console."
+---
+
+See the [API reference](#/package-console/reference/capture-console) for the contract and options.
+
+```tsx
+const { messages, clear } = useConsoleMessages({
+  capture: true,
+  source: "current-page",
+  passThrough: true,
+});
+
+<Console messages={messages} onClear={clear} />;
+```

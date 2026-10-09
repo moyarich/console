@@ -108,7 +108,18 @@ export function parseOrderedDirectory(
 }
 
 function sortItems(items: Iterable<MutableMdxSectionItem>): MdxSectionItem[] {
-  return Array.from(items)
+  const siblings = Array.from(items);
+  const landingPages = new Map(
+    siblings.flatMap((item) =>
+      item.type === "page" ? [[item.page.id, item] as const] : [],
+    ),
+  );
+  const groupIds = new Set(
+    siblings.flatMap((item) => (item.type === "group" ? [item.group.id] : [])),
+  );
+
+  return siblings
+    .filter((item) => item.type !== "page" || !groupIds.has(item.page.id))
     .sort(
       (left, right) =>
         left.order - right.order || left.id.localeCompare(right.id),
@@ -118,6 +129,7 @@ function sortItems(items: Iterable<MutableMdxSectionItem>): MdxSectionItem[] {
         return item;
       }
 
+      const landingPage = landingPages.get(item.group.id);
       return {
         type: "group" as const,
         order: item.order,
@@ -126,7 +138,12 @@ function sortItems(items: Iterable<MutableMdxSectionItem>): MdxSectionItem[] {
           id: item.group.id,
           order: item.group.order,
           label: item.group.label,
-          items: sortItems(item.group.items.values()),
+          items: sortItems([
+            ...(landingPage
+              ? [{ ...landingPage, order: Number.MIN_SAFE_INTEGER }]
+              : []),
+            ...item.group.items.values(),
+          ]),
         },
       };
     });

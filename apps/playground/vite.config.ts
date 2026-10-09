@@ -37,6 +37,10 @@ export default defineConfig({
     dedupe: ["vscode"],
     alias: [
       {
+        find: "@src",
+        replacement: fileURLToPath(new URL("./src", import.meta.url)),
+      },
+      {
         find: "@moyarich/console-core",
         replacement: workspaceSource("console-core/src/index.ts"),
       },

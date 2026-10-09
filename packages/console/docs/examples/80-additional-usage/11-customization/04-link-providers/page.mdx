@@ -27,3 +27,31 @@ The Link providers contract works with terminal output, so source paths and appl
   sourcePath="ansi.tsx"
   title="ANSI link provider"
 />
+
+## Application link providers
+
+See the [API reference](#/package-console/reference/rendering-modes) for the contract and options.
+
+```tsx
+import { Console, type ConsoleLinkProvider } from "@moyarich/console";
+
+const sourceLinks: ConsoleLinkProvider = {
+  id: "source-location",
+  provideLinks(text) {
+    const matches = text.matchAll(
+      /\\b[\\w./-]+\\.(?:ts|tsx|js|jsx):\\d+(?::\\d+)?\\b/g,
+    );
+
+    return Array.from(matches, (match) => ({
+      text: match[0],
+      start: match.index,
+      end: match.index + match[0].length,
+      title: "Open source",
+      action: ({ link }) => openSource(link.text),
+    }));
+  },
+};
+
+<Console messages={messages} linkProviders={[sourceLinks]} />;
+<Console mode="ansi" messages={stdout} linkProviders={[sourceLinks]} />;
+```

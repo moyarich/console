@@ -5,6 +5,10 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
+      "@moyarich/console-addon-annotations": fileURLToPath(
+        new URL("./packages/addons/annotations/src/index.tsx", import.meta.url),
+      ),
+      "@src": fileURLToPath(new URL("./apps/playground/src", import.meta.url)),
       "@moyarich/console-core": fileURLToPath(
         new URL("./packages/console-core/src/index.ts", import.meta.url),
       ),

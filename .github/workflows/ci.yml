@@ -8,34 +8,71 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
-  validate:
+  node:
+    name: Shared Node checks
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_node-ci.yml@v0
+    with:
+      package-directory: "."
+      node-version: "24"
+
+  repository-checks:
+    name: Repository checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: 24
+          node-version: "24"
           cache: npm
-      - name: Install dependencies
-        run: npm ci --include=optional
-      - name: Lint
-        run: npm run lint
+      - run: npm ci --include=optional
+      - name: Validate package changelogs
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdirSync, readFileSync, existsSync } from 'node:fs';
+          import { join } from 'node:path';
+
+          const directories = [
+            ...readdirSync('packages', { withFileTypes: true })
+              .filter((entry) => entry.isDirectory() && entry.name !== 'addons')
+              .map((entry) => join('packages', entry.name)),
+            ...readdirSync('packages/addons', { withFileTypes: true })
+              .filter((entry) => entry.isDirectory())
+              .map((entry) => join('packages/addons', entry.name)),
+          ];
+
+          let count = 0;
+          for (const directory of directories) {
+            const manifestPath = join(directory, 'package.json');
+            if (!existsSync(manifestPath)) continue;
+            const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+            if (manifest.private === true) continue;
+            const changelogPath = join(directory, 'CHANGELOG.md');
+            if (!existsSync(changelogPath)) {
+              throw new Error(`${manifest.name}: missing ${changelogPath}`);
+            }
+            const content = readFileSync(changelogPath, 'utf8');
+            const expected = `## ${manifest.version}`;
+            if (!content.split(/\r?\n/).some((line) => line.trim() === expected)) {
+              throw new Error(`${manifest.name}: ${changelogPath} must contain "${expected}"`);
+            }
+            count++;
+          }
+          console.log(`Validated independent changelogs for ${count} publishable packages.`);
+          NODE
+      # Shared Prettier self-heal excludes workflow YAML and generated dist.
+      # Keep the CI formatting scope identical to its formatter.
       - name: Check formatting
-        run: npm run format:check
-      - name: Typecheck
-        run: npm run typecheck
-      # Tests import workspace packages through their public package entries.
-      # Build package dist outputs first, matching the workspace CI contract used
-      # in dev-toolkit instead of relying on test-only source aliases.
-      - name: Build workspace packages
-        run: npm run build:packages
-      - name: Test
-        run: npm test
-      - name: Build playground
-        run: npm run build:playground
-      - name: Build Storybook
-        run: npm run build-storybook
-      - name: Validate package archives
-        run: npm run pack:packages
+        run: |
+          printf '%s\n' '.github/workflows/' 'dist/' '.prettier-self-heal.ignore' > /tmp/console-prettier-ignore
+          if [ -f .prettierignore ]; then
+            cat .prettierignore >> /tmp/console-prettier-ignore
+          fi
+          npx prettier . --check --ignore-path /tmp/console-prettier-ignore
+      - run: npm run build:packages
+      - run: npm run build:playground
+      - run: npm run build-storybook
+      - run: npm run pack:packages

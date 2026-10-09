@@ -4,7 +4,7 @@
 
 ### Added
 
-- Store multiple annotations against stable Console message IDs without mutating source messages.
-- Toggle bookmark annotations through the default message action.
-- Render bookmark/annotation state through the existing message-decoration extension point.
-- Expose a controller service for navigation, filtering, export, and host-owned UI.
+- Attach multiple annotations to a message using stable Console message IDs without altering source messages.
+- Toggle bookmarks directly from a message action.
+- Display annotation and bookmark state alongside messages through decorations.
+- Expose an annotation controller for host interfaces and other addons, including navigation, filtering, and export integrations.

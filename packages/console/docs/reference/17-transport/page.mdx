@@ -27,30 +27,13 @@ The package does not prescribe where code runs. Console events can be moved from
 
 ### Receive from `postMessage`
 
-```ts
-const events = createConsoleEventEmitter();
-
-const stopListening = listenForConsolePostMessages({
-  events,
-  channel: "preview",
-  source: iframe.contentWindow,
-  origin: "https://preview.example.com",
-});
-```
+See [Create a postMessage transport](#/examples/usage/transport/create-a-postmessage-transport).
 
 Use an explicit origin in production. `origin` may also be a `RegExp` or predicate.
 
 ### Receive from a WebSocket
 
-```ts
-const events = createConsoleEventEmitter();
-
-const stopListening = listenForConsoleWebSocket({
-  socket,
-  channel: "session-42",
-  events,
-});
-```
+See [Create a WebSocket transport](#/examples/usage/transport/create-a-websocket-transport).
 
 The listener accepts JSON text, validates the envelope and channel, deserializes the console event, and publishes it into `events`.
 

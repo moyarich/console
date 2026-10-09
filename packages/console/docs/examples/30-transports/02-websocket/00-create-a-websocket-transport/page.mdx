@@ -1,0 +1,16 @@
+---
+label: "Create a WebSocket transport"
+description: "Usage example for create a websocket transport."
+---
+
+See the [API reference](#/package-console/reference/transport) for the contract and options.
+
+```ts
+const events = createConsoleEventEmitter();
+
+const stopListening = listenForConsoleWebSocket({
+  socket,
+  channel: "session-42",
+  events,
+});
+```

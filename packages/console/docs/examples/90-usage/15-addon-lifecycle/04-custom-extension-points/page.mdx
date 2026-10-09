@@ -1,0 +1,38 @@
+---
+label: "Custom extension points"
+description: "Usage example for custom extension points."
+---
+
+See the [API reference](#/package-console/reference/addons/overview) for the contract and options.
+
+```ts
+import {
+  createConsoleExtensionPoint,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface DiagnosticProvider {
+  analyze(text: string): string | undefined;
+}
+
+export const diagnosticProvider =
+  createConsoleExtensionPoint<DiagnosticProvider>("acme.diagnosticProvider");
+
+export function createDiagnosticAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-diagnostics",
+    activate(host) {
+      host.extensions.register(
+        diagnosticProvider,
+        {
+          analyze: (text) => (text.includes("ERROR") ? "failure" : undefined),
+        },
+        {
+          id: "default",
+          priority: 100,
+        },
+      );
+    },
+  };
+}
+```

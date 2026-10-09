@@ -5,21 +5,7 @@ description: "Create a console-compatible producer for sandboxed or evaluated co
 
 `createConsoleProxy()` returns a console-compatible object without patching the page's real console. It publishes `message` and `clear` events into the provided `ConsoleEventEmitter`; storage and rendering stay outside the proxy.
 
-```ts
-const events = createConsoleEventEmitter();
-
-const runtimeConsole = createConsoleProxy({
-  events,
-  source: "sandbox",
-});
-
-events.on("message", (message) => {
-  // store, render, or transport the message
-});
-
-runtimeConsole.log("hello", { from: "sandbox" });
-runtimeConsole.warn("warning");
-```
+See [Console proxy events](#/examples/usage/console-proxy/console-proxy-events).
 
 ### Proxy options
 

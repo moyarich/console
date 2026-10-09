@@ -5,44 +5,7 @@ description: "Addon lifecycle, extension points, services, capabilities, and hea
 
 Use `addons` when a reusable feature needs to combine several console extension points, shared APIs, or lifecycle resources behind one package-level abstraction.
 
-```tsx
-import {
-  Console,
-  consoleExtensionPoints,
-  type ConsoleAddon,
-} from "@moyarich/console";
-
-function createBuildAddon(): ConsoleAddon {
-  return {
-    id: "@acme/console-build-tools",
-    activate(host) {
-      host.extensions.register(consoleExtensionPoints.linkProvider, {
-        id: "build-task-links",
-        provideLinks(text) {
-          const match = /TASK-\d+/.exec(text);
-
-          if (!match || match.index === undefined) {
-            return undefined;
-          }
-
-          return [
-            {
-              text: match[0],
-              start: match.index,
-              end: match.index + match[0].length,
-              action: () => openTask(match[0]),
-            },
-          ];
-        },
-      });
-    },
-  };
-}
-
-const buildAddon = createBuildAddon();
-
-<Console messages={messages} addons={[buildAddon]} />;
-```
+See [Build task link addon](#/examples/usage/addon-lifecycle/build-task-link-addon).
 
 An addon owns **lifecycle and composition**, not a fixed list of feature fields:
 
@@ -59,25 +22,12 @@ Every addon has a required stable ID. Use a package-qualified ID to avoid collis
 - multiple addons from one package: `@acme/console-tools:search`
 - application-local addons: use an application namespace such as `my-app:build-tools`
 
-First-party core addons are normal workspace packages with package-qualified IDs, for example:
-
-```text
-@moyarich/console-addon-imperative-scrolling
-@moyarich/console-addon-search
-@moyarich/console-addon-links
-```
-
-They use the same `ConsoleAddon` interface and lifecycle as external addons. The `core` distinction describes first-party ownership; it does not create a second runtime addon type.
-
-`@moyarich/console` does not import or auto-register sibling `console-addon-*` packages. Add the packages you want explicitly:
+First-party and external addons use the same `ConsoleAddon` interface and lifecycle.
+`@moyarich/console` does not import or auto-register sibling addon packages.
+Pass the addon instances explicitly:
 
 ```tsx
-import {
-  createImperativeScrollingAddon,
-  IMPERATIVE_SCROLLING_ADDON_ID,
-} from "@moyarich/console-addon-imperative-scrolling";
-
-<Console messages={messages} addons={[createImperativeScrollingAddon()]} />;
+<Console messages={messages} addons={[buildAddon]} />
 ```
 
 Use `disabledAddonIds` to keep a supplied addon inactive:
@@ -85,8 +35,8 @@ Use `disabledAddonIds` to keep a supplied addon inactive:
 ```tsx
 <Console
   messages={messages}
-  addons={[createImperativeScrollingAddon()]}
-  disabledAddonIds={[IMPERATIVE_SCROLLING_ADDON_ID]}
+  addons={[buildAddon]}
+  disabledAddonIds={[buildAddon.id]}
 />
 ```
 
@@ -159,47 +109,11 @@ An addon can replace the complete inner output surface through `consoleExtension
 
 This means a console-feed-style addon can replace the structured/browser-console surface without introducing another `Console` mode, just as an xterm-style addon can replace the ANSI/process-output surface.
 
-```tsx
-function createTerminalSurfaceAddon(): ConsoleAddon {
-  return {
-    id: "@acme/console-terminal-surface",
-    activate(host) {
-      host.extensions.register(consoleExtensionPoints.outputRenderer, {
-        mode: "ansi",
-        render(context) {
-          if (context.mode !== "ansi") {
-            return undefined;
-          }
-
-          return <MyTerminal entries={context.entries} />;
-        },
-      });
-    },
-  };
-}
-```
+See [Replace ANSI output](#/examples/usage/addon-lifecycle/replace-ansi-output).
 
 The same extension point can replace structured console rendering:
 
-```tsx
-function createConsoleFeedAddon(): ConsoleAddon {
-  return {
-    id: "@acme/console-feed",
-    activate(host) {
-      host.extensions.register(consoleExtensionPoints.outputRenderer, {
-        mode: "console",
-        render(context) {
-          if (context.mode !== "console") {
-            return undefined;
-          }
-
-          return <MyConsoleFeed messages={context.messages} />;
-        },
-      });
-    },
-  };
-}
-```
+See [Replace structured output](#/examples/usage/addon-lifecycle/replace-structured-output).
 
 The discriminated renderer context keeps the source data appropriate to each mode:
 
@@ -228,37 +142,7 @@ The output renderer is implementation-neutral. It can support console-feed-style
 
 Third-party packages can define their own typed extension points without changing `ConsoleAddon`:
 
-```ts
-import {
-  createConsoleExtensionPoint,
-  type ConsoleAddon,
-} from "@moyarich/console";
-
-interface DiagnosticProvider {
-  analyze(text: string): string | undefined;
-}
-
-export const diagnosticProvider =
-  createConsoleExtensionPoint<DiagnosticProvider>("acme.diagnosticProvider");
-
-export function createDiagnosticAddon(): ConsoleAddon {
-  return {
-    id: "@acme/console-diagnostics",
-    activate(host) {
-      host.extensions.register(
-        diagnosticProvider,
-        {
-          analyze: (text) => (text.includes("ERROR") ? "failure" : undefined),
-        },
-        {
-          id: "default",
-          priority: 100,
-        },
-      );
-    },
-  };
-}
-```
+See [Custom extension points](#/examples/usage/addon-lifecycle/custom-extension-points).
 
 Higher extension priorities are returned first. Equal priorities preserve registration order. Registration IDs are optional, but when supplied they must be unique within that extension point.
 
@@ -266,40 +150,11 @@ Higher extension priorities are returned first. Equal priorities preserve regist
 
 Use a service when one addon or core feature publishes an API that another addon consumes:
 
-```ts
-import {
-  createConsoleServiceToken,
-  type ConsoleAddon,
-} from "@moyarich/console";
-
-interface BuildService {
-  rerun(): void;
-}
-
-const buildService = createConsoleServiceToken<BuildService>("acme.build");
-
-const provider: ConsoleAddon = {
-  id: "@acme/console-build-tools:provider",
-  activate(host) {
-    host.services.provide(buildService, {
-      rerun: () => runBuild(),
-    });
-  },
-};
-
-const consumer: ConsoleAddon = {
-  id: "@acme/console-build-tools:actions",
-  activate(host) {
-    const build = host.services.require(buildService);
-
-    // Register actions/commands that call build.rerun().
-  },
-};
-```
+See [Shared addon services](#/examples/usage/addon-lifecycle/shared-addon-services).
 
 A service token has one provider at a time. Duplicate providers throw instead of silently replacing the active service.
 
-`@moyarich/console` provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. Workspace addons such as `@moyarich/console-addon-imperative-scrolling`, search, and navigation consume this shared service rather than implementing their own viewport logic.
+`@moyarich/console` provides `consoleServices.viewport`, a `ConsoleViewportService` with `scrollToTop()`, `scrollToBottom()`, `scrollToMessage()`, `isAtTop()`, `isAtBottom()`, and `focus()`. Addons can consume this shared service rather than implementing their own viewport logic.
 
 ### Capabilities
 
@@ -326,19 +181,7 @@ Every addon activation receives its own disposable scope. Registrations made thr
 
 Use `host.scope` for other resources:
 
-```ts
-activate(host) {
-  const controller = new AbortController();
-
-  host.scope.defer(() => {
-    controller.abort();
-  });
-
-  return () => {
-    // Optional additional addon cleanup.
-  };
-}
-```
+See [Addon cleanup](#/examples/usage/addon-lifecycle/addon-cleanup).
 
 Cleanup is idempotent. When an addon manager is disposed, loaded addons are disposed in reverse activation order.
 

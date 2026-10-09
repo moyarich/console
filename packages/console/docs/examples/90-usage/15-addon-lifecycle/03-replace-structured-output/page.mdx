@@ -1,0 +1,26 @@
+---
+label: "Replace structured output"
+description: "Usage example for replace structured output."
+---
+
+See the [API reference](#/package-console/reference/addons/overview) for the contract and options.
+
+```tsx
+function createConsoleFeedAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-feed",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.outputRenderer, {
+        mode: "console",
+        render(context) {
+          if (context.mode !== "console") {
+            return undefined;
+          }
+
+          return <MyConsoleFeed messages={context.messages} />;
+        },
+      });
+    },
+  };
+}
+```

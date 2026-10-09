@@ -202,42 +202,9 @@ form controls.
 Derived hover colors use `color-mix()` only as fallbacks. Supplying an
 explicit public hover token replaces that derived value.
 
-### Example: light output theme
+### Theme example
 
-```css
-.my-console-theme {
-  --console-panel-color-scheme: light;
-  --console-color-scheme: light;
-  --console-context-menu-color-scheme: light;
-
-  --console-panel-background-color: #ffffff;
-  --console-panel-color: #172033;
-  --console-panel-border: 1px solid #d8dee8;
-  --console-panel-header-border-bottom: 1px solid #e2e8f0;
-
-  --console-background-color: #f8fafc;
-  --console-color: #172033;
-  --console-entry-border-bottom: 1px solid #e2e8f0;
-  --console-muted-color: #667085;
-  --console-subtle-color: #98a2b3;
-
-  --console-string-color: #b42318;
-  --console-number-color: #175cd3;
-  --console-null-color: #7a5af8;
-  --console-symbol-color: #027a48;
-
-  --console-context-menu-background-color: #ffffff;
-  --console-context-menu-color: #172033;
-  --console-context-menu-border: 1px solid #d8dee8;
-  --console-context-menu-separator-background-color: #d8dee8;
-}
-```
-
-```tsx
-<div className="my-console-theme">
-  <Console messages={messages} />
-</div>
-```
+See [Light output theme](#/examples/additional-usage/customization/theming).
 
 The context menu is rendered through a portal to `document.body`. When it
 opens, the component copies the public context-menu theme inputs from the

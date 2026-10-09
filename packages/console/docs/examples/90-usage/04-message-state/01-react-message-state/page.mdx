@@ -1,0 +1,15 @@
+---
+label: "React message state"
+description: "Usage example for react message state."
+---
+
+See the [API reference](#/package-console/reference/message-state) for the contract and options.
+
+```tsx
+const { messages, output, console, append, clear, events, setMessages } =
+  useConsoleMessages({
+    maxMessages: 1000,
+    dedupeById: true,
+    resetKey: sessionId,
+  });
+```

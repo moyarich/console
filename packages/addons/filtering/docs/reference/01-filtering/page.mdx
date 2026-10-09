@@ -12,14 +12,7 @@ npm install @moyarich/console-addon-filtering
 
 Create the addon explicitly and pass it through the normal `addons` prop:
 
-```tsx
-import { Console } from "@moyarich/console";
-import { createConsoleFilteringAddon } from "@moyarich/console-addon-filtering";
-
-const filteringAddon = createConsoleFilteringAddon();
-
-<Console messages={messages} addons={[filteringAddon]} />;
-```
+See [Configure filtering](#/examples/addons/core/filtering/filtering).
 
 The addon contributes a `consoleExtensionPoints.messageFilter` predicate.
 Filtering is view-only: retained source messages are not deleted or rewritten.
@@ -30,13 +23,7 @@ Addon filters compose with the existing host-owned `filter` prop. A message
 must satisfy the host predicate and every registered addon predicate to remain
 visible:
 
-```tsx
-<Console
-  messages={messages}
-  addons={[filteringAddon]}
-  filter={(message) => message.source !== "internal"}
-/>
-```
+See [Combine host and addon filters](#/examples/addons/core/filtering/filtering).
 
 This keeps application-specific rules in the host while reusable method, text,
 and source criteria stay in the addon.
@@ -46,23 +33,7 @@ and source criteria stay in the addon.
 The default controls are optional. Applications can own the filter UI and drive
 the same state through `createConsoleFilteringController()`:
 
-```ts
-import {
-  createConsoleFilteringAddon,
-  createConsoleFilteringController,
-} from "@moyarich/console-addon-filtering";
-
-const controller = createConsoleFilteringController({
-  methods: ["warn", "error"],
-  sources: ["api"],
-});
-
-const filteringAddon = createConsoleFilteringAddon({ controller });
-
-controller.setText("timeout");
-controller.setMethodEnabled("warn", false);
-controller.reset();
-```
+See [Drive a headless filter controller](#/examples/addons/core/filtering/usage/filtering/drive-a-headless-filter-controller).
 
 The controller exposes `getState()`, `subscribe()`, state setters, `reset()`,
 and `matches(message)`. Use `createConsoleMessageFilter()` when a fixed

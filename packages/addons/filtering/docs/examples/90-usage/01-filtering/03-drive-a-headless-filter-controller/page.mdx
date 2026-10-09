@@ -1,0 +1,24 @@
+---
+label: "Drive a headless filter controller"
+description: "Usage example for drive a headless filter controller."
+---
+
+See the [API reference](#/addons/filtering/reference/filtering) for the contract and options.
+
+```ts
+import {
+  createConsoleFilteringAddon,
+  createConsoleFilteringController,
+} from "@moyarich/console-addon-filtering";
+
+const controller = createConsoleFilteringController({
+  methods: ["warn", "error"],
+  sources: ["api"],
+});
+
+const filteringAddon = createConsoleFilteringAddon({ controller });
+
+controller.setText("timeout");
+controller.setMethodEnabled("warn", false);
+controller.reset();
+```

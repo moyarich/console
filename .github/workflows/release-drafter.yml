@@ -19,7 +19,15 @@ permissions:
   pull-requests: read
 
 jobs:
+  discover-packages:
+    name: Discover publishable packages
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
+    with:
+      packages-directory: packages
+      require-publish-config: true
+
   discover:
+    needs: discover-packages
     name: Discover changed packages
     runs-on: ubuntu-latest
     outputs:
@@ -40,36 +48,12 @@ jobs:
           INPUT_PACKAGE: ${{ inputs.package }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
+          PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
         shell: bash
         run: |
           set -euo pipefail
 
-          node --input-type=module <<'NODE' > /tmp/packages.json
-          import fs from "node:fs";
-          import path from "node:path";
-
-          function walk(directory) {
-            return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-              const target = path.join(directory, entry.name);
-              if (entry.isDirectory()) return walk(target);
-              return entry.name === "package.json" ? [target] : [];
-            });
-          }
-
-          const packages = walk("packages")
-            .map((manifestPath) => {
-              const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-              return {
-                name: manifest.name,
-                version: manifest.version,
-                directory: path.dirname(manifestPath).replaceAll("\\", "/"),
-                private: manifest.private === true,
-              };
-            })
-            .filter((pkg) => pkg.name && pkg.version && !pkg.private);
-
-          process.stdout.write(JSON.stringify(packages));
-          NODE
+          printf '%s' "$PACKAGES_JSON" > /tmp/packages.json
 
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             if [ "$INPUT_PACKAGE" = "all" ]; then
@@ -138,147 +122,21 @@ jobs:
     name: "Draft · ${{ matrix.name }}"
     needs: discover
     if: ${{ needs.discover.outputs.count != '0' }}
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
     concurrency:
       group: draft-package-${{ github.repository }}-${{ matrix.directory }}
       cancel-in-progress: true
-
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          ref: main
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Build public release body
-        id: notes
-        env:
-          PACKAGE_NAME: ${{ matrix.name }}
-          PACKAGE_DIRECTORY: ${{ matrix.directory }}
-          VERSION: ${{ matrix.version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          CHANGELOG="$PACKAGE_DIRECTORY/CHANGELOG.md"
-          TAG="$PACKAGE_DIRECTORY@$VERSION"
-          RELEASE_NAME="$PACKAGE_NAME v$VERSION"
-
-          if [ ! -f "$CHANGELOG" ]; then
-            echo "::error::$PACKAGE_NAME must own $CHANGELOG."
-            exit 1
-          fi
-
-          CHANGELOG="$CHANGELOG" VERSION="$VERSION" node --input-type=module <<'NODE' > /tmp/release-notes.txt
-          import fs from "node:fs";
-
-          const lines = fs.readFileSync(process.env.CHANGELOG, "utf8").split("\n");
-          const heading = `## ${process.env.VERSION}`;
-          const notes = [];
-          let collecting = false;
-
-          for (const line of lines) {
-            if (line.trim() === heading) {
-              collecting = true;
-              continue;
-            }
-            if (collecting && /^##\s+/.test(line)) break;
-            if (collecting) notes.push(line);
-          }
-
-          process.stdout.write(notes.join("\n").trim());
-          NODE
-
-          NOTES="$(cat /tmp/release-notes.txt)"
-
-          if [ -z "$NOTES" ]; then
-            echo "::error::$CHANGELOG has no public notes for $VERSION."
-            exit 1
-          fi
-
-          BODY="$(
-            {
-              echo "## Release notes"
-              echo
-              echo "$NOTES"
-              echo
-              echo "## Install"
-              echo
-              echo '~~~sh'
-              echo "npm install $PACKAGE_NAME@$VERSION --registry=https://npm.pkg.github.com"
-              echo '~~~'
-            }
-          )"
-
-          {
-            echo "tag=$TAG"
-            echo "release-name=$RELEASE_NAME"
-            echo "body<<EOF"
-            echo "$BODY"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Create or update package draft
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          TAG: ${{ steps.notes.outputs.tag }}
-          RELEASE_NAME: ${{ steps.notes.outputs.release-name }}
-          BODY: ${{ steps.notes.outputs.body }}
-          PACKAGE_NAME: ${{ matrix.name }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          RELEASES="$(gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100")"
-
-          PUBLISHED_ID="$(
-            jq -r --arg tag "$TAG" '
-              [.[][] | select(.draft == false and .tag_name == $tag)]
-              | first | .id // empty
-            ' <<< "$RELEASES"
-          )"
-
-          if [ -n "$PUBLISHED_ID" ]; then
-            {
-              echo "# Package release draft"
-              echo
-              echo "`$TAG` is already published; no draft was changed."
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          EXISTING="$(
-            jq -c --arg tag "$TAG" '
-              [.[][] | select(.draft == true and .tag_name == $tag)]
-              | first // empty
-            ' <<< "$RELEASES"
-          )"
-
-          if [ -n "$EXISTING" ]; then
-            RELEASE_ID="$(jq -r '.id' <<< "$EXISTING")"
-            RELEASE="$(
-              gh api --method PATCH                 "repos/$GH_REPO/releases/$RELEASE_ID"                 -f tag_name="$TAG"                 -f target_commitish="main"                 -f name="$RELEASE_NAME"                 -f body="$BODY"                 -F draft=true
-            )"
-            ACTION="updated"
-          else
-            RELEASE="$(
-              gh api --method POST                 "repos/$GH_REPO/releases"                 -f tag_name="$TAG"                 -f target_commitish="main"                 -f name="$RELEASE_NAME"                 -f body="$BODY"                 -F draft=true
-            )"
-            ACTION="created"
-          fi
-
-          {
-            echo "# Package release draft"
-            echo
-            echo "| Setting | Value |"
-            echo "| --- | --- |"
-            printf '| Package | `%s` |\\n' "$PACKAGE_NAME"
-            printf '| Tag | `%s` |\\n' "$TAG"
-            echo "| Action | **$ACTION** |"
-            echo "| Draft | [Open release draft]($(jq -r '.html_url' <<< "$RELEASE")) |"
-          } >> "$GITHUB_STEP_SUMMARY"
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_release-drafter.yml@v0
+    with:
+      target-branch: main
+      version-mode: exact
+      exact-version: ${{ matrix.version }}
+      package-name: ${{ matrix.name }}
+      package-directory: ${{ matrix.directory }}
+      tag-prefix: ${{ format('{0}@', matrix.directory) }}
+      target-key: ${{ matrix.directory }}
+      release-name: ${{ format('{0} v{1}', matrix.name, matrix.version) }}
+      changelog-path: ${{ format('{0}/CHANGELOG.md', matrix.directory) }}
+      dry-run: false

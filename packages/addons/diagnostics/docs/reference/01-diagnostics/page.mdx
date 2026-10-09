@@ -9,14 +9,7 @@ Install diagnostics separately when you need to inspect what data entered the co
 npm install @moyarich/console-addon-diagnostics
 ```
 
-```tsx
-import { Console } from "@moyarich/console";
-import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
-
-const diagnosticsAddon = createConsoleDiagnosticsAddon();
-
-<Console messages={messages} addons={[diagnosticsAddon]} />;
-```
+See [Configure diagnostics](#/examples/addons/core/diagnostics/diagnostics).
 
 Diagnostics and data export are intentionally separate addons:
 

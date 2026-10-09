@@ -1,0 +1,45 @@
+---
+label: "Build task link addon"
+description: "Usage example for build task link addon."
+---
+
+See the [API reference](#/package-console/reference/addons/overview) for the contract and options.
+
+```tsx
+import {
+  Console,
+  consoleExtensionPoints,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+function createBuildAddon(): ConsoleAddon {
+  return {
+    id: "@acme/console-build-tools",
+    activate(host) {
+      host.extensions.register(consoleExtensionPoints.linkProvider, {
+        id: "build-task-links",
+        provideLinks(text) {
+          const match = /TASK-\d+/.exec(text);
+
+          if (!match || match.index === undefined) {
+            return undefined;
+          }
+
+          return [
+            {
+              text: match[0],
+              start: match.index,
+              end: match.index + match[0].length,
+              action: () => openTask(match[0]),
+            },
+          ];
+        },
+      });
+    },
+  };
+}
+
+const buildAddon = createBuildAddon();
+
+<Console messages={messages} addons={[buildAddon]} />;
+```

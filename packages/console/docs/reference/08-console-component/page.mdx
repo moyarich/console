@@ -26,24 +26,7 @@ The component is intentionally a console surface, not a runtime shell. Runtime s
 | `addons`              | Add reusable `ConsoleAddon` instances                                |
 | `disabledAddonIds`    | Keep selected supplied addons unloaded by package-qualified addon ID |
 
-Optional frame resizing lives in `@moyarich/console-addon-resizable`, not in the core `Console` props:
-
-```tsx
-import { Console } from "@moyarich/console";
-import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
-
-const resizable = createResizableConsoleAddon({
-  direction: "both",
-  defaultWidth: 720,
-  defaultHeight: 300,
-  minWidth: 320,
-  minHeight: 180,
-});
-
-<Console messages={messages} addons={[resizable]} />;
-```
-
-The addon owns resize state, pointer handling, constraints, edges, visible handles, and resize theming while `Console` continues to own the panel and output viewport. Importing `@moyarich/console-addon-resizable` loads the addon stylesheet automatically; the resize CSS remains packaged separately from core.
+For optional frame resizing, see the [Resizable addon reference](#/addons/resizable/reference/resizing).
 
 ### Structured-mode props
 

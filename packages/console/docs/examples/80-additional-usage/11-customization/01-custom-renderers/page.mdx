@@ -29,3 +29,51 @@ Use a message renderer when the whole console row needs custom presentation. `re
   sourcePath="message-renderer.tsx"
   title="Message renderer"
 />
+
+## Custom value and message rendering
+
+See the [API reference](#/package-console/reference/custom-renderers) for the contract and options.
+
+```tsx
+import {
+  Console,
+  type ConsoleMessageRenderer,
+  type ConsoleValueRenderer,
+} from "@moyarich/console";
+
+const messageRenderers: ConsoleMessageRenderer[] = [
+  {
+    method: "info",
+    match: (message) => message.source === "build",
+    render: (_message, { renderDefault }) => (
+      <div className="build-message">{renderDefault()}</div>
+    ),
+  },
+];
+
+const valueRenderers: ConsoleValueRenderer[] = [
+  {
+    type: "Object",
+    match: (value) =>
+      typeof value === "object" &&
+      value !== null &&
+      "kind" in value &&
+      value.kind === "metric",
+    render: (value) => {
+      const metric = value as { label: string; value: number };
+
+      return (
+        <strong>
+          {metric.label}: {metric.value}
+        </strong>
+      );
+    },
+  },
+];
+
+<Console
+  messages={messages}
+  messageRenderers={messageRenderers}
+  valueRenderers={valueRenderers}
+/>;
+```
