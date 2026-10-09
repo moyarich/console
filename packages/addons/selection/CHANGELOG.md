@@ -4,8 +4,9 @@
 
 ### Added
 
-- Select structured Console messages and terminal/process entries by stable ID.
-- Support single, additive, toggle, clear, and visible-range selection.
-- Preserve selected IDs when filtering temporarily hides entries.
-- Expose selected and visible-selected state through a headless controller service.
-- Render selected structured messages through the existing message-decoration extension point.
+- Select structured console messages and terminal entries using stable message IDs.
+- Support single, additive, and toggle selection, plus clearing and replacing selected IDs.
+- Select a contiguous range of currently visible messages between two IDs.
+- Retrieve the visible subset of selected entries for host integrations.
+- Show selected-message indicators and provide a toggle-selection message action, with options to disable either contribution.
+- Access and observe selection state through a headless controller.
