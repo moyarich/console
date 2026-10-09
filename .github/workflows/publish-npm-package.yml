@@ -3,59 +3,174 @@ name: Publish npm packages
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: npm distribution tag
+      package:
+        description: Select one package directory, or all packages in dependency order
         required: true
-        default: latest
-        type: string
-      access:
-        description: npm package access
-        required: true
-        default: public
+        default: all
         type: choice
         options:
-          - public
-          - restricted
+          - all
+          - packages/console-core
+          - packages/console
+          - packages/addons/imperative-scrolling
+          - packages/addons/data-export
+          - packages/addons/diagnostics
+          - packages/addons/filtering
+          - packages/addons/resizable
+      dry-run:
+        description: Preview publishing without changing the npm registry
+        required: true
+        default: true
+        type: boolean
+      tag:
+        description: npm distribution tag (leave blank for the resolved default)
+        required: false
+        default: ""
+        type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: npm-publish
   cancel-in-progress: false
 
 jobs:
-  publish:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: 24
-          cache: npm
-          registry-url: https://registry.npmjs.org
-          scope: "@moyarich"
-      - name: Install dependencies
-        run: npm ci --include=optional
-      - name: Validate publishable packages
-        run: npm run typecheck && npm test && npm run build:packages && npm run pack:packages
-      - name: Show package versions
-        run: |
-          node -p "'Publishing @moyarich/console-core@' + require('./packages/console-core/package.json').version"
-          node -p "'Publishing @moyarich/console@' + require('./packages/console/package.json').version"
-          node -p "'Publishing @moyarich/console-addon-imperative-scrolling@' + require('./packages/addons/imperative-scrolling/package.json').version"
-          node -p "'Publishing @moyarich/console-addon-data-export@' + require('./packages/addons/data-export/package.json').version"
-          node -p "'Publishing @moyarich/console-addon-diagnostics@' + require('./packages/addons/diagnostics/package.json').version"
-          node -p "'Publishing @moyarich/console-addon-filtering@' + require('./packages/addons/filtering/package.json').version"
-          node -p "'Publishing @moyarich/console-addon-resizable@' + require('./packages/addons/resizable/package.json').version"
-      - name: Publish packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TAG: ${{ inputs.tag }}
-          NPM_ACCESS: ${{ inputs.access }}
-        run: |
-          for workspace in             @moyarich/console-core             @moyarich/console             @moyarich/console-addon-imperative-scrolling             @moyarich/console-addon-data-export             @moyarich/console-addon-diagnostics             @moyarich/console-addon-filtering             @moyarich/console-addon-resizable
-          do
-            npm publish --workspace "$workspace"               --registry https://registry.npmjs.org               --tag "$NPM_TAG"               --access "$NPM_ACCESS"
-          done
+  core:
+    name: Publish packages/console-core
+    if: ${{ inputs.package == 'all' || inputs.package == 'packages/console-core' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/console-core
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  console:
+    name: Publish packages/console
+    needs: core
+    if: ${{ always() && !cancelled() && (needs.core.result == 'success' || needs.core.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/console') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/console
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  imperative_scrolling:
+    name: Publish packages/addons/imperative-scrolling
+    needs: console
+    if: ${{ always() && !cancelled() && (needs.console.result == 'success' || needs.console.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/imperative-scrolling') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/imperative-scrolling
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  data_export:
+    name: Publish packages/addons/data-export
+    needs: imperative_scrolling
+    if: ${{ always() && !cancelled() && (needs.imperative_scrolling.result == 'success' || needs.imperative_scrolling.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/data-export') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/data-export
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  diagnostics:
+    name: Publish packages/addons/diagnostics
+    needs: data_export
+    if: ${{ always() && !cancelled() && (needs.data_export.result == 'success' || needs.data_export.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/diagnostics') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/diagnostics
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  filtering:
+    name: Publish packages/addons/filtering
+    needs: diagnostics
+    if: ${{ always() && !cancelled() && (needs.diagnostics.result == 'success' || needs.diagnostics.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/filtering') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/filtering
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  resizable:
+    name: Publish packages/addons/resizable
+    needs: filtering
+    if: ${{ always() && !cancelled() && (needs.filtering.result == 'success' || needs.filtering.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/resizable') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/resizable
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
