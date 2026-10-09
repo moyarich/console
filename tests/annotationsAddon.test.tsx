@@ -52,6 +52,40 @@ describe("@moyarich/console-addon-annotations", () => {
     expect(message).toEqual(before);
   });
 
+  it("keeps immutable annotation snapshots stable until their message changes", () => {
+    const controller = createConsoleAnnotationsController();
+    const empty = controller.getAnnotations("first");
+    expect(controller.getAnnotations("first")).toBe(empty);
+    expect(controller.getAnnotations(" ")).toBe(empty);
+
+    controller.addAnnotation("first", { id: "bookmark" });
+    const bookmarked = controller.getAnnotations("first");
+    expect(bookmarked).not.toBe(empty);
+    expect(Object.isFrozen(bookmarked)).toBe(true);
+    expect(controller.getAnnotations(" first ")).toBe(bookmarked);
+
+    controller.addAnnotation("second", { id: "reviewed" });
+    expect(controller.getAnnotations("first")).toBe(bookmarked);
+    expect(controller.addAnnotation("first", { id: "bookmark" })).toBe(false);
+    expect(controller.getAnnotations("first")).toBe(bookmarked);
+
+    controller.addAnnotation("first", { id: "bookmark", label: "Updated" });
+    const updated = controller.getAnnotations("first");
+    expect(updated).not.toBe(bookmarked);
+    expect(bookmarked[0]?.label).toBeUndefined();
+    expect(updated[0]?.label).toBe("Updated");
+
+    controller.removeAnnotation("first", "bookmark");
+    expect(controller.getAnnotations("first")).toBe(empty);
+    controller.addAnnotation("first", { id: "bookmark" });
+    controller.clearMessage("first");
+    expect(controller.getAnnotations("first")).toBe(empty);
+    controller.addAnnotation("first", { id: "bookmark" });
+    controller.clear();
+    expect(controller.getAnnotations("first")).toBe(empty);
+    expect(controller.getAnnotations("second")).toBe(empty);
+  });
+
   it("handles empty and unknown IDs safely", () => {
     const controller = createConsoleAnnotationsController();
 

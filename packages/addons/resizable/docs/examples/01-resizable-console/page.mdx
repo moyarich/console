@@ -26,3 +26,22 @@ The example also uses the core panel sizing theme variables so the console start
 - `--console-panel-min-height`
 
 <RunnableExample source={source} sourcePath="example.tsx" />
+
+## Configure resizing
+
+See the [API reference](#/addons/resizable/reference/resizing) for the contract and options.
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createResizableConsoleAddon } from "@moyarich/console-addon-resizable";
+
+const resizable = createResizableConsoleAddon({
+  direction: "both",
+  defaultWidth: 720,
+  defaultHeight: 300,
+  minWidth: 320,
+  minHeight: 180,
+});
+
+<Console messages={messages} addons={[resizable]} />;
+```

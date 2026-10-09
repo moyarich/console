@@ -5,49 +5,7 @@ description: "Replace or extend message, value, and output rendering behavior."
 
 Renderer hooks let an application teach the console about domain-specific values without forking the library.
 
-```tsx
-import {
-  Console,
-  type ConsoleMessageRenderer,
-  type ConsoleValueRenderer,
-} from "@moyarich/console";
-
-const messageRenderers: ConsoleMessageRenderer[] = [
-  {
-    method: "info",
-    match: (message) => message.source === "build",
-    render: (_message, { renderDefault }) => (
-      <div className="build-message">{renderDefault()}</div>
-    ),
-  },
-];
-
-const valueRenderers: ConsoleValueRenderer[] = [
-  {
-    type: "Object",
-    match: (value) =>
-      typeof value === "object" &&
-      value !== null &&
-      "kind" in value &&
-      value.kind === "metric",
-    render: (value) => {
-      const metric = value as { label: string; value: number };
-
-      return (
-        <strong>
-          {metric.label}: {metric.value}
-        </strong>
-      );
-    },
-  },
-];
-
-<Console
-  messages={messages}
-  messageRenderers={messageRenderers}
-  valueRenderers={valueRenderers}
-/>;
-```
+See [Custom value and message rendering](#/examples/additional-usage/customization/custom-renderers).
 
 Renderer entries form ordered dispatch tables:
 

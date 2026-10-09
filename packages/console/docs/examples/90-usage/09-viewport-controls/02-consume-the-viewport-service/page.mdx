@@ -1,0 +1,19 @@
+---
+label: "Consume the viewport service"
+description: "Usage example for consume the viewport service."
+---
+
+See the [API reference](#/package-console/reference/viewport-controls) for the contract and options.
+
+```ts
+import { consoleServices, type ConsoleAddon } from "@moyarich/console";
+
+const navigationAddon: ConsoleAddon = {
+  id: "@acme/console-navigation",
+  activate(host) {
+    const viewport = host.services.require(consoleServices.viewport);
+
+    viewport.scrollToMessage("message-42");
+  },
+};
+```

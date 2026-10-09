@@ -32,18 +32,6 @@ If sandboxed code calls an unknown console method on the proxy, the proxy does n
 
 ### Example: timers and groups
 
-```ts
-const events = createConsoleEventEmitter();
-const runtimeConsole = createConsoleProxy({ events });
-
-runtimeConsole.group("build");
-runtimeConsole.time("compile");
-
-runtimeConsole.log("Compiling", { files: 42 });
-runtimeConsole.timeLog("compile", "after parsing");
-runtimeConsole.timeEnd("compile");
-
-runtimeConsole.groupEnd();
-```
+See [Grouped console calls](#/examples/console-methods/groups/console-group).
 
 The messages contain the calculated group depth and timer output, so the renderer does not need to reconstruct console state later.

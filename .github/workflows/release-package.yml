@@ -135,4 +135,3 @@ jobs:
       create-tag: true
       draft: false
       dry-run: ${{ inputs.dry-run }}
-

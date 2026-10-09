@@ -12,16 +12,7 @@ npm install @moyarich/console-addon-data-export
 
 Create the addon explicitly and pass it through the normal `addons` prop:
 
-```tsx
-import { Console } from "@moyarich/console";
-import { createConsoleDataExportAddon } from "@moyarich/console-addon-data-export";
-
-const exportAddon = createConsoleDataExportAddon({
-  fileName: "runtime-output",
-});
-
-<Console messages={messages} addons={[exportAddon]} />;
-```
+See [Configure data export](#/examples/addons/core/data-export/data-export).
 
 The addon is additive. It does not replace the core **Copy output** command,
 object/table copy behavior, renderers, serializers, or process-output pipeline.

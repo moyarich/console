@@ -27,3 +27,16 @@ ANSI diagnostics preserve raw chunks separately from normalized and processor-re
   sourcePath="ansi.tsx"
   title="ANSI pipeline diagnostics"
 />
+
+## Configure diagnostics
+
+See the [API reference](#/addons/diagnostics/reference/diagnostics) for the contract and options.
+
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
+
+const diagnosticsAddon = createConsoleDiagnosticsAddon();
+
+<Console messages={messages} addons={[diagnosticsAddon]} />;
+```

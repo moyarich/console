@@ -24,6 +24,7 @@ export interface ConsoleAnnotation {
 
 /** Observable annotation state kept separate from source Console messages. */
 export interface ConsoleAnnotationsController {
+  /** Immutable snapshot, stable until this message's annotations change. */
   getAnnotations(messageId: string): readonly ConsoleAnnotation[];
   getAnnotatedMessageIds(): readonly string[];
   hasAnnotation(messageId: string, annotationId: string): boolean;
@@ -54,6 +55,8 @@ export const consoleAnnotationsService =
     `${CONSOLE_ANNOTATIONS_ADDON_ID}.controller`,
   );
 
+const EMPTY_ANNOTATIONS: readonly ConsoleAnnotation[] = Object.freeze([]);
+
 const DEFAULT_BOOKMARK: ConsoleAnnotation = Object.freeze({
   id: CONSOLE_BOOKMARK_ANNOTATION_ID,
   label: "Bookmark",
@@ -82,6 +85,7 @@ function normalizeAnnotation(
 /** Creates observable, headless annotation state keyed by stable message ID. */
 export function createConsoleAnnotationsController(): ConsoleAnnotationsController {
   const annotations = new Map<string, Map<string, ConsoleAnnotation>>();
+  const snapshots = new Map<string, readonly ConsoleAnnotation[]>();
   const listeners = new Set<() => void>();
 
   const emit = () => {
@@ -91,8 +95,13 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
   const controller: ConsoleAnnotationsController = {
     getAnnotations(messageId) {
       const id = normalizeId(messageId);
-      if (!id) return [];
-      return Object.freeze(Array.from(annotations.get(id)?.values() ?? []));
+      if (!id || !annotations.has(id)) return EMPTY_ANNOTATIONS;
+      let snapshot = snapshots.get(id);
+      if (!snapshot) {
+        snapshot = Object.freeze(Array.from(annotations.get(id)!.values()));
+        snapshots.set(id, snapshot);
+      }
+      return snapshot;
     },
 
     getAnnotatedMessageIds() {
@@ -119,14 +128,16 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
       const previous = current.get(normalized.id);
 
       if (
-        previous?.label === normalized.label &&
-        previous?.metadata === normalized.metadata
+        previous &&
+        previous.label === normalized.label &&
+        previous.metadata === normalized.metadata
       ) {
         return false;
       }
 
       current.set(normalized.id, normalized);
       annotations.set(messageKey, current);
+      snapshots.delete(messageKey);
       emit();
       return true;
     },
@@ -140,6 +151,7 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
       if (!current?.delete(annotationKey)) return false;
 
       if (current.size === 0) annotations.delete(messageKey);
+      snapshots.delete(messageKey);
       emit();
       return true;
     },
@@ -160,6 +172,7 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
     clearMessage(messageId) {
       const messageKey = normalizeId(messageId);
       if (!messageKey || !annotations.delete(messageKey)) return false;
+      snapshots.delete(messageKey);
       emit();
       return true;
     },
@@ -167,6 +180,7 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
     clear() {
       if (annotations.size === 0) return;
       annotations.clear();
+      snapshots.clear();
       emit();
     },
 

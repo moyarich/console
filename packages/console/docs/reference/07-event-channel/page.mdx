@@ -5,14 +5,7 @@ description: "Publish and subscribe to typed console message and clear events."
 
 `createConsoleEventEmitter()` is a small typed event bus for console producers and consumers.
 
-```ts
-const events = createConsoleEventEmitter();
-
-const { messages } = useConsoleMessages({ events });
-const runtimeConsole = createConsoleProxy({ events });
-
-runtimeConsole.log("shared event stream");
-```
+See [Publish console events](#/examples/usage/event-channel/publish-console-events).
 
 ### Event-emitter methods
 

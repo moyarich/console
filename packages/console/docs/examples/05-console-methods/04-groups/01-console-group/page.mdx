@@ -6,3 +6,21 @@ description: "Render a console.group heading with nested messages."
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
+
+## Grouped console calls
+
+See the [API reference](#/package-console/reference/console-methods) for the contract and options.
+
+```ts
+const events = createConsoleEventEmitter();
+const runtimeConsole = createConsoleProxy({ events });
+
+runtimeConsole.group("build");
+runtimeConsole.time("compile");
+
+runtimeConsole.log("Compiling", { files: 42 });
+runtimeConsole.timeLog("compile", "after parsing");
+runtimeConsole.timeEnd("compile");
+
+runtimeConsole.groupEnd();
+```

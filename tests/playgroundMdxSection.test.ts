@@ -32,6 +32,30 @@ describe("playground MDX sections", () => {
     expect(section.getPage("overview")?.label).toBe("Overview");
   });
 
+  it("places directory landing pages first inside their group without duplication", () => {
+    const section = createMdxSection({
+      id: "examples",
+      label: "Examples",
+      modules: {
+        "./01-parser/01-basic/page.mdx": module("Basic"),
+        "./01-parser/page.mdx": module("Overview"),
+      },
+    });
+    expect(section.pages.map((page) => page.id)).toEqual([
+      "parser",
+      "parser/basic",
+    ]);
+    expect(section.defaultPage?.id).toBe("parser");
+    expect(section.items).toHaveLength(1);
+    const group = section.items[0];
+    expect(group?.type).toBe("group");
+    if (group?.type === "group") {
+      expect(
+        group.group.items.map((item) => item.type === "page" && item.page.id),
+      ).toEqual(["parser", "parser/basic"]);
+    }
+  });
+
   it("accepts unnumbered directories and sorts them after explicitly ordered siblings", () => {
     const section = createMdxSection({
       id: "docs",

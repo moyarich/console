@@ -16,63 +16,7 @@ The three typed action surfaces are:
 The existing `actions` prop remains available as an escape hatch for arbitrary
 React content in the header ellipsis popover.
 
-```tsx
-import {
-  Console,
-  type ConsoleContextMenuAction,
-  type ConsoleMessageAction,
-  type ConsoleMessageData,
-  type ConsolePanelAction,
-} from "@moyarich/console";
-
-const panelActions: ConsolePanelAction[] = [
-  {
-    id: "export-output",
-    label: "Export output",
-    disabled: ({ hasMessages }) => !hasMessages,
-    onSelect: ({ mode }) => exportOutput(mode),
-  },
-];
-
-const contextMenuActions: ConsoleContextMenuAction[] = [
-  {
-    id: "copy-debug-context",
-    label: "Copy debug context",
-    visible: ({ kind }) => kind !== "object",
-    disabled: ({ hasMessages }) => !hasMessages,
-    onSelect: (context) => copyDebugContext(context),
-  },
-];
-
-const messageActions: ConsoleMessageAction[] = [
-  {
-    id: "bookmark",
-    label: "Bookmark",
-    onSelect: ({ message, index }) => bookmarkMessage(message, index),
-  },
-  {
-    id: "open-source",
-    label: "Open source",
-    disabled: ({ message }) => !message.source,
-    onSelect: ({ message }) => openSource(message.source!),
-  },
-];
-
-export function RuntimeConsole({
-  messages,
-}: {
-  messages: ConsoleMessageData[];
-}) {
-  return (
-    <Console
-      messages={messages}
-      panelActions={panelActions}
-      contextMenuActions={contextMenuActions}
-      messageActions={messageActions}
-    />
-  );
-}
-```
+See [Panel and message actions](#/examples/additional-usage/customization/extensible-actions).
 
 Each action supports `id`, `label`, `onSelect`, optional `icon`,
 `ariaLabel`, `variant`, and `separatorBefore`. Both `visible` and

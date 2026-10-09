@@ -1,29 +1,20 @@
 import { useEffect, useRef } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { CONSOLE_EXAMPLE_SECTION } from "@src/playground-registry/examples";
+import { MdxPage } from "@src/mdx/MdxPage";
+import { PlaygroundMDXProvider } from "@src/mdx/PlaygroundMDXProvider";
 import {
-  CONSOLE_EXAMPLE_SECTION,
-  DEFAULT_CONSOLE_EXAMPLE,
-} from "../../examples";
-import { MdxPage } from "../../mdx/MdxPage";
-import { PlaygroundMDXProvider } from "../../mdx/PlaygroundMDXProvider";
-import { DOCUMENTATION_SECTIONS } from "../../utils/documentationSections";
+  DEFAULT_PLAYGROUND_PATH,
+  DOCUMENTATION_SECTIONS,
+  PLAYGROUND_SECTIONS,
+} from "@src/playground-registry";
 import {
   buildPlaygroundPath,
   resolvePlaygroundPath,
-} from "../../utils/playgroundRouting";
-import { Sidebar } from "../Sidebar";
-import { ExamplesSection } from "../Sidebar/sections/ExamplesSection";
-import { MdxPageSection } from "../Sidebar/sections/MdxPageSection";
-
-const PLAYGROUND_SECTIONS = [
-  CONSOLE_EXAMPLE_SECTION,
-  ...DOCUMENTATION_SECTIONS,
-] as const;
-
-const DEFAULT_PLAYGROUND_PATH = buildPlaygroundPath(
-  CONSOLE_EXAMPLE_SECTION.id,
-  DEFAULT_CONSOLE_EXAMPLE.id,
-);
+} from "@src/utils/playgroundRouting";
+import { Sidebar } from "@src/components/Sidebar";
+import { ExamplesSection } from "@src/components/Sidebar/sections/ExamplesSection";
+import { MdxPageSection } from "@src/components/Sidebar/sections/MdxPageSection";
 
 export function Playground() {
   const location = useLocation();
@@ -54,6 +45,15 @@ export function Playground() {
 
   if (!route) {
     return <Navigate to={DEFAULT_PLAYGROUND_PATH} replace />;
+  }
+
+  const canonicalPath = buildPlaygroundPath(
+    route.section.id,
+    route.page.id,
+    route.outline?.id,
+  );
+  if (location.pathname !== canonicalPath) {
+    return <Navigate to={canonicalPath} replace />;
   }
 
   const { section, page: selectedPage, outline } = route;

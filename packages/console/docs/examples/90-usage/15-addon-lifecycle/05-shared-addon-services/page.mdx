@@ -1,0 +1,37 @@
+---
+label: "Shared addon services"
+description: "Usage example for shared addon services."
+---
+
+See the [API reference](#/package-console/reference/addons/overview) for the contract and options.
+
+```ts
+import {
+  createConsoleServiceToken,
+  type ConsoleAddon,
+} from "@moyarich/console";
+
+interface BuildService {
+  rerun(): void;
+}
+
+const buildService = createConsoleServiceToken<BuildService>("acme.build");
+
+const provider: ConsoleAddon = {
+  id: "@acme/console-build-tools:provider",
+  activate(host) {
+    host.services.provide(buildService, {
+      rerun: () => runBuild(),
+    });
+  },
+};
+
+const consumer: ConsoleAddon = {
+  id: "@acme/console-build-tools:actions",
+  activate(host) {
+    const build = host.services.require(buildService);
+
+    // Register actions/commands that call build.rerun().
+  },
+};
+```

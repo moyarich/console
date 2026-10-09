@@ -34,7 +34,8 @@
       ],
       "@moyarich/console-addon-selection": [
         "../../packages/addons/selection/src/index.tsx"
-      ]
+      ],
+      "@src/*": ["src/*"]
     }
   },
   "include": [

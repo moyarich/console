@@ -1,0 +1,17 @@
+---
+label: Imperative scrolling
+description: Add scrolling and focus panel actions through the shared viewport service.
+---
+
+Use `@moyarich/console-addon-imperative-scrolling` to add viewport actions:
+
+See [Configure viewport actions](#/examples/addons/core/imperative-scroll-controls/imperative-scroll-controls).
+
+It contributes standard **Scroll to top**, **Latest output**, and **Focus output** panel actions while delegating all behavior to the same core viewport service.
+
+### Controlled activation
+
+The addon follows the standard Console lifecycle. Keep its state stable and use
+`disabledAddonIds` when the host needs to disable its contributions:
+
+See [Disable viewport actions](#/examples/addons/core/imperative-scroll-controls/usage/scrolling/disable-viewport-actions).
