@@ -19,6 +19,15 @@ on:
           - packages/addons/navigation
           - packages/addons/selection
           - packages/addons/resizable
+      registry:
+        description: Publish destination
+        required: true
+        default: npm
+        type: choice
+        options:
+          - npm
+          - github
+          - all
       dry-run:
         description: Preview publishing without changing the npm registry
         required: true
@@ -48,7 +57,7 @@ jobs:
       target-branch: main
       package-directory: ${{ inputs.package }}
       version-mode: package-json
-      registry: npm
+      registry: ${{ inputs.registry }}
       dry-run: ${{ inputs.dry-run }}
       tag: ${{ inputs.tag }}
       verify-git-tag: true
