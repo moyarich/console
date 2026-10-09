@@ -125,7 +125,7 @@ jobs:
     needs: [select, gate]
     permissions:
       contents: write
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_release.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_release.yml@v0
     with:
       version: ${{ needs.select.outputs.version }}
       release-tag: ${{ needs.select.outputs.tag }}
@@ -143,7 +143,7 @@ jobs:
     permissions:
       contents: write
       packages: write
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@v0
     with:
       package-directory: ${{ needs.select.outputs.directory }}
       target-branch: main
