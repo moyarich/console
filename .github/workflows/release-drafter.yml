@@ -19,7 +19,15 @@ permissions:
   pull-requests: read
 
 jobs:
+  discover-packages:
+    name: Discover publishable packages
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
+    with:
+      packages-directory: packages
+      require-publish-config: true
+
   discover:
+    needs: discover-packages
     name: Discover changed packages
     runs-on: ubuntu-latest
     outputs:
@@ -40,36 +48,12 @@ jobs:
           INPUT_PACKAGE: ${{ inputs.package }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
+          PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
         shell: bash
         run: |
           set -euo pipefail
 
-          node --input-type=module <<'NODE' > /tmp/packages.json
-          import fs from "node:fs";
-          import path from "node:path";
-
-          function walk(directory) {
-            return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-              const target = path.join(directory, entry.name);
-              if (entry.isDirectory()) return walk(target);
-              return entry.name === "package.json" ? [target] : [];
-            });
-          }
-
-          const packages = walk("packages")
-            .map((manifestPath) => {
-              const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-              return {
-                name: manifest.name,
-                version: manifest.version,
-                directory: path.dirname(manifestPath).replaceAll("\\", "/"),
-                private: manifest.private === true,
-              };
-            })
-            .filter((pkg) => pkg.name && pkg.version && !pkg.private);
-
-          process.stdout.write(JSON.stringify(packages));
-          NODE
+          printf '%s' "$PACKAGES_JSON" > /tmp/packages.json
 
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             if [ "$INPUT_PACKAGE" = "all" ]; then
