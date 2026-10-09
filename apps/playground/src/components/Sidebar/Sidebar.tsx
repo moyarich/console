@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
-import "./sidebar.css";
+import "./Sidebar.css";
 
 export type SidebarProps = ComponentPropsWithoutRef<"nav">;
 

@@ -1,3 +1,4 @@
+import "./MdxTable.css";
 import type { ComponentPropsWithoutRef } from "react";
 
 export function MdxTable(props: ComponentPropsWithoutRef<"table">) {
