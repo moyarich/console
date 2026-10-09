@@ -8,34 +8,28 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
-  validate:
+  node:
+    name: Shared Node checks
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_node-ci.yml@main
+    with:
+      package-directory: "."
+      node-version: "24"
+
+  repository-checks:
+    name: Repository checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: 24
+          node-version: "24"
           cache: npm
-      - name: Install dependencies
-        run: npm ci --include=optional
-      - name: Lint
-        run: npm run lint
-      - name: Check formatting
-        run: npm run format:check
-      - name: Typecheck
-        run: npm run typecheck
-      # Tests import workspace packages through their public package entries.
-      # Build package dist outputs first, matching the workspace CI contract used
-      # in dev-toolkit instead of relying on test-only source aliases.
-      - name: Build workspace packages
-        run: npm run build:packages
-      - name: Test
-        run: npm test
-      - name: Build playground
-        run: npm run build:playground
-      - name: Build Storybook
-        run: npm run build-storybook
-      - name: Validate package archives
-        run: npm run pack:packages
+      - run: npm ci --include=optional
+      - run: npm run format:check
+      - run: npm run build:packages
+      - run: npm run build:playground
+      - run: npm run build-storybook
+      - run: npm run pack:packages
