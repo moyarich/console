@@ -63,7 +63,15 @@ jobs:
           }
           console.log(`Validated independent changelogs for ${count} publishable packages.`);
           NODE
-      - run: npm run format:check
+      # Shared Prettier self-heal excludes workflow YAML and generated dist.
+      # Keep the CI formatting scope identical to its formatter.
+      - name: Check formatting
+        run: |
+          printf '%s\n' '.github/workflows/' 'dist/' '.prettier-self-heal.ignore' > /tmp/console-prettier-ignore
+          if [ -f .prettierignore ]; then
+            cat .prettierignore >> /tmp/console-prettier-ignore
+          fi
+          npx prettier . --check --ignore-path /tmp/console-prettier-ignore
       - run: npm run build:packages
       - run: npm run build:playground
       - run: npm run build-storybook
