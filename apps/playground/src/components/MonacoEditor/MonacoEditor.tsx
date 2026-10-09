@@ -118,7 +118,10 @@ export function MonacoEditor({
   };
 
   return (
-    <div className="monaco-editor-container" style={{ height, width, position: "relative" }}>
+    <div
+      className="monaco-editor-container"
+      style={{ height, width, position: "relative" }}
+    >
       {!ready && !error && (
         <div
           style={{

@@ -1,77 +1,73 @@
 :where(.layout-content, .site-footer, .playground-shell) {
-  --_playground-component-border: var(--playground-component-border, var(--playground-border, #d7deea));
-  --_playground-component-accent-companion: var(--playground-component-accent-companion, var(--playground-accent-companion, #635bff));
-  --_playground-component-text-subtle: var(--playground-component-text-subtle, var(--playground-text-subtle, #334155));
-  --_playground-component-accent-strong: var(--playground-component-accent-strong, var(--playground-accent-strong, #635bff));
+  --_playground-component-border: var(
+    --playground-component-border,
+    var(--playground-border, #d7deea)
+  );
+  --_playground-component-accent-companion: var(
+    --playground-component-accent-companion,
+    var(--playground-accent-companion, #635bff)
+  );
+  --_playground-component-text-subtle: var(
+    --playground-component-text-subtle,
+    var(--playground-text-subtle, #334155)
+  );
+  --_playground-component-accent-strong: var(
+    --playground-component-accent-strong,
+    var(--playground-accent-strong, #635bff)
+  );
 }
 
-
-
 .site-footer {
-  border-top: 1px solid var(--_playground-component-border, var(--playground-border, #d7deea));
+  border-top: 1px solid
+    var(--_playground-component-border, var(--playground-border, #d7deea));
   color: #8a94a6;
   font-size: 0.74rem;
 }
-
 
 .site-footer span:first-child {
   color: #667085;
   font-weight: 500;
 }
 @media (max-width: 1180px) {
-
   .playground-grid {
     grid-template-columns: 250px minmax(0, 1fr);
   }
-
 }
 
 @media (max-width: 1020px) {
-
   .playground-grid {
     grid-template-columns: 1fr;
   }
 
-
   .selected-example {
     min-height: 100%;
   }
-
 }
 
 @media (max-width: 760px) {
-
-
   .playground-shell {
     width: min(100% - 28px, 1440px);
     padding: 40px 0 56px;
   }
 
-
   .hero {
     margin-bottom: 28px;
   }
 
-
   .hero h1 {
     font-size: clamp(2.15rem, 11vw, 3.6rem);
   }
-
 }
-
-
 
 .documentation-sidebar {
   border-right: 1px solid #e5e7eb;
   background: #fff;
 }
 
-
 .hero {
   max-width: 900px;
   margin: 0 0 22px;
 }
-
 
 .hero h1 {
   max-width: 760px;
@@ -83,7 +79,6 @@
   letter-spacing: -0.04em;
 }
 
-
 .hero p {
   max-width: 700px;
   margin: 0;
@@ -92,7 +87,6 @@
   font-weight: 400;
   line-height: 1.6;
 }
-
 
 .hero-example-path {
   display: flex;
@@ -105,17 +99,17 @@
   font-size: 0.72rem;
 }
 
-
 .hero-example-path strong {
   color: #4f46e5;
   font-weight: 500;
 }
 
-
 .hero-example-path > [aria-hidden="true"] {
-  color: var(--_playground-component-accent-companion, var(--playground-accent-companion, #635bff));
+  color: var(
+    --_playground-component-accent-companion,
+    var(--playground-accent-companion, #635bff)
+  );
 }
-
 
 .documentation-page {
   margin: 0 0 22px;
@@ -124,21 +118,17 @@
   line-height: 1.7;
 }
 
-
 .documentation-page:empty {
   display: none;
 }
-
 
 .documentation-page > :first-child {
   margin-top: 0;
 }
 
-
 .documentation-page > :last-child {
   margin-bottom: 0;
 }
-
 
 .documentation-page h1,
 .documentation-page h2,
@@ -148,23 +138,19 @@
   letter-spacing: -0.02em;
 }
 
-
 .documentation-page h1 {
   font-size: 1.7rem;
 }
-
 
 .documentation-page h2 {
   margin-top: 28px;
   font-size: 1.3rem;
 }
 
-
 .documentation-page h3 {
   margin-top: 22px;
   font-size: 1.05rem;
 }
-
 
 .documentation-page code {
   border-radius: 5px;
@@ -174,46 +160,41 @@
   font-size: 0.88em;
 }
 
-
 .documentation-page a {
   color: #4f46e5;
   text-underline-offset: 3px;
 }
 @media (max-width: 980px) {
-
   .documentation-sidebar {
     border: 1px solid #e2e7ef;
     border-radius: 14px;
   }
-
 }
 
 @media (max-width: 760px) {
-
-
   .hero {
     margin-bottom: 18px;
   }
-
 
   .hero h1 {
     font-size: clamp(1.85rem, 8.5vw, 2.6rem);
   }
 
-
   .hero p {
     font-size: 0.9rem;
   }
-
 }
-
-
 
 .hero-example-path {
-  color: var(--_playground-component-text-subtle, var(--playground-text-subtle, #334155));
+  color: var(
+    --_playground-component-text-subtle,
+    var(--playground-text-subtle, #334155)
+  );
 }
 
-
 .documentation-page a:hover {
-  color: var(--_playground-component-accent-strong, var(--playground-accent-strong, #635bff));
+  color: var(
+    --_playground-component-accent-strong,
+    var(--playground-accent-strong, #635bff)
+  );
 }
