@@ -1,6 +1,12 @@
 .mdx-code-block {
-  --_mdx-code-block-border: var(--mdx-code-block-border, var(--playground-border, #d7deea));
-  --_mdx-code-block-surface: var(--mdx-code-block-surface, var(--playground-surface, #fff));
+  --_mdx-code-block-border: var(
+    --mdx-code-block-border,
+    var(--playground-border, #d7deea)
+  );
+  --_mdx-code-block-surface: var(
+    --mdx-code-block-surface,
+    var(--playground-surface, #fff)
+  );
 }
 
 .mdx-code-block {
@@ -17,4 +23,3 @@
   background: transparent;
   color: inherit;
 }
-

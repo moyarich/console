@@ -1,11 +1,29 @@
 .mdx-table {
-  --_mdx-table-border: var(--mdx-table-border, var(--playground-border, #d7deea));
-  --_mdx-table-surface: var(--mdx-table-surface, var(--playground-surface, #fff));
-  --_mdx-table-accent: var(--mdx-table-accent, var(--playground-accent, #635bff));
-  --_mdx-table-accent-soft: var(--mdx-table-accent-soft, var(--playground-accent-soft, #635bff));
-  --_mdx-table-surface-subtle: var(--mdx-table-surface-subtle, var(--playground-surface-subtle, #fff));
+  --_mdx-table-border: var(
+    --mdx-table-border,
+    var(--playground-border, #d7deea)
+  );
+  --_mdx-table-surface: var(
+    --mdx-table-surface,
+    var(--playground-surface, #fff)
+  );
+  --_mdx-table-accent: var(
+    --mdx-table-accent,
+    var(--playground-accent, #635bff)
+  );
+  --_mdx-table-accent-soft: var(
+    --mdx-table-accent-soft,
+    var(--playground-accent-soft, #635bff)
+  );
+  --_mdx-table-surface-subtle: var(
+    --mdx-table-surface-subtle,
+    var(--playground-surface-subtle, #fff)
+  );
   --_mdx-table-text: var(--mdx-table-text, var(--playground-text, #334155));
-  --_mdx-table-text-secondary: var(--mdx-table-text-secondary, var(--playground-text-secondary, #334155));
+  --_mdx-table-text-secondary: var(
+    --mdx-table-text-secondary,
+    var(--playground-text-secondary, #334155)
+  );
 }
 
 .mdx-table-scroll {
@@ -65,4 +83,3 @@
 .documentation-page .mdx-table-scroll td:last-child {
   border-right: 0;
 }
-

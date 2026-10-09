@@ -1,17 +1,44 @@
 .sidebar {
-  --_sidebar-text-secondary: var(--sidebar-text-secondary, var(--playground-text-secondary, #334155));
-  --_sidebar-accent-surface: var(--sidebar-accent-surface, var(--playground-accent-surface, #635bff));
-  --_sidebar-accent-strong: var(--sidebar-accent-strong, var(--playground-accent-strong, #635bff));
+  --_sidebar-text-secondary: var(
+    --sidebar-text-secondary,
+    var(--playground-text-secondary, #334155)
+  );
+  --_sidebar-accent-surface: var(
+    --sidebar-accent-surface,
+    var(--playground-accent-surface, #635bff)
+  );
+  --_sidebar-accent-strong: var(
+    --sidebar-accent-strong,
+    var(--playground-accent-strong, #635bff)
+  );
   --_sidebar-border: var(--sidebar-border, var(--playground-border, #d7deea));
-  --_sidebar-surface-subtle: var(--sidebar-surface-subtle, var(--playground-surface-subtle, #fff));
-  --_sidebar-text-subtle: var(--sidebar-text-subtle, var(--playground-text-subtle, #334155));
+  --_sidebar-surface-subtle: var(
+    --sidebar-surface-subtle,
+    var(--playground-surface-subtle, #fff)
+  );
+  --_sidebar-text-subtle: var(
+    --sidebar-text-subtle,
+    var(--playground-text-subtle, #334155)
+  );
   --_sidebar-accent: var(--sidebar-accent, var(--playground-accent, #635bff));
   --_sidebar-surface: var(--sidebar-surface, var(--playground-surface, #fff));
-  --_sidebar-focus-ring: var(--sidebar-focus-ring, var(--playground-focus-ring, #fff));
+  --_sidebar-focus-ring: var(
+    --sidebar-focus-ring,
+    var(--playground-focus-ring, #fff)
+  );
   --_sidebar-text: var(--sidebar-text, var(--playground-text, #334155));
-  --_sidebar-accent-neutral: var(--sidebar-accent-neutral, var(--playground-accent-neutral, #635bff));
-  --_sidebar-text-muted: var(--sidebar-text-muted, var(--playground-text-muted, #334155));
-  --_sidebar-accent-companion: var(--sidebar-accent-companion, var(--playground-accent-companion, #635bff));
+  --_sidebar-accent-neutral: var(
+    --sidebar-accent-neutral,
+    var(--playground-accent-neutral, #635bff)
+  );
+  --_sidebar-text-muted: var(
+    --sidebar-text-muted,
+    var(--playground-text-muted, #334155)
+  );
+  --_sidebar-accent-companion: var(
+    --sidebar-accent-companion,
+    var(--playground-accent-companion, #635bff)
+  );
   display: flex;
   height: 100%;
   min-height: 0;
