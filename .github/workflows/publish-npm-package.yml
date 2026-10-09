@@ -16,6 +16,10 @@ on:
           - packages/addons/data-export
           - packages/addons/diagnostics
           - packages/addons/filtering
+          - packages/addons/markdown
+          - packages/addons/annotations
+          - packages/addons/navigation
+          - packages/addons/selection
           - packages/addons/resizable
       dry-run:
         description: Preview publishing without changing the npm registry
@@ -154,9 +158,89 @@ jobs:
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
 
+  markdown:
+    name: Publish packages/addons/markdown
+    needs: filtering
+    if: ${{ always() && !cancelled() && (needs.selection.result == 'success' || needs.selection.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/markdown') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/markdown
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  annotations:
+    name: Publish packages/addons/annotations
+    needs: markdown
+    if: ${{ always() && !cancelled() && (needs.markdown.result == 'success' || needs.markdown.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/annotations') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/annotations
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  navigation:
+    name: Publish packages/addons/navigation
+    needs: annotations
+    if: ${{ always() && !cancelled() && (needs.annotations.result == 'success' || needs.annotations.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/navigation') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/navigation
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
+  selection:
+    name: Publish packages/addons/selection
+    needs: navigation
+    if: ${{ always() && !cancelled() && (needs.navigation.result == 'success' || needs.navigation.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/selection') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@main
+    with:
+      target-branch: main
+      package-directory: packages/addons/selection
+      version-mode: package-json
+      registry: npm
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+
   resizable:
     name: Publish packages/addons/resizable
-    needs: filtering
+    needs: selection
     if: ${{ always() && !cancelled() && (needs.filtering.result == 'success' || needs.filtering.result == 'skipped') && (inputs.package == 'all' || inputs.package == 'packages/addons/resizable') }}
     permissions:
       contents: write
