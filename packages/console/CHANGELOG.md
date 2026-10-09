@@ -4,9 +4,9 @@
 
 ### Added
 
-- Add a `Terminal` output surface for sequential stdout/stderr, ANSI styling, process-control handling, links, and structured terminal values.
-
-- Render structured browser-style console messages with inspectable JavaScript values.
-- Render ANSI-aware stdout and stderr output for embedded developer tools.
-- Capture existing console calls or create isolated console-compatible producers.
-- Manage message state, event channels, transports, serialization, renderers, links, actions, and secondary utility entry points.
+- React Console views for structured browser-style logging and sequential terminal stdout/stderr.
+- Inspectable JavaScript values and support for formatted console messages.
+- ANSI-aware terminal rendering with process-control output, links, and structured values.
+- Capture existing console calls or create independent console-compatible producers.
+- Message management, transport, and serialization tools for embedded developer experiences, including iframe and WebSocket integrations.
+- Extensible rendering, links, actions, and utility APIs for application-owned Console interfaces.
