@@ -136,19 +136,3 @@ jobs:
       draft: false
       dry-run: ${{ inputs.dry-run }}
 
-  publish:
-    name: Publish GitHub package
-    needs: [select, release]
-    if: ${{ !inputs.dry-run && needs.release.result == 'success' }}
-    permissions:
-      contents: write
-      packages: write
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@v0
-    with:
-      package-directory: ${{ needs.select.outputs.directory }}
-      target-branch: main
-      registry: github
-      version-mode: package-json
-      verify-git-tag: true
-      dry-run: false
-      node-version: "24"
