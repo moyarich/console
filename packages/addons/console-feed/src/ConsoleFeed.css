@@ -1,0 +1,44 @@
+.console-feed {
+  --_console-feed-border: var(
+    --console-feed-border-color,
+    color-mix(in oklab, currentColor 20%, transparent)
+  );
+  --_console-feed-panel: var(--console-feed-background-color, transparent);
+  --_console-feed-warning: var(--console-feed-warning-color, #c58b20);
+  --_console-feed-error: var(--console-feed-error-color, #db4954);
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--_console-feed-panel);
+  color: inherit;
+}
+.console-feed-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--_console-feed-border);
+  border-radius: 0.5rem;
+}
+.console-feed-entry[data-severity="warn"] {
+  border-inline-start: 3px solid var(--_console-feed-warning);
+}
+.console-feed-entry[data-severity="error"] {
+  border-inline-start: 3px solid var(--_console-feed-error);
+}
+.console-feed-kind {
+  min-width: 2.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.console-feed-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.console-feed-value {
+  display: inline;
+  white-space: pre-wrap;
+  font: inherit;
+  overflow-wrap: anywhere;
+}
