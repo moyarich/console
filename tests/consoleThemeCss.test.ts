@@ -41,6 +41,15 @@ const consoleIndex = readFileSync(consoleIndexPath, "utf8");
 const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
 const resizableFrame = readFileSync(resizableFramePath, "utf8");
+const resizableCss = readFileSync(
+  fileURLToPath(
+    new URL(
+      "../packages/addons/resizable/src/components/ResizableConsoleFrame/ResizableConsoleFrame.css",
+      import.meta.url,
+    ),
+  ),
+  "utf8",
+);
 const consoleViteConfig = readFileSync(consoleViteConfigPath, "utf8");
 const resizableAddonViteConfig = readFileSync(
   resizableAddonViteConfigPath,
@@ -56,6 +65,10 @@ const resizableAddonPackage = JSON.parse(
 };
 
 describe("console theme CSS", () => {
+  it("disables resize-handle transitions for reduced motion", () => {
+    expect(resizableCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(resizableCss).toMatch(/\.console-resize-corner-handle\s*\{\s*transition: none;/);
+  });
   it("loads each package stylesheet from its own entrypoint", () => {
     expect(consoleIndex).toContain('import "./styles.css";');
     expect(resizableAddonIndex).toContain(
