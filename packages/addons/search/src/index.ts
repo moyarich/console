@@ -3,6 +3,7 @@ import {
   consoleExtensionPoints,
   type ConsolePanelElement,
   type ConsoleMessageDecoration,
+  type ConsoleTextHighlightProvider,
 } from "@moyarich/console-core";
 import { ConsoleSearchControls } from "./components/ConsoleSearchControls/ConsoleSearchControls";
 import { ConsoleSearchHighlight } from "./components/ConsoleSearchHighlight/ConsoleSearchHighlight";
@@ -89,6 +90,27 @@ export function findConsoleSearchMatches(
   }
   return { matches };
 }
+/** Search rendered value content without mutating or serializing the source model. */
+function valueSearchText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (value instanceof Error) return value.stack || value.message;
+  if (typeof value === "object" && value !== null) {
+    try {
+      return JSON.stringify(value) ?? String(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+function visibleTerminalText(value: string): string {
+  return value.replace(
+    new RegExp(String.raw`\x1b\[[0-?]*[ -/]*[@-~]`, "g"),
+    "",
+  );
+}
+
 export function createConsoleSearchAddon(): ConsoleAddon & {
   controller: ConsoleSearchController;
 } {
@@ -129,13 +151,13 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
               text: [
                 message.method,
                 message.source,
-                ...message.data.map(String),
+                ...message.data.map(valueSearchText),
               ].join(" "),
             }))
           : snapshot?.mode === "terminal"
             ? snapshot.visible.map((entry, index) => ({
                 id: entry.entry.id ?? `terminal-${index}`,
-                text: entry.output.data,
+                text: visibleTerminalText(entry.output.data),
               }))
             : [];
       const result = findConsoleSearchMatches(
@@ -183,6 +205,39 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       data = host.services.get(consoleServices.data);
       viewport = host.services.get(consoleServices.viewport);
       host.services.provide(consoleSearchService, controller);
+      const textHighlightProvider: ConsoleTextHighlightProvider = {
+        subscribe: controller.subscribe,
+        getSnapshot: controller.getState,
+        getRanges(text, context) {
+          if (!state.query) return [];
+          const matches = findConsoleSearchMatches(
+            [{ id: context.id ?? "local", text }],
+            state.query,
+            state.options,
+          ).matches;
+          const active = state.matches[state.activeIndex];
+          return matches
+            .filter((match) => match.end > match.start)
+            .map((match, index) => ({
+              start: match.start,
+              end: match.end,
+              active:
+                active?.id === context.id &&
+                active?.text === match.text &&
+                state.matches
+                  .filter(
+                    (item) =>
+                      item.id === active?.id && item.text === active?.text,
+                  )
+                  .findIndex((item) => item.start === active?.start) === index,
+            }));
+        },
+      };
+      host.extensions.register(
+        consoleExtensionPoints.textHighlightProvider,
+        textHighlightProvider,
+        { id: CONSOLE_SEARCH_ADDON_ID + ":inline" },
+      );
       const highlight: ConsoleMessageDecoration = {
         id: CONSOLE_SEARCH_ADDON_ID + ":highlight",
         placement: "badge",

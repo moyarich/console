@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useContext, useSyncExternalStore, type ReactNode } from "react";
+import { ConsoleTextHighlightContext } from "./textHighlights";
 import type {
   ConsoleLink as CoreConsoleLink,
   ConsoleLinkActionContext as CoreConsoleLinkActionContext,
@@ -169,6 +170,9 @@ export interface ConsoleLinkedTextProps {
   ) => ReactNode;
 }
 
+const noopSubscribe = () => () => {};
+const emptyHighlightSnapshot = () => null;
+
 function isExternalWebTarget(target: string): boolean {
   return /^https?:\/\//i.test(target);
 }
@@ -181,13 +185,76 @@ export function ConsoleLinkedText({
   links,
   renderText = (value) => value,
 }: ConsoleLinkedTextProps) {
+  const highlightProvider = useContext(ConsoleTextHighlightContext);
+  // Subscribe only to this Console's provider, without mutating React-owned DOM.
+  useSyncExternalStore(
+    highlightProvider?.subscribe ?? noopSubscribe,
+    highlightProvider?.getSnapshot ?? emptyHighlightSnapshot,
+    highlightProvider?.getSnapshot ?? emptyHighlightSnapshot,
+  );
+  const ranges = highlightProvider?.getRanges(text, { ...context, text }) ?? [];
+  const validRanges = ranges
+    .filter(
+      (range) =>
+        Number.isInteger(range.start) &&
+        Number.isInteger(range.end) &&
+        range.start >= 0 &&
+        range.end > range.start &&
+        range.end <= text.length,
+    )
+    .sort((a, b) => a.start - b.start || a.end - b.end);
+  const highlightText = (
+    value: string,
+    key: string,
+    start: number,
+    end: number,
+  ): ReactNode => {
+    const pieces: ReactNode[] = [];
+    let cursor = start;
+    for (const [index, range] of validRanges.entries()) {
+      const rangeStart = Math.max(cursor, range.start, start);
+      const rangeEnd = Math.min(end, range.end);
+      if (rangeEnd <= rangeStart) continue;
+      if (cursor < rangeStart) {
+        pieces.push(
+          renderText(
+            text.slice(cursor, rangeStart),
+            `${key}-plain-${index}`,
+            cursor,
+            rangeStart,
+          ),
+        );
+      }
+      pieces.push(
+        <mark
+          key={`${key}-match-${index}`}
+          className="console-search-highlight"
+          data-active={range.active ? "" : undefined}
+          aria-current={range.active ? "true" : undefined}
+        >
+          {renderText(
+            text.slice(rangeStart, rangeEnd),
+            `${key}-hit-${index}`,
+            rangeStart,
+            rangeEnd,
+          )}
+        </mark>,
+      );
+      cursor = rangeEnd;
+    }
+    if (cursor < end)
+      pieces.push(
+        renderText(text.slice(cursor, end), `${key}-tail`, cursor, end),
+      );
+    return pieces.length ? <>{pieces}</> : renderText(value, key, start, end);
+  };
   const resolved = resolveConsoleLinks(text, context, {
     providers,
     links,
   });
 
   if (!resolved.length) {
-    return <>{renderText(text, "text", 0, text.length)}</>;
+    return <>{highlightText(text, "text", 0, text.length)}</>;
   }
 
   const parts: ReactNode[] = [];
@@ -196,7 +263,7 @@ export function ConsoleLinkedText({
   resolved.forEach((link, index) => {
     if (offset < link.start) {
       parts.push(
-        renderText(
+        highlightText(
           text.slice(offset, link.start),
           `text-${index}`,
           offset,
@@ -211,7 +278,7 @@ export function ConsoleLinkedText({
       link,
       ...(link.providerId ? { providerId: link.providerId } : {}),
     };
-    const content = renderText(
+    const content = highlightText(
       link.text,
       `link-text-${index}`,
       link.start,
@@ -252,7 +319,9 @@ export function ConsoleLinkedText({
   });
 
   if (offset < text.length) {
-    parts.push(renderText(text.slice(offset), "text-end", offset, text.length));
+    parts.push(
+      highlightText(text.slice(offset), "text-end", offset, text.length),
+    );
   }
 
   return <>{parts}</>;

@@ -175,7 +175,7 @@ export function ConsoleResolvedStdout({
     const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
       mode: "terminal",
       index,
-      ...(entry.id !== undefined ? { id: entry.id } : {}),
+      id,
       ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
       metadata: processedOutput.metadata,
     };
