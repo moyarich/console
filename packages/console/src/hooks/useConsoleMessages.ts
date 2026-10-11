@@ -22,11 +22,17 @@ export function appendConsoleRetainedMessage(
   maxMessages: number,
   dedupeById = true,
 ): { messages: ConsoleMessageData[]; droppedCount: number } {
-  if (dedupeById && message.id && current.messages.some((item) => item.id === message.id)) {
+  if (
+    dedupeById &&
+    message.id &&
+    current.messages.some((item) => item.id === message.id)
+  ) {
     return current;
   }
   const next = [...current.messages, message];
-  const limit = Number.isFinite(maxMessages) ? Math.max(0, Math.floor(maxMessages)) : next.length;
+  const limit = Number.isFinite(maxMessages)
+    ? Math.max(0, Math.floor(maxMessages))
+    : next.length;
   const dropped = Math.max(0, next.length - limit);
   return {
     messages: dropped ? (limit === 0 ? [] : next.slice(-limit)) : next,
