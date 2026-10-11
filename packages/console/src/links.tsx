@@ -194,11 +194,21 @@ export function ConsoleLinkedText({
   );
   const ranges = highlightProvider?.getRanges(text, { ...context, text }) ?? [];
   const validRanges = ranges
-    .filter((range) => Number.isInteger(range.start) &&
-      Number.isInteger(range.end) && range.start >= 0 &&
-      range.end > range.start && range.end <= text.length)
+    .filter(
+      (range) =>
+        Number.isInteger(range.start) &&
+        Number.isInteger(range.end) &&
+        range.start >= 0 &&
+        range.end > range.start &&
+        range.end <= text.length,
+    )
     .sort((a, b) => a.start - b.start || a.end - b.end);
-  const highlightText = (value: string, key: string, start: number, end: number): ReactNode => {
+  const highlightText = (
+    value: string,
+    key: string,
+    start: number,
+    end: number,
+  ): ReactNode => {
     const pieces: ReactNode[] = [];
     let cursor = start;
     for (const [index, range] of validRanges.entries()) {
@@ -206,7 +216,14 @@ export function ConsoleLinkedText({
       const rangeEnd = Math.min(end, range.end);
       if (rangeEnd <= rangeStart) continue;
       if (cursor < rangeStart) {
-        pieces.push(renderText(text.slice(cursor, rangeStart), `${key}-plain-${index}`, cursor, rangeStart));
+        pieces.push(
+          renderText(
+            text.slice(cursor, rangeStart),
+            `${key}-plain-${index}`,
+            cursor,
+            rangeStart,
+          ),
+        );
       }
       pieces.push(
         <mark
@@ -214,12 +231,20 @@ export function ConsoleLinkedText({
           className="console-search-highlight"
           data-active={range.active ? "" : undefined}
         >
-          {renderText(text.slice(rangeStart, rangeEnd), `${key}-hit-${index}`, rangeStart, rangeEnd)}
+          {renderText(
+            text.slice(rangeStart, rangeEnd),
+            `${key}-hit-${index}`,
+            rangeStart,
+            rangeEnd,
+          )}
         </mark>,
       );
       cursor = rangeEnd;
     }
-    if (cursor < end) pieces.push(renderText(text.slice(cursor, end), `${key}-tail`, cursor, end));
+    if (cursor < end)
+      pieces.push(
+        renderText(text.slice(cursor, end), `${key}-tail`, cursor, end),
+      );
     return pieces.length ? <>{pieces}</> : renderText(value, key, start, end);
   };
   const resolved = resolveConsoleLinks(text, context, {
@@ -293,7 +318,9 @@ export function ConsoleLinkedText({
   });
 
   if (offset < text.length) {
-    parts.push(highlightText(text.slice(offset), "text-end", offset, text.length));
+    parts.push(
+      highlightText(text.slice(offset), "text-end", offset, text.length),
+    );
   }
 
   return <>{parts}</>;

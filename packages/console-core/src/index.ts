@@ -1029,7 +1029,10 @@ export interface ConsoleTextHighlightRange {
 export interface ConsoleTextHighlightProvider {
   subscribe(listener: () => void): () => void;
   getSnapshot(): unknown;
-  getRanges(text: string, context: ConsoleLinkProviderContext): readonly ConsoleTextHighlightRange[];
+  getRanges(
+    text: string,
+    context: ConsoleLinkProviderContext,
+  ): readonly ConsoleTextHighlightRange[];
 }
 
 export interface ConsoleMessageTextProviderContext {
@@ -1210,10 +1213,11 @@ export const consoleExtensionPoints = Object.freeze({
    * @composition collect Text from all providers is accumulated in resolved order.
    */
   /** A single presentation-only provider for inline text highlighting. */
-  textHighlightProvider: createConsoleExtensionPoint<ConsoleTextHighlightProvider>(
-    "console.render.textHighlight",
-    "first-result",
-  ),
+  textHighlightProvider:
+    createConsoleExtensionPoint<ConsoleTextHighlightProvider>(
+      "console.render.textHighlight",
+      "first-result",
+    ),
   messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
     "console.message.text",
     "collect",

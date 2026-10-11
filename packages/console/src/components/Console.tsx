@@ -1096,9 +1096,9 @@ export function Console({ ref, ...props }: ConsoleProps) {
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
-  const highlightProvider = addonExtensions.getAll(
-    consoleExtensionPoints.textHighlightProvider,
-  )[0] ?? null;
+  const highlightProvider =
+    addonExtensions.getAll(consoleExtensionPoints.textHighlightProvider)[0] ??
+    null;
 
   return (
     <ConsoleTextHighlightContext.Provider value={highlightProvider}>

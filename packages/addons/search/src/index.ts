@@ -200,9 +200,14 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
             .map((match, index) => ({
               start: match.start,
               end: match.end,
-              active: active?.id === context.id &&
+              active:
+                active?.id === context.id &&
                 active.text === match.text &&
-                state.matches.filter((item) => item.id === active.id && item.text === active.text)
+                state.matches
+                  .filter(
+                    (item) =>
+                      item.id === active.id && item.text === active.text,
+                  )
                   .findIndex((item) => item.start === active.start) === index,
             }));
         },
