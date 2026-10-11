@@ -283,3 +283,11 @@
 .console-resize-corner-handle[data-active="true"] {
   color: var(--_console-resize-separator-active-grip-color);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .console-resize-handle::before,
+  .console-resize-grip,
+  .console-resize-corner-handle {
+    transition: none;
+  }
+}
