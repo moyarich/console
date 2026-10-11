@@ -136,7 +136,7 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       const activeIndex = (state.activeIndex + 1) % state.matches.length;
       state = { ...state, activeIndex };
       emit();
-      const match = state.matches[activeIndex];
+      const match = state.matches[activeIndex]!;
       viewport?.scrollToMessage(match.id);
       return match;
     },
@@ -147,7 +147,7 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
         (state.activeIndex + state.matches.length - 1) % state.matches.length;
       state = { ...state, activeIndex };
       emit();
-      const match = state.matches[activeIndex];
+      const match = state.matches[activeIndex]!;
       viewport?.scrollToMessage(match.id);
       return match;
     },
