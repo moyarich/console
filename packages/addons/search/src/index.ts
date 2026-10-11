@@ -54,7 +54,7 @@ export function findConsoleSearchMatches(
   try {
     pattern = new RegExp(
       options.regex ? query : query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      options.caseSensitive ? "" : "i",
+      options.caseSensitive ? "g" : "gi",
     );
   } catch (error) {
     return {
@@ -62,19 +62,20 @@ export function findConsoleSearchMatches(
       error: error instanceof Error ? error.message : "Invalid pattern",
     };
   }
-  return {
-    matches: entries.flatMap((entry, index) => {
-      if (!entry.id) return [];
-      const matched = pattern.exec(entry.text);
-      if (!matched) return [];
-      if (options.wholeWord) {
-        const before = entry.text[matched.index - 1] ?? "";
-        const after = entry.text[matched.index + matched[0].length] ?? "";
-        if (/\w/.test(before) || /\w/.test(after)) return [];
+  const matches: ConsoleSearchMatch[] = [];
+  for (const [index, entry] of entries.entries()) {
+    pattern.lastIndex = 0;
+    let hit: RegExpExecArray | null;
+    while ((hit = pattern.exec(entry.text)) !== null) {
+      const before = entry.text[hit.index - 1] ?? "";
+      const after = entry.text[hit.index + hit[0].length] ?? "";
+      if (!options.wholeWord || (!/\\w/.test(before) && !/\\w/.test(after))) {
+        matches.push({ id: entry.id ?? String(index), index, text: hit[0] });
       }
-      return [{ id: entry.id, index, text: entry.text }];
-    }),
-  };
+      if (hit[0].length === 0) pattern.lastIndex++;
+    }
+  }
+  return { matches };
 }
 export function createConsoleSearchAddon(): ConsoleAddon & {
   controller: ConsoleSearchController;
@@ -130,9 +131,9 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
         state.query,
         state.options,
       );
-      const activeId = state.matches[state.activeIndex]?.id;
+      const activeMatch = state.matches[state.activeIndex];
       const nextIndex = result.matches.findIndex(
-        (match) => match.id === activeId,
+        (match) => match.id === activeMatch?.id && match.index === activeMatch.index && match.text === activeMatch.text,
       );
       state = { ...state, ...result, activeIndex: nextIndex };
       emit();
