@@ -5,8 +5,8 @@ const animation = createConsoleAnimationAddon({
   stagger: 0.08,
 });
 const messages: ConsoleMessageData[] = [
-  { id: "a", method: "log" as const, data: ["First output"] },
-  { id: "b", method: "log" as const, data: [{ interactive: true }] },
+  { id: "a", method: "log" as const, depth: 0, data: ["First output"] },
+  { id: "b", method: "log" as const, depth: 0, data: [{ interactive: true }] },
 ];
 export default function Example() {
   return <Console messages={messages} addons={[animation]} />;
