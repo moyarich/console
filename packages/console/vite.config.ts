@@ -22,7 +22,6 @@ export default defineConfig({
         "@moyarich/console-core",
         "anser",
         "lucide-react",
-        "shiki",
         "react",
         "react-dom",
         "react/jsx-runtime",
