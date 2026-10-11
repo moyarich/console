@@ -17,6 +17,20 @@ describe("animated output addon", () => {
     ).toBeCloseTo(0.7);
     expect(getConsoleAnimationDelay(-1, { wait: -1, stagger: -2 })).toBe(0);
   });
+  it("keeps later entries hidden until earlier entries complete when sequencing is enabled", () => {
+    const html = renderToStaticMarkup(
+      <Console
+        addons={[createConsoleAnimationAddon({ effect: "typewriter", sequence: true })]}
+        messages={[
+          { id: "first", method: "log", depth: 0, data: ["alpha"] },
+          { id: "second", method: "log", depth: 0, data: ["beta"] },
+        ]}
+      />,
+    );
+    expect(html).toContain("alpha");
+    expect(html).toContain("beta");
+    expect(html).toContain('visibility:hidden');
+  });
   it("registers and disposes per-entry middleware", () => {
     const manager = createConsoleAddonManager();
     const disposable = manager.load(
