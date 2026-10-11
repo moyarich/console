@@ -9,9 +9,10 @@ const entries = [
 describe("console search", () => {
   it("finds every occurrence instead of just the first match per row", () => {
     const result = findConsoleSearchMatches(entries, "error");
-    expect(result.matches.filter((match) => match.id === "first")).toHaveLength(
-      3,
-    );
+    const first = result.matches.filter((match) => match.id === "first");
+    expect(first).toHaveLength(3);
+    expect(first.map((match) => match.start)).toEqual([0, 6, 24]);
+    expect(first.map((match) => match.end)).toEqual([5, 11, 29]);
   });
   it("supports case sensitivity", () => {
     expect(
