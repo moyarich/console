@@ -942,6 +942,7 @@ function ConsoleTerminalMode({
   processControlParsers,
   processors,
   structuredOutputParsers,
+  virtualize = false,
   panelActions,
   contextMenuActions,
   outputRenderers,
