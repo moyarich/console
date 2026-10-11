@@ -138,9 +138,10 @@ export function ConsoleContextMenu({
 
   const openMenu = useCallback(
     (event: MouseEvent<HTMLElement>, target: MenuTarget) => {
-      focusOriginRef.current = document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : targetRef.current;
+      focusOriginRef.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : targetRef.current;
       const point = getEventPoint(event);
       const themeStyle = getContextMenuThemeStyle(targetRef.current);
       setMenu({ ...point, target, themeStyle });
@@ -346,12 +347,17 @@ export function ConsoleContextMenu({
         className="console-context-menu-target"
         onContextMenu={handleContextMenu}
         onKeyDown={(event) => {
-          if (event.key !== "ContextMenu" && !(event.shiftKey && event.key === "F10")) return;
+          if (
+            event.key !== "ContextMenu" &&
+            !(event.shiftKey && event.key === "F10")
+          )
+            return;
           event.preventDefault();
           const rect = event.currentTarget.getBoundingClientRect();
-          focusOriginRef.current = document.activeElement instanceof HTMLElement
-            ? document.activeElement
-            : event.currentTarget;
+          focusOriginRef.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : event.currentTarget;
           setMenu({
             x: rect.left + Math.min(28, rect.width / 2),
             y: rect.top + Math.min(28, rect.height / 2),
