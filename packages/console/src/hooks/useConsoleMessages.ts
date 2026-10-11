@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
@@ -55,35 +55,45 @@ export function useConsoleMessages({
   const events =
     providedEvents ??
     (internalEventsRef.current ??= createConsoleEventEmitter());
-  const [messages, setMessages] =
-    useState<ConsoleMessageData[]>(initialMessages);
-  const [droppedCount, setDroppedCount] = useState(0);
+  const [history, setHistory] = useState(() => ({
+    messages: initialMessages,
+    droppedCount: 0,
+  }));
+  const { messages, droppedCount } = history;
+  const setMessages: Dispatch<SetStateAction<ConsoleMessageData[]>> = useCallback(
+    (updater) => {
+      setHistory((current) => ({
+        ...current,
+        messages: typeof updater === "function" ? updater(current.messages) : updater,
+      }));
+    },
+    [],
+  );
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
-      setMessages((current) => {
+      setHistory((current) => {
         if (
           dedupeById &&
           message.id &&
-          current.some((item) => item.id === message.id)
+          current.messages.some((item) => item.id === message.id)
         ) {
           return current;
         }
-
-        const next = [...current, message];
-
+        const next = [...current.messages, message];
         const limit = Math.max(0, Math.floor(maxMessages));
         const dropped = Math.max(0, next.length - limit);
-        if (dropped > 0) setDroppedCount((count) => count + dropped);
-        return dropped ? (limit === 0 ? [] : next.slice(-limit)) : next;
+        return {
+          messages: dropped ? (limit === 0 ? [] : next.slice(-limit)) : next,
+          droppedCount: current.droppedCount + dropped,
+        };
       });
     },
     [dedupeById, maxMessages],
   );
 
   const handleClear = useCallback(() => {
-    setMessages([]);
-    setDroppedCount(0);
+    setHistory({ messages: [], droppedCount: 0 });
   }, []);
 
   const console = useMemo(
