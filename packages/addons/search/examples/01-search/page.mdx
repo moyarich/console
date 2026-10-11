@@ -14,6 +14,13 @@ import source from "./example.tsx?raw";
 
 The controller searches the logical, filtered data snapshot rather than mounted DOM rows, so results survive filtered views and virtualization. Clearing the query removes highlighting. Search does not change source messages.
 
+## Inline highlights
+
+Search results are marked directly in rendered string values, including nested object strings and ANSI terminal lines. Highlighting is presentation-only: it does not rewrite messages, interfere with links, remove ANSI styles, or affect the logical search results used for next/previous navigation. Clearing the query removes the marks. For non-text structured data, the message's match badge remains available.
+
+Set the parent Console theme's `--console-search-highlight-background-color`, `--console-search-highlight-color`, and `--console-search-highlight-active-color` variables to customize the inline marks.
+
+
 ## Theming
 
 Search controls inherit the surrounding Console theme and expose public CSS custom properties for targeted overrides. These resolve to private `--_console-search-*` component variables.
