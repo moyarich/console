@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import type { HTMLAttributes } from "react";
 import { writeClipboardText } from "@moyarich/console";
 
-export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
+export interface CodeBlockProps extends Omit<
+  HTMLAttributes<HTMLElement>,
+  "children"
+> {
   /** Raw, unescaped source to display and copy. */
   code: string;
   /** Shiki language identifier, e.g. "tsx", "bash", or "json". */
@@ -72,7 +75,9 @@ export function CodeBlock({
       aria-label={filename ? `Code: ${filename}` : `Code in ${language}`}
     >
       <div className="console-code-block__toolbar">
-        <span className="console-code-block__filename">{filename ?? language}</span>
+        <span className="console-code-block__filename">
+          {filename ?? language}
+        </span>
         {copyable && (
           <button
             type="button"
@@ -81,7 +86,11 @@ export function CodeBlock({
             aria-label={copied ? "Copied code" : "Copy code"}
             title={copied ? "Copied" : "Copy"}
           >
-            {copied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
+            {copied ? (
+              <Check size={15} aria-hidden="true" />
+            ) : (
+              <Copy size={15} aria-hidden="true" />
+            )}
             <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
           </button>
         )}
@@ -89,16 +98,26 @@ export function CodeBlock({
       <div className="console-code-block__viewport">
         {html ? (
           <div
-            className={showLineNumbers ? "console-code-block__numbered" : undefined}
+            className={
+              showLineNumbers ? "console-code-block__numbered" : undefined
+            }
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <pre className={showLineNumbers ? "console-code-block__numbered" : undefined}>
+          <pre
+            className={
+              showLineNumbers ? "console-code-block__numbered" : undefined
+            }
+          >
             <code>{code}</code>
           </pre>
         )}
       </div>
-      {error && <span className="console-code-block__sr-only">Syntax highlighting unavailable; plain source shown.</span>}
+      {error && (
+        <span className="console-code-block__sr-only">
+          Syntax highlighting unavailable; plain source shown.
+        </span>
+      )}
     </section>
   );
 }
