@@ -2,26 +2,14 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client"],
     "paths": {
-      "@moyarich/console": [
-        "../../packages/console/src/index.ts"
-      ],
-      "@moyarich/console/styles.css": [
-        "../../packages/console/src/styles.css"
-      ],
-      "@moyarich/console-core": [
-        "../../packages/console-core/src/index.ts"
-      ],
-      "@src/*": [
-        "src/*"
-      ]
+      "@moyarich/console": ["../../packages/console/src/index.ts"],
+      "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
+      "@moyarich/console-core": ["../../packages/console-core/src/index.ts"],
+      "@src/*": ["src/*"]
     },
-    "customConditions": [
-      "development"
-    ]
+    "customConditions": ["development"]
   },
   "include": [
     "src",
