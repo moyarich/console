@@ -22,7 +22,9 @@ export function useConsoleOutputPause<T>(
     setPaused(true);
   }, [current]);
 
-  const resume = useCallback(() => { setPaused(false); }, []);
+  const resume = useCallback(() => {
+    setPaused(false);
+  }, []);
   const clearView = useCallback(() => {
     baseline.current = 0;
     setDisplayed([]);
