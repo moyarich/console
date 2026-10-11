@@ -4,7 +4,7 @@ import type { ConsoleOutputEntryDecorator, ConsoleOutputEntryDecoratorContext } 
 /** Earlier decorators wrap later ones, with the original entry as the innermost renderer. */
 export function decorateConsoleOutputEntry(
   decorators: readonly ConsoleOutputEntryDecorator<ReactNode>[],
-  context: Omit<ConsoleOutputEntryDecoratorContext<ReactNode>, "renderDefault">,
+  context: { readonly mode: "console"; readonly message: import("./types").ConsoleMessageData; readonly index: number; readonly id?: string } | { readonly mode: "terminal"; readonly entry: import("./processOutput").ConsoleStdoutEntry; readonly index: number; readonly id?: string },
   renderDefault: () => ReactNode,
 ): ReactNode {
   let render = renderDefault;
