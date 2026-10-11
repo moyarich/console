@@ -9,6 +9,7 @@ import * as DiagnosticsAddonPackage from "@moyarich/console-addon-diagnostics";
 import * as FilteringAddonPackage from "@moyarich/console-addon-filtering";
 import * as ImperativeScrollingAddonPackage from "@moyarich/console-addon-imperative-scrolling";
 import * as MarkdownAddonPackage from "@moyarich/console-addon-markdown";
+import * as ConsoleFeedAddonPackage from "@moyarich/console-addon-console-feed";
 import * as LinksAddonPackage from "@moyarich/console-addon-links";
 import * as SessionAddonPackage from "@moyarich/console-addon-session";
 import * as SearchAddonPackage from "@moyarich/console-addon-search";
@@ -35,6 +36,7 @@ export const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, unknown>> = {
   "@moyarich/console-addon-imperative-scrolling":
     ImperativeScrollingAddonPackage,
   "@moyarich/console-addon-markdown": MarkdownAddonPackage,
+  "@moyarich/console-addon-console-feed": ConsoleFeedAddonPackage,
   "@moyarich/console-addon-links": LinksAddonPackage,
   "@moyarich/console-addon-search": SearchAddonPackage,
   "@moyarich/console-addon-session": SessionAddonPackage,
