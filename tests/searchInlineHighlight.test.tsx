@@ -9,7 +9,10 @@ import {
   createConsoleAddonManager,
   type ConsoleTextHighlightProvider,
 } from "@moyarich/console-core";
-import { ConsoleSearchControls, createConsoleSearchAddon } from "@moyarich/console-addon-search";
+import {
+  ConsoleSearchControls,
+  createConsoleSearchAddon,
+} from "@moyarich/console-addon-search";
 
 describe("inline search highlighting", () => {
   const highlight: ConsoleTextHighlightProvider = {
@@ -115,7 +118,9 @@ describe("inline search highlighting", () => {
 
   it("provides named native keyboard controls and a polite match status", () => {
     const addon = createConsoleSearchAddon();
-    const html = renderToStaticMarkup(<ConsoleSearchControls controller={addon.controller} />);
+    const html = renderToStaticMarkup(
+      <ConsoleSearchControls controller={addon.controller} />,
+    );
     expect(html).toContain('type="search"');
     expect(html).toContain('aria-label="Search console output"');
     expect(html).toContain('aria-label="Previous search result"');
