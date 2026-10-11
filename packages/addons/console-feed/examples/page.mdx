@@ -16,6 +16,6 @@ import source from "./example.tsx?raw";
 
 - Supports `log`, `info`, `warn`, and `error` as distinct, text-labeled severities, with other methods shown as log.
 - Formats objects, errors, bigints, circular references, and multiline strings as readable text. This feed does **not** implement interactive object inspection, `console.table`, collapsing groups, link detection, or the built-in per-message context actions.
-- The parent Console retains filtering/search integration and accessible output log semantics. The feed emits no additional live announcements.
+- The parent Console retains filtering integration and accessible output log semantics; search result highlighting and built-in message navigation require the default renderer. The feed emits no additional live announcements.
 - Because an output renderer owns the entire inner surface, the core `virtualize` prop does not window this feed. For large histories, remove the addon to use the built-in virtualized renderer.
 - The addon stylesheet uses public `--console-feed-*` theme variables with component-local fallbacks.
