@@ -70,7 +70,7 @@ describe("console value display", () => {
         valueDisplay="string"
         valueRenderers={[
           {
-            type: "object",
+            type: "Object",
             render: () => <em>custom-value</em>,
           },
         ]}
