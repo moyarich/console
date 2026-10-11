@@ -14,6 +14,7 @@ import {
 } from "react";
 import { ConsoleContextMenu } from "./ConsoleContextMenu";
 import { ConsoleMessage } from "./ConsoleMessage";
+import { decorateConsoleOutputEntry } from "../outputEntryDecorator";
 import {
   ConsoleResolvedStdout,
   type ConsoleProcessControlParser,
@@ -49,6 +50,7 @@ import {
   type ConsoleEmptyStateRendererContext,
   type ConsoleExtensionRegistry,
   type ConsoleFrameDecorator,
+  type ConsoleOutputEntryDecorator,
   type ConsoleKeyboardShortcut,
   type ConsoleKeyboardShortcutContext,
   type ConsoleMessageDecoration,
@@ -715,6 +717,7 @@ function ConsoleMessageMode({
   const resolvedKeyboardShortcuts = addonExtensions.getAll(
     consoleExtensionPoints.keyboardShortcut,
   ) as readonly ConsoleKeyboardShortcut[];
+  const resolvedEntryDecorators = addonExtensions.getAll(consoleExtensionPoints.outputEntryDecorator) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
   const resolvedMessageDecorations = addonExtensions.getAll(
     consoleExtensionPoints.messageDecoration,
   ) as readonly ConsoleMessageDecoration<ReactNode>[];
@@ -839,17 +842,10 @@ function ConsoleMessageMode({
         />
       );
 
-      if (!hasDecorations) {
-        return (
-          <div key={key} data-console-message-id={message.id}>
-            {renderedMessage}
-          </div>
-        );
-      }
-
-      return (
+      const renderEntry = () => !hasDecorations ? (
+        <div data-console-message-id={message.id}>{renderedMessage}</div>
+      ) : (
         <div
-          key={key}
           className="console-message-extension-shell"
           data-console-message-id={message.id}
         >
@@ -865,6 +861,7 @@ function ConsoleMessageMode({
           {overlay}
         </div>
       );
+      return <div key={key}>{decorateConsoleOutputEntry(resolvedEntryDecorators, { mode: "console", message, id: message.id, index }, renderEntry)}</div>;
     });
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
@@ -986,9 +983,11 @@ function ConsoleTerminalMode({
   const resolvedKeyboardShortcuts = addonExtensions.getAll(
     consoleExtensionPoints.keyboardShortcut,
   ) as readonly ConsoleKeyboardShortcut[];
+  const resolvedEntryDecorators = addonExtensions.getAll(consoleExtensionPoints.outputEntryDecorator) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
+      entryDecorators={resolvedEntryDecorators}
       parseStructuredOutput={parseStructuredOutput}
       structuredOutputParsers={resolvedStructuredOutputParsers}
       valueRenderers={resolvedValueRenderers}
