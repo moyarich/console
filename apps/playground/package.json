@@ -43,7 +43,8 @@
     "@moyarich/console-addon-links": "*",
     "shiki": "^3.13.0",
     "@moyarich/console-addon-search": "*",
-    "@moyarich/console-addon-session": "*"
+    "@moyarich/console-addon-session": "*",
+    "@moyarich/console-addon-console-feed": "*"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",
