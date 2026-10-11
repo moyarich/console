@@ -720,10 +720,10 @@ describe("Console rendering", () => {
     expect(html).toContain("safe fallback");
   });
 
-  it("detects web links in structured console strings with the links addon", () => {
+  it("detects web links in structured console strings with the web-link provider", () => {
     const html = renderToStaticMarkup(
       <Console
-        addons={[createConsoleLinksAddon()]}
+        linkProviders={[webLinkProvider]}
         messages={[
           {
             method: "log",
@@ -898,8 +898,7 @@ describe("Console rendering", () => {
             data: "Error: src/cli/run.ts:91:12\n",
           },
         ]}
-        linkProviders={[provider]}
-        addons={[createConsoleLinksAddon()]}
+        linkProviders={[provider, webLinkProvider]}
       />,
     );
 
@@ -912,7 +911,7 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <Console
         mode="terminal"
-        addons={[createConsoleLinksAddon()]}
+        linkProviders={[webLinkProvider]}
         messages={[`Visit ${escape}[36mhttps://example${escape}[0m.com/docs`]}
       />,
     );
