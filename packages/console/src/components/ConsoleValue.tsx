@@ -131,7 +131,9 @@ function ConsoleObjectValue({
   const { copyObject, openForValue } = useConsoleContextMenu();
   const expansionCache = useContext(ConsoleExpansionContext);
   const [isOpen, setIsOpen] = useState(
-    () => expansionCache?.get(value) ?? (expandLevel > 0 || expandAllVersion !== undefined),
+    () =>
+      expansionCache?.get(value) ??
+      (expandLevel > 0 || expandAllVersion !== undefined),
   );
 
   useEffect(() => {

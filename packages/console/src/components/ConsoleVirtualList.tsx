@@ -176,7 +176,11 @@ export function ConsoleVirtualList({
               // above the viewport grows or contracts after measuring.
               const root = rootRef.current;
               const surface = root?.closest<HTMLElement>(".console-surface");
-              if (root && surface && offsets[index]! + previous <= position.top) {
+              if (
+                root &&
+                surface &&
+                offsets[index]! + previous <= position.top
+              ) {
                 surface.scrollTop += height - previous;
               }
               setRevision((current) => current + 1);

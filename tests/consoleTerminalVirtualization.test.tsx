@@ -38,7 +38,9 @@ describe("structured output virtualization", () => {
     expect(html).toContain("data-console-virtual-list");
     expect(html).toContain("structured line 0");
     expect(html).not.toContain("structured line 9999");
-    expect((html.match(/data-console-message-id=/g) ?? []).length).toBeLessThan(100);
+    expect((html.match(/data-console-message-id=/g) ?? []).length).toBeLessThan(
+      100,
+    );
   });
 
   it("renders the complete small dataset with virtualization disabled", () => {

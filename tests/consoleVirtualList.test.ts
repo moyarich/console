@@ -11,7 +11,10 @@ describe("virtual console viewport", () => {
     expect(range.end).toBeLessThan(10000);
   });
   it("keeps DOM window bounded for 100,000 retained rows", () => {
-    const largeOffsets = Array.from({ length: 100001 }, (_, index) => index * 32);
+    const largeOffsets = Array.from(
+      { length: 100001 },
+      (_, index) => index * 32,
+    );
     const range = getConsoleVirtualRange(largeOffsets, 1600000, 640, 6);
     expect(range.end - range.start).toBeLessThanOrEqual(32);
     expect(range.start).toBeGreaterThan(0);
