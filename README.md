@@ -80,6 +80,21 @@ Do not call the returned `console` during React render. Use it from event handle
 | Bundle reusable console extensions                 | `addons` / `ConsoleAddon`                    |
 | Make URLs and application references interactive   | `detectLinks` / `linkProviders`              |
 
+## Large retained logs
+
+For thousands of retained messages or process-output entries, enable opt-in windowing:
+
+```tsx
+<Console messages={messages} virtualize />
+<Console mode="terminal" messages={entries} virtualize />
+```
+
+Virtualization limits **mounted React rows**, not retained data. The producer still owns retention, filtering, and disposal. The current virtual viewport uses estimated 32px row heights until measured, with six extra rows on each side of the viewport. Rows can grow when inspectable objects expand, and their heights are measured again after resizing. The host supplies the available height and scroll container; virtualization does not impose a fixed panel height.
+
+Provide stable, unique `id` values when entries may be filtered or reordered. Imperative `scrollToMessage(id, { block: "center" })` works for off-screen retained IDs; an ID excluded by the active filter cannot be scrolled into the current view. Search operates on the data snapshots, not only mounted DOM rows. When virtualization is enabled, built-in terminal copy uses all resolved entries rather than only the mounted viewport. Custom output renderers own their rendering and must implement their own windowing if needed.
+
+The regression suite includes 10,000- and 100,000-row virtual-range checks. Those tests assert bounded mount ranges; they are **not** browser frame-rate or memory benchmarks. Measure real workloads separately, including expensive decorators, parsers, deeply nested objects, resizing, and continuously appended output.
+
 ## Documentation
 
 The playground is the long-form documentation surface for this repository.
