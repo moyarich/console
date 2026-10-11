@@ -105,7 +105,10 @@ function valueSearchText(value: unknown): string {
 }
 
 function visibleTerminalText(value: string): string {
-  return value.replace(new RegExp(String.raw`\x1b\[[0-?]*[ -/]*[@-~]`, "g"), "");
+  return value.replace(
+    new RegExp(String.raw`\x1b\[[0-?]*[ -/]*[@-~]`, "g"),
+    "",
+  );
 }
 
 export function createConsoleSearchAddon(): ConsoleAddon & {
