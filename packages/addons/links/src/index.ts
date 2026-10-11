@@ -1,4 +1,9 @@
-import { consoleExtensionPoints, type ConsoleAddon, type ConsoleLink, type ConsoleLinkProvider } from "@moyarich/console-core";
+import {
+  consoleExtensionPoints,
+  type ConsoleAddon,
+  type ConsoleLink,
+  type ConsoleLinkProvider,
+} from "@moyarich/console-core";
 
 export const CONSOLE_LINKS_ADDON_ID = "@moyarich/console-addon-links";
 
@@ -68,11 +73,12 @@ export function detectWebLinks(text: string): ConsoleLink[] {
   return links;
 }
 
-
 /** Default provider, registered only when the addon is enabled. */
 export const webLinkProvider: ConsoleLinkProvider = {
   id: "web",
-  provideLinks({ text }) { return detectWebLinks(text); },
+  provideLinks({ text }) {
+    return detectWebLinks(text);
+  },
 };
 
 /** Adds web URL detection to structured and terminal console output. */
@@ -80,10 +86,11 @@ export function createConsoleLinksAddon(): ConsoleAddon {
   return {
     id: CONSOLE_LINKS_ADDON_ID,
     activate(host) {
-      host.extensions.register(consoleExtensionPoints.linkProvider, webLinkProvider, {
-        id: CONSOLE_LINKS_ADDON_ID,
-        priority: -100,
-      });
+      host.extensions.register(
+        consoleExtensionPoints.linkProvider,
+        webLinkProvider,
+        { id: CONSOLE_LINKS_ADDON_ID, priority: -100 },
+      );
     },
   };
 }
