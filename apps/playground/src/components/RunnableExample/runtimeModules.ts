@@ -36,4 +36,3 @@ export const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, unknown>> = {
   "@moyarich/console-addon-resizable/styles.css": {},
   "lucide-react": LucideReact,
 };
-
