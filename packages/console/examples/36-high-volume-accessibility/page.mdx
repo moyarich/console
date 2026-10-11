@@ -22,3 +22,17 @@ import source from "./example.tsx?raw";
 - Honor `prefers-reduced-motion` for animated addons, and check text/background contrast and focus indicators in both themes.
 
 Verify the controls and keyboard/focus behavior with browser-based accessibility tests and a screen reader, especially during continuous streaming.
+
+## Contrast and reduced motion
+
+For custom themes and addons, check normal-size text against its background at **4.5:1** or better, large text at **3:1**, and the visible boundaries of controls and focus indicators at **3:1**. Check both light and dark schemes, including highlighted search results, severity badges, decorations, disabled states, and keyboard focus rings. Do not rely on color alone to distinguish warnings or status.
+
+Animated output uses `prefers-reduced-motion` to skip animated reveal delays and typewriter effects. The resizable addon disables grip/handle transitions under the same media query. Recheck any host-provided animation and theme overrides separately.
+
+## Manual verification checklist
+
+- Use Tab, Shift+Tab, arrow keys, Home, End, Context Menu, Shift+F10, Escape, and Enter through the search, filtering, navigation, panel, and message action controls.
+- Verify Escape and choosing an action return focus to the invoker when it still exists. Repeat after filtering or virtualizing rows.
+- With a screen reader, inspect bulk output with announcements off; then test occasional polite announcements without enabling assertive announcements during large streams.
+- Check both themes at 200% zoom and with forced colors where supported, including search highlights and custom decorations.
+- Enable reduced motion and verify that animated output and resize indicators do not require watching movement to understand state.
