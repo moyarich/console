@@ -95,7 +95,8 @@ export function parseConsoleSession(
         typeof message !== "object" ||
         typeof message.method !== "string" ||
         !Array.isArray(message.data) ||
-        typeof message.depth !== "number"
+        !Number.isSafeInteger(message.depth) ||
+        message.depth < 0
       )
         throw new TypeError("Invalid console message");
     }
@@ -115,7 +116,11 @@ export function parseConsoleSession(
           typeof entry === "string" ||
           (entry &&
             typeof entry === "object" &&
-            typeof entry.data === "string"),
+            typeof entry.data === "string" &&
+            (entry.id === undefined || typeof entry.id === "string") &&
+            (entry.stream === undefined ||
+              entry.stream === "stdout" ||
+              entry.stream === "stderr")),
       )
     )
       throw new TypeError("Invalid terminal entries");
