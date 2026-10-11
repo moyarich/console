@@ -93,8 +93,7 @@ export function resolveConsoleLinks(
   context: ConsoleLinkProviderBaseContext,
   options: {
     /** @deprecated Automatic detection belongs to the links addon; this option is ignored. */
-    /** @deprecated Automatic detection belongs to the links addon; this option is ignored. */
-  detectLinks?: boolean;
+    detectLinks?: boolean;
     providers?: readonly ConsoleLinkProvider[];
     links?: readonly ConsoleLink[];
   } = {},
@@ -130,7 +129,6 @@ export function resolveConsoleLinks(
     }
   }
 
-
   const resolved: ResolvedConsoleLink[] = [];
   const sorted = candidates
     .map((link, order) => ({ link, order }))
@@ -159,6 +157,7 @@ export function resolveConsoleLinks(
 export interface ConsoleLinkedTextProps {
   text: string;
   context: ConsoleLinkProviderBaseContext;
+  /** @deprecated Automatic detection belongs to the links addon; this option is ignored. */
   detectLinks?: boolean;
   providers?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
