@@ -35,16 +35,16 @@ export function TypewriterEntry({
     useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >=
     index;
   const ready = !options.sequence || active;
-  const done = () => {
-    if (id !== undefined) completed.add(id);
-    sequence.complete(index);
-  };
   useEffect(() => {
     if (ready && (reducedMotion || (id !== undefined && completed.has(id)))) {
       sequence.complete(index);
     }
   }, [ready, reducedMotion, id, index, completed, sequence]);
   useEffect(() => {
+    const done = () => {
+      if (id !== undefined) completed.add(id);
+      sequence.complete(index);
+    };
     const element = root.current;
     if (
       !element ||
