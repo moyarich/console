@@ -8,7 +8,10 @@ function message(id: string): ConsoleMessageData {
 
 describe("bounded Console history", () => {
   it("retains only the newest entries and tracks single and multiple trims", () => {
-    let history = { messages: [message("1"), message("2"), message("3")], droppedCount: 0 };
+    let history = {
+      messages: [message("1"), message("2"), message("3")],
+      droppedCount: 0,
+    };
     history = appendConsoleRetainedMessage(history, message("4"), 3);
     expect(history.messages.map((entry) => entry.id)).toEqual(["2", "3", "4"]);
     expect(history.droppedCount).toBe(1);
@@ -18,10 +21,16 @@ describe("bounded Console history", () => {
   });
   it("does not count deduplicated entries as dropped", () => {
     const history = { messages: [message("same")], droppedCount: 5 };
-    expect(appendConsoleRetainedMessage(history, message("same"), 1)).toBe(history);
+    expect(appendConsoleRetainedMessage(history, message("same"), 1)).toBe(
+      history,
+    );
   });
   it("supports zero retention", () => {
-    const next = appendConsoleRetainedMessage({ messages: [], droppedCount: 0 }, message("new"), 0);
+    const next = appendConsoleRetainedMessage(
+      { messages: [], droppedCount: 0 },
+      message("new"),
+      0,
+    );
     expect(next.messages).toEqual([]);
     expect(next.droppedCount).toBe(1);
   });
