@@ -35,13 +35,14 @@ describe("Console announcement accessibility", () => {
     },
   );
 
-  it("preserves keyboard-accessible message actions with announcements off", () => {
+  it("keeps the log focusable programmatically without adding inert message tab stops", () => {
     const html = renderToStaticMarkup(
       <Console messages={messages} announcementMode="off" />,
     );
     expect(html).toContain('aria-live="off"');
-    expect(html).toContain('role="group"');
-    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('tabindex="-1"');
+    // Message groups become keyboard-focusable only when context actions exist.
+    expect(html).not.toContain('role="group"');
   });
 
   it("uses the same announcement policy for terminal output", () => {
