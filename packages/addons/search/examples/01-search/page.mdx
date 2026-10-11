@@ -13,3 +13,21 @@ import source from "./example.tsx?raw";
 <RunnableExample source={source} sourcePath="example.tsx" />
 
 The controller searches the logical, filtered data snapshot rather than mounted DOM rows, so results survive filtered views and virtualization. Clearing the query removes highlighting. Search does not change source messages.
+
+## Theming
+
+Search controls inherit the surrounding Console theme and expose public CSS custom properties for targeted overrides. These resolve to private `--_console-search-*` component variables.
+
+```css
+.my-console {
+  --console-search-background-color: #151b2b;
+  --console-search-color: #eef2ff;
+  --console-search-border-color: #667085;
+  --console-search-focus-color: #a5b4fc;
+  --console-search-highlight-background-color: #fde68a;
+  --console-search-highlight-color: #312e09;
+  --console-search-highlight-active-color: #818cf8;
+}
+```
+
+Use `color-scheme: dark` or `color-scheme: light` on the theme wrapper to select the built-in search highlight defaults.
