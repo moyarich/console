@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ConsoleExpansionContext } from "./ConsoleExpansionContext";
 
 export interface ConsoleVirtualListProps {
   count: number;
@@ -44,6 +45,7 @@ export function ConsoleVirtualList({
 }: ConsoleVirtualListProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const heights = useRef(new Map<string, number>());
+  const expansionStates = useRef(new Map<string, WeakMap<object, boolean>>());
   const [revision, setRevision] = useState(0);
   const [position, setPosition] = useState({ top: 0, height: 600 });
   // Measurements follow logical IDs across filtering and reordering.
@@ -155,6 +157,12 @@ export function ConsoleVirtualList({
     >
       {Array.from({ length: end - start }, (_, offset) => {
         const index = start + offset;
+        const key = rowKeys[index]!;
+        let expansions = expansionStates.current.get(key);
+        if (!expansions) {
+          expansions = new WeakMap<object, boolean>();
+          expansionStates.current.set(key, expansions);
+        }
         return (
           <MeasuredConsoleRow
             key={rowKeys[index]}
@@ -174,7 +182,9 @@ export function ConsoleVirtualList({
               setRevision((current) => current + 1);
             }}
           >
-            {renderRow(index)}
+            <ConsoleExpansionContext.Provider value={expansions}>
+              {renderRow(index)}
+            </ConsoleExpansionContext.Provider>
           </MeasuredConsoleRow>
         );
       })}
