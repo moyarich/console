@@ -15,6 +15,25 @@ import { createConsoleProxy } from "../utils/console/runtime/createConsoleProxy"
 import { captureConsole } from "../utils/console/runtime/captureConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
 
+/** Deterministic bounded-history transition shared by captured events and tests. */
+export function appendConsoleRetainedMessage(
+  current: { messages: ConsoleMessageData[]; droppedCount: number },
+  message: ConsoleMessageData,
+  maxMessages: number,
+  dedupeById = true,
+): { messages: ConsoleMessageData[]; droppedCount: number } {
+  if (dedupeById && message.id && current.messages.some((item) => item.id === message.id)) {
+    return current;
+  }
+  const next = [...current.messages, message];
+  const limit = Number.isFinite(maxMessages) ? Math.max(0, Math.floor(maxMessages)) : next.length;
+  const dropped = Math.max(0, next.length - limit);
+  return {
+    messages: dropped ? (limit === 0 ? [] : next.slice(-limit)) : next,
+    droppedCount: current.droppedCount + dropped,
+  };
+}
+
 /** Configuration for {@link useConsoleMessages}. */
 export interface UseConsoleMessagesOptions {
   /** Messages used to initialize hook state. */
@@ -79,22 +98,9 @@ export function useConsoleMessages({
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
-      setHistory((current) => {
-        if (
-          dedupeById &&
-          message.id &&
-          current.messages.some((item) => item.id === message.id)
-        ) {
-          return current;
-        }
-        const next = [...current.messages, message];
-        const limit = Math.max(0, Math.floor(maxMessages));
-        const dropped = Math.max(0, next.length - limit);
-        return {
-          messages: dropped ? (limit === 0 ? [] : next.slice(-limit)) : next,
-          droppedCount: current.droppedCount + dropped,
-        };
-      });
+      setHistory((current) =>
+        appendConsoleRetainedMessage(current, message, maxMessages, dedupeById),
+;
     },
     [dedupeById, maxMessages],
   );
