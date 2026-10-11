@@ -69,7 +69,7 @@ export function findConsoleSearchMatches(
     while ((hit = pattern.exec(entry.text)) !== null) {
       const before = entry.text[hit.index - 1] ?? "";
       const after = entry.text[hit.index + hit[0].length] ?? "";
-      if (!options.wholeWord || (!/\\w/.test(before) && !/\\w/.test(after))) {
+      if (!options.wholeWord || (!/\w/.test(before) && !/\w/.test(after))) {
         matches.push({ id: entry.id ?? String(index), index, text: hit[0] });
       }
       if (hit[0].length === 0) pattern.lastIndex++;
