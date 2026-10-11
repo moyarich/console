@@ -3,6 +3,7 @@ import {
   consoleExtensionPoints,
   type ConsolePanelElement,
   type ConsoleMessageDecoration,
+  type ConsoleTextHighlightProvider,
 } from "@moyarich/console-core";
 import { ConsoleSearchControls } from "./components/ConsoleSearchControls/ConsoleSearchControls";
 import { ConsoleSearchHighlight } from "./components/ConsoleSearchHighlight/ConsoleSearchHighlight";
@@ -183,6 +184,34 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       data = host.services.get(consoleServices.data);
       viewport = host.services.get(consoleServices.viewport);
       host.services.provide(consoleSearchService, controller);
+      const textHighlightProvider: ConsoleTextHighlightProvider = {
+        subscribe: controller.subscribe,
+        getSnapshot: controller.getState,
+        getRanges(text, context) {
+          if (!state.query) return [];
+          const matches = findConsoleSearchMatches(
+            [{ id: context.id ?? "local", text }],
+            state.query,
+            state.options,
+          ).matches;
+          const active = state.matches[state.activeIndex];
+          return matches
+            .filter((match) => match.end > match.start)
+            .map((match, index) => ({
+              start: match.start,
+              end: match.end,
+              active: active?.id === context.id &&
+                active.text === match.text &&
+                state.matches.filter((item) => item.id === active.id && item.text === active.text)
+                  .findIndex((item) => item.start === active.start) === index,
+            }));
+        },
+      };
+      host.extensions.register(
+        consoleExtensionPoints.textHighlightProvider,
+        textHighlightProvider,
+        { id: CONSOLE_SEARCH_ADDON_ID + ":inline" },
+      );
       const highlight: ConsoleMessageDecoration = {
         id: CONSOLE_SEARCH_ADDON_ID + ":highlight",
         placement: "badge",
