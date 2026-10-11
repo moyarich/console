@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  detectWebLinks,
   isSafeConsoleLinkTarget,
   resolveConsoleLinks,
   type ConsoleLinkProvider,
 } from "@moyarich/console";
+import { detectWebLinks, webLinkProvider } from "@moyarich/console-addon-links";
 
 describe("console links", () => {
   it("detects safe HTTP and HTTPS URLs with exact ranges", () => {
@@ -51,7 +51,7 @@ describe("console links", () => {
     const links = resolveConsoleLinks(
       text,
       { mode: "console" },
-      { providers: [provider] },
+      { providers: [provider, webLinkProvider] },
     );
 
     expect(links).toHaveLength(2);

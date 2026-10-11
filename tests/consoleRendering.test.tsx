@@ -10,6 +10,7 @@ import {
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
+import { createConsoleLinksAddon, webLinkProvider } from "@moyarich/console-addon-links";
 
 function renderConsole(messages: ConsoleMessageData[], error = "") {
   return renderToStaticMarkup(
@@ -716,9 +717,10 @@ describe("Console rendering", () => {
     expect(html).toContain("safe fallback");
   });
 
-  it("detects web links in structured console strings", () => {
+  it("detects web links in structured console strings with the links addon", () => {
     const html = renderToStaticMarkup(
       <Console
+        addons={[createConsoleLinksAddon()]}
         messages={[
           {
             method: "log",
@@ -735,10 +737,9 @@ describe("Console rendering", () => {
     expect(html).toContain("console-link");
   });
 
-  it("can disable built-in web-link detection", () => {
+  it("does not detect web links without the addon", () => {
     const html = renderToStaticMarkup(
       <Console
-        detectLinks={false}
         messages={[
           {
             method: "log",
@@ -765,6 +766,7 @@ describe("Console rendering", () => {
       <ConsoleLinkedText
         text={text}
         context={{ mode: "terminal" }}
+        providers={[webLinkProvider]}
         renderText={(value, _key, start, end) => {
           ranges.push([value, start, end]);
           return value;
@@ -894,6 +896,7 @@ describe("Console rendering", () => {
           },
         ]}
         linkProviders={[provider]}
+        addons={[createConsoleLinksAddon()]}
       />,
     );
 
@@ -906,6 +909,7 @@ describe("Console rendering", () => {
     const html = renderToStaticMarkup(
       <Console
         mode="terminal"
+        addons={[createConsoleLinksAddon()]}
         messages={[`Visit ${escape}[36mhttps://example${escape}[0m.com/docs`]}
       />,
     );
