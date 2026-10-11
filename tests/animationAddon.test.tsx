@@ -30,6 +30,18 @@ describe("animated output addon", () => {
       manager.extensions.getAll(consoleExtensionPoints.outputEntryDecorator),
     ).toHaveLength(0);
   });
+  it("supports distinct typing and horizontal reveal effects", () => {
+    for (const effect of ["typewriter", "reveal"] as const) {
+      const html = renderToStaticMarkup(
+        <Console
+          addons={[createConsoleAnimationAddon({ effect })]}
+          messages={[{ id: effect, method: "log", depth: 0, data: ["hello world"] }]}
+        />,
+      );
+      expect(html).toContain("hello world");
+      expect(html).toContain(`data-console-message-id="${effect}"`);
+    }
+  });
   it("preserves structured output content and IDs", () => {
     const html = renderToStaticMarkup(
       <Console
