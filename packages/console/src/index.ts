@@ -192,3 +192,5 @@ export { stringifyConsoleValue } from "./utils/console/valueDisplay";
 
 export { ConsoleVirtualList, getConsoleVirtualRange } from "./components/ConsoleVirtualList";
 export type { ConsoleVirtualListProps } from "./components/ConsoleVirtualList";
+
+export { useConsoleOutputPause } from "./hooks/useConsoleOutputPause";
