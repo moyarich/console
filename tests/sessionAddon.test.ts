@@ -44,6 +44,46 @@ describe("Console session snapshots", () => {
         { id: "done", data: "done", stream: "stdout" },
       ]);
   });
+  it("round-trips rich terminal metadata without JSON serialization errors", () => {
+    const circular: Record<string, unknown> = {
+      timestamp: new Date("2024-02-03T00:00:00.000Z"),
+      count: 9n,
+    };
+    circular.self = circular;
+    const session = createConsoleSession({
+      mode: "terminal",
+      entries: [{ id: "event", data: "ready", metadata: circular }],
+    });
+    const restored = parseConsoleSession(stringifyConsoleSession(session));
+    expect(restored.mode).toBe("terminal");
+    if (restored.mode === "terminal") {
+      const entry = restored.entries[0];
+      expect(typeof entry).toBe("object");
+      if (typeof entry !== "string" && entry) {
+        expect(entry.metadata?.timestamp).toEqual(
+          new Date("2024-02-03T00:00:00.000Z"),
+        );
+        expect(entry.metadata?.count).toBe(9n);
+        expect(entry.metadata?.self).toBe("[Circular]");
+      }
+    }
+  });
+
+  it("rejects malformed terminal metadata", () => {
+    const base = {
+      type: "MOYARICH_CONSOLE_SESSION",
+      version: 1,
+      droppedCount: 0,
+      mode: "terminal",
+    };
+    expect(() =>
+      parseConsoleSession({
+        ...base,
+        entries: [{ data: "line", metadata: 42 }],
+      }),
+    ).toThrow(/Invalid terminal entries/);
+  });
+
   it("rejects unknown future versions", () => {
     const saved = createConsoleSession({ mode: "console", messages: [] });
     expect(() => parseConsoleSession({ ...saved, version: 999 })).toThrow(
