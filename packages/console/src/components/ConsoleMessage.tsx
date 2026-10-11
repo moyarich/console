@@ -169,6 +169,7 @@ export function ConsoleMessage({
   onExpandAll,
   renderers,
   valueRenderers,
+  valueDisplay = "structured",
   detectLinks = true,
   linkProviders,
 }: ConsoleMessageProps) {
