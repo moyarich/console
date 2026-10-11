@@ -1,6 +1,16 @@
-import { consoleExtensionPoints, type ConsoleAddon, type ConsoleValueRenderer } from "@moyarich/console-core";
-import { MarkdownValue, hasMarkdown } from "./components/MarkdownValue/MarkdownValue";
-export { MarkdownValue, hasMarkdown } from "./components/MarkdownValue/MarkdownValue";
+import {
+  consoleExtensionPoints,
+  type ConsoleAddon,
+  type ConsoleValueRenderer,
+} from "@moyarich/console-core";
+import {
+  MarkdownValue,
+  hasMarkdown,
+} from "./components/MarkdownValue/MarkdownValue";
+export {
+  MarkdownValue,
+  hasMarkdown,
+} from "./components/MarkdownValue/MarkdownValue";
 
 /** Stable package-qualified identity for the Markdown addon. */
 export const CONSOLE_MARKDOWN_ADDON_ID = "@moyarich/console-addon-markdown";

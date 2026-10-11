@@ -1,7 +1,4 @@
-import {
-  useSyncExternalStore,
-  type CSSProperties,
-} from "react";
+import { useSyncExternalStore, type CSSProperties } from "react";
 import {
   consoleExtensionPoints,
   consoleServices,

@@ -1,5 +1,8 @@
 import { useSyncExternalStore } from "react";
-import type { ConsoleAnnotation, ConsoleAnnotationsController } from "../../index";
+import type {
+  ConsoleAnnotation,
+  ConsoleAnnotationsController,
+} from "../../index";
 
 function useAnnotations(
   controller: ConsoleAnnotationsController,
@@ -46,4 +49,3 @@ export function ConsoleAnnotationBadge({
     </span>
   );
 }
-

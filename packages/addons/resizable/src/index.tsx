@@ -3,10 +3,19 @@ export const RESIZABLE_CONSOLE_ADDON_ID = "@moyarich/console-addon-resizable";
 
 import { ResizableConsoleFrame } from "./components/ResizableConsoleFrame/ResizableConsoleFrame";
 export { resolveConsoleResizeAxes } from "./components/ResizableConsoleFrame/ResizableConsoleFrame";
-export type { ConsoleResizeDirection, ConsoleResizeEdge, ConsoleResizeSize, ResizableConsoleAddonOptions } from "./components/ResizableConsoleFrame/ResizableConsoleFrame";
+export type {
+  ConsoleResizeDirection,
+  ConsoleResizeEdge,
+  ConsoleResizeSize,
+  ResizableConsoleAddonOptions,
+} from "./components/ResizableConsoleFrame/ResizableConsoleFrame";
 import type { ResizableConsoleAddonOptions } from "./components/ResizableConsoleFrame/ResizableConsoleFrame";
 import type { ReactNode } from "react";
-import { consoleExtensionPoints, type ConsoleAddon, type ConsoleFrameDecorator } from "@moyarich/console-core";
+import {
+  consoleExtensionPoints,
+  type ConsoleAddon,
+  type ConsoleFrameDecorator,
+} from "@moyarich/console-core";
 
 /**
  * Creates a first-party frame-resizing addon.

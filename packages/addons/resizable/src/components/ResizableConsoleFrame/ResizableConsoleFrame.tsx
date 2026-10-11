@@ -1,6 +1,14 @@
 import "./ResizableConsoleFrame.css";
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import type { ConsoleMode } from "@moyarich/console-core";
 
 export type ConsoleResizeDirection =
@@ -361,4 +369,3 @@ export function ResizableConsoleFrame({
     </div>
   );
 }
-

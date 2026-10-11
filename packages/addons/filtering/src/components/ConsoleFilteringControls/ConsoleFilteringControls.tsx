@@ -1,6 +1,11 @@
 import { useId, useMemo, useSyncExternalStore } from "react";
 import type { ConsoleMessageData } from "@moyarich/console-core";
-import { CONSOLE_FILTERING_METHODS, type ConsoleFilteringController, type ConsoleFilteringControlsProps, type ConsoleFilteringState } from "../../index";
+import {
+  CONSOLE_FILTERING_METHODS,
+  type ConsoleFilteringController,
+  type ConsoleFilteringControlsProps,
+  type ConsoleFilteringState,
+} from "../../index";
 import "./ConsoleFilteringControls.css";
 
 function useFilteringState(
@@ -21,7 +26,15 @@ function normalizeSources(
     return Object.freeze(Array.from(new Set(sources.filter(Boolean))));
   }
 
-  return Object.freeze(Array.from(new Set((messages ?? []).flatMap((message) => message.source ? [message.source] : []))));
+  return Object.freeze(
+    Array.from(
+      new Set(
+        (messages ?? []).flatMap((message) =>
+          message.source ? [message.source] : [],
+        ),
+      ),
+    ),
+  );
 }
 
 /** Default first-party controls for method, text, and source filters. */
@@ -156,4 +169,3 @@ export function ConsoleFilteringControls({
     </div>
   );
 }
-

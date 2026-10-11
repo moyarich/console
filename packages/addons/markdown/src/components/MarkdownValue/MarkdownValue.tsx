@@ -116,4 +116,3 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
     </div>
   );
 }
-
