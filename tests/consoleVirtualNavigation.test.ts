@@ -12,7 +12,9 @@ describe("virtualized Console navigation", () => {
       querySelector: vi.fn(() => ({ scrollToConsoleMessage: jump })),
       focus: vi.fn(),
     };
-    const viewport = createConsoleViewportController(() => surface as unknown as HTMLElement);
+    const viewport = createConsoleViewportController(
+      () => surface as unknown as HTMLElement,
+    );
     expect(viewport.scrollToMessage("offscreen-9000")).toBe(true);
     expect(jump).toHaveBeenCalledWith("offscreen-9000");
     expect(viewport.scrollToMessage("missing")).toBe(false);
