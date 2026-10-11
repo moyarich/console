@@ -100,7 +100,7 @@ export function useConsoleMessages({
     (message: ConsoleMessageData) => {
       setHistory((current) =>
         appendConsoleRetainedMessage(current, message, maxMessages, dedupeById),
-;
+      );
     },
     [dedupeById, maxMessages],
   );
