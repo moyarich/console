@@ -1,2 +1,10 @@
-.console-search-highlight { background: var(--moya-console-search-highlight-bg, #ffdf70); color: var(--moya-console-search-highlight-fg, #231c00); border-radius: 2px; padding: 0 .2em; }
-.console-search-highlight[data-active] { outline: 2px solid var(--moya-console-search-highlight-active, currentColor); outline-offset: 1px; }
+.console-search-highlight {
+  background: var(--moya-console-search-highlight-bg, #ffdf70);
+  color: var(--moya-console-search-highlight-fg, #231c00);
+  border-radius: 2px;
+  padding: 0 0.2em;
+}
+.console-search-highlight[data-active] {
+  outline: 2px solid var(--moya-console-search-highlight-active, currentColor);
+  outline-offset: 1px;
+}
