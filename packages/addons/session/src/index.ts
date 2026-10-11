@@ -137,23 +137,38 @@ export interface ConsoleSessionService {
   restore(serialized: string): ConsoleSession;
 }
 export const CONSOLE_SESSION_ADDON_ID = "@moyarich/console-addon-session";
-export const consoleSessionService = createConsoleServiceToken<ConsoleSessionService>(
-  CONSOLE_SESSION_ADDON_ID + ".service",
-);
+export const consoleSessionService =
+  createConsoleServiceToken<ConsoleSessionService>(
+    CONSOLE_SESSION_ADDON_ID + ".service",
+  );
 
 /** The host owns applying a restored session to source messages; the addon never mutates capture state. */
-export function createConsoleSessionAddon(): ConsoleAddon & { service: ConsoleSessionService } {
+export function createConsoleSessionAddon(): ConsoleAddon & {
+  service: ConsoleSessionService;
+} {
   let data: ConsoleDataService | undefined;
   const service: ConsoleSessionService = {
     capture(droppedCount = 0) {
       const snapshot = data?.getSnapshot();
       if (!snapshot) throw new Error("Console session addon is not active");
       return snapshot.mode === "console"
-        ? createConsoleSession({ mode: "console", messages: snapshot.all, droppedCount })
-        : createConsoleSession({ mode: "terminal", entries: snapshot.rawEntries, droppedCount });
+        ? createConsoleSession({
+            mode: "console",
+            messages: snapshot.all,
+            droppedCount,
+          })
+        : createConsoleSession({
+            mode: "terminal",
+            entries: snapshot.rawEntries,
+            droppedCount,
+          });
     },
-    save(droppedCount = 0) { return stringifyConsoleSession(service.capture(droppedCount)); },
-    restore(serialized) { return parseConsoleSession(serialized); },
+    save(droppedCount = 0) {
+      return stringifyConsoleSession(service.capture(droppedCount));
+    },
+    restore(serialized) {
+      return parseConsoleSession(serialized);
+    },
   };
   return {
     id: CONSOLE_SESSION_ADDON_ID,
@@ -161,7 +176,9 @@ export function createConsoleSessionAddon(): ConsoleAddon & { service: ConsoleSe
     activate(host) {
       data = host.services.get(consoleServices.data);
       host.services.provide(consoleSessionService, service);
-      return () => { data = undefined; };
+      return () => {
+        data = undefined;
+      };
     },
   };
 }
