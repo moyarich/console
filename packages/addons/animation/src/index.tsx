@@ -99,7 +99,7 @@ function TypewriterEntry({
       0,
     );
     if (!total) {
-      if (id !== undefined) completed.add(id);
+      done();
       return;
     }
 
@@ -123,7 +123,7 @@ function TypewriterEntry({
       });
       if (position >= total) {
         if (ticker !== undefined) clearInterval(ticker);
-        if (id !== undefined) completed.add(id);
+        done();
       }
     };
     const start = setTimeout(() => {
@@ -131,7 +131,7 @@ function TypewriterEntry({
         entries.forEach((entry, i) => {
           entry.node.textContent = originals[i]!.value;
         });
-        if (id !== undefined) completed.add(id);
+        done();
       } else {
         ticker = setInterval(reveal, Math.max(1, stepTime));
       }
@@ -151,12 +151,14 @@ function AnimatedEntry({
   id,
   index,
   completed,
+  sequence,
   options,
   children,
 }: {
   id?: string;
   index: number;
   completed: Set<string>;
+  sequence: AnimationSequence;
   options: ConsoleAnimationOptions;
   children: ReactNode;
 }) {
