@@ -189,3 +189,6 @@ export type {
 
 export type { ConsoleValueDisplay } from "./utils/console/valueDisplay";
 export { stringifyConsoleValue } from "./utils/console/valueDisplay";
+
+export { ConsoleVirtualList, getConsoleVirtualRange } from "./components/ConsoleVirtualList";
+export type { ConsoleVirtualListProps } from "./components/ConsoleVirtualList";

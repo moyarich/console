@@ -42,6 +42,7 @@ import {
   type ConsoleSurfaceActionContext,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
+import { ConsoleVirtualList } from "./ConsoleVirtualList";
 import type { ConsoleLinkProvider } from "../links";
 import type { ConsoleValueDisplay } from "../utils/console/valueDisplay";
 import {
@@ -93,6 +94,8 @@ export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and terminal console modes. */
 interface ConsoleSharedProps {
+  /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
+  virtualize?: boolean;
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
@@ -670,6 +673,7 @@ function ConsoleMessageMode({
   outputRenderers,
   valueRenderers,
   valueDisplay = "structured",
+  virtualize = false,
   detectLinks = true,
   linkProviders,
   addonExtensions,
@@ -800,8 +804,8 @@ function ConsoleMessageMode({
     });
   };
 
-  const renderDefaultOutput = () =>
-    visibleMessages.map((message, index) => {
+  const renderDefaultOutput = () => {
+    const rows = visibleMessages.map((message, index) => {
       const key =
         message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
       const gutter = renderConsoleMessageDecorations(
@@ -888,6 +892,10 @@ function ConsoleMessageMode({
         </div>
       );
     });
+    return virtualize ? (
+      <ConsoleVirtualList count={rows.length} renderRow={(index) => rows[index]} />
+    ) : rows;
+  };
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
     messages: visibleMessages,
