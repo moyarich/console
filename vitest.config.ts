@@ -5,6 +5,9 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
+      "@moyarich/console-addon-animation": fileURLToPath(
+        new URL("./packages/addons/animation/src/index.tsx", import.meta.url),
+      ),
       "@moyarich/console-addon-navigation": fileURLToPath(
         new URL("./packages/addons/navigation/src/index.ts", import.meta.url),
       ),
