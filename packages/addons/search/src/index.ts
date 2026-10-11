@@ -1,5 +1,8 @@
 import { createElement } from "react";
-import { consoleExtensionPoints, type ConsolePanelElement } from "@moyarich/console-core";
+import {
+  consoleExtensionPoints,
+  type ConsolePanelElement,
+} from "@moyarich/console-core";
 import { ConsoleSearchControls } from "./components/ConsoleSearchControls/ConsoleSearchControls";
 export { ConsoleSearchControls } from "./components/ConsoleSearchControls/ConsoleSearchControls";
 import {
@@ -163,16 +166,36 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       data = host.services.get(consoleServices.data);
       viewport = host.services.get(consoleServices.viewport);
       host.services.provide(consoleSearchService, controller);
-    const panel: ConsolePanelElement = {
-      id: CONSOLE_SEARCH_ADDON_ID + ":controls",
-      placement: "before-output",
-      render: () => createElement(ConsoleSearchControls, { controller }),
-    };
-    host.extensions.register(consoleExtensionPoints.panelElement, panel, { id: panel.id });
-    for (const shortcut of [
-      { id: CONSOLE_SEARCH_ADDON_ID + ":next", key: "F3", onTrigger: () => { controller.next(); } },
-      { id: CONSOLE_SEARCH_ADDON_ID + ":previous", key: "F3", shiftKey: true, onTrigger: () => { controller.previous(); } },
-    ]) host.extensions.register(consoleExtensionPoints.keyboardShortcut, shortcut, { id: shortcut.id });
+      const panel: ConsolePanelElement = {
+        id: CONSOLE_SEARCH_ADDON_ID + ":controls",
+        placement: "before-output",
+        render: () => createElement(ConsoleSearchControls, { controller }),
+      };
+      host.extensions.register(consoleExtensionPoints.panelElement, panel, {
+        id: panel.id,
+      });
+      for (const shortcut of [
+        {
+          id: CONSOLE_SEARCH_ADDON_ID + ":next",
+          key: "F3",
+          onTrigger: () => {
+            controller.next();
+          },
+        },
+        {
+          id: CONSOLE_SEARCH_ADDON_ID + ":previous",
+          key: "F3",
+          shiftKey: true,
+          onTrigger: () => {
+            controller.previous();
+          },
+        },
+      ])
+        host.extensions.register(
+          consoleExtensionPoints.keyboardShortcut,
+          shortcut,
+          { id: shortcut.id },
+        );
 
       const subscription = data?.subscribe(() => controller.refresh());
       return () => {
