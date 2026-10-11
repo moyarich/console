@@ -15,8 +15,8 @@ describe("virtualized Console navigation", () => {
     const viewport = createConsoleViewportController(
       () => surface as unknown as HTMLElement,
     );
-    expect(viewport.scrollToMessage("offscreen-9000")).toBe(true);
-    expect(jump).toHaveBeenCalledWith("offscreen-9000");
+    expect(viewport.scrollToMessage("offscreen-9000", { block: "center" })).toBe(true);
+    expect(jump).toHaveBeenCalledWith("offscreen-9000", { block: "center" });
     expect(viewport.scrollToMessage("missing")).toBe(false);
   });
 });
