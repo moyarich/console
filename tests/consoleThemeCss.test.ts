@@ -67,7 +67,9 @@ const resizableAddonPackage = JSON.parse(
 describe("console theme CSS", () => {
   it("disables resize-handle transitions for reduced motion", () => {
     expect(resizableCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(resizableCss).toMatch(/\.console-resize-corner-handle\s*\{\s*transition: none;/);
+    expect(resizableCss).toMatch(
+      /\.console-resize-corner-handle\s*\{\s*transition: none;/,
+    );
   });
   it("loads each package stylesheet from its own entrypoint", () => {
     expect(consoleIndex).toContain('import "./styles.css";');
