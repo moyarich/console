@@ -126,11 +126,22 @@ export function ConsoleContextMenu({
 }: ConsoleContextMenuProps) {
   const targetRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const focusOriginRef = useRef<HTMLElement | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
-  const closeMenu = useCallback(() => setMenu(null), []);
+  const closeMenu = useCallback((restoreFocus = false) => {
+    setMenu(null);
+    if (restoreFocus && focusOriginRef.current?.isConnected) {
+      focusOriginRef.current.focus();
+    }
+    focusOriginRef.current = null;
+  }, []);
 
   const openMenu = useCallback(
     (event: MouseEvent<HTMLElement>, target: MenuTarget) => {
+      focusOriginRef.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : targetRef.current;
       const point = getEventPoint(event);
       const themeStyle = getContextMenuThemeStyle(targetRef.current);
       setMenu({ ...point, target, themeStyle });
@@ -163,7 +174,7 @@ export function ConsoleContextMenu({
 
   const copyObject = useCallback(
     (value: object) => {
-      closeMenu();
+      closeMenu(true);
       void writeClipboardText(formatConsoleObjectForCopy(value));
     },
     [closeMenu],
@@ -235,7 +246,8 @@ export function ConsoleContextMenu({
     };
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") {
-        closeMenu();
+        event.preventDefault();
+        closeMenu(true);
       }
     };
     const handleViewportChange = () => closeMenu();
@@ -282,7 +294,7 @@ export function ConsoleContextMenu({
 
   const handleCopyConsole = () => {
     const value = targetRef.current?.innerText.trim() ?? "";
-    closeMenu();
+    closeMenu(true);
 
     if (value) {
       void writeClipboardText(value);
@@ -334,6 +346,25 @@ export function ConsoleContextMenu({
         ref={targetRef}
         className="console-context-menu-target"
         onContextMenu={handleContextMenu}
+        onKeyDown={(event) => {
+          if (
+            event.key !== "ContextMenu" &&
+            !(event.shiftKey && event.key === "F10")
+          )
+            return;
+          event.preventDefault();
+          const rect = event.currentTarget.getBoundingClientRect();
+          focusOriginRef.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : event.currentTarget;
+          setMenu({
+            x: rect.left + Math.min(28, rect.width / 2),
+            y: rect.top + Math.min(28, rect.height / 2),
+            target: { kind: "console" },
+            themeStyle: getContextMenuThemeStyle(targetRef.current),
+          });
+        }}
       >
         {children}
       </div>
@@ -360,7 +391,7 @@ export function ConsoleContextMenu({
                 key={`context-${resolvedAction.action.id}`}
                 resolvedAction={resolvedAction}
                 context={actionContext}
-                onBeforeSelect={closeMenu}
+                onBeforeSelect={() => closeMenu(true)}
               />
             ))}
 
@@ -416,7 +447,7 @@ export function ConsoleContextMenu({
               role="menuitem"
               disabled={clearDisabled}
               onClick={() => {
-                closeMenu();
+                closeMenu(true);
                 onClear?.();
               }}
             >
