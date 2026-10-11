@@ -7,6 +7,8 @@ import {
 import {
   deserializeConsoleMessage,
   serializeConsoleMessage,
+  serializeConsoleValue,
+  deserializeConsoleValue,
   type ConsoleMessageData,
   type ConsoleStdoutEntry,
 } from "@moyarich/console";
@@ -60,7 +62,16 @@ export function createConsoleSession(
         mode: "terminal",
         droppedCount,
         entries: input.entries.map((entry) =>
-          typeof entry === "string" ? entry : { ...entry },
+          typeof entry === "string"
+            ? entry
+            : {
+                data: entry.data,
+                ...(entry.id !== undefined ? { id: entry.id } : {}),
+                ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
+                ...(entry.metadata !== undefined
+                  ? { metadata: serializeConsoleValue(entry.metadata) }
+                  : {}),
+              },
         ),
       };
 }
@@ -120,7 +131,11 @@ export function parseConsoleSession(
             (entry.id === undefined || typeof entry.id === "string") &&
             (entry.stream === undefined ||
               entry.stream === "stdout" ||
-              entry.stream === "stderr")),
+              entry.stream === "stderr") &&
+            (entry.metadata === undefined ||
+              (entry.metadata !== null &&
+                typeof entry.metadata === "object" &&
+                !Array.isArray(entry.metadata)))),
       )
     )
       throw new TypeError("Invalid terminal entries");
@@ -129,7 +144,16 @@ export function parseConsoleSession(
       version: 1,
       mode: "terminal",
       droppedCount: record.droppedCount as number,
-      entries: record.entries,
+      entries: record.entries.map((entry) =>
+        typeof entry === "string"
+          ? entry
+          : {
+              ...entry,
+              ...(entry.metadata !== undefined
+                ? { metadata: deserializeConsoleValue(entry.metadata) }
+                : {}),
+            },
+      ),
     };
   }
   throw new TypeError("Unsupported console session mode");
