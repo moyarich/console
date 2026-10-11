@@ -17,6 +17,12 @@ const contextMenuThemeStylePath = fileURLToPath(
 const resizableAddonIndexPath = fileURLToPath(
   new URL("../packages/addons/resizable/src/index.tsx", import.meta.url),
 );
+const resizableFramePath = fileURLToPath(
+  new URL(
+    "../packages/addons/resizable/src/components/ResizableConsoleFrame/ResizableConsoleFrame.tsx",
+    import.meta.url,
+  ),
+);
 const consolePackagePath = fileURLToPath(
   new URL("../packages/console/package.json", import.meta.url),
 );
@@ -34,6 +40,7 @@ const styles = readFileSync(stylesPath, "utf8");
 const consoleIndex = readFileSync(consoleIndexPath, "utf8");
 const contextMenuThemeStyle = readFileSync(contextMenuThemeStylePath, "utf8");
 const resizableAddonIndex = readFileSync(resizableAddonIndexPath, "utf8");
+const resizableFrame = readFileSync(resizableFramePath, "utf8");
 const consoleViteConfig = readFileSync(consoleViteConfigPath, "utf8");
 const resizableAddonViteConfig = readFileSync(
   resizableAddonViteConfigPath,
@@ -51,7 +58,10 @@ const resizableAddonPackage = JSON.parse(
 describe("console theme CSS", () => {
   it("loads each package stylesheet from its own entrypoint", () => {
     expect(consoleIndex).toContain('import "./styles.css";');
-    expect(resizableAddonIndex).toContain('import "./styles.css";');
+    expect(resizableAddonIndex).toContain(
+      "components/ResizableConsoleFrame/ResizableConsoleFrame",
+    );
+    expect(resizableFrame).toContain('import "./ResizableConsoleFrame.css";');
 
     expect(consolePackage.scripts.build).toContain("vite build");
     expect(resizableAddonPackage.scripts.build).toContain("vite build");

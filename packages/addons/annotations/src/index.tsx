@@ -1,4 +1,6 @@
-import { useSyncExternalStore, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { ConsoleAnnotationBadge } from "./components/ConsoleAnnotationBadge/ConsoleAnnotationBadge";
+export { ConsoleAnnotationBadge } from "./components/ConsoleAnnotationBadge/ConsoleAnnotationBadge";
 import {
   consoleExtensionPoints,
   createConsoleServiceToken,
@@ -191,52 +193,6 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
   };
 
   return controller;
-}
-
-function useAnnotations(
-  controller: ConsoleAnnotationsController,
-  messageId: string,
-): readonly ConsoleAnnotation[] {
-  return useSyncExternalStore(
-    controller.subscribe,
-    () => controller.getAnnotations(messageId),
-    () => controller.getAnnotations(messageId),
-  );
-}
-
-/** Default bookmark/annotation badge rendered through messageDecoration. */
-export function ConsoleAnnotationBadge({
-  controller,
-  messageId,
-}: {
-  controller: ConsoleAnnotationsController;
-  messageId: string;
-}) {
-  const annotations = useAnnotations(controller, messageId);
-  if (annotations.length === 0) return null;
-
-  const label = annotations
-    .map((annotation) => annotation.label ?? annotation.id)
-    .join(", ");
-
-  return (
-    <span
-      aria-label={`Annotations: ${label}`}
-      title={label}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 4,
-        fontSize: 12,
-        lineHeight: 1,
-      }}
-    >
-      <span aria-hidden="true">★</span>
-      {annotations.length > 1 ? (
-        <span aria-hidden="true">{annotations.length}</span>
-      ) : null}
-    </span>
-  );
 }
 
 function createDecoration(
