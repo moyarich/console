@@ -153,7 +153,7 @@ export function ConsoleResolvedStdout({
       {resolvedEntries.map(({ entry, output: processedOutput }, index) => {
         const data = processedOutput.data;
         const stream = entry.stream;
-        const id = entry.id;
+        const id = entry.id ?? `terminal-${index}`;
         const key = entry.id ?? `stdout-${index}`;
         const structuredValue =
           processedOutput.structuredValue !== undefined
