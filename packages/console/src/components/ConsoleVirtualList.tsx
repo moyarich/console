@@ -44,6 +44,7 @@ export function ConsoleVirtualList({
   const [revision, setRevision] = useState(0);
   const [position, setPosition] = useState({ top: 0, height: 600 });
   const offsets = useMemo(() => {
+    void revision; // Recalculate offsets when a measured row changes height.
     const result = [0];
     for (let i = 0; i < count; i++) {
       result.push(result[i]! + (heights.current.get(i) ?? estimatedRowHeight));
