@@ -860,11 +860,11 @@ function ConsoleMessageMode({
 
       const renderEntry = () =>
         !hasDecorations ? (
-          <div data-console-message-id={message.id}>{renderedMessage}</div>
+          <div data-console-message-id={message.id ?? `console-${index}`}>{renderedMessage}</div>
         ) : (
           <div
             className="console-message-extension-shell"
-            data-console-message-id={message.id}
+            data-console-message-id={message.id ?? `console-${index}`}
           >
             {before}
             <div className="console-message-extension-row">
