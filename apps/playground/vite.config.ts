@@ -34,8 +34,8 @@ export default defineConfig({
     react({ include: /\.(?:js|jsx|md|mdx|ts|tsx)$/ }),
   ],
   resolve: {
-    // Prefer workspace source exports in both dev server and production playground builds.
-    conditions: ["development", "..."],
+    // Preserve Vite browser/module conditions for Monaco while enabling workspace source exports.
+    conditions: ["module", "browser", "development|production", "development"],
     dedupe: ["vscode"],
     alias: [
       {
