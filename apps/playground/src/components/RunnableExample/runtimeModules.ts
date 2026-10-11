@@ -9,6 +9,7 @@ import * as DiagnosticsAddonPackage from "@moyarich/console-addon-diagnostics";
 import * as FilteringAddonPackage from "@moyarich/console-addon-filtering";
 import * as ImperativeScrollingAddonPackage from "@moyarich/console-addon-imperative-scrolling";
 import * as MarkdownAddonPackage from "@moyarich/console-addon-markdown";
+import * as LinksAddonPackage from "@moyarich/console-addon-links";
 import * as ResizableAddonPackage from "@moyarich/console-addon-resizable";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
@@ -32,6 +33,7 @@ export const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, unknown>> = {
   "@moyarich/console-addon-imperative-scrolling":
     ImperativeScrollingAddonPackage,
   "@moyarich/console-addon-markdown": MarkdownAddonPackage,
+  "@moyarich/console-addon-links": LinksAddonPackage,
   "@moyarich/console-addon-resizable": ResizableAddonPackage,
   "@moyarich/console-addon-resizable/styles.css": {},
   "lucide-react": LucideReact,
