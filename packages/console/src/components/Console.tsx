@@ -893,8 +893,13 @@ function ConsoleMessageMode({
       );
     });
     return virtualize ? (
-      <ConsoleVirtualList count={rows.length} renderRow={(index) => rows[index]} />
-    ) : rows;
+      <ConsoleVirtualList
+        count={rows.length}
+        renderRow={(index) => rows[index]}
+      />
+    ) : (
+      rows
+    );
   };
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",

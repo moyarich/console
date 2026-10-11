@@ -16,7 +16,8 @@ export function getConsoleVirtualRange(
   overscan = 6,
 ): { start: number; end: number } {
   const count = offsets.length - 1;
-  let low = 0, high = count;
+  let low = 0,
+    high = count;
   while (low < high) {
     const middle = Math.floor((low + high) / 2);
     if (offsets[middle + 1]! <= scrollTop) low = middle + 1;
@@ -52,16 +53,32 @@ export function ConsoleVirtualList({
   useEffect(() => {
     const surface = rootRef.current?.closest(".console-surface");
     if (!surface) return;
-    const update = () => setPosition({ top: surface.scrollTop, height: surface.clientHeight });
+    const update = () =>
+      setPosition({ top: surface.scrollTop, height: surface.clientHeight });
     update();
     surface.addEventListener("scroll", update, { passive: true });
-    const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(update);
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? undefined
+        : new ResizeObserver(update);
     observer?.observe(surface);
-    return () => { surface.removeEventListener("scroll", update); observer?.disconnect(); };
+    return () => {
+      surface.removeEventListener("scroll", update);
+      observer?.disconnect();
+    };
   }, []);
-  const { start, end } = getConsoleVirtualRange(offsets, position.top, position.height, overscan);
+  const { start, end } = getConsoleVirtualRange(
+    offsets,
+    position.top,
+    position.height,
+    overscan,
+  );
   return (
-    <div ref={rootRef} data-console-virtual-list="" style={{ position: "relative", height: offsets[count] }}>
+    <div
+      ref={rootRef}
+      data-console-virtual-list=""
+      style={{ position: "relative", height: offsets[count] }}
+    >
       {Array.from({ length: end - start }, (_, offset) => {
         const index = start + offset;
         return (
@@ -82,8 +99,14 @@ export function ConsoleVirtualList({
   );
 }
 
-function MeasuredConsoleRow({ top, onHeight, children }: {
-  top: number; onHeight(height: number): void; children: ReactNode;
+function MeasuredConsoleRow({
+  top,
+  onHeight,
+  children,
+}: {
+  top: number;
+  onHeight(height: number): void;
+  children: ReactNode;
 }) {
   const rowRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -96,5 +119,9 @@ function MeasuredConsoleRow({ top, onHeight, children }: {
     observer.observe(element);
     return () => observer.disconnect();
   }, [onHeight]);
-  return <div ref={rowRef} style={{ position: "absolute", top, left: 0, right: 0 }}>{children}</div>;
+  return (
+    <div ref={rowRef} style={{ position: "absolute", top, left: 0, right: 0 }}>
+      {children}
+    </div>
+  );
 }
