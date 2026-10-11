@@ -1,4 +1,10 @@
 import {
+  consoleServices,
+  createConsoleServiceToken,
+  type ConsoleAddon,
+  type ConsoleDataService,
+} from "@moyarich/console";
+import {
   deserializeConsoleMessage,
   serializeConsoleMessage,
   type ConsoleMessageData,
@@ -122,4 +128,40 @@ export function parseConsoleSession(
     };
   }
   throw new TypeError("Unsupported console session mode");
+}
+
+/** Read-only session snapshot facade exposed while the addon is active. */
+export interface ConsoleSessionService {
+  capture(droppedCount?: number): ConsoleSession;
+  save(droppedCount?: number): string;
+  restore(serialized: string): ConsoleSession;
+}
+export const CONSOLE_SESSION_ADDON_ID = "@moyarich/console-addon-session";
+export const consoleSessionService = createConsoleServiceToken<ConsoleSessionService>(
+  CONSOLE_SESSION_ADDON_ID + ".service",
+);
+
+/** The host owns applying a restored session to source messages; the addon never mutates capture state. */
+export function createConsoleSessionAddon(): ConsoleAddon & { service: ConsoleSessionService } {
+  let data: ConsoleDataService | undefined;
+  const service: ConsoleSessionService = {
+    capture(droppedCount = 0) {
+      const snapshot = data?.getSnapshot();
+      if (!snapshot) throw new Error("Console session addon is not active");
+      return snapshot.mode === "console"
+        ? createConsoleSession({ mode: "console", messages: snapshot.all, droppedCount })
+        : createConsoleSession({ mode: "terminal", entries: snapshot.rawEntries, droppedCount });
+    },
+    save(droppedCount = 0) { return stringifyConsoleSession(service.capture(droppedCount)); },
+    restore(serialized) { return parseConsoleSession(serialized); },
+  };
+  return {
+    id: CONSOLE_SESSION_ADDON_ID,
+    service,
+    activate(host) {
+      data = host.services.get(consoleServices.data);
+      host.services.provide(consoleSessionService, service);
+      return () => { data = undefined; };
+    },
+  };
 }
