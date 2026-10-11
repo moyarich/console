@@ -157,7 +157,7 @@ function AnimatedEntry({
       ? { opacity: 1 }
       : effect === "slide"
         ? { y: 0 }
-        : effect === "typewriter"
+        : effect === "reveal"
           ? { clipPath: "inset(0 0% 0 0)" }
           : { opacity: 1, y: 0 };
   return createElement(motion.div, {
@@ -178,7 +178,7 @@ function AnimatedEntry({
     },
     style: {
       overflow:
-        effect === "typewriter" && !reducedMotion && !alreadyCompleted
+        effect === "reveal" && !reducedMotion && !alreadyCompleted
           ? "hidden"
           : undefined,
     },
