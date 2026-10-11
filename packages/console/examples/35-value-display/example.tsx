@@ -34,7 +34,12 @@ const messages: ConsoleMessageData[] = [
     id: "table",
     method: "table",
     depth: 0,
-    data: [[{ item: "First", count: 2 }, { item: "Second", count: 4 }]],
+    data: [
+      [
+        { item: "First", count: 2 },
+        { item: "Second", count: 4 },
+      ],
+    ],
   },
   {
     id: "custom",
@@ -48,9 +53,7 @@ const customRenderers: ConsoleValueRenderer[] = [
   {
     type: "Object",
     match: ({ value }) =>
-      typeof value === "object" &&
-      value !== null &&
-      "special" in value,
+      typeof value === "object" && value !== null && "special" in value,
     render: () => <strong>Custom object renderer</strong>,
   },
 ];
