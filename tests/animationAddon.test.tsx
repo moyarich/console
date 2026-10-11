@@ -25,13 +25,29 @@ describe("animated output addon", () => {
     const options = { effect: "typewriter" as const, sequence: true };
     const html = renderToStaticMarkup(
       <>
-        <TypewriterEntry id="first" index={0} sequence={sequence} completed={completed} options={options}>alpha</TypewriterEntry>
-        <TypewriterEntry id="second" index={1} sequence={sequence} completed={completed} options={options}>beta</TypewriterEntry>
+        <TypewriterEntry
+          id="first"
+          index={0}
+          sequence={sequence}
+          completed={completed}
+          options={options}
+        >
+          alpha
+        </TypewriterEntry>
+        <TypewriterEntry
+          id="second"
+          index={1}
+          sequence={sequence}
+          completed={completed}
+          options={options}
+        >
+          beta
+        </TypewriterEntry>
       </>,
     );
     expect(html).toContain("alpha");
     expect(html).toContain("beta");
-    expect(html).toContain('visibility:hidden');
+    expect(html).toContain("visibility:hidden");
   });
   it("registers and disposes per-entry middleware", () => {
     const manager = createConsoleAddonManager();
