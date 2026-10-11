@@ -864,11 +864,11 @@ function ConsoleMessageMode({
 
       const renderEntry = () =>
         !hasDecorations ? (
-          <div data-console-message-id={message.id}>{renderedMessage}</div>
+          <div data-console-message-id={message.id ?? `console-${index}`}>{renderedMessage}</div>
         ) : (
           <div
             className="console-message-extension-shell"
-            data-console-message-id={message.id}
+            data-console-message-id={message.id ?? `console-${index}`}
           >
             {before}
             <div className="console-message-extension-row">
@@ -895,7 +895,7 @@ function ConsoleMessageMode({
     return virtualize ? (
       <ConsoleVirtualList
         count={rows.length}
-        messageIds={visibleMessages.map((message) => message.id)}
+        messageIds={visibleMessages.map((message, index) => message.id ?? `console-${index}`)}
         renderRow={(index) => rows[index]}
       />
     ) : (
