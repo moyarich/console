@@ -1,0 +1,40 @@
+import { describe, expect, it } from "vitest";
+import {
+  createConsoleSession,
+  parseConsoleSession,
+  stringifyConsoleSession,
+  CONSOLE_SESSION_VERSION,
+} from "@moyarich/console-addon-session";
+
+describe("Console session snapshots", () => {
+  it("round-trips structured messages and retention metadata", () => {
+    const original = createConsoleSession({
+      mode: "console",
+      messages: [{ id: "one", method: "log", depth: 0, data: [42, "hello", new Date("2020-01-01T00:00:00.000Z")] }],
+      droppedCount: 12,
+    });
+    const restored = parseConsoleSession(stringifyConsoleSession(original));
+    expect(restored.mode).toBe("console");
+    expect(restored.droppedCount).toBe(12);
+    expect(restored.version).toBe(CONSOLE_SESSION_VERSION);
+    if (restored.mode === "console") {
+      expect(restored.messages[0]?.data[0]).toBe(42);
+      expect(restored.messages[0]?.data[2]).toEqual(new Date("2020-01-01T00:00:00.000Z"));
+    }
+  });
+  it("round-trips terminal entries in source order", () => {
+    const session = createConsoleSession({ mode: "terminal", entries: ["connected", { id: "done", data: "done", stream: "stdout" }] });
+    const restored = parseConsoleSession(stringifyConsoleSession(session));
+    expect(restored.mode).toBe("terminal");
+    if (restored.mode === "terminal") expect(restored.entries).toEqual(["connected", { id: "done", data: "done", stream: "stdout" }]);
+  });
+  it("rejects unknown future versions", () => {
+    const saved = createConsoleSession({ mode: "console", messages: [] });
+    expect(() => parseConsoleSession({ ...saved, version: 999 })).toThrow(/Unsupported/);
+  });
+  it("rejects malformed input and retention counters", () => {
+    expect(() => parseConsoleSession("{}")).toThrow();
+    expect(() => createConsoleSession({ mode: "console", messages: [], droppedCount: -2 })).toThrow();
+    expect(() => parseConsoleSession({ type: "MOYARICH_CONSOLE_SESSION", version: 1, mode: "console", droppedCount: 0, messages: null })).toThrow();
+  });
+});
