@@ -3,8 +3,13 @@ import {
   Console,
   type ConsoleMessageData,
   type ConsoleValueDisplay,
+  type ConsoleValueRenderer,
 } from "@moyarich/console";
 
+const circular: Record<string, unknown> = { name: "Cycle" };
+circular.self = circular;
+
+// Keep the same message objects while switching display modes.
 const messages: ConsoleMessageData[] = [
   {
     id: "object",
@@ -16,19 +21,37 @@ const messages: ConsoleMessageData[] = [
     id: "array",
     method: "log",
     depth: 0,
-    data: [[1, 2, { ok: true }], null, false],
+    data: [[1, 2, { ok: true }], null, false, 42],
+  },
+  {
+    id: "circular",
+    method: "log",
+    depth: 0,
+    data: [circular],
   },
   { id: "dir", method: "dir", depth: 0, data: [{ nested: { count: 3 } }] },
   {
     id: "table",
     method: "table",
     depth: 0,
-    data: [
-      [
-        { item: "First", count: 2 },
-        { item: "Second", count: 4 },
-      ],
-    ],
+    data: [[{ item: "First", count: 2 }, { item: "Second", count: 4 }]],
+  },
+  {
+    id: "custom",
+    method: "log",
+    depth: 0,
+    data: [{ special: true }],
+  },
+];
+
+const customRenderers: ConsoleValueRenderer[] = [
+  {
+    type: "Object",
+    match: ({ value }) =>
+      typeof value === "object" &&
+      value !== null &&
+      "special" in value,
+    render: () => <strong>Custom object renderer</strong>,
   },
 ];
 
@@ -50,7 +73,11 @@ export default function Example() {
           <option value="string">String</option>
         </select>
       </label>
-      <Console messages={messages} valueDisplay={valueDisplay} />
+      <Console
+        messages={messages}
+        valueDisplay={valueDisplay}
+        valueRenderers={customRenderers}
+      />
     </div>
   );
 }
