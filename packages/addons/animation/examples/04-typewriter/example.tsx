@@ -11,8 +11,16 @@ const animation = createConsoleAnimationAddon({
 const messages: ConsoleMessageData[] = [
   { id: "04-typewriter-1", method: "log", data: ["Starting task"] },
   { id: "04-typewriter-2", method: "info", data: ["See https://example.com"] },
-  { id: "04-typewriter-3", method: "log", data: [{ status: "ready", steps: 3 }] },
-  { id: "04-typewriter-4", method: "warn", data: ["Finished with one warning"] },
+  {
+    id: "04-typewriter-3",
+    method: "log",
+    data: [{ status: "ready", steps: 3 }],
+  },
+  {
+    id: "04-typewriter-4",
+    method: "warn",
+    data: ["Finished with one warning"],
+  },
 ];
 
 export default function Example() {
