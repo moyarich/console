@@ -20,7 +20,9 @@ describe("animated output addon", () => {
   it("keeps later entries hidden until earlier entries complete when sequencing is enabled", () => {
     const html = renderToStaticMarkup(
       <Console
-        addons={[createConsoleAnimationAddon({ effect: "typewriter", sequence: true })]}
+        addons={[
+          createConsoleAnimationAddon({ effect: "typewriter", sequence: true }),
+        ]}
         messages={[
           { id: "first", method: "log", depth: 0, data: ["alpha"] },
           { id: "second", method: "log", depth: 0, data: ["beta"] },
@@ -29,7 +31,7 @@ describe("animated output addon", () => {
     );
     expect(html).toContain("alpha");
     expect(html).toContain("beta");
-    expect(html).toContain('visibility:hidden');
+    expect(html).toContain("visibility:hidden");
   });
   it("registers and disposes per-entry middleware", () => {
     const manager = createConsoleAddonManager();

@@ -1,5 +1,11 @@
 import { motion, useReducedMotion } from "motion/react";
-import { createElement, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import {
+  createElement,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -41,7 +47,9 @@ class AnimationSequence {
   private next = 0;
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
-    return () => { this.listeners.delete(listener); };
+    return () => {
+      this.listeners.delete(listener);
+    };
   };
   snapshot = () => this.next;
   complete(index: number) {
@@ -77,9 +85,14 @@ function TypewriterEntry({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
+  const active =
+    useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >=
+    index;
   const ready = !options.sequence || active;
-  const done = () => { if (id !== undefined) completed.add(id); sequence.complete(index); };
+  const done = () => {
+    if (id !== undefined) completed.add(id);
+    sequence.complete(index);
+  };
   useEffect(() => {
     if (ready && (reducedMotion || (id !== undefined && completed.has(id)))) {
       sequence.complete(index);
@@ -87,7 +100,12 @@ function TypewriterEntry({
   }, [ready, reducedMotion, id, index, completed, sequence]);
   useEffect(() => {
     const element = root.current;
-    if (!element || !ready || reducedMotion || (id !== undefined && completed.has(id))) {
+    if (
+      !element ||
+      !ready ||
+      reducedMotion ||
+      (id !== undefined && completed.has(id))
+    ) {
       return;
     }
 
@@ -115,7 +133,12 @@ function TypewriterEntry({
     let position = 0;
     const duration = Math.max(0, options.duration ?? 0.3) * 1000;
     const stepTime = total ? duration / total : 0;
-    const startDelay = (options.sequence ? (index === 0 ? Math.max(0, options.wait ?? 0) : Math.max(0, options.stagger ?? 0)) : getConsoleAnimationDelay(index, options)) * 1000;
+    const startDelay =
+      (options.sequence
+        ? index === 0
+          ? Math.max(0, options.wait ?? 0)
+          : Math.max(0, options.stagger ?? 0)
+        : getConsoleAnimationDelay(index, options)) * 1000;
     let ticker: ReturnType<typeof setInterval> | undefined;
     const reveal = () => {
       position += 1;
@@ -149,7 +172,11 @@ function TypewriterEntry({
     };
   }, [id, index, completed, options, reducedMotion, ready, sequence]);
 
-  return createElement("div", { ref: root, style: { visibility: options.sequence && !ready ? "hidden" : undefined }, children });
+  return createElement("div", {
+    ref: root,
+    style: { visibility: options.sequence && !ready ? "hidden" : undefined },
+    children,
+  });
 }
 
 function AnimatedEntry({
@@ -168,7 +195,9 @@ function AnimatedEntry({
   children: ReactNode;
 }) {
   const reducedMotion = useReducedMotion();
-  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
+  const active =
+    useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >=
+    index;
   const ready = !options.sequence || active;
   const alreadyCompleted = id !== undefined && completed.has(id);
   useEffect(() => {
@@ -214,7 +243,9 @@ function AnimatedEntry({
         reducedMotion || alreadyCompleted
           ? 0
           : options.sequence
-            ? index === 0 ? Math.max(0, options.wait ?? 0) : Math.max(0, options.stagger ?? 0)
+            ? index === 0
+              ? Math.max(0, options.wait ?? 0)
+              : Math.max(0, options.stagger ?? 0)
             : getConsoleAnimationDelay(index, options),
     },
     onAnimationComplete: () => {
