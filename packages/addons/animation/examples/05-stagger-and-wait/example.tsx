@@ -9,20 +9,20 @@ const animation = createConsoleAnimationAddon({
 });
 
 const messages: ConsoleMessageData[] = [
-  { id: "05-stagger-and-wait-1", method: "log", data: ["Starting task"] },
+  { id: "05-stagger-and-wait-1", method: "log", depth: 0, data: ["Starting task"] },
   {
     id: "05-stagger-and-wait-2",
-    method: "info",
+    method: "info", depth: 0,
     data: ["See https://example.com"],
   },
   {
     id: "05-stagger-and-wait-3",
-    method: "log",
+    method: "log", depth: 0,
     data: [{ status: "ready", steps: 3 }],
   },
   {
     id: "05-stagger-and-wait-4",
-    method: "warn",
+    method: "warn", depth: 0,
     data: ["Finished with one warning"],
   },
 ];
