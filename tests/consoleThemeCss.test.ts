@@ -18,7 +18,10 @@ const resizableAddonIndexPath = fileURLToPath(
   new URL("../packages/addons/resizable/src/index.tsx", import.meta.url),
 );
 const resizableFramePath = fileURLToPath(
-  new URL("../packages/addons/resizable/src/components/ResizableConsoleFrame/ResizableConsoleFrame.tsx", import.meta.url),
+  new URL(
+    "../packages/addons/resizable/src/components/ResizableConsoleFrame/ResizableConsoleFrame.tsx",
+    import.meta.url,
+  ),
 );
 const consolePackagePath = fileURLToPath(
   new URL("../packages/console/package.json", import.meta.url),
@@ -55,7 +58,9 @@ const resizableAddonPackage = JSON.parse(
 describe("console theme CSS", () => {
   it("loads each package stylesheet from its own entrypoint", () => {
     expect(consoleIndex).toContain('import "./styles.css";');
-    expect(resizableAddonIndex).toContain("components/ResizableConsoleFrame/ResizableConsoleFrame");
+    expect(resizableAddonIndex).toContain(
+      "components/ResizableConsoleFrame/ResizableConsoleFrame",
+    );
     expect(resizableFrame).toContain('import "./ResizableConsoleFrame.css";');
 
     expect(consolePackage.scripts.build).toContain("vite build");
