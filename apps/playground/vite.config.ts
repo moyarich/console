@@ -43,10 +43,6 @@ export default defineConfig({
         replacement: fileURLToPath(new URL("./src", import.meta.url)),
       },
       {
-        find: "@moyarich/console-addon-links",
-        replacement: workspaceSource("addons/links/src/index.ts"),
-      },
-      {
         find: "@moyarich/console-core",
         replacement: workspaceSource("console-core/src/index.ts"),
       },

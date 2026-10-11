@@ -53,7 +53,7 @@
   ],
   "sideEffects": [
     "./src/index.tsx",
-    "./src/styles.css",
+    "./src/components/ConsoleFilteringControls/ConsoleFilteringControls.css",
     "./dist/index.js",
     "./dist/index.cjs"
   ]

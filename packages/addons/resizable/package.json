@@ -58,7 +58,7 @@
   ],
   "sideEffects": [
     "./src/index.tsx",
-    "./src/styles.css",
+    "./src/components/ResizableConsoleFrame/ResizableConsoleFrame.css",
     "./dist/index.js",
     "./dist/index.cjs"
   ]
