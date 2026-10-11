@@ -3,7 +3,6 @@
   "compilerOptions": {
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@moyarich/console-core": ["../console-core/src/index.ts"]
     }
