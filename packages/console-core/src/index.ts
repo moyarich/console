@@ -1018,6 +1018,20 @@ export interface ConsoleEmptyStateRenderer<TUi = unknown> {
   render: (context: ConsoleEmptyStateRendererContext<TUi>) => TUi | undefined;
 }
 
+/** A presentation-only match range within the rendered text (UTF-16 offsets). */
+export interface ConsoleTextHighlightRange {
+  readonly start: number;
+  readonly end: number;
+  readonly active?: boolean;
+}
+
+/** Optional, reactive addon-provided text highlights. Does not change source output. */
+export interface ConsoleTextHighlightProvider {
+  subscribe(listener: () => void): () => void;
+  getSnapshot(): unknown;
+  getRanges(text: string, context: ConsoleLinkProviderContext): readonly ConsoleTextHighlightRange[];
+}
+
 export interface ConsoleMessageTextProviderContext {
   readonly message: ConsoleMessageData;
   readonly index: number;
@@ -1195,6 +1209,11 @@ export const consoleExtensionPoints = Object.freeze({
    *
    * @composition collect Text from all providers is accumulated in resolved order.
    */
+  /** A single presentation-only provider for inline text highlighting. */
+  textHighlightProvider: createConsoleExtensionPoint<ConsoleTextHighlightProvider>(
+    "console.render.textHighlight",
+    "first-result",
+  ),
   messageTextProvider: createConsoleExtensionPoint<ConsoleMessageTextProvider>(
     "console.message.text",
     "collect",
