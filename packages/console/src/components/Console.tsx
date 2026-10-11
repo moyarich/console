@@ -805,94 +805,94 @@ function ConsoleMessageMode({
   };
 
   const renderMessageRow = (message: ConsoleMessageData, index: number) => {
-      const key =
-        message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
-      const gutter = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "gutter",
-        message,
-        index,
-        visibleMessages,
-      );
-      const before = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "before",
-        message,
-        index,
-        visibleMessages,
-      );
-      const after = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "after",
-        message,
-        index,
-        visibleMessages,
-      );
-      const badge = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "badge",
-        message,
-        index,
-        visibleMessages,
-      );
-      const overlay = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "overlay",
-        message,
-        index,
-        visibleMessages,
-      );
-      const hasDecorations = Boolean(
-        gutter || before || after || badge || overlay,
-      );
+    const key =
+      message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
+    const gutter = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "gutter",
+      message,
+      index,
+      visibleMessages,
+    );
+    const before = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "before",
+      message,
+      index,
+      visibleMessages,
+    );
+    const after = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "after",
+      message,
+      index,
+      visibleMessages,
+    );
+    const badge = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "badge",
+      message,
+      index,
+      visibleMessages,
+    );
+    const overlay = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "overlay",
+      message,
+      index,
+      visibleMessages,
+    );
+    const hasDecorations = Boolean(
+      gutter || before || after || badge || overlay,
+    );
 
-      const renderedMessage = (
-        <ConsoleMessage
-          message={message}
-          index={index}
-          messages={visibleMessages}
-          expandAllVersion={expandedMessages.get(message)}
-          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
-          renderers={resolvedMessageRenderers}
-          valueRenderers={resolvedValueRenderers}
-          valueDisplay={valueDisplay}
-          detectLinks={detectLinks}
-          linkProviders={resolvedLinkProviders}
-        />
-      );
+    const renderedMessage = (
+      <ConsoleMessage
+        message={message}
+        index={index}
+        messages={visibleMessages}
+        expandAllVersion={expandedMessages.get(message)}
+        onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+        renderers={resolvedMessageRenderers}
+        valueRenderers={resolvedValueRenderers}
+        valueDisplay={valueDisplay}
+        detectLinks={detectLinks}
+        linkProviders={resolvedLinkProviders}
+      />
+    );
 
-      const renderEntry = () =>
-        !hasDecorations ? (
-          <div data-console-message-id={message.id ?? `console-${index}`}>
-            {renderedMessage}
-          </div>
-        ) : (
-          <div
-            className="console-message-extension-shell"
-            data-console-message-id={message.id ?? `console-${index}`}
-          >
-            {before}
-            <div className="console-message-extension-row">
-              {gutter}
-              <div className="console-message-extension-content">
-                {renderedMessage}
-              </div>
-              {badge}
+    const renderEntry = () =>
+      !hasDecorations ? (
+        <div data-console-message-id={message.id ?? `console-${index}`}>
+          {renderedMessage}
+        </div>
+      ) : (
+        <div
+          className="console-message-extension-shell"
+          data-console-message-id={message.id ?? `console-${index}`}
+        >
+          {before}
+          <div className="console-message-extension-row">
+            {gutter}
+            <div className="console-message-extension-content">
+              {renderedMessage}
             </div>
-            {after}
-            {overlay}
+            {badge}
           </div>
-        );
-      return (
-        <div key={key}>
-          {decorateConsoleOutputEntry(
-            resolvedEntryDecorators,
-            { mode: "console", message, id: message.id, index },
-            renderEntry,
-          )}
+          {after}
+          {overlay}
         </div>
       );
-    };
+    return (
+      <div key={key}>
+        {decorateConsoleOutputEntry(
+          resolvedEntryDecorators,
+          { mode: "console", message, id: message.id, index },
+          renderEntry,
+        )}
+      </div>
+    );
+  };
   const renderDefaultOutput = () =>
     virtualize ? (
       <ConsoleVirtualList
