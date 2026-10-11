@@ -1,4 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { AnimationSequence } from "../packages/addons/animation/src/AnimationSequence";
+import { TypewriterEntry } from "../packages/addons/animation/src/components/TypewriterEntry/TypewriterEntry";
 import { describe, expect, it } from "vitest";
 import {
   Console,
@@ -18,20 +20,18 @@ describe("animated output addon", () => {
     expect(getConsoleAnimationDelay(-1, { wait: -1, stagger: -2 })).toBe(0);
   });
   it("keeps later entries hidden until earlier entries complete when sequencing is enabled", () => {
+    const sequence = new AnimationSequence();
+    const completed = new Set<string>();
+    const options = { effect: "typewriter" as const, sequence: true };
     const html = renderToStaticMarkup(
-      <Console
-        addons={[
-          createConsoleAnimationAddon({ effect: "typewriter", sequence: true }),
-        ]}
-        messages={[
-          { id: "first", method: "log", depth: 0, data: ["alpha"] },
-          { id: "second", method: "log", depth: 0, data: ["beta"] },
-        ]}
-      />,
+      <>
+        <TypewriterEntry id="first" index={0} sequence={sequence} completed={completed} options={options}>alpha</TypewriterEntry>
+        <TypewriterEntry id="second" index={1} sequence={sequence} completed={completed} options={options}>beta</TypewriterEntry>
+      </>,
     );
     expect(html).toContain("alpha");
     expect(html).toContain("beta");
-    expect(html).toContain("visibility:hidden");
+    expect(html).toContain('visibility:hidden');
   });
   it("registers and disposes per-entry middleware", () => {
     const manager = createConsoleAddonManager();
