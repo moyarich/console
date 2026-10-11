@@ -9,7 +9,9 @@ const messages: ConsoleMessageData[] = [
 
 describe("Console announcement accessibility", () => {
   it("defaults to a named, non-live log for high-volume output", () => {
-    const html = renderToStaticMarkup(<Console messages={messages} title="Build output" />);
+    const html = renderToStaticMarkup(
+      <Console messages={messages} title="Build output" />,
+    );
     expect(html).toContain('role="log"');
     expect(html).toContain('aria-label="Build output"');
     expect(html).toContain('aria-live="off"');
@@ -22,7 +24,11 @@ describe("Console announcement accessibility", () => {
     "supports explicit %s announcements",
     (announcementMode) => {
       const html = renderToStaticMarkup(
-        <Console messages={messages} announcementMode={announcementMode} outputLabel="Streaming results" />,
+        <Console
+          messages={messages}
+          announcementMode={announcementMode}
+          outputLabel="Streaming results"
+        />,
       );
       expect(html).toContain(`aria-live="${announcementMode}"`);
       expect(html).toContain('aria-label="Streaming results"');
@@ -30,7 +36,9 @@ describe("Console announcement accessibility", () => {
   );
 
   it("preserves keyboard-accessible message actions with announcements off", () => {
-    const html = renderToStaticMarkup(<Console messages={messages} announcementMode="off" />);
+    const html = renderToStaticMarkup(
+      <Console messages={messages} announcementMode="off" />,
+    );
     expect(html).toContain('aria-live="off"');
     expect(html).toContain('role="group"');
     expect(html).toContain('tabindex="0"');
@@ -38,7 +46,12 @@ describe("Console announcement accessibility", () => {
 
   it("uses the same announcement policy for terminal output", () => {
     const html = renderToStaticMarkup(
-      <Console mode="terminal" messages={["Connected", "Ready"]} announcementMode="off" outputLabel="Process output" />,
+      <Console
+        mode="terminal"
+        messages={["Connected", "Ready"]}
+        announcementMode="off"
+        outputLabel="Process output"
+      />,
     );
     expect(html).toContain('role="log"');
     expect(html).toContain('aria-label="Process output"');
