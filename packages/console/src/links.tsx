@@ -230,6 +230,7 @@ export function ConsoleLinkedText({
           key={`${key}-match-${index}`}
           className="console-search-highlight"
           data-active={range.active ? "" : undefined}
+          aria-current={range.active ? "true" : undefined}
         >
           {renderText(
             text.slice(rangeStart, rangeEnd),
