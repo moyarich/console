@@ -10,15 +10,22 @@ const animation = createConsoleAnimationAddon({
 
 const messages: ConsoleMessageData[] = [
   { id: "04-typewriter-1", method: "log", depth: 0, data: ["Starting task"] },
-  { id: "04-typewriter-2", method: "info", depth: 0, data: ["See https://example.com"] },
+  {
+    id: "04-typewriter-2",
+    method: "info",
+    depth: 0,
+    data: ["See https://example.com"],
+  },
   {
     id: "04-typewriter-3",
-    method: "log", depth: 0,
+    method: "log",
+    depth: 0,
     data: [{ status: "ready", steps: 3 }],
   },
   {
     id: "04-typewriter-4",
-    method: "warn", depth: 0,
+    method: "warn",
+    depth: 0,
     data: ["Finished with one warning"],
   },
 ];
