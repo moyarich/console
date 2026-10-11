@@ -76,7 +76,12 @@ export function createConsoleViewportController(
       const target = findMessageElement(surface, id);
       if (!target) {
         const virtual = surface.querySelector?.<
-          HTMLDivElement & { scrollToConsoleMessage?: (id: string, options?: ConsoleScrollOptions) => boolean }
+          HTMLDivElement & {
+            scrollToConsoleMessage?: (
+              id: string,
+              options?: ConsoleScrollOptions,
+            ) => boolean;
+          }
         >("[data-console-virtual-list]");
         const scrolled = virtual?.scrollToConsoleMessage?.(id, options) ?? false;
         if (scrolled) pinnedToBottom = false;
