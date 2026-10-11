@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
@@ -6,6 +14,31 @@ import {
 import { createConsoleProxy } from "../utils/console/runtime/createConsoleProxy";
 import { captureConsole } from "../utils/console/runtime/captureConsole";
 import type { ConsoleMessageData, RunOutput } from "../types";
+
+/** Deterministic bounded-history transition shared by captured events and tests. */
+export function appendConsoleRetainedMessage(
+  current: { messages: ConsoleMessageData[]; droppedCount: number },
+  message: ConsoleMessageData,
+  maxMessages: number,
+  dedupeById = true,
+): { messages: ConsoleMessageData[]; droppedCount: number } {
+  if (
+    dedupeById &&
+    message.id &&
+    current.messages.some((item) => item.id === message.id)
+  ) {
+    return current;
+  }
+  const next = [...current.messages, message];
+  const limit = Number.isFinite(maxMessages)
+    ? Math.max(0, Math.floor(maxMessages))
+    : next.length;
+  const dropped = Math.max(0, next.length - limit);
+  return {
+    messages: dropped ? (limit === 0 ? [] : next.slice(-limit)) : next,
+    droppedCount: current.droppedCount + dropped,
+  };
+}
 
 /** Configuration for {@link useConsoleMessages}. */
 export interface UseConsoleMessagesOptions {
@@ -55,30 +88,31 @@ export function useConsoleMessages({
   const events =
     providedEvents ??
     (internalEventsRef.current ??= createConsoleEventEmitter());
-  const [messages, setMessages] =
-    useState<ConsoleMessageData[]>(initialMessages);
+  const [history, setHistory] = useState(() => ({
+    messages: initialMessages,
+    droppedCount: 0,
+  }));
+  const { messages, droppedCount } = history;
+  const setMessages: Dispatch<SetStateAction<ConsoleMessageData[]>> =
+    useCallback((updater) => {
+      setHistory((current) => ({
+        ...current,
+        messages:
+          typeof updater === "function" ? updater(current.messages) : updater,
+      }));
+    }, []);
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
-      setMessages((current) => {
-        if (
-          dedupeById &&
-          message.id &&
-          current.some((item) => item.id === message.id)
-        ) {
-          return current;
-        }
-
-        const next = [...current, message];
-
-        return next.length > maxMessages ? next.slice(-maxMessages) : next;
-      });
+      setHistory((current) =>
+        appendConsoleRetainedMessage(current, message, maxMessages, dedupeById),
+      );
     },
     [dedupeById, maxMessages],
   );
 
   const handleClear = useCallback(() => {
-    setMessages([]);
+    setHistory({ messages: [], droppedCount: 0 });
   }, []);
 
   const console = useMemo(
@@ -140,6 +174,8 @@ export function useConsoleMessages({
 
   return {
     messages,
+    droppedCount,
+    retainedCount: messages.length,
     output,
     console,
     append,
