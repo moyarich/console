@@ -1032,6 +1032,7 @@ function ConsoleTerminalMode({
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
+      virtualize={virtualize}
       entryDecorators={resolvedEntryDecorators}
       parseStructuredOutput={parseStructuredOutput}
       structuredOutputParsers={resolvedStructuredOutputParsers}
