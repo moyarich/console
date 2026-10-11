@@ -1,0 +1,6 @@
+.console-search-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; padding: .5rem; border-bottom: 1px solid var(--moya-console-border, #7776); font: inherit; }
+.console-search-controls label { display: inline-flex; align-items: center; gap: .35rem; }
+.console-search-controls input[type="search"] { min-width: 12rem; max-width: 100%; background: var(--moya-console-background, inherit); color: var(--moya-console-foreground, inherit); border: 1px solid var(--moya-console-border, currentColor); border-radius: 4px; padding: .3rem .5rem; }
+.console-search-controls button { border: 1px solid var(--moya-console-border, currentColor); background: var(--moya-console-background, transparent); color: var(--moya-console-foreground, inherit); padding: .3rem .5rem; border-radius: 4px; cursor: pointer; }
+.console-search-controls :focus-visible { outline: 2px solid var(--moya-console-focus, currentColor); outline-offset: 2px; }
+.console-search-controls button:disabled { opacity: .5; cursor: default; }
