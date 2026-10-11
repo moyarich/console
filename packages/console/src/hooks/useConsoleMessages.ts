@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import {
   createConsoleEventEmitter,
   type ConsoleEventEmitter,
@@ -60,15 +68,14 @@ export function useConsoleMessages({
     droppedCount: 0,
   }));
   const { messages, droppedCount } = history;
-  const setMessages: Dispatch<SetStateAction<ConsoleMessageData[]>> = useCallback(
-    (updater) => {
+  const setMessages: Dispatch<SetStateAction<ConsoleMessageData[]>> =
+    useCallback((updater) => {
       setHistory((current) => ({
         ...current,
-        messages: typeof updater === "function" ? updater(current.messages) : updater,
+        messages:
+          typeof updater === "function" ? updater(current.messages) : updater,
       }));
-    },
-    [],
-  );
+    }, []);
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
