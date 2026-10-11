@@ -19,13 +19,20 @@ export function ConsoleSearchHighlight({
     .filter(({ match }) => match.index === index);
   if (!matches.length) return null;
   return (
-    <span className="console-search-matches" aria-label={`${matches.length} matches in this message`}>
+    <span
+      className="console-search-matches"
+      aria-label={`${matches.length} matches in this message`}
+    >
       {matches.map(({ match, matchIndex }) => (
         <mark
           key={`${match.start}-${match.end}-${matchIndex}`}
           className="console-search-highlight"
           data-active={state.activeIndex === matchIndex ? "" : undefined}
-          aria-label={state.activeIndex === matchIndex ? "Current search match" : "Search match"}
+          aria-label={
+            state.activeIndex === matchIndex
+              ? "Current search match"
+              : "Search match"
+          }
         >
           {match.text || "Zero-width match"}
         </mark>
