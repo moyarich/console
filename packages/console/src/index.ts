@@ -195,3 +195,5 @@ export {
   getConsoleVirtualRange,
 } from "./components/ConsoleVirtualList";
 export type { ConsoleVirtualListProps } from "./components/ConsoleVirtualList";
+
+export { useConsoleOutputPause } from "./hooks/useConsoleOutputPause";

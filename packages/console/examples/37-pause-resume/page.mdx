@@ -1,0 +1,15 @@
+---
+label: Pause streaming output
+title: Pause and resume the Console view
+description: Freeze visible messages while continuing to collect source output.
+---
+
+# Pause and resume output
+
+Use `useConsoleOutputPause(source)` to keep capturing incoming messages while suspending updates to the displayed view. The hook returns `pause()`, `resume()`, `displayed`, and `bufferedCount`, and works with structured messages or process chunks.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Disabling automatic scrolling while paused lets people inspect older output. Resuming renders retained output in source order. Pausing affects presentation only; capture and the source array remain independent.
