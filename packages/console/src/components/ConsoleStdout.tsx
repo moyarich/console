@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import type { ConsoleOutputEntryDecorator } from "../addons";
+import { decorateConsoleOutputEntry } from "../outputEntryDecorator";
 import { ConsoleValue } from "./ConsoleValue";
 import type { ConsoleValueRenderer } from "../renderers";
 import {
@@ -63,6 +66,7 @@ interface ConsoleResolvedStdoutProps extends Omit<
   "entries" | "processControlParsers" | "processors"
 > {
   resolvedEntries: readonly ConsoleResolvedProcessOutputEntry[];
+  entryDecorators?: readonly ConsoleOutputEntryDecorator<ReactNode>[];
 }
 
 function AnsiText({
@@ -132,6 +136,7 @@ function AnsiText({
  */
 export function ConsoleResolvedStdout({
   resolvedEntries,
+  entryDecorators = [],
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
   structuredOutputParsers,
@@ -172,14 +177,13 @@ export function ConsoleResolvedStdout({
           metadata: processedOutput.metadata,
         };
 
-        if (structuredValue !== undefined) {
-          return (
+        const renderEntry = () =>
+          structuredValue !== undefined ? (
             <div
               className="console-stdout-line console-stdout-structured"
               data-stream={stream}
               data-console-message-id={id}
               data-clear-line={clearLine || undefined}
-              key={key}
             >
               <ConsoleValue
                 value={structuredValue}
@@ -189,25 +193,30 @@ export function ConsoleResolvedStdout({
                 linkContext={linkContext}
               />
             </div>
+          ) : (
+            <pre
+              className="console-stdout-line"
+              data-stream={stream}
+              data-console-message-id={id}
+              data-clear-line={clearLine || undefined}
+            >
+              <AnsiText
+                data={data}
+                context={linkContext}
+                detectLinks={detectLinks}
+                linkProviders={linkProviders}
+                links={processedOutput.links}
+              />
+            </pre>
           );
-        }
-
         return (
-          <pre
-            className="console-stdout-line"
-            data-stream={stream}
-            data-console-message-id={id}
-            data-clear-line={clearLine || undefined}
-            key={key}
-          >
-            <AnsiText
-              data={data}
-              context={linkContext}
-              detectLinks={detectLinks}
-              linkProviders={linkProviders}
-              links={processedOutput.links}
-            />
-          </pre>
+          <div key={key}>
+            {decorateConsoleOutputEntry(
+              entryDecorators,
+              { mode: "terminal", entry, index, id },
+              renderEntry,
+            )}
+          </div>
         );
       })}
     </div>

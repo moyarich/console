@@ -1,0 +1,15 @@
+---
+label: "Stagger and wait"
+title: "Stagger and wait animation"
+description: "Sequenced entries with an initial delay for Console output entries."
+---
+
+# Stagger and wait
+
+Sequenced entries with an initial delay. The animation wraps each rendered entry without replacing links, structured values, or custom renderers.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+The effect can be combined with a configurable initial wait and stagger interval. The addon respects reduced-motion preferences.

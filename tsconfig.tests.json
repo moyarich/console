@@ -3,7 +3,6 @@
   "compilerOptions": {
     "noEmit": true,
     "types": ["node", "vitest/globals"],
-    "baseUrl": ".",
     "paths": {
       "@moyarich/console": ["./packages/console/src/index.ts"],
       "@moyarich/console-addon-data-export": [
@@ -29,6 +28,9 @@
       "@moyarich/console-addon-annotations": [
         "./packages/addons/annotations/src/index.tsx"
       ],
+      "@moyarich/console-addon-animation": [
+        "./packages/addons/animation/src/index.tsx"
+      ],
       "@moyarich/console-addon-navigation": [
         "./packages/addons/navigation/src/index.ts"
       ],
@@ -44,6 +46,7 @@
     ".storybook",
     "packages/addons/imperative-scrolling/src",
     "packages/addons/annotations/src",
+    "packages/addons/animation/src",
     "packages/addons/data-export/src",
     "packages/addons/diagnostics/src",
     "packages/addons/filtering/src",
