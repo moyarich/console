@@ -174,7 +174,7 @@ export function ConsoleContextMenu({
 
   const copyObject = useCallback(
     (value: object) => {
-      closeMenu();
+      closeMenu(true);
       void writeClipboardText(formatConsoleObjectForCopy(value));
     },
     [closeMenu],
@@ -294,7 +294,7 @@ export function ConsoleContextMenu({
 
   const handleCopyConsole = () => {
     const value = targetRef.current?.innerText.trim() ?? "";
-    closeMenu();
+    closeMenu(true);
 
     if (value) {
       void writeClipboardText(value);
@@ -391,7 +391,7 @@ export function ConsoleContextMenu({
                 key={`context-${resolvedAction.action.id}`}
                 resolvedAction={resolvedAction}
                 context={actionContext}
-                onBeforeSelect={closeMenu}
+                onBeforeSelect={() => closeMenu(true)}
               />
             ))}
 
@@ -447,7 +447,7 @@ export function ConsoleContextMenu({
               role="menuitem"
               disabled={clearDisabled}
               onClick={() => {
-                closeMenu();
+                closeMenu(true);
                 onClear?.();
               }}
             >
