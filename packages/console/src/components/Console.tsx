@@ -895,6 +895,7 @@ function ConsoleMessageMode({
     return virtualize ? (
       <ConsoleVirtualList
         count={rows.length}
+        messageIds={visibleMessages.map((message) => message.id)}
         renderRow={(index) => rows[index]}
       />
     ) : (
