@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 export interface ConsoleVirtualListProps {
   count: number;
+  messageIds?: readonly (string | undefined)[];
   renderRow(index: number): ReactNode;
   /** Approximate row height used before a row can be measured. */
   estimatedRowHeight?: number;
@@ -35,6 +36,7 @@ export function getConsoleVirtualRange(
  */
 export function ConsoleVirtualList({
   count,
+  messageIds,
   renderRow,
   estimatedRowHeight = 32,
   overscan = 6,
@@ -51,6 +53,18 @@ export function ConsoleVirtualList({
     }
     return result;
   }, [count, estimatedRowHeight, revision]);
+  useEffect(() => {
+    const root = rootRef.current as (HTMLDivElement & { scrollToConsoleMessage?: (id: string) => boolean }) | null;
+    const surface = root?.closest<HTMLElement>(".console-surface");
+    if (!root || !surface || !messageIds) return;
+    root.scrollToConsoleMessage = (id) => {
+      const index = messageIds.indexOf(id);
+      if (index < 0) return false;
+      surface.scrollTop = root.offsetTop + (offsets[index] ?? 0);
+      return true;
+    };
+    return () => { delete root.scrollToConsoleMessage; };
+  }, [messageIds, offsets]);
   useEffect(() => {
     const surface = rootRef.current?.closest(".console-surface");
     if (!surface) return;
