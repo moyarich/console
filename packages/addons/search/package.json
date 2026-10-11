@@ -51,6 +51,7 @@
     "search"
   ],
   "sideEffects": [
-    "./src/components/ConsoleSearchControls/ConsoleSearchControls.css"
+    "./src/components/ConsoleSearchControls/ConsoleSearchControls.css",
+    "./src/components/ConsoleSearchHighlight/ConsoleSearchHighlight.css"
   ]
 }
