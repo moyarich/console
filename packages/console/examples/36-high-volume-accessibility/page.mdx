@@ -1,0 +1,24 @@
+---
+label: High-volume accessibility
+title: High-volume output accessibility
+description: Configure screen-reader announcement behavior for rapidly updating Console output.
+---
+
+# High-volume output accessibility
+
+The output retains `role="log"` and an accessible name in both console and terminal modes. **Announcements default to `off`** so appending hundreds of lines does not overwhelm screen-reader users. Entries remain readable by navigating into the output.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Recommended behavior
+
+- For bulk output and log replay, use `announcementMode="off"` and provide a separate, concise status message outside the log when user attention is needed.
+- For occasional updates, opt into `announcementMode="polite"`. The log announces additions, not every text mutation.
+- Reserve `announcementMode="assertive"` for exceptional critical use. It may interrupt screen-reader speech.
+- Use `outputLabel` when the page has multiple Console instances so each output region is recognizable.
+- Preserve keyboard focus when adding, clearing, filtering or navigating output. Do not force focus into the log on every new entry.
+- Honor `prefers-reduced-motion` for animated addons, and check text/background contrast and focus indicators in both themes.
+
+The controls and keyboard/focus behavior should be verified with browser-based accessibility tests and a screen reader, especially for continuous streaming.

@@ -97,6 +97,10 @@ interface ConsoleSharedProps {
   ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
+  /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default "off" */
+  announcementMode?: "off" | "polite" | "assertive";
+  /** Accessible name for the output log; defaults to the console title. */
+  outputLabel?: string;
   /** Keep the output pinned to the bottom while the user remains near it. @default true */
   autoScroll?: boolean;
   /** Whether to render the panel header. @default true */
@@ -368,6 +372,8 @@ function ConsoleFrame({
   viewport,
   onClear,
   autoScroll = true,
+  announcementMode = "off",
+  outputLabel,
   showHeader = true,
   showClearButton = true,
   actions,
@@ -602,7 +608,10 @@ function ConsoleFrame({
           ref={surfaceRef}
           className="console-surface"
           role="log"
-          aria-live="polite"
+          aria-label={outputLabel ?? title}
+          aria-live={announcementMode}
+          aria-relevant="additions"
+          aria-atomic="false"
           tabIndex={-1}
           onScroll={viewport.updateFromScroll}
         >
