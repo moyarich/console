@@ -54,7 +54,9 @@ export function ConsoleVirtualList({
     return result;
   }, [count, estimatedRowHeight, revision]);
   useEffect(() => {
-    const root = rootRef.current as (HTMLDivElement & { scrollToConsoleMessage?: (id: string) => boolean }) | null;
+    const root = rootRef.current as
+      | (HTMLDivElement & { scrollToConsoleMessage?: (id: string) => boolean })
+      | null;
     const surface = root?.closest<HTMLElement>(".console-surface");
     if (!root || !surface || !messageIds) return;
     root.scrollToConsoleMessage = (id) => {
@@ -63,7 +65,9 @@ export function ConsoleVirtualList({
       surface.scrollTop = root.offsetTop + (offsets[index] ?? 0);
       return true;
     };
-    return () => { delete root.scrollToConsoleMessage; };
+    return () => {
+      delete root.scrollToConsoleMessage;
+    };
   }, [messageIds, offsets]);
   useEffect(() => {
     const surface = rootRef.current?.closest(".console-surface");
