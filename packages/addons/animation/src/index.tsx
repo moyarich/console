@@ -81,6 +81,11 @@ function TypewriterEntry({
   const ready = !options.sequence || active;
   const done = () => { if (id !== undefined) completed.add(id); sequence.complete(index); };
   useEffect(() => {
+    if (ready && (reducedMotion || (id !== undefined && completed.has(id)))) {
+      sequence.complete(index);
+    }
+  }, [ready, reducedMotion, id, index, completed, sequence]);
+  useEffect(() => {
     const element = root.current;
     if (!element || !ready || reducedMotion || (id !== undefined && completed.has(id))) {
       return;
@@ -176,6 +181,9 @@ function AnimatedEntry({
   }
   const ready = !options.sequence || active;
   const alreadyCompleted = id !== undefined && completed.has(id);
+  useEffect(() => {
+    if (ready && (reducedMotion || alreadyCompleted)) sequence.complete(index);
+  }, [ready, reducedMotion, alreadyCompleted, sequence, index]);
   const effect = options.effect ?? "fade-slide";
   const distance = options.distance ?? 12;
   const initial =
