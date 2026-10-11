@@ -36,6 +36,8 @@ export type {
   ConsoleExtensionPoint,
   ConsoleExtensionRegistrationOptions,
   ConsoleExtensionRegistry,
+  ConsoleOutputEntryDecorator,
+  ConsoleOutputEntryDecoratorContext,
   ConsoleFrameDecorator,
   ConsoleFrameDecoratorContext,
   ConsoleLink,
