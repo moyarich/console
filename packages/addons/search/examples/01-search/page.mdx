@@ -1,7 +1,15 @@
 ---
 label: Search
+title: Search and navigate Console output
+description: Search visible structured and process output with keyboard-accessible controls.
 ---
 
-# Search addon
+# Search and match navigation
 
-Use `createConsoleSearchAddon()` with the Console `addons` prop. Call `addon.controller.setQuery()` and `next()` or `previous()` to navigate matching logical entries. Matching uses the current visible data snapshot rather than DOM nodes.
+The optional `@moyarich/console-addon-search` contributes a search field, case-sensitivity, whole-word and regex settings, result counts, highlighted matching rows, and next/previous navigation. Use **F3** and **Shift+F3** to navigate when the Console has keyboard focus.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+The controller searches the logical, filtered data snapshot rather than mounted DOM rows, so results survive filtered views and virtualization. Clearing the query removes highlighting. Search does not change source messages.
