@@ -163,6 +163,7 @@ function AnimatedEntry({
   children: ReactNode;
 }) {
   const reducedMotion = useReducedMotion();
+  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
   if (options.effect === "typewriter") {
     return createElement(TypewriterEntry, {
       id,
@@ -173,7 +174,6 @@ function AnimatedEntry({
       children,
     });
   }
-  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
   const ready = !options.sequence || active;
   const alreadyCompleted = id !== undefined && completed.has(id);
   const effect = options.effect ?? "fade-slide";
