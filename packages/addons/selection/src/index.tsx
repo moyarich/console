@@ -1,4 +1,6 @@
 import { type ReactNode } from "react";
+import { SelectedMessageIndicator } from "./components/SelectedMessageIndicator/SelectedMessageIndicator";
+export { SelectedMessageIndicator } from "./components/SelectedMessageIndicator/SelectedMessageIndicator";
 import {
   consoleExtensionPoints,
   consoleServices,
@@ -184,15 +186,7 @@ function createDecoration(
     render({ message }) {
       if (!message.id || !controller.isSelected(message.id)) return undefined;
 
-      return (
-        <span
-          aria-label="Selected message"
-          title="Selected"
-          style={{ fontSize: 12, lineHeight: 1 }}
-        >
-          ●
-        </span>
-      );
+      return <SelectedMessageIndicator />;
     },
   };
 }
