@@ -1,0 +1,13 @@
+---
+label: Animated output
+title: "@moyarich/console-addon-animation"
+description: Opt-in motion middleware for individual structured and terminal output entries.
+---
+
+# Animated output
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Pass `createConsoleAnimationAddon({ effect: "fade-slide", duration: 0.3, stagger: 0.05, wait: 0 })` to the Console `addons` prop. Other effects are `fade`, `slide`, and `typewriter` (a clipped reveal of the already-rendered interactive content). Delays are in seconds. Reduced-motion preferences are respected.
