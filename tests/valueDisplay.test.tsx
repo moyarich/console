@@ -1,17 +1,31 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Console, stringifyConsoleValue, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  stringifyConsoleValue,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 
-const message = (method: ConsoleMessageData["method"], data: unknown[]): ConsoleMessageData =>
-  ({ method, data, depth: 0 });
+const message = (
+  method: ConsoleMessageData["method"],
+  data: unknown[],
+): ConsoleMessageData => ({ method, data, depth: 0 });
 
-function render(data: unknown[], valueDisplay: "structured" | "string" = "string", method: ConsoleMessageData["method"] = "log") {
-  return renderToStaticMarkup(<Console messages={[message(method, data)]} valueDisplay={valueDisplay} />);
+function render(
+  data: unknown[],
+  valueDisplay: "structured" | "string" = "string",
+  method: ConsoleMessageData["method"] = "log",
+) {
+  return renderToStaticMarkup(
+    <Console messages={[message(method, data)]} valueDisplay={valueDisplay} />,
+  );
 }
 
 describe("console value display", () => {
   it("keeps structured rendering by default", () => {
-    const html = renderToStaticMarkup(<Console messages={[message("log", [{a: 1}])]} />);
+    const html = renderToStaticMarkup(
+      <Console messages={[message("log", [{ a: 1 }])]} />,
+    );
     expect(html).toContain("console-object-shell");
   });
   it("renders objects, arrays, and independent arguments as text", () => {
@@ -33,26 +47,48 @@ describe("console value display", () => {
     circular.self = circular;
     expect(stringifyConsoleValue(circular)).toContain("[Circular]");
     expect(stringifyConsoleValue({ count: 1n })).toContain("1");
-    expect(() => stringifyConsoleValue({ get broken() { throw Error("oops"); } })).not.toThrow();
+    expect(() =>
+      stringifyConsoleValue({
+        get broken() {
+          throw Error("oops");
+        },
+      }),
+    ).not.toThrow();
   });
   it("preserves dir and table specific behavior", () => {
-    expect(render([{ nested: true }], "string", "dir")).toContain("{&quot;nested&quot;:true}");
-    expect(render([[{ score: 7 }]], "string", "table")).toContain("console-table");
+    expect(render([{ nested: true }], "string", "dir")).toContain(
+      "{&quot;nested&quot;:true}",
+    );
+    expect(render([[{ score: 7 }]], "string", "table")).toContain(
+      "console-table",
+    );
   });
   it("lets custom value renderers take precedence", () => {
     const html = renderToStaticMarkup(
-      <Console messages={[message("log", [{ a: 1 }])]} valueDisplay="string" valueRenderers={[{
-        type: "object",
-        render: () => <em>custom-value</em>,
-      }]} />,
+      <Console
+        messages={[message("log", [{ a: 1 }])]}
+        valueDisplay="string"
+        valueRenderers={[
+          {
+            type: "object",
+            render: () => <em>custom-value</em>,
+          },
+        ]}
+      />,
     );
     expect(html).toContain("custom-value");
   });
   it("can switch modes on unchanged message data", () => {
     const messages = [message("log", [{ untouched: true }])];
-    const structured = renderToStaticMarkup(<Console messages={messages} valueDisplay="structured" />);
-    const plain = renderToStaticMarkup(<Console messages={messages} valueDisplay="string" />);
-    const restored = renderToStaticMarkup(<Console messages={messages} valueDisplay="structured" />);
+    const structured = renderToStaticMarkup(
+      <Console messages={messages} valueDisplay="structured" />,
+    );
+    const plain = renderToStaticMarkup(
+      <Console messages={messages} valueDisplay="string" />,
+    );
+    const restored = renderToStaticMarkup(
+      <Console messages={messages} valueDisplay="structured" />,
+    );
     expect(structured).toContain("console-object-shell");
     expect(plain).toContain("untouched");
     expect(plain).not.toContain("console-object-shell");
