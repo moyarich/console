@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { createElement, useEffect, useRef, type ReactNode } from "react";
+import { createElement, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -16,6 +16,8 @@ export interface ConsoleAnimationOptions {
   stagger?: number;
   /** Initial wait, in seconds. */
   wait?: number;
+  /** Start each entry only when the previous entry has finished. */
+  sequence?: boolean;
   /** Vertical slide distance, in pixels. */
   distance?: number;
 }
@@ -32,6 +34,28 @@ export function getConsoleAnimationDelay(
   );
 }
 
+/** Notifies mounted entry wrappers when an earlier entry completes. */
+class AnimationSequence {
+  private listeners = new Set<() => void>();
+  private finished = new Set<number>();
+  private next = 0;
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    return () => { this.listeners.delete(listener); };
+  };
+  snapshot = () => this.next;
+  complete(index: number) {
+    if (this.finished.has(index)) return;
+    this.finished.add(index);
+    while (this.finished.has(this.next)) this.next++;
+    for (const listener of this.listeners) listener();
+  }
+  clear() {
+    this.finished.clear();
+    this.listeners.clear();
+  }
+}
+
 /**
  * Types into the existing text nodes rather than replacing the rendered React tree.
  * Links, ANSI spans, and custom value markup retain their nodes and event handlers.
@@ -40,20 +64,25 @@ function TypewriterEntry({
   id,
   index,
   completed,
+  sequence,
   options,
   children,
 }: {
   id?: string;
   index: number;
   completed: Set<string>;
+  sequence: AnimationSequence;
   options: ConsoleAnimationOptions;
   children: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
+  const ready = !options.sequence || active;
+  const done = () => { if (id !== undefined) completed.add(id); sequence.complete(index); };
   useEffect(() => {
     const element = root.current;
-    if (!element || reducedMotion || (id !== undefined && completed.has(id))) {
+    if (!element || !ready || reducedMotion || (id !== undefined && completed.has(id))) {
       return;
     }
 
@@ -81,7 +110,7 @@ function TypewriterEntry({
     let position = 0;
     const duration = Math.max(0, options.duration ?? 0.3) * 1000;
     const stepTime = total ? duration / total : 0;
-    const startDelay = getConsoleAnimationDelay(index, options) * 1000;
+    const startDelay = (options.sequence ? (index === 0 ? Math.max(0, options.wait ?? 0) : Math.max(0, options.stagger ?? 0)) : getConsoleAnimationDelay(index, options)) * 1000;
     let ticker: ReturnType<typeof setInterval> | undefined;
     const reveal = () => {
       position += 1;
@@ -113,9 +142,9 @@ function TypewriterEntry({
       if (ticker !== undefined) clearInterval(ticker);
       for (const entry of originals) entry.node.textContent = entry.value;
     };
-  }, [id, index, completed, options, reducedMotion]);
+  }, [id, index, completed, options, reducedMotion, ready, sequence]);
 
-  return createElement("div", { ref: root, children });
+  return createElement("div", { ref: root, style: { visibility: options.sequence && !ready ? "hidden" : undefined }, children });
 }
 
 function AnimatedEntry({
@@ -137,10 +166,13 @@ function AnimatedEntry({
       id,
       index,
       completed,
+      sequence,
       options,
       children,
     });
   }
+  const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
+  const ready = !options.sequence || active;
   const alreadyCompleted = id !== undefined && completed.has(id);
   const effect = options.effect ?? "fade-slide";
   const distance = options.distance ?? 12;
@@ -161,8 +193,8 @@ function AnimatedEntry({
           ? { clipPath: "inset(0 0% 0 0)" }
           : { opacity: 1, y: 0 };
   return createElement(motion.div, {
-    initial: reducedMotion || alreadyCompleted ? false : initial,
-    animate,
+    initial: reducedMotion || alreadyCompleted || !ready ? false : initial,
+    animate: ready ? animate : initial,
     transition: {
       duration:
         reducedMotion || alreadyCompleted
@@ -171,12 +203,15 @@ function AnimatedEntry({
       delay:
         reducedMotion || alreadyCompleted
           ? 0
-          : getConsoleAnimationDelay(index, options),
+          : options.sequence
+            ? index === 0 ? Math.max(0, options.wait ?? 0) : Math.max(0, options.stagger ?? 0)
+            : getConsoleAnimationDelay(index, options),
     },
     onAnimationComplete: () => {
       if (id !== undefined) completed.add(id);
     },
     style: {
+      visibility: options.sequence && !ready ? "hidden" : undefined,
       overflow:
         effect === "reveal" && !reducedMotion && !alreadyCompleted
           ? "hidden"
@@ -194,6 +229,7 @@ export function createConsoleAnimationAddon(
     id: CONSOLE_ANIMATION_ADDON_ID,
     activate(host) {
       const completed = new Set<string>();
+      const sequence = new AnimationSequence();
       const decorator: ConsoleOutputEntryDecorator<ReactNode> = {
         render(context) {
           const id =
@@ -205,6 +241,7 @@ export function createConsoleAnimationAddon(
             id,
             index: context.index,
             completed,
+            sequence,
             options,
             children: context.renderDefault(),
           });
@@ -217,6 +254,7 @@ export function createConsoleAnimationAddon(
       );
       host.scope.defer(() => registration.dispose());
       host.scope.defer(() => completed.clear());
+      host.scope.defer(() => sequence.clear());
     },
   };
 }
