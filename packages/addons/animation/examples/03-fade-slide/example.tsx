@@ -9,16 +9,16 @@ const animation = createConsoleAnimationAddon({
 });
 
 const messages: ConsoleMessageData[] = [
-  { id: "03-fade-slide-1", method: "log", data: ["Starting task"] },
-  { id: "03-fade-slide-2", method: "info", data: ["See https://example.com"] },
+  { id: "03-fade-slide-1", method: "log", depth: 0, data: ["Starting task"] },
+  { id: "03-fade-slide-2", method: "info", depth: 0, data: ["See https://example.com"] },
   {
     id: "03-fade-slide-3",
-    method: "log",
+    method: "log", depth: 0,
     data: [{ status: "ready", steps: 3 }],
   },
   {
     id: "03-fade-slide-4",
-    method: "warn",
+    method: "warn", depth: 0,
     data: ["Finished with one warning"],
   },
 ];
