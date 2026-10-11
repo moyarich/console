@@ -131,7 +131,11 @@ function DefaultConsoleMessage({
           valueDisplay={valueDisplay}
           detectLinks={detectLinks}
           linkProviders={linkProviders}
-          linkContext={{ mode: "console", id: message.id ?? `console-${index}`, index }}
+          linkContext={{
+            mode: "console",
+            id: message.id ?? `console-${index}`,
+            index,
+          }}
         />
       </div>
     );
@@ -150,7 +154,11 @@ function DefaultConsoleMessage({
             valueDisplay={valueDisplay}
             detectLinks={detectLinks}
             linkProviders={linkProviders}
-            linkContext={{ mode: "console", id: message.id ?? `console-${index}`, index }}
+            linkContext={{
+              mode: "console",
+              id: message.id ?? `console-${index}`,
+              index,
+            }}
           />
         ))}
       </div>

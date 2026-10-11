@@ -27,12 +27,14 @@ describe("inline search highlighting", () => {
         <ConsoleLinkedText
           text="Error https://example.com/error"
           context={{ mode: "console" }}
-          links={[{
-            text: "https://example.com/error",
-            start: 6,
-            end: 31,
-            target: "https://example.com/error",
-          }]}
+          links={[
+            {
+              text: "https://example.com/error",
+              start: 6,
+              end: 31,
+              target: "https://example.com/error",
+            },
+          ]}
         />
       </ConsoleTextHighlightContext.Provider>,
     );
@@ -45,7 +47,9 @@ describe("inline search highlighting", () => {
   it("preserves terminal ANSI styles while highlighting visible text", () => {
     const html = renderToStaticMarkup(
       <ConsoleTextHighlightContext.Provider value={highlight}>
-        <ConsoleStdout entries={[{ id: "ansi", data: "\u001b[31merror\u001b[0m ready" }]} />
+        <ConsoleStdout
+          entries={[{ id: "ansi", data: "\u001b[31merror\u001b[0m ready" }]}
+        />
       </ConsoleTextHighlightContext.Provider>,
     );
     expect(html).toContain("<mark");
@@ -74,8 +78,18 @@ describe("inline search highlighting", () => {
       consoleExtensionPoints.textHighlightProvider,
     )[0]!;
     addon.controller.setQuery("error");
-    expect(provider.getRanges("an error occurred", { mode: "console", text: "an error occurred" })).toHaveLength(1);
+    expect(
+      provider.getRanges("an error occurred", {
+        mode: "console",
+        text: "an error occurred",
+      }),
+    ).toHaveLength(1);
     addon.controller.setQuery("");
-    expect(provider.getRanges("an error occurred", { mode: "console", text: "an error occurred" })).toEqual([]);
+    expect(
+      provider.getRanges("an error occurred", {
+        mode: "console",
+        text: "an error occurred",
+      }),
+    ).toEqual([]);
   });
 });
