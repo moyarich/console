@@ -1,0 +1,21 @@
+---
+label: Feed renderer
+title: "@moyarich/console-addon-console-feed"
+description: Opt-in feed-style output for structured Console messages.
+---
+
+# Optional console feed
+
+The feed addon replaces only the **inner structured output** through `consoleExtensionPoints.outputRenderer`. It does not define a core mode, mutate captured messages, or require the third-party `console-feed` dependency. Remove the addon to return to built-in Console rendering without recapturing messages.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Compatibility
+
+- Supports `log`, `info`, `warn`, and `error` as distinct, text-labeled severities, with other methods shown as log.
+- Formats objects, errors, bigints, circular references, and multiline strings as readable text. This feed does **not** implement interactive object inspection, `console.table`, collapsing groups, link detection, or the built-in per-message context actions.
+- The parent Console retains filtering/search integration and accessible output log semantics. The feed emits no additional live announcements.
+- Because an output renderer owns the entire inner surface, the core `virtualize` prop does not window this feed. For large histories, remove the addon to use the built-in virtualized renderer.
+- The addon stylesheet uses public `--console-feed-*` theme variables with component-local fallbacks.
