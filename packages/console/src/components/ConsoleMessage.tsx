@@ -70,6 +70,7 @@ export interface ConsoleMessageProps {
 
 function DefaultConsoleMessage({
   message,
+  index = 0,
   expandAllVersion,
   onExpandAll,
   valueRenderers,
@@ -130,7 +131,7 @@ function DefaultConsoleMessage({
           valueDisplay={valueDisplay}
           detectLinks={detectLinks}
           linkProviders={linkProviders}
-          linkContext={{ mode: "console" }}
+          linkContext={{ mode: "console", id: message.id ?? `console-${index}`, index }}
         />
       </div>
     );
@@ -149,7 +150,7 @@ function DefaultConsoleMessage({
             valueDisplay={valueDisplay}
             detectLinks={detectLinks}
             linkProviders={linkProviders}
-            linkContext={{ mode: "console" }}
+            linkContext={{ mode: "console", id: message.id ?? `console-${index}`, index }}
           />
         ))}
       </div>
