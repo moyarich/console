@@ -90,6 +90,24 @@ export function findConsoleSearchMatches(
   }
   return { matches };
 }
+/** Search rendered value content without mutating or serializing the source model. */
+function valueSearchText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (value instanceof Error) return value.stack || value.message;
+  if (typeof value === "object" && value !== null) {
+    try {
+      return JSON.stringify(value) ?? String(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+function visibleTerminalText(value: string): string {
+  return value.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+}
+
 export function createConsoleSearchAddon(): ConsoleAddon & {
   controller: ConsoleSearchController;
 } {
@@ -130,13 +148,13 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
               text: [
                 message.method,
                 message.source,
-                ...message.data.map(String),
+                ...message.data.map(valueSearchText),
               ].join(" "),
             }))
           : snapshot?.mode === "terminal"
             ? snapshot.visible.map((entry, index) => ({
                 id: entry.entry.id ?? `terminal-${index}`,
-                text: entry.output.data,
+                text: visibleTerminalText(entry.output.data),
               }))
             : [];
       const result = findConsoleSearchMatches(
