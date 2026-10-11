@@ -1,9 +1,9 @@
 # CodeBlock
 
-`CodeBlock` is a read-only React code viewer in `@moyarich/console`, with Shiki syntax highlighting and a source-copy action. It is separate from the editable Monaco playground and can be reused in documentation, component examples, and other React apps.
+`CodeBlock` is a read-only React code viewer in `apps/playground`, with Shiki syntax highlighting and a source-copy action. It is separate from the editable Monaco playground and is local to the playground.
 
 ```tsx
-import { CodeBlock } from "@moyarich/console";
+import { CodeBlock } from "../components/CodeBlock/CodeBlock";
 
 export function Example() {
   return (
@@ -23,7 +23,7 @@ Shiki is loaded asynchronously when the component mounts. Until highlighting is 
 
 ## Styling
 
-The component keeps its CSS in `components/CodeBlock/CodeBlock.css`, using public theme inputs with private fallbacks:
+The component keeps its CSS in `apps/playground/src/components/CodeBlock/CodeBlock.css`, using public theme inputs with private fallbacks:
 
 - `--console-code-block-background`
 - `--console-code-block-color`
