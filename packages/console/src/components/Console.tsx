@@ -122,7 +122,7 @@ interface ConsoleSharedProps {
   outputRenderers?: readonly ConsoleOutputRenderer[];
   /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
-  /** Whether built-in HTTP/HTTPS link detection is enabled. @default true */
+  /** @deprecated Automatic detection is provided by @moyarich/console-addon-links. */
   detectLinks?: boolean;
   /** Ordered application-specific link providers used in either mode. */
   linkProviders?: readonly ConsoleLinkProvider[];

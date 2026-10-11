@@ -120,7 +120,6 @@ export type {
 } from "./processOutput";
 export {
   ConsoleLinkedText,
-  detectWebLinks,
   isSafeConsoleLinkTarget,
   resolveConsoleLinks,
 } from "./links";

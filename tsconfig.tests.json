@@ -23,6 +23,7 @@
     "packages/addons/filtering/src",
     "packages/addons/markdown/src",
     "packages/addons/navigation/src",
+    "packages/addons/links/src",
     "packages/addons/selection/src",
     "packages/addons/resizable/src",
     "packages/console-core/src"

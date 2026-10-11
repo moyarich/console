@@ -24,34 +24,6 @@ interface ResolvedConsoleLink extends ConsoleLink {
   providerId?: string;
 }
 
-const WEB_URL_PATTERN = /\bhttps?:\/\/[^\s<>"']+/gi;
-const TRAILING_PUNCTUATION_PATTERN = /[.,;:!?]+$/;
-
-function trimWebUrlCandidate(candidate: string): string {
-  let trimmed = candidate.replace(TRAILING_PUNCTUATION_PATTERN, "");
-
-  const pairs: Array<[string, string]> = [
-    ["(", ")"],
-    ["[", "]"],
-    ["{", "}"],
-  ];
-
-  for (const [opening, closing] of pairs) {
-    while (trimmed.endsWith(closing)) {
-      const openingCount = trimmed.split(opening).length - 1;
-      const closingCount = trimmed.split(closing).length - 1;
-
-      if (closingCount <= openingCount) {
-        break;
-      }
-
-      trimmed = trimmed.slice(0, -1);
-    }
-  }
-
-  return trimmed;
-}
-
 function isSafeWebUrl(value: string): boolean {
   try {
     const url = new URL(value);
@@ -73,35 +45,6 @@ export function isSafeConsoleLinkTarget(target: string): boolean {
   }
 
   return isSafeWebUrl(target);
-}
-
-/** Detects safe HTTP/HTTPS links with source text ranges. */
-export function detectWebLinks(text: string): ConsoleLink[] {
-  const links: ConsoleLink[] = [];
-
-  for (const match of text.matchAll(WEB_URL_PATTERN)) {
-    const raw = match[0];
-    const start = match.index;
-
-    if (start === undefined) {
-      continue;
-    }
-
-    const value = trimWebUrlCandidate(raw);
-
-    if (!value || !isSafeWebUrl(value)) {
-      continue;
-    }
-
-    links.push({
-      text: value,
-      start,
-      end: start + value.length,
-      target: value,
-    });
-  }
-
-  return links;
 }
 
 function normalizeLink(
@@ -142,20 +85,21 @@ function normalizeLink(
 }
 
 /**
- * Resolves custom providers in declaration order, then optional built-in
- * HTTP/HTTPS detection. Earlier links win when ranges overlap.
+ * Resolves explicit links and registered providers in declaration order.
+ * Earlier links win when ranges overlap.
  */
 export function resolveConsoleLinks(
   text: string,
   context: ConsoleLinkProviderBaseContext,
   options: {
+    /** @deprecated Automatic detection belongs to the links addon; this option is ignored. */
     detectLinks?: boolean;
     providers?: readonly ConsoleLinkProvider[];
     links?: readonly ConsoleLink[];
   } = {},
 ): ResolvedConsoleLink[] {
   const candidates: ResolvedConsoleLink[] = [];
-  const { detectLinks = true, providers, links } = options;
+  const { providers, links } = options;
 
   const append = (
     sourceLinks: readonly ConsoleLink[] | undefined,
@@ -183,10 +127,6 @@ export function resolveConsoleLinks(
     } catch {
       // A custom provider must not prevent the original text from rendering.
     }
-  }
-
-  if (detectLinks) {
-    append(detectWebLinks(text), "web");
   }
 
   const resolved: ResolvedConsoleLink[] = [];
@@ -217,6 +157,7 @@ export function resolveConsoleLinks(
 export interface ConsoleLinkedTextProps {
   text: string;
   context: ConsoleLinkProviderBaseContext;
+  /** @deprecated Automatic detection belongs to the links addon; this option is ignored. */
   detectLinks?: boolean;
   providers?: readonly ConsoleLinkProvider[];
   links?: readonly ConsoleLink[];
@@ -236,13 +177,11 @@ function isExternalWebTarget(target: string): boolean {
 export function ConsoleLinkedText({
   text,
   context,
-  detectLinks = true,
   providers,
   links,
   renderText = (value) => value,
 }: ConsoleLinkedTextProps) {
   const resolved = resolveConsoleLinks(text, context, {
-    detectLinks,
     providers,
     links,
   });

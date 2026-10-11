@@ -1,0 +1,15 @@
+---
+label: Web links
+title: "@moyarich/console-addon-links"
+description: Opt-in HTTP and HTTPS link detection for Console output.
+---
+
+# Web links
+
+Automatic web links are provided by `@moyarich/console-addon-links` instead of Console core. The addon registers a low-priority `linkProvider` extension, so direct host providers take precedence for overlapping ranges.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Remove this addon from `addons` or add its ID to `disabledAddonIds` to render URLs as ordinary text. Both structured and terminal modes are supported.
