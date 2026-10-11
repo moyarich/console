@@ -50,6 +50,34 @@ describe("Console session snapshots", () => {
       /Unsupported/,
     );
   });
+  it("rejects invalid structured depths and terminal metadata", () => {
+    const base = {
+      type: "MOYARICH_CONSOLE_SESSION",
+      version: 1,
+      droppedCount: 0,
+    };
+    for (const depth of [-1, 1.5, Number.POSITIVE_INFINITY]) {
+      expect(() =>
+        parseConsoleSession({
+          ...base,
+          mode: "console",
+          messages: [{ method: "log", data: [], depth }],
+        }),
+      ).toThrow(/Invalid console message/);
+    }
+    for (const entry of [
+      { data: "hello", id: 42 },
+      { data: "hello", stream: "unknown" },
+    ]) {
+      expect(() =>
+        parseConsoleSession({
+          ...base,
+          mode: "terminal",
+          entries: [entry],
+        }),
+      ).toThrow(/Invalid terminal entries/);
+    }
+  });
   it("rejects malformed input and retention counters", () => {
     expect(() => parseConsoleSession("{}")).toThrow();
     expect(() =>
