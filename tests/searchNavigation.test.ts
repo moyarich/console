@@ -52,4 +52,33 @@ describe("search navigation and filtering", () => {
     expect(addon.controller.getState().matches).toHaveLength(1);
     expect(addon.controller.getState().activeIndex).toBe(-1);
   });
+  it("searches and navigates terminal output without modifying source entries", () => {
+    const manager = createConsoleAddonManager();
+    const rawEntries = [{ id: "a", data: "ready error" }, { id: "b", data: "error again" }];
+    const visible = rawEntries.map((entry) => ({
+      entry,
+      output: { data: entry.data },
+    }));
+    const data: ConsoleDataService = {
+      getSnapshot: () => ({ mode: "terminal", rawEntries, all: visible, visible }),
+      subscribe: () => ({ dispose() {} }),
+    };
+    const scrolled: string[] = [];
+    const viewport: ConsoleViewportService = {
+      scrollToTop() {}, scrollToBottom() {}, focus() {},
+      isAtBottom: () => false, isAtTop: () => false,
+      scrollToMessage(id) { scrolled.push(id); return true; },
+    };
+    manager.services.provide(consoleServices.data, data);
+    manager.services.provide(consoleServices.viewport, viewport);
+    const addon = createConsoleSearchAddon();
+    manager.load(addon);
+    addon.controller.setQuery("error");
+    expect(addon.controller.getState().matches.map((match) => match.id)).toEqual(["a", "b"]);
+    addon.controller.next();
+    addon.controller.next();
+    expect(scrolled).toEqual(["a", "b"]);
+    expect(rawEntries[0]!.data).toBe("ready error");
+  });
+
 });
