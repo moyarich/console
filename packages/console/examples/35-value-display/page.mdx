@@ -1,0 +1,15 @@
+---
+label: Value display modes
+title: Configurable value display
+description: Switch structured message values between interactive objects and safe plain text.
+---
+
+# Configurable value display
+
+Use `valueDisplay="structured"` (the default) to inspect interactive objects and arrays, or `valueDisplay="string"` to show safe JSON-like text without modifying the original message values.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Changing the select changes the display strategy for existing messages without recapturing their data. Multiple arguments remain separate; plain strings have no extra quotes. Circular references render safely as `[Circular]`. Custom value renderers still take precedence. `console.table()` retains its table layout.
