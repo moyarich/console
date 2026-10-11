@@ -66,6 +66,33 @@ describe("inline search highlighting", () => {
     expect(html).not.toContain("<mark");
   });
 
+  it("indexes nested structured values and strips ANSI codes from terminal matches", () => {
+    const manager = createConsoleAddonManager();
+    let snapshot: ReturnType<import("@moyarich/console-core").ConsoleDataService["getSnapshot"]> = {
+      mode: "console",
+      all: [{ id: "nested", method: "log", depth: 0, data: [{ status: "needle" }] }],
+      visible: [{ id: "nested", method: "log", depth: 0, data: [{ status: "needle" }] }],
+    };
+    manager.services.provide(consoleServices.data, {
+      getSnapshot: () => snapshot,
+      subscribe: () => ({ dispose() {} }),
+    });
+    const addon = createConsoleSearchAddon();
+    manager.load(addon);
+    addon.controller.setQuery("needle");
+    expect(addon.controller.getState().matches.map((match) => match.id)).toEqual(["nested"]);
+    const processEntry = { id: "terminal", data: "\\u001b[31mneedle\\u001b[0m" };
+    snapshot = {
+      mode: "terminal",
+      rawEntries: [processEntry],
+      all: [{ entry: processEntry, output: { data: processEntry.data, metadata: {} } }],
+      visible: [{ entry: processEntry, output: { data: processEntry.data, metadata: {} } }],
+    };
+    addon.controller.refresh();
+    expect(addon.controller.getState().matches.map((match) => match.id)).toEqual(["terminal"]);
+    expect(processEntry.data).toContain("\\u001b");
+  });
+
   it("search addon registers a reactive provider that clears highlights", () => {
     const manager = createConsoleAddonManager();
     const addon = createConsoleSearchAddon();
