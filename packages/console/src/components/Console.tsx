@@ -843,6 +843,7 @@ function ConsoleMessageMode({
           onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
           renderers={resolvedMessageRenderers}
           valueRenderers={resolvedValueRenderers}
+          valueDisplay={valueDisplay}
           detectLinks={detectLinks}
           linkProviders={resolvedLinkProviders}
         />
