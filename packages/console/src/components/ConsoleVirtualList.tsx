@@ -124,7 +124,10 @@ export function ConsoleVirtualList({
         (root.getBoundingClientRect().top -
           surface.getBoundingClientRect().top +
           surface.scrollTop);
-      setPosition({ top: Math.max(0, relativeTop), height: surface.clientHeight });
+      setPosition({
+        top: Math.max(0, relativeTop),
+        height: surface.clientHeight,
+      });
     };
     update();
     surface.addEventListener("scroll", update, { passive: true });

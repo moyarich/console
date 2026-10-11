@@ -83,7 +83,8 @@ export function createConsoleViewportController(
             ) => boolean;
           }
         >("[data-console-virtual-list]");
-        const scrolled = virtual?.scrollToConsoleMessage?.(id, options) ?? false;
+        const scrolled =
+          virtual?.scrollToConsoleMessage?.(id, options) ?? false;
         if (scrolled) pinnedToBottom = false;
         return scrolled;
       }
