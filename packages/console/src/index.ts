@@ -186,3 +186,6 @@ export type {
   ConsoleEvent,
   ConsoleTransportEnvelope,
 } from "./types";
+
+export type { ConsoleValueDisplay } from "./utils/console/valueDisplay";
+export { stringifyConsoleValue } from "./utils/console/valueDisplay";

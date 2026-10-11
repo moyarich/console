@@ -1,0 +1,17 @@
+---
+label: Value display modes
+title: Configurable value display
+description: Toggle between interactive structured values and safe string output without changing message data.
+---
+
+# Configurable value display
+
+Set `valueDisplay="structured"` (the default) for expandable objects and arrays, or `valueDisplay="string"` for safe JSON-like text. Switching the selector updates **the same messages**; nothing is recaptured.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+The example demonstrates multiple arguments, an array, primitives, a circular object, `console.dir()`, and `console.table()`. In string mode, plain strings stay unquoted, circular references display `[Circular]`, and the table keeps its table layout.
+
+The final **custom** message demonstrates renderer precedence: the renderer uses `type: "Object"` (the JavaScript object type discriminator), matches the `special` property, and overrides both built-in display modes.

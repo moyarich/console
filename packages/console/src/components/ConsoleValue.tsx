@@ -1,4 +1,8 @@
 import { ChevronRight, Copy } from "lucide-react";
+import {
+  stringifyConsoleValue,
+  type ConsoleValueDisplay,
+} from "../utils/console/valueDisplay";
 import { useEffect, useState, type ReactNode } from "react";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { isElementLike } from "../utils/console/isElementLike";
@@ -22,6 +26,8 @@ import {
 /** Props for rendering a single console value. */
 export interface ConsoleValueProps {
   value: unknown;
+  /** Built-in display strategy. Custom renderers take precedence. */
+  valueDisplay?: ConsoleValueDisplay;
   expandLevel?: number;
   ancestors?: ReadonlySet<object>;
   propertyKey?: string;
@@ -299,22 +305,38 @@ export function ConsoleValue({
   propertyKey,
   expandAllVersion,
   renderers,
+  valueDisplay = "structured",
   detectLinks = true,
   linkProviders,
   linkContext,
 }: ConsoleValueProps) {
   const renderDefault = () =>
-    renderDefaultValue({
-      value,
-      expandLevel,
-      ancestors,
-      propertyKey,
-      expandAllVersion,
-      renderers,
-      detectLinks,
-      linkProviders,
-      linkContext,
-    });
+    valueDisplay === "string" ? (
+      <span className="console-string">
+        <ConsoleLinkedText
+          text={stringifyConsoleValue(value)}
+          context={{
+            mode: linkContext?.mode ?? "console",
+            ...linkContext,
+            value,
+            propertyKey,
+          }}
+          providers={linkProviders}
+        />
+      </span>
+    ) : (
+      renderDefaultValue({
+        value,
+        expandLevel,
+        ancestors,
+        propertyKey,
+        expandAllVersion,
+        renderers,
+        detectLinks,
+        linkProviders,
+        linkContext,
+      })
+    );
 
   const custom = dispatchValueRenderer(renderers, {
     value,

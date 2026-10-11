@@ -23,6 +23,7 @@ import {
 } from "../renderers";
 import type { ConsoleMessageData } from "../types";
 import type { ConsoleLinkProvider } from "../links";
+import type { ConsoleValueDisplay } from "../utils/console/valueDisplay";
 
 type MessageIconMap = {
   [Method in ConsoleMessageData["method"]]?: LucideIcon;
@@ -59,6 +60,8 @@ export interface ConsoleMessageProps {
   renderers?: readonly ConsoleMessageRenderer[];
   /** Ordered custom renderers for values inside the message. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Value display strategy; tables retain their tabular structure. */
+  valueDisplay?: ConsoleValueDisplay;
   /** Whether built-in HTTP/HTTPS detection is enabled. @default true */
   detectLinks?: boolean;
   /** Ordered application-specific link providers. */
@@ -70,6 +73,7 @@ function DefaultConsoleMessage({
   expandAllVersion,
   onExpandAll,
   valueRenderers,
+  valueDisplay = "structured",
   detectLinks = true,
   linkProviders,
 }: ConsoleMessageProps) {
@@ -123,6 +127,7 @@ function DefaultConsoleMessage({
           expandLevel={message.expandLevel ?? 1}
           expandAllVersion={expandAllVersion}
           renderers={valueRenderers}
+          valueDisplay={valueDisplay}
           detectLinks={detectLinks}
           linkProviders={linkProviders}
           linkContext={{ mode: "console" }}
@@ -141,6 +146,7 @@ function DefaultConsoleMessage({
             value={value}
             expandAllVersion={expandAllVersion}
             renderers={valueRenderers}
+            valueDisplay={valueDisplay}
             detectLinks={detectLinks}
             linkProviders={linkProviders}
             linkContext={{ mode: "console" }}
@@ -163,6 +169,7 @@ export function ConsoleMessage({
   onExpandAll,
   renderers,
   valueRenderers,
+  valueDisplay = "structured",
   detectLinks = true,
   linkProviders,
 }: ConsoleMessageProps) {
@@ -176,6 +183,7 @@ export function ConsoleMessage({
       expandAllVersion={expandAllVersion}
       onExpandAll={onExpandAll}
       valueRenderers={valueRenderers}
+      valueDisplay={valueDisplay}
       detectLinks={detectLinks}
       linkProviders={linkProviders}
     />
