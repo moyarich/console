@@ -60,7 +60,7 @@ describe("search navigation and filtering", () => {
     ];
     const visible = rawEntries.map((entry) => ({
       entry,
-      output: { data: entry.data },
+      output: { data: entry.data, metadata: {} },
     }));
     const data: ConsoleDataService = {
       getSnapshot: () => ({
