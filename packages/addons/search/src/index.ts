@@ -173,12 +173,17 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       data = host.services.get(consoleServices.data);
       viewport = host.services.get(consoleServices.viewport);
       host.services.provide(consoleSearchService, controller);
-    const highlight: ConsoleMessageDecoration = {
-      id: CONSOLE_SEARCH_ADDON_ID + ":highlight",
-      placement: "badge",
-      render: ({ index }) => createElement(ConsoleSearchHighlight, { controller, index }),
-    };
-    host.extensions.register(consoleExtensionPoints.messageDecoration, highlight, { id: highlight.id });
+      const highlight: ConsoleMessageDecoration = {
+        id: CONSOLE_SEARCH_ADDON_ID + ":highlight",
+        placement: "badge",
+        render: ({ index }) =>
+          createElement(ConsoleSearchHighlight, { controller, index }),
+      };
+      host.extensions.register(
+        consoleExtensionPoints.messageDecoration,
+        highlight,
+        { id: highlight.id },
+      );
       const panel: ConsolePanelElement = {
         id: CONSOLE_SEARCH_ADDON_ID + ":controls",
         placement: "before-output",
