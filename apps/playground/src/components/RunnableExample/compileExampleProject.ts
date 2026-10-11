@@ -1,4 +1,5 @@
 import * as AnnotationsAddonPackage from "@moyarich/console-addon-annotations";
+import * as AnimationAddonPackage from "@moyarich/console-addon-animation";
 import * as NavigationAddonPackage from "@moyarich/console-addon-navigation";
 import * as SelectionAddonPackage from "@moyarich/console-addon-selection";
 import * as ConsolePackage from "@moyarich/console";
@@ -40,6 +41,7 @@ const RESOLVABLE_EXTENSIONS = [...SCRIPT_EXTENSIONS, ".json", ".css"] as const;
 
 const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, RuntimeModule>> = {
   "@moyarich/console-addon-annotations": AnnotationsAddonPackage,
+  "@moyarich/console-addon-animation": AnimationAddonPackage,
   "@moyarich/console-addon-navigation": NavigationAddonPackage,
   "@moyarich/console-addon-selection": SelectionAddonPackage,
   react: React,
