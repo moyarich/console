@@ -9,10 +9,10 @@ const animation = createConsoleAnimationAddon({
 });
 
 const messages: ConsoleMessageData[] = [
-  { id: "01-fade-1", method: "log", data: ["Starting task"] },
-  { id: "01-fade-2", method: "info", data: ["See https://example.com"] },
-  { id: "01-fade-3", method: "log", data: [{ status: "ready", steps: 3 }] },
-  { id: "01-fade-4", method: "warn", data: ["Finished with one warning"] },
+  { id: "01-fade-1", method: "log", depth: 0, data: ["Starting task"] },
+  { id: "01-fade-2", method: "info", depth: 0, data: ["See https://example.com"] },
+  { id: "01-fade-3", method: "log", depth: 0, data: [{ status: "ready", steps: 3 }] },
+  { id: "01-fade-4", method: "warn", depth: 0, data: ["Finished with one warning"] },
 ];
 
 export default function Example() {
