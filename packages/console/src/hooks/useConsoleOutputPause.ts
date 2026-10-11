@@ -7,18 +7,21 @@ export function useConsoleOutputPause<T>(
 ) {
   const [paused, setPaused] = useState(initiallyPaused);
   const [displayed, setDisplayed] = useState<readonly T[]>(current);
+  const [baselineItems, setBaselineItems] = useState<readonly T[]>(current);
   const baseline = useRef(current.length);
 
   useEffect(() => {
     if (!paused) {
       setDisplayed(current);
       baseline.current = current.length;
+      setBaselineItems(current);
     }
   }, [current, paused]);
 
   const pause = useCallback(() => {
     baseline.current = current.length;
     setDisplayed(current);
+    setBaselineItems(current);
     setPaused(true);
   }, [current]);
 
@@ -28,12 +31,21 @@ export function useConsoleOutputPause<T>(
   const clearView = useCallback(() => {
     baseline.current = 0;
     setDisplayed([]);
+    setBaselineItems([]);
   }, []);
+
+  // A reset/replacement starts a new source history; do not report removed rows as buffered.
+  const bufferedCount = paused
+    ? current.length >= baseline.current &&
+      baselineItems.every((entry, index) => current[index] === entry)
+      ? current.length - baseline.current
+      : current.length
+    : 0;
 
   return {
     paused,
     displayed: paused ? displayed : current,
-    bufferedCount: paused ? Math.max(0, current.length - baseline.current) : 0,
+    bufferedCount,
     pause,
     resume,
     clearView,
