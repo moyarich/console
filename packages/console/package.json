@@ -47,7 +47,8 @@
   "dependencies": {
     "@moyarich/console-core": "0.1.0",
     "anser": "^2.3.5",
-    "lucide-react": "^1.47.0"
+    "lucide-react": "^1.47.0",
+    "shiki": "^3.13.0"
   },
   "peerDependencies": {
     "react": ">=18",
