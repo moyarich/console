@@ -9,7 +9,7 @@ import {
   createConsoleAddonManager,
   type ConsoleTextHighlightProvider,
 } from "@moyarich/console-core";
-import { createConsoleSearchAddon } from "@moyarich/console-addon-search";
+import { ConsoleSearchControls, createConsoleSearchAddon } from "@moyarich/console-addon-search";
 
 describe("inline search highlighting", () => {
   const highlight: ConsoleTextHighlightProvider = {
@@ -111,6 +111,16 @@ describe("inline search highlighting", () => {
       addon.controller.getState().matches.map((match) => match.id),
     ).toEqual(["terminal"]);
     expect(processEntry.data).toContain("\u001b");
+  });
+
+  it("provides named native keyboard controls and a polite match status", () => {
+    const addon = createConsoleSearchAddon();
+    const html = renderToStaticMarkup(<ConsoleSearchControls controller={addon.controller} />);
+    expect(html).toContain('type="search"');
+    expect(html).toContain('aria-label="Search console output"');
+    expect(html).toContain('aria-label="Previous search result"');
+    expect(html).toContain('aria-label="Next search result"');
+    expect(html).toContain('aria-live="polite"');
   });
 
   it("search addon registers a reactive provider that clears highlights", () => {
