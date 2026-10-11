@@ -81,7 +81,7 @@ describe("inline search highlighting", () => {
     manager.load(addon);
     addon.controller.setQuery("needle");
     expect(addon.controller.getState().matches.map((match) => match.id)).toEqual(["nested"]);
-    const processEntry = { id: "terminal", data: "\\u001b[31mneedle\\u001b[0m" };
+    const processEntry = { id: "terminal", data: "\u001b[31mneedle\u001b[0m" };
     snapshot = {
       mode: "terminal",
       rawEntries: [processEntry],
@@ -90,7 +90,7 @@ describe("inline search highlighting", () => {
     };
     addon.controller.refresh();
     expect(addon.controller.getState().matches.map((match) => match.id)).toEqual(["terminal"]);
-    expect(processEntry.data).toContain("\\u001b");
+    expect(processEntry.data).toContain("\u001b");
   });
 
   it("search addon registers a reactive provider that clears highlights", () => {
