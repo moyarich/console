@@ -194,6 +194,7 @@ interface ConsoleFrameProps extends ConsoleSharedProps {
   hasMessages: boolean;
   isEmpty: boolean;
   scrollKey: unknown;
+  copyText?: string;
   children: ReactNode;
   messageActions?: readonly ConsoleMessageAction[];
   frameDecorators?: readonly ConsoleFrameDecorator<ReactNode>[];
@@ -391,6 +392,7 @@ function ConsoleFrame({
   hasMessages,
   isEmpty,
   scrollKey,
+  copyText,
   children,
   messageActions,
   frameDecorators,
@@ -404,12 +406,12 @@ function ConsoleFrame({
   }, [onClear]);
 
   const copyOutput = useCallback(() => {
-    const value = surfaceRef.current?.innerText.trim() ?? "";
+    const value = copyText ?? surfaceRef.current?.innerText.trim() ?? "";
 
     if (value) {
       void writeClipboardText(value);
     }
-  }, [surfaceRef]);
+  }, [copyText, surfaceRef]);
 
   useEffect(() => {
     if (!autoScroll) return;
@@ -1058,6 +1060,7 @@ function ConsoleTerminalMode({
       hasMessages={messages.length > 0}
       isEmpty={resolvedEntries.length === 0 && !hasCustomOutput}
       scrollKey={resolvedEntries}
+      copyText={virtualize && !hasCustomOutput ? resolvedEntries.map(({ output }) => output.data).join("\\n") : undefined}
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       frameDecorators={resolvedFrameDecorators}
