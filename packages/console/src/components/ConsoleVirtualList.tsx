@@ -162,7 +162,15 @@ export function ConsoleVirtualList({
             onHeight={(height) => {
               const key = rowKeys[index]!;
               if (heights.current.get(key) === height) return;
+              const previous = heights.current.get(key) ?? estimatedRowHeight;
               heights.current.set(key, height);
+              // Keep the visible content stationary when an overscanned row
+              // above the viewport grows or contracts after measuring.
+              const root = rootRef.current;
+              const surface = root?.closest<HTMLElement>(".console-surface");
+              if (root && surface && offsets[index]! + previous <= position.top) {
+                surface.scrollTop += height - previous;
+              }
               setRevision((current) => current + 1);
             }}
           >
