@@ -6,7 +6,11 @@ import {
   consoleExtensionPoints,
   type ConsoleLinkProvider,
 } from "@moyarich/console";
-import { createConsoleLinksAddon, detectWebLinks, webLinkProvider } from "@moyarich/console-addon-links";
+import {
+  createConsoleLinksAddon,
+  detectWebLinks,
+  webLinkProvider,
+} from "@moyarich/console-addon-links";
 
 describe("console links", () => {
   it("detects safe HTTP and HTTPS URLs with exact ranges", () => {
@@ -72,11 +76,17 @@ describe("console links", () => {
 
   it("activates and deactivates the default provider with the addon", () => {
     const manager = createConsoleAddonManager();
-    expect(manager.extensions.getAll(consoleExtensionPoints.linkProvider)).toEqual([]);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.linkProvider),
+    ).toEqual([]);
     const registration = manager.load(createConsoleLinksAddon());
-    expect(manager.extensions.getAll(consoleExtensionPoints.linkProvider)).toEqual([webLinkProvider]);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.linkProvider),
+    ).toEqual([webLinkProvider]);
     registration.dispose();
-    expect(manager.extensions.getAll(consoleExtensionPoints.linkProvider)).toEqual([]);
+    expect(
+      manager.extensions.getAll(consoleExtensionPoints.linkProvider),
+    ).toEqual([]);
     manager.dispose();
   });
 
@@ -84,16 +94,24 @@ describe("console links", () => {
     const text = "https://example.com/docs";
     const direct: ConsoleLinkProvider = {
       id: "host",
-      provideLinks: () => [{
-        text,
-        start: 0,
-        end: text.length,
-        target: "/docs",
-      }],
+      provideLinks: () => [
+        {
+          text,
+          start: 0,
+          end: text.length,
+          target: "/docs",
+        },
+      ],
     };
-    expect(resolveConsoleLinks(text, { mode: "console" }, {
-      providers: [direct, webLinkProvider],
-    })).toMatchObject([{ providerId: "host", target: "/docs" }]);
+    expect(
+      resolveConsoleLinks(
+        text,
+        { mode: "console" },
+        {
+          providers: [direct, webLinkProvider],
+        },
+      ),
+    ).toMatchObject([{ providerId: "host", target: "/docs" }]);
     expect(resolveConsoleLinks(text, { mode: "console" })).toEqual([]);
   });
   it("ignores invalid ranges and navigation targets", () => {
