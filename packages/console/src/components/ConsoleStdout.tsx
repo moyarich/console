@@ -177,7 +177,8 @@ export function ConsoleResolvedStdout({
           metadata: processedOutput.metadata,
         };
 
-        const renderEntry = () => structuredValue !== undefined ? (
+        const renderEntry = () =>
+          structuredValue !== undefined ? (
             <div
               className="console-stdout-line console-stdout-structured"
               data-stream={stream}
@@ -193,22 +194,30 @@ export function ConsoleResolvedStdout({
               />
             </div>
           ) : (
-          <pre
-            className="console-stdout-line"
-            data-stream={stream}
-            data-console-message-id={id}
-            data-clear-line={clearLine || undefined}
-          >
-            <AnsiText
-              data={data}
-              context={linkContext}
-              detectLinks={detectLinks}
-              linkProviders={linkProviders}
-              links={processedOutput.links}
-            />
-          </pre>
+            <pre
+              className="console-stdout-line"
+              data-stream={stream}
+              data-console-message-id={id}
+              data-clear-line={clearLine || undefined}
+            >
+              <AnsiText
+                data={data}
+                context={linkContext}
+                detectLinks={detectLinks}
+                linkProviders={linkProviders}
+                links={processedOutput.links}
+              />
+            </pre>
+          );
+        return (
+          <div key={key}>
+            {decorateConsoleOutputEntry(
+              entryDecorators,
+              { mode: "terminal", entry, index, id },
+              renderEntry,
+            )}
+          </div>
         );
-        return <div key={key}>{decorateConsoleOutputEntry(entryDecorators, { mode: "terminal", entry, index, id }, renderEntry)}</div>;
       })}
     </div>
   );

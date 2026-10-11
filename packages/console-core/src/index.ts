@@ -976,8 +976,20 @@ export interface ConsoleOutputRenderer<TUi = unknown> {
 }
 
 export type ConsoleOutputEntryDecoratorContext<TUi = unknown> =
-  | { readonly mode: "console"; readonly message: ConsoleMessageData; readonly index: number; readonly id?: string; readonly renderDefault: () => TUi }
-  | { readonly mode: "terminal"; readonly entry: ConsoleStdoutEntry; readonly index: number; readonly id?: string; readonly renderDefault: () => TUi };
+  | {
+      readonly mode: "console";
+      readonly message: ConsoleMessageData;
+      readonly index: number;
+      readonly id?: string;
+      readonly renderDefault: () => TUi;
+    }
+  | {
+      readonly mode: "terminal";
+      readonly entry: ConsoleStdoutEntry;
+      readonly index: number;
+      readonly id?: string;
+      readonly renderDefault: () => TUi;
+    };
 
 /** Wraps one fully rendered output entry, preserving its interactive children. */
 export interface ConsoleOutputEntryDecorator<TUi = unknown> {
@@ -1124,10 +1136,11 @@ export const consoleExtensionPoints = Object.freeze({
    *
    * @composition middleware Earlier contributions become outer wrappers.
    */
-  outputEntryDecorator: createConsoleExtensionPoint<ConsoleOutputEntryDecorator>(
-    "console.render.outputEntry",
-    "middleware",
-  ),
+  outputEntryDecorator:
+    createConsoleExtensionPoint<ConsoleOutputEntryDecorator>(
+      "console.render.outputEntry",
+      "middleware",
+    ),
   frameDecorator: createConsoleExtensionPoint<ConsoleFrameDecorator>(
     "console.render.frame",
     "middleware",

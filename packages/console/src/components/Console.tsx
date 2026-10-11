@@ -717,7 +717,9 @@ function ConsoleMessageMode({
   const resolvedKeyboardShortcuts = addonExtensions.getAll(
     consoleExtensionPoints.keyboardShortcut,
   ) as readonly ConsoleKeyboardShortcut[];
-  const resolvedEntryDecorators = addonExtensions.getAll(consoleExtensionPoints.outputEntryDecorator) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
+  const resolvedEntryDecorators = addonExtensions.getAll(
+    consoleExtensionPoints.outputEntryDecorator,
+  ) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
   const resolvedMessageDecorations = addonExtensions.getAll(
     consoleExtensionPoints.messageDecoration,
   ) as readonly ConsoleMessageDecoration<ReactNode>[];
@@ -842,26 +844,35 @@ function ConsoleMessageMode({
         />
       );
 
-      const renderEntry = () => !hasDecorations ? (
-        <div data-console-message-id={message.id}>{renderedMessage}</div>
-      ) : (
-        <div
-          className="console-message-extension-shell"
-          data-console-message-id={message.id}
-        >
-          {before}
-          <div className="console-message-extension-row">
-            {gutter}
-            <div className="console-message-extension-content">
-              {renderedMessage}
+      const renderEntry = () =>
+        !hasDecorations ? (
+          <div data-console-message-id={message.id}>{renderedMessage}</div>
+        ) : (
+          <div
+            className="console-message-extension-shell"
+            data-console-message-id={message.id}
+          >
+            {before}
+            <div className="console-message-extension-row">
+              {gutter}
+              <div className="console-message-extension-content">
+                {renderedMessage}
+              </div>
+              {badge}
             </div>
-            {badge}
+            {after}
+            {overlay}
           </div>
-          {after}
-          {overlay}
+        );
+      return (
+        <div key={key}>
+          {decorateConsoleOutputEntry(
+            resolvedEntryDecorators,
+            { mode: "console", message, id: message.id, index },
+            renderEntry,
+          )}
         </div>
       );
-      return <div key={key}>{decorateConsoleOutputEntry(resolvedEntryDecorators, { mode: "console", message, id: message.id, index }, renderEntry)}</div>;
     });
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
@@ -983,7 +994,9 @@ function ConsoleTerminalMode({
   const resolvedKeyboardShortcuts = addonExtensions.getAll(
     consoleExtensionPoints.keyboardShortcut,
   ) as readonly ConsoleKeyboardShortcut[];
-  const resolvedEntryDecorators = addonExtensions.getAll(consoleExtensionPoints.outputEntryDecorator) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
+  const resolvedEntryDecorators = addonExtensions.getAll(
+    consoleExtensionPoints.outputEntryDecorator,
+  ) as readonly ConsoleOutputEntryDecorator<ReactNode>[];
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
