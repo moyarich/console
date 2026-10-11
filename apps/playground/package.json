@@ -41,6 +41,7 @@
     "@moyarich/console-addon-selection": "*",
     "@moyarich/console-addon-animation": "*",
     "@moyarich/console-addon-links": "*",
+    "shiki": "^3.13.0",
     "@moyarich/console-addon-search": "*"
   },
   "devDependencies": {
