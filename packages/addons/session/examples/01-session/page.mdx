@@ -1,7 +1,15 @@
 ---
 label: Session persistence
+title: Save and restore Console sessions
+description: Versioned snapshots of structured messages and terminal process output.
 ---
 
-# Console sessions
+# Save and restore sessions
 
-Create a versioned session with `createConsoleSession`, save with `stringifyConsoleSession`, and restore with `parseConsoleSession`. The helpers support structured messages and terminal chunks and reject unsupported versions. Store serialized data in a host-provided storage mechanism.
+Use `createConsoleSessionAddon()` to capture retained logical data from the Console service and serialize it to JSON. Restore the snapshot to host-owned state; loading a session never changes the source messages implicitly.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Snapshots include version metadata and an optional dropped-history counter. The parser rejects unsupported versions and malformed records. Hosts can save JSON to local storage, a server, or a bug-report bundle according to their privacy policy.
