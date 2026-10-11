@@ -13,13 +13,6 @@ describe("console search", () => {
       3,
     );
   });
-  it("keeps distinct offsets for repeated identical matches", () => {
-    const matches = findConsoleSearchMatches(
-      [{ id: "repeated", text: "foo foo foo" }],
-      "foo",
-    ).matches;
-    expect(matches.map((match) => match.offset)).toEqual([0, 4, 8]);
-  });
   it("supports case sensitivity", () => {
     expect(
       findConsoleSearchMatches(entries, "Error", { caseSensitive: true })

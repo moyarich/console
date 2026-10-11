@@ -42,6 +42,7 @@ import {
   type ConsoleSurfaceActionContext,
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
+import { ConsoleVirtualList } from "./ConsoleVirtualList";
 import type { ConsoleLinkProvider } from "../links";
 import type { ConsoleValueDisplay } from "../utils/console/valueDisplay";
 import {
@@ -93,6 +94,8 @@ export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and terminal console modes. */
 interface ConsoleSharedProps {
+  /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
+  virtualize?: boolean;
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
@@ -670,6 +673,7 @@ function ConsoleMessageMode({
   outputRenderers,
   valueRenderers,
   valueDisplay = "structured",
+  virtualize = false,
   detectLinks = true,
   linkProviders,
   addonExtensions,
@@ -800,96 +804,107 @@ function ConsoleMessageMode({
     });
   };
 
-  const renderDefaultOutput = () =>
-    visibleMessages.map((message, index) => {
-      const key =
-        message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
-      const gutter = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "gutter",
-        message,
-        index,
-        visibleMessages,
-      );
-      const before = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "before",
-        message,
-        index,
-        visibleMessages,
-      );
-      const after = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "after",
-        message,
-        index,
-        visibleMessages,
-      );
-      const badge = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "badge",
-        message,
-        index,
-        visibleMessages,
-      );
-      const overlay = renderConsoleMessageDecorations(
-        resolvedMessageDecorations,
-        "overlay",
-        message,
-        index,
-        visibleMessages,
-      );
-      const hasDecorations = Boolean(
-        gutter || before || after || badge || overlay,
-      );
+  const renderMessageRow = (message: ConsoleMessageData, index: number) => {
+    const key =
+      message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
+    const gutter = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "gutter",
+      message,
+      index,
+      visibleMessages,
+    );
+    const before = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "before",
+      message,
+      index,
+      visibleMessages,
+    );
+    const after = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "after",
+      message,
+      index,
+      visibleMessages,
+    );
+    const badge = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "badge",
+      message,
+      index,
+      visibleMessages,
+    );
+    const overlay = renderConsoleMessageDecorations(
+      resolvedMessageDecorations,
+      "overlay",
+      message,
+      index,
+      visibleMessages,
+    );
+    const hasDecorations = Boolean(
+      gutter || before || after || badge || overlay,
+    );
 
-      const renderedMessage = (
-        <ConsoleMessage
-          message={message}
-          index={index}
-          messages={visibleMessages}
-          expandAllVersion={expandedMessages.get(message)}
-          onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
-          renderers={resolvedMessageRenderers}
-          valueRenderers={resolvedValueRenderers}
-          valueDisplay={valueDisplay}
-          detectLinks={detectLinks}
-          linkProviders={resolvedLinkProviders}
-        />
-      );
+    const renderedMessage = (
+      <ConsoleMessage
+        message={message}
+        index={index}
+        messages={visibleMessages}
+        expandAllVersion={expandedMessages.get(message)}
+        onExpandAll={hasExpandableValues ? expandAllCollapsed : undefined}
+        renderers={resolvedMessageRenderers}
+        valueRenderers={resolvedValueRenderers}
+        valueDisplay={valueDisplay}
+        detectLinks={detectLinks}
+        linkProviders={resolvedLinkProviders}
+      />
+    );
 
-      const renderEntry = () =>
-        !hasDecorations ? (
-          <div data-console-message-id={message.id ?? `console-${index}`}>
-            {renderedMessage}
-          </div>
-        ) : (
-          <div
-            className="console-message-extension-shell"
-            data-console-message-id={message.id ?? `console-${index}`}
-          >
-            {before}
-            <div className="console-message-extension-row">
-              {gutter}
-              <div className="console-message-extension-content">
-                {renderedMessage}
-              </div>
-              {badge}
+    const renderEntry = () =>
+      !hasDecorations ? (
+        <div data-console-message-id={message.id ?? `console-${index}`}>
+          {renderedMessage}
+        </div>
+      ) : (
+        <div
+          className="console-message-extension-shell"
+          data-console-message-id={message.id ?? `console-${index}`}
+        >
+          {before}
+          <div className="console-message-extension-row">
+            {gutter}
+            <div className="console-message-extension-content">
+              {renderedMessage}
             </div>
-            {after}
-            {overlay}
+            {badge}
           </div>
-        );
-      return (
-        <div key={key}>
-          {decorateConsoleOutputEntry(
-            resolvedEntryDecorators,
-            { mode: "console", message, id: message.id, index },
-            renderEntry,
-          )}
+          {after}
+          {overlay}
         </div>
       );
-    });
+    return (
+      <div key={key}>
+        {decorateConsoleOutputEntry(
+          resolvedEntryDecorators,
+          { mode: "console", message, id: message.id, index },
+          renderEntry,
+        )}
+      </div>
+    );
+  };
+  const renderDefaultOutput = () =>
+    virtualize ? (
+      <ConsoleVirtualList
+        count={visibleMessages.length}
+        messageIds={visibleMessages.map(
+          (message, index) => message.id ?? `console-${index}`,
+        )}
+        renderRow={(index) => renderMessageRow(visibleMessages[index]!, index)}
+      />
+    ) : (
+      visibleMessages.map(renderMessageRow)
+    );
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
     messages: visibleMessages,
@@ -926,6 +941,7 @@ function ConsoleTerminalMode({
   processControlParsers,
   processors,
   structuredOutputParsers,
+  virtualize = false,
   panelActions,
   contextMenuActions,
   outputRenderers,
@@ -1016,6 +1032,7 @@ function ConsoleTerminalMode({
   const renderDefaultOutput = () => (
     <ConsoleResolvedStdout
       resolvedEntries={resolvedEntries}
+      virtualize={virtualize}
       entryDecorators={resolvedEntryDecorators}
       parseStructuredOutput={parseStructuredOutput}
       structuredOutputParsers={resolvedStructuredOutputParsers}

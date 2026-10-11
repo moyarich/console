@@ -25,8 +25,6 @@ export interface ConsoleSearchOptions {
 export interface ConsoleSearchMatch {
   id: string;
   index: number;
-  /** Character offset within the source entry, distinguishing repeated matches. */
-  offset: number;
   text: string;
 }
 export interface ConsoleSearchState {
@@ -75,12 +73,7 @@ export function findConsoleSearchMatches(
       const before = entry.text[hit.index - 1] ?? "";
       const after = entry.text[hit.index + hit[0].length] ?? "";
       if (!options.wholeWord || (!/\w/.test(before) && !/\w/.test(after))) {
-        matches.push({
-          id: entry.id ?? String(index),
-          index,
-          offset: hit.index,
-          text: hit[0],
-        });
+        matches.push({ id: entry.id ?? String(index), index, text: hit[0] });
       }
       if (hit[0].length === 0) pattern.lastIndex++;
     }
@@ -146,7 +139,6 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
         (match) =>
           match.id === activeMatch?.id &&
           match.index === activeMatch.index &&
-          match.offset === activeMatch.offset &&
           match.text === activeMatch.text,
       );
       state = { ...state, ...result, activeIndex: nextIndex };

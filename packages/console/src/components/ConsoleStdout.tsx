@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ConsoleVirtualList } from "./ConsoleVirtualList";
 import type { ConsoleOutputEntryDecorator } from "../addons";
 import { decorateConsoleOutputEntry } from "../outputEntryDecorator";
 import { ConsoleValue } from "./ConsoleValue";
@@ -43,6 +44,8 @@ export type {
 export interface ConsoleStdoutProps {
   /** Ordered process-output entries. */
   entries: readonly (ConsoleStdoutEntry | string)[];
+  /** Opt-in windowed terminal rendering. */
+  virtualize?: boolean;
   /** Empty-state text. */
   emptyMessage?: string;
   /** Whether complete JSON object/array lines should render as structured values. */
@@ -137,6 +140,7 @@ function AnsiText({
 export function ConsoleResolvedStdout({
   resolvedEntries,
   entryDecorators = [],
+  virtualize = false,
   emptyMessage = "No stdout output yet.",
   parseStructuredOutput: shouldParseStructuredOutput = false,
   structuredOutputParsers,
@@ -148,77 +152,89 @@ export function ConsoleResolvedStdout({
     return <div className="console-stdout-empty">{emptyMessage}</div>;
   }
 
+  const renderRow = (index: number) => {
+    const { entry, output: processedOutput } = resolvedEntries[index]!;
+    const data = processedOutput.data;
+    const stream = entry.stream;
+    const id = entry.id ?? `terminal-${index}`;
+    const key = entry.id ?? `stdout-${index}`;
+    const structuredValue =
+      processedOutput.structuredValue !== undefined
+        ? processedOutput.structuredValue
+        : shouldParseStructuredOutput || structuredOutputParsers?.length
+          ? parseStructuredOutput(
+              data,
+              entry,
+              index,
+              shouldParseStructuredOutput,
+              structuredOutputParsers,
+              processedOutput.metadata,
+            )
+          : undefined;
+    const clearLine = hasAnsiClearLine(data);
+    const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
+      mode: "terminal",
+      index,
+      ...(entry.id !== undefined ? { id: entry.id } : {}),
+      ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
+      metadata: processedOutput.metadata,
+    };
+
+    const renderEntry = () =>
+      structuredValue !== undefined ? (
+        <div
+          className="console-stdout-line console-stdout-structured"
+          data-stream={stream}
+          data-console-message-id={id}
+          data-clear-line={clearLine || undefined}
+        >
+          <ConsoleValue
+            value={structuredValue}
+            renderers={valueRenderers}
+            detectLinks={detectLinks}
+            linkProviders={linkProviders}
+            linkContext={linkContext}
+          />
+        </div>
+      ) : (
+        <pre
+          className="console-stdout-line"
+          data-stream={stream}
+          data-console-message-id={id}
+          data-clear-line={clearLine || undefined}
+        >
+          <AnsiText
+            data={data}
+            context={linkContext}
+            detectLinks={detectLinks}
+            linkProviders={linkProviders}
+            links={processedOutput.links}
+          />
+        </pre>
+      );
+    return (
+      <div key={key}>
+        {decorateConsoleOutputEntry(
+          entryDecorators,
+          { mode: "terminal", entry, index, id },
+          renderEntry,
+        )}
+      </div>
+    );
+  };
   return (
     <div className="console-stdout-list">
-      {resolvedEntries.map(({ entry, output: processedOutput }, index) => {
-        const data = processedOutput.data;
-        const stream = entry.stream;
-        const id = entry.id ?? `terminal-${index}`;
-        const key = entry.id ?? `stdout-${index}`;
-        const structuredValue =
-          processedOutput.structuredValue !== undefined
-            ? processedOutput.structuredValue
-            : shouldParseStructuredOutput || structuredOutputParsers?.length
-              ? parseStructuredOutput(
-                  data,
-                  entry,
-                  index,
-                  shouldParseStructuredOutput,
-                  structuredOutputParsers,
-                  processedOutput.metadata,
-                )
-              : undefined;
-        const clearLine = hasAnsiClearLine(data);
-        const linkContext: Omit<ConsoleLinkProviderContext, "text"> = {
-          mode: "terminal",
-          index,
-          ...(entry.id !== undefined ? { id: entry.id } : {}),
-          ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
-          metadata: processedOutput.metadata,
-        };
-
-        const renderEntry = () =>
-          structuredValue !== undefined ? (
-            <div
-              className="console-stdout-line console-stdout-structured"
-              data-stream={stream}
-              data-console-message-id={id}
-              data-clear-line={clearLine || undefined}
-            >
-              <ConsoleValue
-                value={structuredValue}
-                renderers={valueRenderers}
-                detectLinks={detectLinks}
-                linkProviders={linkProviders}
-                linkContext={linkContext}
-              />
-            </div>
-          ) : (
-            <pre
-              className="console-stdout-line"
-              data-stream={stream}
-              data-console-message-id={id}
-              data-clear-line={clearLine || undefined}
-            >
-              <AnsiText
-                data={data}
-                context={linkContext}
-                detectLinks={detectLinks}
-                linkProviders={linkProviders}
-                links={processedOutput.links}
-              />
-            </pre>
-          );
-        return (
-          <div key={key}>
-            {decorateConsoleOutputEntry(
-              entryDecorators,
-              { mode: "terminal", entry, index, id },
-              renderEntry,
-            )}
-          </div>
-        );
-      })}
+      {virtualize ? (
+        <ConsoleVirtualList
+          count={resolvedEntries.length}
+          messageIds={resolvedEntries.map(
+            ({ entry }, index) => entry.id ?? `terminal-${index}`,
+          )}
+          renderRow={renderRow}
+        />
+      ) : (
+        resolvedEntries.map((_, index) => renderRow(index))
+      )}
     </div>
   );
 }
