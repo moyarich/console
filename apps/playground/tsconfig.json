@@ -7,7 +7,7 @@
       "@moyarich/console": ["../../packages/console/src/index.ts"],
       "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
       "@moyarich/console-core": ["../../packages/console-core/src/index.ts"],
-      "@src/*": ["src/*"]
+      "@src/*": ["./src/*"]
     },
     "customConditions": ["development"]
   },
