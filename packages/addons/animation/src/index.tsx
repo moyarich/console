@@ -4,7 +4,7 @@ import {
   type ConsoleAddon,
   type ConsoleOutputEntryDecorator,
 } from "@moyarich/console-core";
-import { AnimatedEntry } from "./AnimatedEntry";
+import { AnimatedEntry } from "./components/AnimatedEntry/AnimatedEntry";
 import { AnimationSequence } from "./AnimationSequence";
 import type { ConsoleAnimationOptions } from "./types";
 
