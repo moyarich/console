@@ -49,28 +49,45 @@ export function ConsoleVirtualList({
   // Measurements follow logical IDs across filtering and reordering.
   // Index-based fallback IDs are only stable while the input order is stable.
   const rowKeys = useMemo(
-    () => Array.from({ length: count }, (_, index) => messageIds?.[index] ?? `__index-${index}`),
+    () =>
+      Array.from(
+        { length: count },
+        (_, index) => messageIds?.[index] ?? `__index-${index}`,
+      ),
     [count, messageIds],
   );
   const offsets = useMemo(() => {
     void revision; // Recalculate offsets when a measured row changes height.
     const result = [0];
     for (let i = 0; i < count; i++) {
-      result.push(result[i]! + (heights.current.get(rowKeys[i]!) ?? estimatedRowHeight));
+      result.push(
+        result[i]! + (heights.current.get(rowKeys[i]!) ?? estimatedRowHeight),
+      );
     }
     return result;
   }, [count, estimatedRowHeight, revision, rowKeys]);
   useEffect(() => {
     const root = rootRef.current as
-      | (HTMLDivElement & { scrollToConsoleMessage?: (id: string, options?: { block?: ScrollLogicalPosition; behavior?: ScrollBehavior }) => boolean })
+      | (HTMLDivElement & {
+          scrollToConsoleMessage?: (
+            id: string,
+            options?: {
+              block?: ScrollLogicalPosition;
+              behavior?: ScrollBehavior;
+            },
+          ) => boolean;
+        })
       | null;
     const surface = root?.closest<HTMLElement>(".console-surface");
     if (!root || !surface || !messageIds) return;
     root.scrollToConsoleMessage = (id, options) => {
       const index = messageIds.indexOf(id);
       if (index < 0) return false;
-      const top = root.getBoundingClientRect().top - surface.getBoundingClientRect().top +
-        surface.scrollTop + (offsets[index] ?? 0);
+      const top =
+        root.getBoundingClientRect().top -
+        surface.getBoundingClientRect().top +
+        surface.scrollTop +
+        (offsets[index] ?? 0);
       const height = offsets[index + 1]! - offsets[index]!;
       const block = options?.block ?? "nearest";
       const viewTop = surface.scrollTop;
@@ -83,7 +100,10 @@ export function ConsoleVirtualList({
         target = top < viewTop ? top : top + height - surface.clientHeight;
       }
       if (typeof surface.scrollTo === "function") {
-        surface.scrollTo({ top: Math.max(0, target), behavior: options?.behavior });
+        surface.scrollTo({
+          top: Math.max(0, target),
+          behavior: options?.behavior,
+        });
       } else {
         surface.scrollTop = Math.max(0, target);
       }
@@ -100,8 +120,10 @@ export function ConsoleVirtualList({
       const root = rootRef.current;
       if (!root) return;
       const relativeTop =
-        surface.scrollTop - (root.getBoundingClientRect().top -
-          surface.getBoundingClientRect().top + surface.scrollTop);
+        surface.scrollTop -
+        (root.getBoundingClientRect().top -
+          surface.getBoundingClientRect().top +
+          surface.scrollTop);
       setPosition({ top: Math.max(0, relativeTop), height: surface.clientHeight });
     };
     update();
