@@ -93,7 +93,7 @@ Virtualization limits **mounted React rows**, not retained data. The producer st
 
 Provide stable, unique `id` values when entries may be filtered or reordered. Imperative `scrollToMessage(id, { block: "center" })` works for off-screen retained IDs; an ID excluded by the active filter cannot be scrolled into the current view. Search operates on the data snapshots, not only mounted DOM rows. When virtualization is enabled, built-in terminal copy uses all resolved entries rather than only the mounted viewport. Custom output renderers own their rendering and must implement their own windowing if needed.
 
-The regression suite includes 10,000- and 100,000-row virtual-range checks. Those tests assert bounded mount ranges; they are **not** browser frame-rate or memory benchmarks. Measure real workloads separately, including expensive decorators, parsers, deeply nested objects, resizing, and continuously appended output.
+The regression suite includes a 10,000-message structured-render test and 10,000- and 100,000-row virtual-range checks. Those tests assert bounded mount ranges; they are **not** browser frame-rate or memory benchmarks. Measure real workloads separately, including expensive decorators, parsers, deeply nested objects, resizing, and continuously appended output.
 
 ## Documentation
 
