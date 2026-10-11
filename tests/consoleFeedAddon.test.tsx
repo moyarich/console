@@ -1,7 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Console } from "@moyarich/console";
-import { ConsoleFeed, consoleFeedOutputRenderer, createConsoleFeedAddon } from "@moyarich/console-addon-console-feed";
+import {
+  ConsoleFeed,
+  consoleFeedOutputRenderer,
+  createConsoleFeedAddon,
+} from "@moyarich/console-addon-console-feed";
 
 const messages = [
   { id: "log", method: "log" as const, depth: 0, data: ["started"] },
@@ -22,7 +26,9 @@ describe("optional console feed addon", () => {
 
   it("renders only structured output and leaves terminal mode to the default renderer", () => {
     expect(consoleFeedOutputRenderer.mode).toBe("console");
-    const html = renderToStaticMarkup(<Console mode="terminal" messages={["ready"]} />);
+    const html = renderToStaticMarkup(
+      <Console mode="terminal" messages={["ready"]} />,
+    );
     expect(html).not.toContain("console-feed-entry");
   });
 
@@ -30,7 +36,9 @@ describe("optional console feed addon", () => {
     const html = renderToStaticMarkup(<Console messages={messages} />);
     expect(html).toContain("started");
     expect(html).not.toContain("console-feed-entry");
-    expect(createConsoleFeedAddon().id).toBe("@moyarich/console-addon-console-feed");
+    expect(createConsoleFeedAddon().id).toBe(
+      "@moyarich/console-addon-console-feed",
+    );
   });
 
   it("renders circular object values without crashing", () => {

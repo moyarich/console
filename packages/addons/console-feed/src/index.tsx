@@ -1,4 +1,8 @@
-import { consoleExtensionPoints, type ConsoleAddon, type ConsoleOutputRenderer } from "@moyarich/console-core";
+import {
+  consoleExtensionPoints,
+  type ConsoleAddon,
+  type ConsoleOutputRenderer,
+} from "@moyarich/console-core";
 import type { ConsoleMessageData } from "@moyarich/console";
 import type { ReactNode } from "react";
 import { ConsoleFeed } from "./ConsoleFeed";
@@ -19,9 +23,13 @@ export function createConsoleFeedAddon(): ConsoleAddon {
   return {
     id: CONSOLE_FEED_ADDON_ID,
     activate(host) {
-      host.extensions.register(consoleExtensionPoints.outputRenderer, consoleFeedOutputRenderer, {
-        id: `${CONSOLE_FEED_ADDON_ID}:output-renderer`,
-      });
+      host.extensions.register(
+        consoleExtensionPoints.outputRenderer,
+        consoleFeedOutputRenderer,
+        {
+          id: `${CONSOLE_FEED_ADDON_ID}:output-renderer`,
+        },
+      );
     },
   };
 }
