@@ -34,6 +34,8 @@ export default defineConfig({
     react({ include: /\.(?:js|jsx|md|mdx|ts|tsx)$/ }),
   ],
   resolve: {
+    // Prefer workspace source exports in both dev server and production playground builds.
+    conditions: ["development", "..."],
     dedupe: ["vscode"],
     alias: [
       {
