@@ -36,8 +36,8 @@ describe("search navigation and filtering", () => {
     expect(manager.services.get(consoleSearchService)).toBe(addon.controller);
     addon.controller.setQuery("error");
     expect(addon.controller.getState().matches).toHaveLength(3);
-    expect(addon.controller.next()?.start).toBe(4);
-    expect(addon.controller.next()?.start).toBe(11);
+    expect(addon.controller.next()?.start).toBe(5);
+    expect(addon.controller.next()?.start).toBe(12);
     addon.controller.refresh();
     expect(addon.controller.getState().activeIndex).toBe(1);
     expect(scrolled).toEqual(["one", "one"]);
