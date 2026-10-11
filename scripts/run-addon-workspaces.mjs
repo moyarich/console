@@ -12,17 +12,25 @@ if (command !== "build" && command !== "pack") {
 const root = resolve(import.meta.dirname, "..");
 const addonDirectories = readdirSync(resolve(root, "packages/addons"), {
   withFileTypes: true,
-}).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+})
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
 
 for (const addon of addonDirectories) {
   const workspace = `packages/addons/${addon}`;
-  const args = command === "build"
-    ? ["run", "build", "--workspace", workspace, "--if-present"]
-    : ["pack", "--workspace", workspace, "--dry-run"];
-  const result = spawnSync(process.platform === "win32" ? "npm.cmd" : "npm", args, {
-    cwd: root,
-    stdio: "inherit",
-  });
+  const args =
+    command === "build"
+      ? ["run", "build", "--workspace", workspace, "--if-present"]
+      : ["pack", "--workspace", workspace, "--dry-run"];
+  const result = spawnSync(
+    process.platform === "win32" ? "npm.cmd" : "npm",
+    args,
+    {
+      cwd: root,
+      stdio: "inherit",
+    },
+  );
   if (result.error) {
     console.error(result.error);
     process.exit(1);
