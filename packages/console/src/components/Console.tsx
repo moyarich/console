@@ -43,6 +43,7 @@ import {
 } from "../actions";
 import { writeClipboardText } from "../utils/browser/clipboard";
 import type { ConsoleLinkProvider } from "../links";
+import type { ConsoleValueDisplay } from "../utils/console/valueDisplay";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -122,6 +123,8 @@ interface ConsoleSharedProps {
   outputRenderers?: readonly ConsoleOutputRenderer[];
   /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
+  /** Built-in value display strategy for structured messages. @default "structured" */
+  valueDisplay?: ConsoleValueDisplay;
   /** @deprecated Automatic detection is provided by @moyarich/console-addon-links. */
   detectLinks?: boolean;
   /** Ordered application-specific link providers used in either mode. */
@@ -657,6 +660,7 @@ function ConsoleMessageMode({
   contextMenuActions,
   outputRenderers,
   valueRenderers,
+  valueDisplay = "structured",
   detectLinks = true,
   linkProviders,
   addonExtensions,
