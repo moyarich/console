@@ -13,3 +13,11 @@ import source from "./example.tsx?raw";
 <RunnableExample source={source} sourcePath="example.tsx" />
 
 Snapshots include version metadata and an optional dropped-history counter. The parser rejects unsupported versions and malformed records. Hosts can save JSON to local storage, a server, or a bug-report bundle according to their privacy policy.
+
+## Supported data and compatibility
+
+Version 1 stores structured messages using the core tagged-value serializer and preserves terminal stdout/stderr order, IDs, stream, and JSON-safe metadata. Rich metadata values such as dates, bigints, and cyclic references are encoded with the same transport serializer; cyclic links are represented as `[Circular]`. The host controls retention and must pass its `droppedCount` when capturing if it tracks discarded output.
+
+Use `stringifyConsoleSession(createConsoleSession(...))` for new snapshots, then `parseConsoleSession(json)` to restore. The returned session is hydrated for rendering. When saving a restored session again, construct a fresh snapshot from its hydrated messages or entries before stringifying rather than assuming an already-hydrated session is still the serialized wire representation.
+
+Snapshots with unknown versions, invalid modes, invalid retention counts, or malformed entry records throw errors. If a future version is introduced, implement an explicit migration instead of silently accepting it as version 1.
