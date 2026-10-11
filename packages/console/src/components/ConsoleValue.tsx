@@ -3,7 +3,8 @@ import {
   stringifyConsoleValue,
   type ConsoleValueDisplay,
 } from "../utils/console/valueDisplay";
-import { useEffect, useState, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
+import { ConsoleExpansionContext } from "./ConsoleExpansionContext";
 import { useConsoleContextMenu } from "../hooks/useConsoleContextMenu";
 import { isElementLike } from "../utils/console/isElementLike";
 import { isInspectableObject } from "../utils/console/isInspectableObject";
@@ -128,15 +129,19 @@ function ConsoleObjectValue({
   linkContext,
 }: ConsoleObjectValueProps) {
   const { copyObject, openForValue } = useConsoleContextMenu();
+  const expansionCache = useContext(ConsoleExpansionContext);
   const [isOpen, setIsOpen] = useState(
-    expandLevel > 0 || expandAllVersion !== undefined,
+    () =>
+      expansionCache?.get(value) ??
+      (expandLevel > 0 || expandAllVersion !== undefined),
   );
 
   useEffect(() => {
     if (expandAllVersion !== undefined) {
+      expansionCache?.set(value, true);
       setIsOpen(true);
     }
-  }, [expandAllVersion]);
+  }, [expandAllVersion, expansionCache, value]);
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
@@ -152,7 +157,11 @@ function ConsoleObjectValue({
       <details
         className="console-object"
         open={isOpen}
-        onToggle={(event) => setIsOpen(event.currentTarget.open)}
+        onToggle={(event) => {
+          const open = event.currentTarget.open;
+          expansionCache?.set(value, open);
+          setIsOpen(open);
+        }}
       >
         <summary data-console-object-key={propertyKey}>
           <ChevronRight

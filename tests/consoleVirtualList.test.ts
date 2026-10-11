@@ -10,6 +10,21 @@ describe("virtual console viewport", () => {
     expect(range.end - range.start).toBeLessThan(40);
     expect(range.end).toBeLessThan(10000);
   });
+  it("keeps DOM window bounded for 100,000 retained rows", () => {
+    const largeOffsets = Array.from(
+      { length: 100001 },
+      (_, index) => index * 32,
+    );
+    const range = getConsoleVirtualRange(largeOffsets, 1600000, 640, 6);
+    expect(range.end - range.start).toBeLessThanOrEqual(32);
+    expect(range.start).toBeGreaterThan(0);
+    expect(range.end).toBeLessThan(100000);
+  });
+
+  it("returns an empty range for no retained rows", () => {
+    expect(getConsoleVirtualRange([0], 0, 600)).toEqual({ start: 0, end: 0 });
+  });
+
   it("respects top and bottom boundaries", () => {
     const top = getConsoleVirtualRange(offsets, 0, 480, 6);
     const bottom = getConsoleVirtualRange(offsets, 239800, 480, 6);

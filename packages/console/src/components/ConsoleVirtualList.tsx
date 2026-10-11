@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ConsoleExpansionContext } from "./ConsoleExpansionContext";
 
 export interface ConsoleVirtualListProps {
   count: number;
@@ -17,6 +18,7 @@ export function getConsoleVirtualRange(
   overscan = 6,
 ): { start: number; end: number } {
   const count = offsets.length - 1;
+  if (count <= 0) return { start: 0, end: 0 };
   let low = 0,
     high = count;
   while (low < high) {
@@ -42,27 +44,71 @@ export function ConsoleVirtualList({
   overscan = 6,
 }: ConsoleVirtualListProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const heights = useRef(new Map<number, number>());
+  const heights = useRef(new Map<string, number>());
+  const expansionStates = useRef(new Map<string, WeakMap<object, boolean>>());
   const [revision, setRevision] = useState(0);
   const [position, setPosition] = useState({ top: 0, height: 600 });
+  // Measurements follow logical IDs across filtering and reordering.
+  // Index-based fallback IDs are only stable while the input order is stable.
+  const rowKeys = useMemo(
+    () =>
+      Array.from(
+        { length: count },
+        (_, index) => messageIds?.[index] ?? `__index-${index}`,
+      ),
+    [count, messageIds],
+  );
   const offsets = useMemo(() => {
     void revision; // Recalculate offsets when a measured row changes height.
     const result = [0];
     for (let i = 0; i < count; i++) {
-      result.push(result[i]! + (heights.current.get(i) ?? estimatedRowHeight));
+      result.push(
+        result[i]! + (heights.current.get(rowKeys[i]!) ?? estimatedRowHeight),
+      );
     }
     return result;
-  }, [count, estimatedRowHeight, revision]);
+  }, [count, estimatedRowHeight, revision, rowKeys]);
   useEffect(() => {
     const root = rootRef.current as
-      | (HTMLDivElement & { scrollToConsoleMessage?: (id: string) => boolean })
+      | (HTMLDivElement & {
+          scrollToConsoleMessage?: (
+            id: string,
+            options?: {
+              block?: ScrollLogicalPosition;
+              behavior?: ScrollBehavior;
+            },
+          ) => boolean;
+        })
       | null;
     const surface = root?.closest<HTMLElement>(".console-surface");
     if (!root || !surface || !messageIds) return;
-    root.scrollToConsoleMessage = (id) => {
+    root.scrollToConsoleMessage = (id, options) => {
       const index = messageIds.indexOf(id);
       if (index < 0) return false;
-      surface.scrollTop = root.offsetTop + (offsets[index] ?? 0);
+      const top =
+        root.getBoundingClientRect().top -
+        surface.getBoundingClientRect().top +
+        surface.scrollTop +
+        (offsets[index] ?? 0);
+      const height = offsets[index + 1]! - offsets[index]!;
+      const block = options?.block ?? "nearest";
+      const viewTop = surface.scrollTop;
+      const viewBottom = viewTop + surface.clientHeight;
+      let target = top;
+      if (block === "center") target -= (surface.clientHeight - height) / 2;
+      else if (block === "end") target -= surface.clientHeight - height;
+      else if (block === "nearest") {
+        if (top >= viewTop && top + height <= viewBottom) return true;
+        target = top < viewTop ? top : top + height - surface.clientHeight;
+      }
+      if (typeof surface.scrollTo === "function") {
+        surface.scrollTo({
+          top: Math.max(0, target),
+          behavior: options?.behavior,
+        });
+      } else {
+        surface.scrollTop = Math.max(0, target);
+      }
       return true;
     };
     return () => {
@@ -72,8 +118,19 @@ export function ConsoleVirtualList({
   useEffect(() => {
     const surface = rootRef.current?.closest(".console-surface");
     if (!surface) return;
-    const update = () =>
-      setPosition({ top: surface.scrollTop, height: surface.clientHeight });
+    const update = () => {
+      const root = rootRef.current;
+      if (!root) return;
+      const relativeTop =
+        surface.scrollTop -
+        (root.getBoundingClientRect().top -
+          surface.getBoundingClientRect().top +
+          surface.scrollTop);
+      setPosition({
+        top: Math.max(0, relativeTop),
+        height: surface.clientHeight,
+      });
+    };
     update();
     surface.addEventListener("scroll", update, { passive: true });
     const observer =
@@ -100,17 +157,38 @@ export function ConsoleVirtualList({
     >
       {Array.from({ length: end - start }, (_, offset) => {
         const index = start + offset;
+        const key = rowKeys[index]!;
+        let expansions = expansionStates.current.get(key);
+        if (!expansions) {
+          expansions = new WeakMap<object, boolean>();
+          expansionStates.current.set(key, expansions);
+        }
         return (
           <MeasuredConsoleRow
-            key={index}
+            key={rowKeys[index]}
             top={offsets[index]!}
             onHeight={(height) => {
-              if (heights.current.get(index) === height) return;
-              heights.current.set(index, height);
+              const key = rowKeys[index]!;
+              if (heights.current.get(key) === height) return;
+              const previous = heights.current.get(key) ?? estimatedRowHeight;
+              heights.current.set(key, height);
+              // Keep the visible content stationary when an overscanned row
+              // above the viewport grows or contracts after measuring.
+              const root = rootRef.current;
+              const surface = root?.closest<HTMLElement>(".console-surface");
+              if (
+                root &&
+                surface &&
+                offsets[index]! + previous <= position.top
+              ) {
+                surface.scrollTop += height - previous;
+              }
               setRevision((current) => current + 1);
             }}
           >
-            {renderRow(index)}
+            <ConsoleExpansionContext.Provider value={expansions}>
+              {renderRow(index)}
+            </ConsoleExpansionContext.Provider>
           </MeasuredConsoleRow>
         );
       })}
