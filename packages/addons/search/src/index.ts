@@ -133,7 +133,10 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       );
       const activeMatch = state.matches[state.activeIndex];
       const nextIndex = result.matches.findIndex(
-        (match) => match.id === activeMatch?.id && match.index === activeMatch.index && match.text === activeMatch.text,
+        (match) =>
+          match.id === activeMatch?.id &&
+          match.index === activeMatch.index &&
+          match.text === activeMatch.text,
       );
       state = { ...state, ...result, activeIndex: nextIndex };
       emit();
