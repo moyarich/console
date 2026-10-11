@@ -10,10 +10,7 @@ import {
   type ConsoleMessageData,
   type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
-import {
-  createConsoleLinksAddon,
-  webLinkProvider,
-} from "@moyarich/console-addon-links";
+import { webLinkProvider } from "@moyarich/console-addon-links";
 
 function renderConsole(messages: ConsoleMessageData[], error = "") {
   return renderToStaticMarkup(
