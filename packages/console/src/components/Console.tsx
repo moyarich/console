@@ -804,8 +804,7 @@ function ConsoleMessageMode({
     });
   };
 
-  const renderDefaultOutput = () => {
-    const rows = visibleMessages.map((message, index) => {
+  const renderMessageRow = (message: ConsoleMessageData, index: number) => {
       const key =
         message.id ?? `${message.method}-${message.timestamp ?? "na"}-${index}`;
       const gutter = renderConsoleMessageDecorations(
@@ -893,19 +892,19 @@ function ConsoleMessageMode({
           )}
         </div>
       );
-    });
-    return virtualize ? (
+    };
+  const renderDefaultOutput = () =>
+    virtualize ? (
       <ConsoleVirtualList
-        count={rows.length}
+        count={visibleMessages.length}
         messageIds={visibleMessages.map(
           (message, index) => message.id ?? `console-${index}`,
         )}
-        renderRow={(index) => rows[index]}
+        renderRow={(index) => renderMessageRow(visibleMessages[index]!, index)}
       />
     ) : (
-      rows
+      visibleMessages.map(renderMessageRow)
     );
-  };
   const renderedOutput = dispatchOutputRenderer(resolvedOutputRenderers, {
     mode: "console",
     messages: visibleMessages,
