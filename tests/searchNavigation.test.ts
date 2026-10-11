@@ -6,7 +6,10 @@ import {
   type ConsoleMessageData,
   type ConsoleViewportService,
 } from "@moyarich/console-core";
-import { createConsoleSearchAddon, consoleSearchService } from "@moyarich/console-addon-search";
+import {
+  createConsoleSearchAddon,
+  consoleSearchService,
+} from "@moyarich/console-addon-search";
 
 describe("search navigation and filtering", () => {
   it("navigates repeated occurrences and keeps the selected occurrence after refresh", () => {
@@ -22,7 +25,10 @@ describe("search navigation and filtering", () => {
       subscribe: () => ({ dispose() {} }),
     };
     const viewport: ConsoleViewportService = {
-      scrollToMessage: (id) => { scrolled.push(id); return true; },
+      scrollToMessage: (id) => {
+        scrolled.push(id);
+        return true;
+      },
       scrollToTop() {},
       scrollToBottom() {},
       isAtBottom: () => false,
