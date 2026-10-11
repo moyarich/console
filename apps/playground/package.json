@@ -38,7 +38,8 @@
     "@moyarich/console-addon-markdown": "*",
     "@moyarich/console-addon-annotations": "*",
     "@moyarich/console-addon-navigation": "*",
-    "@moyarich/console-addon-selection": "*"
+    "@moyarich/console-addon-selection": "*",
+    "@moyarich/console-addon-animation": "*"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",
