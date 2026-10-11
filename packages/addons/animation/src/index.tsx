@@ -169,6 +169,11 @@ function AnimatedEntry({
 }) {
   const reducedMotion = useReducedMotion();
   const active = useSyncExternalStore(sequence.subscribe, sequence.snapshot, () => 0) >= index;
+  const ready = !options.sequence || active;
+  const alreadyCompleted = id !== undefined && completed.has(id);
+  useEffect(() => {
+    if (ready && (reducedMotion || alreadyCompleted)) sequence.complete(index);
+  }, [ready, reducedMotion, alreadyCompleted, sequence, index]);
   if (options.effect === "typewriter") {
     return createElement(TypewriterEntry, {
       id,
@@ -179,11 +184,6 @@ function AnimatedEntry({
       children,
     });
   }
-  const ready = !options.sequence || active;
-  const alreadyCompleted = id !== undefined && completed.has(id);
-  useEffect(() => {
-    if (ready && (reducedMotion || alreadyCompleted)) sequence.complete(index);
-  }, [ready, reducedMotion, alreadyCompleted, sequence, index]);
   const effect = options.effect ?? "fade-slide";
   const distance = options.distance ?? 12;
   const initial =
@@ -218,7 +218,10 @@ function AnimatedEntry({
             : getConsoleAnimationDelay(index, options),
     },
     onAnimationComplete: () => {
-      if (id !== undefined) completed.add(id);
+      if (ready) {
+        if (id !== undefined) completed.add(id);
+        sequence.complete(index);
+      }
     },
     style: {
       visibility: options.sequence && !ready ? "hidden" : undefined,
