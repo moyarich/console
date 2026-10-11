@@ -69,7 +69,12 @@ export function createConsoleSession(
                 ...(entry.id !== undefined ? { id: entry.id } : {}),
                 ...(entry.stream !== undefined ? { stream: entry.stream } : {}),
                 ...(entry.metadata !== undefined
-                  ? { metadata: serializeConsoleValue(entry.metadata) as Record<string, unknown> }
+                  ? {
+                      metadata: serializeConsoleValue(entry.metadata) as Record<
+                        string,
+                        unknown
+                      >,
+                    }
                   : {}),
               },
         ),
@@ -150,7 +155,12 @@ export function parseConsoleSession(
           : {
               ...entry,
               ...(entry.metadata !== undefined
-                ? { metadata: deserializeConsoleValue(entry.metadata) as Record<string, unknown> }
+                ? {
+                    metadata: deserializeConsoleValue(entry.metadata) as Record<
+                      string,
+                      unknown
+                    >,
+                  }
                 : {}),
             },
       ),
