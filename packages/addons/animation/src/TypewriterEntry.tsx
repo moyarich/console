@@ -1,5 +1,11 @@
 import { useReducedMotion } from "motion/react";
-import { createElement, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import {
+  createElement,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { AnimationSequence } from "./AnimationSequence";
 import { getConsoleAnimationDelay } from "./getConsoleAnimationDelay";
 import type { ConsoleAnimationOptions } from "./types";
@@ -118,4 +124,3 @@ export function TypewriterEntry({
     children,
   });
 }
-

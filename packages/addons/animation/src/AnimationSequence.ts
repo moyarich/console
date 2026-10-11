@@ -21,4 +21,3 @@ export class AnimationSequence {
     this.listeners.clear();
   }
 }
-

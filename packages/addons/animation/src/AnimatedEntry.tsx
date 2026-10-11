@@ -1,5 +1,10 @@
 import { motion, useReducedMotion } from "motion/react";
-import { createElement, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import {
+  createElement,
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { AnimationSequence } from "./AnimationSequence";
 import { getConsoleAnimationDelay } from "./getConsoleAnimationDelay";
 import { TypewriterEntry } from "./TypewriterEntry";
@@ -90,4 +95,3 @@ export function AnimatedEntry({
     children,
   });
 }
-

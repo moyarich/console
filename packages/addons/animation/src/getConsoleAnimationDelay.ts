@@ -10,4 +10,3 @@ export function getConsoleAnimationDelay(
     Math.max(0, index) * Math.max(0, options.stagger ?? 0)
   );
 }
-
