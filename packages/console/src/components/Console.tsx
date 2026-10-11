@@ -1,3 +1,4 @@
+import { ConsoleTextHighlightContext } from "../textHighlights";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -1095,9 +1096,17 @@ export function Console({ ref, ...props }: ConsoleProps) {
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
-  if (props.mode === "terminal") {
-    return <ConsoleTerminalMode {...props} {...resolvedProps} />;
-  }
+  const highlightProvider = addonExtensions.getAll(
+    consoleExtensionPoints.textHighlightProvider,
+  )[0] ?? null;
 
-  return <ConsoleMessageMode {...props} {...resolvedProps} />;
+  return (
+    <ConsoleTextHighlightContext.Provider value={highlightProvider}>
+      {props.mode === "terminal" ? (
+        <ConsoleTerminalMode {...props} {...resolvedProps} />
+      ) : (
+        <ConsoleMessageMode {...props} {...resolvedProps} />
+      )}
+    </ConsoleTextHighlightContext.Provider>
+  );
 }
