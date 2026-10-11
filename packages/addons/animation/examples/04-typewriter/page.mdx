@@ -1,15 +1,15 @@
 ---
 label: "Typewriter"
 title: "Typewriter animation"
-description: "Progressive reveal of already-rendered interactive content for Console output entries."
+description: "Character-by-character typing across rendered text nodes for Console output entries."
 ---
 
 # Typewriter
 
-Progressive reveal of already-rendered interactive content. The animation wraps each rendered entry without replacing links, structured values, or custom renderers.
+Character-by-character typing across rendered text nodes. The animation wraps each rendered entry without replacing links, structured values, or custom renderers.
 
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
 
-Typewriter progressively reveals the existing rendered entry using clipping; it does not reconstruct text character-by-character. The addon respects reduced-motion preferences.
+Typewriter reveals characters one by one, including text inside links and ANSI spans, while keeping the existing rendered elements and interactive behavior. Use a longer duration to make the keystrokes visible. The addon respects reduced-motion preferences.

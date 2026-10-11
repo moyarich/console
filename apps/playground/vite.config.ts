@@ -34,6 +34,8 @@ export default defineConfig({
     react({ include: /\.(?:js|jsx|md|mdx|ts|tsx)$/ }),
   ],
   resolve: {
+    // Preserve Vite browser/module conditions for Monaco while enabling workspace source exports.
+    conditions: ["module", "browser", "development|production", "development"],
     dedupe: ["vscode"],
     alias: [
       {
@@ -47,48 +49,6 @@ export default defineConfig({
       {
         find: "@moyarich/console/styles.css",
         replacement: workspaceSource("console/src/styles.css"),
-      },
-      {
-        find: "@moyarich/console-addon-imperative-scrolling",
-        replacement: workspaceSource(
-          "addons/imperative-scrolling/src/index.ts",
-        ),
-      },
-      {
-        find: "@moyarich/console-addon-diagnostics",
-        replacement: workspaceSource("addons/diagnostics/src/index.ts"),
-      },
-      {
-        find: "@moyarich/console-addon-filtering",
-        replacement: workspaceSource("addons/filtering/src/index.tsx"),
-      },
-      {
-        find: "@moyarich/console-addon-markdown",
-        replacement: workspaceSource("addons/markdown/src/index.tsx"),
-      },
-      {
-        find: "@moyarich/console-addon-navigation",
-        replacement: workspaceSource("addons/navigation/src/index.ts"),
-      },
-      {
-        find: "@moyarich/console-addon-selection",
-        replacement: workspaceSource("addons/selection/src/index.tsx"),
-      },
-      {
-        find: "@moyarich/console-addon-resizable/styles.css",
-        replacement: workspaceSource("addons/resizable/src/styles.css"),
-      },
-      {
-        find: "@moyarich/console-addon-resizable",
-        replacement: workspaceSource("addons/resizable/src/index.tsx"),
-      },
-      {
-        find: "@moyarich/console-addon-annotations",
-        replacement: workspaceSource("addons/annotations/src/index.tsx"),
-      },
-      {
-        find: "@moyarich/console-addon-data-export",
-        replacement: workspaceSource("addons/data-export/src/index.ts"),
       },
       {
         find: "@moyarich/console",

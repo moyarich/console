@@ -8,12 +8,23 @@ description: Opt-in entry animations for structured Console and terminal output.
 
 The animation addon decorates each fully rendered entry, preserving links, ANSI formatting, expandable objects, and custom renderers. Animations respect `prefers-reduced-motion` and completed entries with stable IDs do not replay during normal rerenders.
 
+The basic fade-and-slide usage can be edited and run directly:
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
 Explore each effect in its own editable, runnable example:
 
 - [Fade](#/package-addons-animation/fade) — opacity reveal.
 - [Slide](#/package-addons-animation/slide) — vertical entrance.
 - [Fade + slide](#/package-addons-animation/fade-slide) — combines opacity and motion.
-- [Typewriter](#/package-addons-animation/typewriter) — progressively reveals the already-rendered entry without rebuilding its text.
+- [Typewriter](#/package-addons-animation/typewriter) — types actual characters into existing rendered text nodes.
+- [Horizontal reveal](#/package-addons-animation/reveal) — keeps the original clip-based left-to-right wipe.
 - [Stagger and wait](#/package-addons-animation/stagger-and-wait) — delay and sequence multiple entries.
 
 Use `createConsoleAnimationAddon({ effect: "fade-slide", duration: 0.3, stagger: 0.05, wait: 0 })` with the Console `addons` prop. Timing values are in seconds.
+
+## Reusing the React components
+
+The `TypewriterEntry` component types text character by character into the existing rendered DOM text nodes, retaining link, ANSI and custom-renderer elements. To reuse it in another React app, copy `src/components/TypewriterEntry/` and its imports from `AnimationSequence`, `getConsoleAnimationDelay`, and `types`. It uses React and `motion/react`; no global CSS is required. These shared helper dependencies currently need to be copied or replaced for standalone use.

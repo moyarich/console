@@ -6,35 +6,8 @@
     "paths": {
       "@moyarich/console": ["../../packages/console/src/index.ts"],
       "@moyarich/console/styles.css": ["../../packages/console/src/styles.css"],
-      "@moyarich/console-addon-imperative-scrolling": [
-        "../../packages/addons/imperative-scrolling/src/index.ts"
-      ],
-      "@moyarich/console-addon-data-export": [
-        "../../packages/addons/data-export/src/index.ts"
-      ],
-      "@moyarich/console-addon-diagnostics": [
-        "../../packages/addons/diagnostics/src/index.ts"
-      ],
-      "@moyarich/console-addon-filtering": [
-        "../../packages/addons/filtering/src/index.tsx"
-      ],
-      "@moyarich/console-addon-markdown": [
-        "../../packages/addons/markdown/src/index.tsx"
-      ],
-      "@moyarich/console-addon-resizable": [
-        "../../packages/addons/resizable/src/index.tsx"
-      ],
       "@moyarich/console-core": ["../../packages/console-core/src/index.ts"],
-      "@moyarich/console-addon-annotations": [
-        "../../packages/addons/annotations/src/index.tsx"
-      ],
-      "@moyarich/console-addon-navigation": [
-        "../../packages/addons/navigation/src/index.ts"
-      ],
-      "@moyarich/console-addon-selection": [
-        "../../packages/addons/selection/src/index.tsx"
-      ],
-      "@src/*": ["src/*"]
+      "@src/*": ["./src/*"]
     },
     "customConditions": ["development"]
   },

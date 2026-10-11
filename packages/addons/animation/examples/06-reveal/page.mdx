@@ -1,0 +1,15 @@
+---
+label: "Horizontal reveal"
+title: "Horizontal reveal animation"
+description: "Horizontal clipping reveal of already-rendered interactive content for Console output entries."
+---
+
+# Horizontal reveal
+
+Progressive reveal of already-rendered interactive content. The animation wraps each rendered entry without replacing links, structured values, or custom renderers.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Horizontal reveal uses a left-to-right clip over the fully rendered entry; it does not type characters. The addon respects reduced-motion preferences.

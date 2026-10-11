@@ -1,4 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { AnimationSequence } from "../packages/addons/animation/src/AnimationSequence";
+import { TypewriterEntry } from "../packages/addons/animation/src/components/TypewriterEntry/TypewriterEntry";
 import { describe, expect, it } from "vitest";
 import {
   Console,
@@ -17,6 +19,36 @@ describe("animated output addon", () => {
     ).toBeCloseTo(0.7);
     expect(getConsoleAnimationDelay(-1, { wait: -1, stagger: -2 })).toBe(0);
   });
+  it("keeps later entries hidden until earlier entries complete when sequencing is enabled", () => {
+    const sequence = new AnimationSequence();
+    const completed = new Set<string>();
+    const options = { effect: "typewriter" as const, sequence: true };
+    const html = renderToStaticMarkup(
+      <>
+        <TypewriterEntry
+          id="first"
+          index={0}
+          sequence={sequence}
+          completed={completed}
+          options={options}
+        >
+          alpha
+        </TypewriterEntry>
+        <TypewriterEntry
+          id="second"
+          index={1}
+          sequence={sequence}
+          completed={completed}
+          options={options}
+        >
+          beta
+        </TypewriterEntry>
+      </>,
+    );
+    expect(html).toContain("alpha");
+    expect(html).toContain("beta");
+    expect(html).toContain("visibility:hidden");
+  });
   it("registers and disposes per-entry middleware", () => {
     const manager = createConsoleAddonManager();
     const disposable = manager.load(
@@ -29,6 +61,20 @@ describe("animated output addon", () => {
     expect(
       manager.extensions.getAll(consoleExtensionPoints.outputEntryDecorator),
     ).toHaveLength(0);
+  });
+  it("supports distinct typing and horizontal reveal effects", () => {
+    for (const effect of ["typewriter", "reveal"] as const) {
+      const html = renderToStaticMarkup(
+        <Console
+          addons={[createConsoleAnimationAddon({ effect })]}
+          messages={[
+            { id: effect, method: "log", depth: 0, data: ["hello world"] },
+          ]}
+        />,
+      );
+      expect(html).toContain("hello world");
+      expect(html).toContain(`data-console-message-id="${effect}"`);
+    }
   });
   it("preserves structured output content and IDs", () => {
     const html = renderToStaticMarkup(
