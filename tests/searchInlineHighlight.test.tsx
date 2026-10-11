@@ -44,6 +44,7 @@ describe("inline search highlighting", () => {
     expect(html).toContain('<mark class="console-search-highlight"');
     expect(html).toContain('href="https://example.com/error"');
     expect(html).toContain('data-active=""');
+    expect(html).toContain('aria-current="true"');
     expect(html).not.toContain("undefined");
   });
 
