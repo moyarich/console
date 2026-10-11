@@ -62,9 +62,13 @@ function TypewriterEntry({
     let node: Node | null;
     while ((node = walker.nextNode())) {
       const text = node as Text;
-      if (text.textContent) entries.push({ node: text, value: text.textContent });
+      if (text.textContent)
+        entries.push({ node: text, value: text.textContent });
     }
-    const total = entries.reduce((sum, entry) => sum + Array.from(entry.value).length, 0);
+    const total = entries.reduce(
+      (sum, entry) => sum + Array.from(entry.value).length,
+      0,
+    );
     if (!total) {
       if (id !== undefined) completed.add(id);
       return;
@@ -95,7 +99,9 @@ function TypewriterEntry({
     };
     const start = setTimeout(() => {
       if (stepTime <= 0) {
-        entries.forEach((entry, i) => { entry.node.textContent = originals[i]!.value; });
+        entries.forEach((entry, i) => {
+          entry.node.textContent = originals[i]!.value;
+        });
         if (id !== undefined) completed.add(id);
       } else {
         ticker = setInterval(reveal, Math.max(1, stepTime));
@@ -127,7 +133,13 @@ function AnimatedEntry({
 }) {
   const reducedMotion = useReducedMotion();
   if (options.effect === "typewriter") {
-    return createElement(TypewriterEntry, { id, index, completed, options, children });
+    return createElement(TypewriterEntry, {
+      id,
+      index,
+      completed,
+      options,
+      children,
+    });
   }
   const alreadyCompleted = id !== undefined && completed.has(id);
   const effect = options.effect ?? "fade-slide";

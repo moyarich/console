@@ -35,7 +35,9 @@ describe("animated output addon", () => {
       const html = renderToStaticMarkup(
         <Console
           addons={[createConsoleAnimationAddon({ effect })]}
-          messages={[{ id: effect, method: "log", depth: 0, data: ["hello world"] }]}
+          messages={[
+            { id: effect, method: "log", depth: 0, data: ["hello world"] },
+          ]}
         />,
       );
       expect(html).toContain("hello world");
