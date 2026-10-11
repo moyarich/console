@@ -57,6 +57,7 @@ export function useConsoleMessages({
     (internalEventsRef.current ??= createConsoleEventEmitter());
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
+  const [droppedCount, setDroppedCount] = useState(0);
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
@@ -71,7 +72,10 @@ export function useConsoleMessages({
 
         const next = [...current, message];
 
-        return next.length > maxMessages ? next.slice(-maxMessages) : next;
+        const limit = Math.max(0, Math.floor(maxMessages));
+        const dropped = Math.max(0, next.length - limit);
+        if (dropped > 0) setDroppedCount((count) => count + dropped);
+        return dropped ? (limit === 0 ? [] : next.slice(-limit)) : next;
       });
     },
     [dedupeById, maxMessages],
@@ -79,6 +83,7 @@ export function useConsoleMessages({
 
   const handleClear = useCallback(() => {
     setMessages([]);
+    setDroppedCount(0);
   }, []);
 
   const console = useMemo(
@@ -140,6 +145,8 @@ export function useConsoleMessages({
 
   return {
     messages,
+    droppedCount,
+    retainedCount: messages.length,
     output,
     console,
     append,
