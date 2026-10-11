@@ -14,16 +14,29 @@ export function ConsoleSearchHighlight({
     controller.getState,
     controller.getState,
   );
-  const matched = state.matches.find((match) => match.index === index);
-  if (!matched) return null;
-  const active = state.matches[state.activeIndex]?.index === index;
+  const matches = state.matches
+    .map((match, matchIndex) => ({ match, matchIndex }))
+    .filter(({ match }) => match.index === index);
+  if (!matches.length) return null;
   return (
-    <mark
-      className="console-search-highlight"
-      data-active={active ? "" : undefined}
-      aria-label={active ? "Current search match" : "Search match"}
+    <span
+      className="console-search-matches"
+      aria-label={`${matches.length} matches in this message`}
     >
-      {matched.text}
-    </mark>
+      {matches.map(({ match, matchIndex }) => (
+        <mark
+          key={`${match.start}-${match.end}-${matchIndex}`}
+          className="console-search-highlight"
+          data-active={state.activeIndex === matchIndex ? "" : undefined}
+          aria-label={
+            state.activeIndex === matchIndex
+              ? "Current search match"
+              : "Search match"
+          }
+        >
+          {match.text || "Zero-width match"}
+        </mark>
+      ))}
+    </span>
   );
 }
