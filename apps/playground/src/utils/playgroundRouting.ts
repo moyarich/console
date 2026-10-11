@@ -66,63 +66,6 @@ function firstPage(
   return undefined;
 }
 
-/** Preserves shared URLs for examples moved out of the custom addon group. */
-function resolveExampleSegments(segments: string[]): string[] {
-  const oldGroups = [
-    ["addons", "custom", "output-surfaces"],
-    ["addons", "custom", "extension-points"],
-  ];
-  for (const [index, prefix] of oldGroups.entries()) {
-    if (prefix.every((segment, i) => segments[i] === segment)) {
-      segments = [
-        "extension-points",
-        ...(index === 0 ? ["output-renderer"] : ["overview"]),
-        ...segments.slice(prefix.length),
-      ];
-      break;
-    }
-  }
-  if (
-    segments[0] === "extension-points" &&
-    segments[1] === "overview" &&
-    segments.length === 3
-  ) {
-    const extensionPoints = [
-      "processControlParser",
-      "processOutputProcessor",
-      "structuredOutputParser",
-      "linkProvider",
-      "outputRenderer",
-      "frameDecorator",
-      "emptyStateRenderer",
-      "panelElement",
-      "messageFilter",
-      "messageRenderer",
-      "messageDecoration",
-      "messageTextProvider",
-      "valueRenderer",
-      "keyboardShortcut",
-      "panelAction",
-      "contextMenuAction",
-      "messageAction",
-    ];
-    const point = extensionPoints.find(
-      (name) => `consoleextensionpoints${name.toLowerCase()}` === segments[2],
-    );
-    if (point) {
-      const slug = point.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-      return ["extension-points", slug];
-    }
-  }
-  if (segments[0] === "extension-points") {
-    return segments.filter(
-      (segment, index) =>
-        !(segment === "overview" && (index === 1 || index === 2)),
-    );
-  }
-  return segments;
-}
-
 /**
  * Builds a path of the form /section/page[/nested-page][/heading].
  * Each segment is URI-encoded independently, preserving page hierarchy.
@@ -151,7 +94,7 @@ export function buildPlaygroundPath(
  * Empty path segments are ignored. Deeper page IDs are tried first so nested
  * pages take precedence over headings on a parent page. A heading must match
  * exactly one remaining segment and exist in the matched page's outline.
- * Group paths resolve to their first page; moved example URLs remain supported.
+ * Group paths resolve to their first page.
  *
  * @param pathname - URI-encoded pathname without a query string or fragment.
  * @param sections - Documentation sections available to the playground.
@@ -166,11 +109,7 @@ export function resolvePlaygroundPath(
     .split("/")
     .filter(Boolean)
     .map((segment) => decodeURIComponent(segment));
-  const [sectionId, ...remainingSegments] = segments;
-  const pageSegments =
-    sectionId === "examples"
-      ? resolveExampleSegments(remainingSegments)
-      : remainingSegments;
+  const [sectionId, ...pageSegments] = segments;
   const section = sections.find((candidate) => candidate.id === sectionId);
 
   if (!section || !pageSegments.length) {

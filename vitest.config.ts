@@ -5,6 +5,12 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
+      "@moyarich/console-addon-navigation": fileURLToPath(
+        new URL("./packages/addons/navigation/src/index.ts", import.meta.url),
+      ),
+      "@moyarich/console-addon-selection": fileURLToPath(
+        new URL("./packages/addons/selection/src/index.tsx", import.meta.url),
+      ),
       "@moyarich/console-addon-annotations": fileURLToPath(
         new URL("./packages/addons/annotations/src/index.tsx", import.meta.url),
       ),

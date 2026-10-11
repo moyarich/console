@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import AnsiLinkProviderExample from "../packages/console/docs/examples/80-additional-usage/11-customization/04-link-providers/ansi";
+import LinkProviderExample from "../packages/console/examples/70-extension-points/04-link-provider/01-component-prop/example";
 
 const meta = {
   title: "Console/Link Providers/ANSI",
@@ -16,10 +16,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SourceLocation: Story = {
-  render: () => <AnsiLinkProviderExample />,
+  render: () => <LinkProviderExample initialMode="terminal" />,
   play: async ({ canvasElement }) => {
     const ansiConsole = canvasElement.querySelector(
-      '[data-console-mode="ansi"]',
+      '[data-console-mode="terminal"]',
     );
 
     if (!ansiConsole) {
@@ -38,7 +38,7 @@ export const SourceLocation: Story = {
     await new Promise((resolve) => window.setTimeout(resolve, 0));
 
     const result = canvasElement.querySelector(
-      "[data-ansi-link-provider-result] strong",
+      "[data-console-link-provider-result] strong",
     );
 
     if (!result?.textContent?.includes(".tsx:")) {

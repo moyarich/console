@@ -1,0 +1,41 @@
+---
+label: "Terminal"
+description: "Append ANSI process output to one terminal session, including styles, stdout/stderr metadata, and expandable strict JSON."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## ANSI process entries
+
+See the [API reference](#/package-console/ansi) for the contract and options.
+
+```tsx
+const entries = [
+  { id: "1", data: "\u001b[32mServer ready\u001b[0m", stream: "stdout" },
+  {
+    id: "2",
+    data: "\u001b[31mConnection failed\u001b[0m",
+    stream: "stderr",
+  },
+];
+
+<Console mode="terminal" messages={entries} />;
+```
+
+### ANSI process-output mode
+
+Use `mode="terminal"` for text written by a process or CLI.
+
+ANSI rendering uses `anser` and supports standard and bright colors, 256-color, truecolor, and common text decorations.
+
+`stream` is process-channel metadata. A `stderr` entry is **not** converted to `console.error()`.
+
+ANSI mode is intentionally a process-output viewer, not a PTY or VT terminal emulator. It does not emulate cursor movement, shell input, alternate buffers, Vim/tmux behavior, or other terminal state.
+
+## Options used with process output
+
+`messages` accepts strings or entries with `data`, optional `id`, `stream`, and `metadata`. `processControlParsers` run before line normalization; `processors` transform logical output; `structuredOutputParsers` promote matching lines into inspectable values. Enable `parseStructuredOutput` to inspect complete JSON objects and arrays.
+
+For a custom surrounding layout, `<ConsoleStdout entries={entries} />` renders the output list without the full panel. `<Terminal output={entries} />` exposes the same processing options; it uses `children` when `output` is omitted. `TerminalOutputEntry` is the same entry type as `ConsoleStdoutEntry`.

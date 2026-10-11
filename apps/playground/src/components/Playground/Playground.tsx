@@ -1,27 +1,25 @@
 import "./Playground.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { CONSOLE_EXAMPLE_SECTION } from "@src/playground-registry/examples";
 import { MdxPage } from "@src/mdx/MdxPage";
 import { PlaygroundMDXProvider } from "@src/mdx/PlaygroundMDXProvider";
 import {
   DEFAULT_PLAYGROUND_PATH,
-  DOCUMENTATION_SECTIONS,
-  PLAYGROUND_SECTIONS,
+  resolvePlaygroundRoute,
 } from "@src/playground-registry";
-import {
-  buildPlaygroundPath,
-  resolvePlaygroundPath,
-} from "@src/utils/playgroundRouting";
+import { buildPlaygroundPath } from "@src/utils/playgroundRouting";
+import { PACKAGE_NAVIGATION } from "@src/playground-registry/package-sections";
+import { REPOSITORY_DOCS_SECTIONS } from "@src/playground-registry/repository-docs-sections";
+import type { PackageNavigationItem } from "@src/playground-registry/packageNavigation";
+import type { MdxSection } from "@src/utils/mdxSection";
 import { Sidebar } from "@src/components/Sidebar";
-import { ExamplesSection } from "@src/components/Sidebar/sections/ExamplesSection";
 import { MdxPageSection } from "@src/components/Sidebar/sections/MdxPageSection";
 
 export function Playground() {
   const location = useLocation();
   const navigate = useNavigate();
   const mainRef = useRef<HTMLElement>(null);
-  const route = resolvePlaygroundPath(location.pathname, PLAYGROUND_SECTIONS);
+  const route = resolvePlaygroundRoute(location.pathname);
   const routePageId = route?.page.id;
   const routeOutlineId = route?.outline?.id;
 
@@ -58,7 +56,6 @@ export function Playground() {
   }
 
   const { section, page: selectedPage, outline } = route;
-  const showingExamples = section.id === CONSOLE_EXAMPLE_SECTION.id;
   const Page = selectedPage.Page;
 
   function navigateToPage(
@@ -69,36 +66,33 @@ export function Playground() {
     navigate(buildPlaygroundPath(sectionId, pageId, outlineId));
   }
 
+  function renderSection(documentationSection: MdxSection) {
+    return (
+      <MdxPageSection
+        key={documentationSection.id}
+        section={documentationSection}
+        value={
+          section.id === documentationSection.id ? selectedPage.id : undefined
+        }
+        outlineValue={
+          section.id === documentationSection.id ? outline?.id : undefined
+        }
+        onChange={(id, outlineId) =>
+          navigateToPage(documentationSection.id, id, outlineId)
+        }
+      />
+    );
+  }
+
   return (
     <div className="layout-content">
       <aside className="layout-sidebar documentation-sidebar">
         <Sidebar aria-label="Console documentation">
-          <ExamplesSection
-            section={CONSOLE_EXAMPLE_SECTION}
-            value={showingExamples ? selectedPage.id : undefined}
-            outlineValue={showingExamples ? outline?.id : undefined}
-            onChange={(id, outlineId) =>
-              navigateToPage(CONSOLE_EXAMPLE_SECTION.id, id, outlineId)
-            }
+          <PackageNavigation
+            items={PACKAGE_NAVIGATION}
+            renderSection={renderSection}
           />
-
-          {DOCUMENTATION_SECTIONS.map((documentationSection) => (
-            <MdxPageSection
-              key={documentationSection.id}
-              section={documentationSection}
-              value={
-                section.id === documentationSection.id
-                  ? selectedPage.id
-                  : undefined
-              }
-              outlineValue={
-                section.id === documentationSection.id ? outline?.id : undefined
-              }
-              onChange={(id, outlineId) =>
-                navigateToPage(documentationSection.id, id, outlineId)
-              }
-            />
-          ))}
+          {renderSection(REPOSITORY_DOCS_SECTIONS)}
         </Sidebar>
       </aside>
 
@@ -115,5 +109,39 @@ export function Playground() {
         </MdxPage>
       </main>
     </div>
+  );
+}
+
+function PackageNavigation({
+  items,
+  renderSection,
+}: {
+  items: readonly PackageNavigationItem[];
+  renderSection: (section: MdxSection) => ReactNode;
+}) {
+  return (
+    <>
+      {items.map((item) =>
+        item.type === "package" ? (
+          renderSection(item.section)
+        ) : (
+          <section
+            className="sidebar-package-directory"
+            key={item.id}
+            aria-label={item.label}
+          >
+            <strong className="sidebar-package-directory-title">
+              {item.label}
+            </strong>
+            <div className="sidebar-package-directory-children">
+              <PackageNavigation
+                items={item.items}
+                renderSection={renderSection}
+              />
+            </div>
+          </section>
+        ),
+      )}
+    </>
   );
 }

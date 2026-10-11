@@ -1,0 +1,35 @@
+---
+label: "Rendering modes"
+description: "Structured console and ANSI process-output rendering, processors, links, and structured output parsing."
+---
+
+`Console` has two distinct modes because browser console messages and process output have different semantics.
+
+| Mode       | Input                                 | Best for                                                                  |
+| ---------- | ------------------------------------- | ------------------------------------------------------------------------- |
+| `console`  | `ConsoleMessageData[]` or `RunOutput` | Browser-style `console.*`, rich JavaScript values, groups, tables, traces |
+| `terminal` | strings or `ConsoleStdoutEntry[]`     | Process `stdout` / `stderr`, build output, CLI output, ANSI colors        |
+
+### Structured console mode
+
+See [Structured messages](#/package-console/usage/plain-messages).
+
+### ANSI process-output mode
+
+See [ANSI process entries](#/package-console/ansi/terminal).
+
+#### Carriage-return and progress output
+
+See the [Pyodide + tqdm progress example](#/package-console/ansi/progress/pyodide-tqdm-progress) for a browser-based progress demonstration.
+
+### Process output with ordered processors
+
+See [Ordered process output processors](#/package-console/extension-points/process-output-processor/component-prop).
+
+### Interactive links and custom link providers
+
+See [Structured link provider](#/package-console/extension-points/link-provider/component-prop) and [ANSI link provider](#/package-console/extension-points/link-provider/component-prop).
+
+### Parse structured values from ANSI output
+
+See [Structured output parsing](#/package-console/extension-points/structured-output-parser/component-prop).

@@ -1,0 +1,19 @@
+---
+label: "Process Control Parser"
+title: "consoleExtensionPoints.processControlParser"
+description: "Parse stateful semantic controls from raw process chunks before carriage-return and newline normalization."
+---
+
+Parse stateful semantic controls from raw process chunks before carriage-return and newline normalization.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="processControlParser"
+/>
+
+`resolveConsoleProcessControls(entries, parsers)` applies raw controls before normalization and returns printable `entries` plus semantic `events`. Use the full process-output resolver when you also need normalized, processed output.

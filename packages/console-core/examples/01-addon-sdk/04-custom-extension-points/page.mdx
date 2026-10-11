@@ -1,0 +1,18 @@
+---
+label: "Custom extension points"
+description: "Register a diagnostic provider, then consume it through the manager’s extension registry. Change the text and choose Analyze to see the provider result."
+---
+
+import source from "./example.tsx?raw";
+
+Register a diagnostic provider, then consume it through the manager’s extension registry. Change the text and choose Analyze to see the provider result.
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+See the [Addon SDK guide](#/package-console-core/overview) for the lifecycle and contract.
+
+## Registration and ordering
+
+`createConsoleExtensionPoint(id, composition)` creates a typed token; composition defaults to `"collect"`. The host must read and consume its contributions. `manager.extensions.register(point, contribution, options)` returns a disposable. Optional registration `id` and `priority` control identification and ordering; higher priority resolves first, with registration order breaking ties. `getAll(point)` returns contributions in that order.
+
+A headless host can also create an independent registry with `createConsoleExtensionRegistry`. In an addon, register through `host.extensions` so unload removes its contributions automatically.

@@ -1,0 +1,12 @@
+---
+label: "WebSocket"
+description: "Keep one WebSocket connection mounted while sending and receiving console transport envelopes."
+---
+
+import source from "./WebSocketConsole.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Receiving options and cleanup
+
+`listenForConsoleWebSocket` requires `socket` and `events`; `channel` defaults to `"default"`. It accepts JSON text, ignores invalid JSON and unrelated envelopes/channels, and deserializes accepted events into the emitter. The returned function removes the message listener; it does not close the socket.

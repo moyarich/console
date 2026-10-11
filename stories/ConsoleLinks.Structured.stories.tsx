@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import StructuredLinkProviderExample from "../packages/console/docs/examples/80-additional-usage/11-customization/04-link-providers/structured";
+import LinkProviderExample from "../packages/console/examples/70-extension-points/04-link-provider/01-component-prop/example";
 
 const meta = {
   title: "Console/Link Providers/Structured",
@@ -16,7 +16,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SourceLocation: Story = {
-  render: () => <StructuredLinkProviderExample />,
+  render: () => <LinkProviderExample />,
   play: async ({ canvasElement }) => {
     const sourceLink = canvasElement.querySelector<HTMLButtonElement>(
       "button.console-link-button",

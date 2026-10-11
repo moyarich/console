@@ -1,0 +1,12 @@
+---
+label: "Component prop"
+description: "Use one source-location provider with structured messages or terminal output."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Switch modes and click a source location. The same `linkProviders` contribution works in both modes; only the Console input shape changes. Web links continue to use built-in detection.
+
+Each provider range includes its visible `text`, inclusive `start`, exclusive `end`, and optional navigation `target`, `title`, or application-owned `action`. See the [provider behavior](#/package-console/extension-points/link-provider) for range validation and ordering.

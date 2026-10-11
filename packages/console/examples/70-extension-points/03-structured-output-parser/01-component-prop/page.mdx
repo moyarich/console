@@ -1,0 +1,76 @@
+---
+label: "Component prop"
+description: "Parse ANSI-stripped compiler and test-runner lines into inspectable values while preserving strict JSON and plain-text fallback."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Structured output parsing
+
+See the [structured-output parser contract](#/package-console/extension-points/structured-output-parser) for the contract and options.
+
+```tsx
+import type { ConsoleStructuredOutputParser } from "@moyarich/console";
+
+const diagnosticParser: ConsoleStructuredOutputParser = (context) => {
+  const { text } = context;
+  const match = text.match(/^ERROR\s+(TS\d+):\s+(.+)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    kind: "diagnostic",
+    code: match[1],
+    message: match[2],
+    stream: context.stream,
+  };
+};
+
+<Console
+  mode="terminal"
+  messages={[
+    {
+      id: "diagnostic-1",
+      data: "\u001b[31mERROR TS2322: invalid value\u001b[0m",
+      stream: "stderr",
+    },
+  ]}
+  structuredOutputParsers={[diagnosticParser]}
+/>;
+```
+
+### Parse structured values from ANSI output
+
+If a process prints complete JSON objects or arrays, `parseStructuredOutput` keeps the built-in strict-JSON behavior and renders matching values through the normal expandable inspector:
+
+```tsx
+<Console
+  mode="terminal"
+  messages={['{"request":{"method":"GET","status":200}}']}
+  parseStructuredOutput
+/>
+```
+
+For NDJSON records, compiler diagnostics, test-runner events, or application-specific lines, pass one or more `structuredOutputParsers`:
+
+Parsers run in order and receive ANSI-stripped text plus the original entry context:
+
+```ts
+interface ConsoleStructuredOutputParserContext {
+  entry: ConsoleStdoutEntry | string;
+  index: number;
+  id?: string;
+  stream?: "stdout" | "stderr";
+  metadata?: ConsoleProcessOutputMetadata;
+}
+```
+
+Processors run before structured parsers, so parsers receive transformed text and accumulated processor metadata. Return `undefined` when a parser does not handle the line. If a parser throws, the console continues to the next parser and ultimately falls back to ANSI text. When `parseStructuredOutput` is also enabled, strict JSON is attempted after custom parsers.
+
+ANSI codes may surround strict JSON because the renderer strips ANSI before calling `JSON.parse()`. JavaScript-like strings such as `{ name: "Ada" }` remain plain text unless a custom parser handles them.
+
+Use `ConsoleStdout` directly if you only need the lower-level ANSI list without the surrounding panel.

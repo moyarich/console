@@ -1,0 +1,36 @@
+---
+label: "Addon integration"
+description: "Connect portable addons to the React Console host."
+---
+
+Pass addon instances to the Console `addons` prop. Create stateful addons once with `useMemo`; use `disabledAddonIds` to unload supplied addons temporarily.
+
+The [Addon SDK guide](#/package-console-core/overview) owns lifecycle, services, custom extension points, composition, and cleanup. Each first-party addon has its own package guide and examples in the sidebar.
+
+These working React host examples demonstrate:
+
+- [Task links](#/package-console/extension-points/link-provider)
+- [Custom terminal output](#/package-console/extension-points/output-renderer/ansi)
+- [Custom structured output](#/package-console/extension-points/output-renderer/structured)
+
+Each example defines all of its components, data, and callbacks beside its importing page.
+
+Each extension point has an overview page and separate example pages.
+
+- [processControlParser](#/package-console/extension-points/process-control-parser) — Parse stateful semantic controls from raw process chunks before carriage-return and newline normalization.
+- [processOutputProcessor](#/package-console/extension-points/process-output-processor) — Transform resolved ANSI/process output before the console renders it.
+- [structuredOutputParser](#/package-console/extension-points/structured-output-parser) — Recognize structured values embedded in terminal text.
+- [linkProvider](#/package-console/extension-points/link-provider) — Detect application-specific links and attach custom actions to them.
+- [outputRenderer](#/package-console/extension-points/output-renderer) — Replace the complete output surface for a matching console mode.
+- [frameDecorator](#/package-console/extension-points/frame-decorator) — Structurally wrap the complete Console frame. Reserve this for frame-level behavior such as resizing or docking.
+- [emptyStateRenderer](#/package-console/extension-points/empty-state-renderer) — Customize only the empty-state surface while leaving normal output rendering unchanged.
+- [panelElement](#/package-console/extension-points/panel-element) — Add persistent addon-owned UI to a generic panel placement without wrapping the Console frame.
+- [messageFilter](#/package-console/extension-points/message-filter) — Contribute a predicate to the structured-message view. Multiple addon filters compose with the host-owned `filter` prop.
+- [messageRenderer](#/package-console/extension-points/message-renderer) — Customize individual structured message rows.
+- [messageDecoration](#/package-console/extension-points/message-decoration) — Add UI around a structured row without replacing its renderer.
+- [messageTextProvider](#/package-console/extension-points/message-text-provider) — Contribute logical searchable/plain text for a structured message without changing its visible renderer.
+- [valueRenderer](#/package-console/extension-points/value-renderer) — Customize individual structured values while leaving the rest of the message rendering intact.
+- [keyboardShortcut](#/package-console/extension-points/keyboard-shortcut) — Register a keyboard command scoped to the focused Console instead of installing global document listeners.
+- [panelAction](#/package-console/extension-points/panel-action) — Add a host-defined action to the console panel actions.
+- [contextMenuAction](#/package-console/extension-points/context-menu-action) — Add an action to the context menu and inspect the selected target kind.
+- [messageAction](#/package-console/extension-points/message-action) — Add an action scoped to an individual structured message.

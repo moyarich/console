@@ -1,0 +1,17 @@
+---
+label: Annotations
+title: "@moyarich/console-addon-annotations"
+description: Message annotations and bookmarks keyed by stable Console message IDs.
+---
+
+# @moyarich/console-addon-annotations
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+The addon contributes a default bookmark action and renders current annotation state through `messageDecoration`.
+
+Annotations are stored separately from `ConsoleMessageData`, can coexist on the same message, and are exposed through the addon controller/service.
+
+Use `addon.controller` to manage state by stable message ID.

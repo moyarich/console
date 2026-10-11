@@ -1,0 +1,18 @@
+---
+label: "Addon cleanup"
+description: "Load the addon and send an event to increment the counter. The listener uses `AbortController.signal`; unloading the addon aborts the controller, so sending another event leaves the counter unchanged. Reloading registers a fresh listener."
+---
+
+import source from "./example.tsx?raw";
+
+Load the addon and send an event to increment the counter. The listener uses `AbortController.signal`; unloading the addon aborts the controller, so sending another event leaves the counter unchanged. Reloading registers a fresh listener.
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+See the [Addon SDK guide](#/package-console-core/overview) for the lifecycle and contract.
+
+## Manager and scope behavior
+
+`createConsoleAddonManager` accepts optional `version` and `capabilities`. Version defaults to `CONSOLE_ADDON_API_VERSION` (`"1"`). `load(addon)` returns a disposable; `unload(id)` reports whether an active addon was removed; `has(id)` checks active IDs. Disposing the manager unloads its addons.
+
+An addon may return a cleanup function, a disposable, or nothing from `activate`. The host owns the activation scope and releases scoped registrations on unload. A standalone `createConsoleDisposableScope` provides `add(disposable)` and `defer(cleanup)`; disposal runs cleanup in reverse order once.

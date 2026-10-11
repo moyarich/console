@@ -1,0 +1,27 @@
+---
+label: "Message Action"
+title: "consoleExtensionPoints.messageAction"
+description: "Add an action scoped to an individual structured message."
+---
+
+Add an action scoped to an individual structured message.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="messageAction"
+/>
+
+## Component-prop example
+
+See the [working example](#/package-console/extension-points/message-action/component-prop) for configuring `messageActions` directly on `<Console>`.
+
+## Component configuration
+
+The `messageActions` component prop receives the selected message, its visible index, and the visible message list. It is available in structured mode. Use addon registration for reusable commands.
+
+Action descriptors support `id`, `label`, `onSelect`, optional `icon`, `ariaLabel`, `variant`, and `separatorBefore`. `visible` and `disabled` accept booleans or context predicates. Custom menu commands participate in Arrow Up/Down, Home, and End navigation. Messages become focusable when custom context or message actions are configured.

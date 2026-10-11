@@ -1,0 +1,15 @@
+---
+title: "@moyarich/console-addon-markdown"
+label: "Package guide"
+description: Automatic GitHub Flavored Markdown rendering for Console string values.
+---
+
+# @moyarich/console-addon-markdown
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+The source models a GitHub Actions `$GITHUB_STEP_SUMMARY` containing headings, a table, inline code, and a list. It also includes an ordinary multiline log to demonstrate fallback rendering.
+
+The addon contributes a value renderer that recognizes meaningful Markdown in complete string values. It takes over only when the parsed document contains more than plain paragraphs, text, and line breaks. Plain text, multiline logs, and bare URLs retain normal Console rendering. Producers can keep logging ordinary strings.

@@ -1,0 +1,18 @@
+---
+label: "Shared addon services"
+description: "A provider registers a build service before a consumer requires and invokes it. Run the build to see the counter change; the manager is disposed after each run."
+---
+
+import source from "./example.tsx?raw";
+
+A provider registers a build service before a consumer requires and invokes it. Run the build to see the counter change; the manager is disposed after each run.
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+See the [Addon SDK guide](#/package-console-core/overview) for the lifecycle and contract.
+
+## Service lookup
+
+`createConsoleServiceToken(id)` identifies one typed service. `provide(token, service)` returns a disposable; `get(token)` returns a service or `undefined`; `require(token)` throws when unavailable. A headless host can create an independent registry with `createConsoleServiceRegistry`.
+
+The React Console provides `consoleServices.data` and `consoleServices.viewport`. Use capabilities to test optional host functionality: `consoleCapabilities` includes `react`, `dom`, `structuredMessages`, and `processOutput`. Custom hosts can define capabilities with `createConsoleCapability` and build their registry with `createConsoleCapabilityRegistry`.

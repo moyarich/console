@@ -1,0 +1,45 @@
+---
+label: "Component prop"
+description: "Use a value renderer when only a particular value needs custom presentation. Returning `undefined` keeps the built-in inspector as the fallback."
+---
+
+import valueRendererSource from "./value-renderer.tsx?raw";
+import metricSource from "./metric.ts?raw";
+
+## Value renderer
+
+Use a value renderer when only a particular value needs custom presentation. Returning `undefined` keeps the built-in inspector as the fallback.
+
+<RunnableExample
+  source={valueRendererSource}
+  sourcePath="value-renderer.tsx"
+  files={{ "metric.ts": metricSource }}
+  title="Value renderer"
+/>
+
+## Custom value and message rendering
+
+See the [API reference](#/package-console/extension-points/value-renderer) for the contract and options.
+
+## Rendering behavior
+
+Renderer hooks let an application teach the console about domain-specific values without forking the library.
+
+Renderer entries form ordered dispatch tables:
+
+1. `method` or `type` can narrow the candidate.
+2. `match` can perform additional matching.
+3. `render` returns a React node to handle the value.
+4. Returning `undefined` continues to the next renderer.
+5. If nothing handles the value, the built-in renderer is used.
+
+Each renderer context exposes `renderDefault()`, which is useful for wrapping or decorating the standard UI. Synchronous matcher/renderer errors are contained so one extension cannot prevent the rest of the console from rendering.
+
+`getConsoleValueType(value)` returns the dispatch type used by value renderers:
+
+- primitives use normal `typeof` names such as `"string"` and `"number"`
+- `null` becomes `"null"`
+- arrays become `"array"`
+- objects use their constructor name when available, for example `"Object"`, `"Map"`, or a custom class name
+
+Value renderers propagate through top-level values, nested inspectors, `console.table()` cells, and structured values promoted from ANSI output.

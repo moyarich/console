@@ -1,0 +1,23 @@
+---
+label: "Panel Action"
+title: "consoleExtensionPoints.panelAction"
+description: "Add a host-defined action to the console panel actions."
+---
+
+Add a host-defined action to the console panel actions.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" title="panelAction" />
+
+## Component configuration
+
+The `panelActions` component prop adds descriptor-based commands to the header ellipsis menu. Its context includes `mode` and `hasMessages`. Commands appear before built-in Copy output and Clear. Use `actions` when arbitrary React content is needed.
+
+Action descriptors support `id`, `label`, `onSelect`, optional `icon`, `ariaLabel`, `variant`, and `separatorBefore`. `visible` and `disabled` accept booleans or context predicates. Custom menu commands participate in Arrow Up/Down, Home, and End navigation. Messages become focusable when custom context or message actions are configured.
+
+## Component-prop example
+
+See the [working component-prop example](#/package-console/extension-points/panel-action/component-prop) for host-owned configuration.

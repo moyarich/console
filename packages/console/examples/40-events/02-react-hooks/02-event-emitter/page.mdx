@@ -1,0 +1,18 @@
+---
+label: "ConsoleEventEmitter with React state"
+description: "Subscribe to `ConsoleEventEmitter` directly when the application needs its own reducer, retention policy, persistence, or message store."
+---
+
+import eventEmitterSource from "./event-emitter.tsx?raw";
+import eventRuntimeSource from "./event-runtime.ts?raw";
+
+## Host-owned state
+
+Subscribe to `ConsoleEventEmitter` directly when the application needs its own reducer, retention policy, persistence, or message store.
+
+<RunnableExample
+  source={eventEmitterSource}
+  sourcePath="event-emitter.tsx"
+  files={{ "event-runtime.ts": eventRuntimeSource }}
+  title="ConsoleEventEmitter with React state"
+/>

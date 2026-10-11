@@ -1,0 +1,27 @@
+---
+label: "Value Renderer"
+title: "consoleExtensionPoints.valueRenderer"
+description: "Customize individual structured values while leaving the rest of the message rendering intact."
+---
+
+Customize individual structured values while leaving the rest of the message rendering intact.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="valueRenderer"
+/>
+
+## Component-prop example
+
+See the [working example](#/package-console/extension-points/value-renderer/component-prop) for configuring `valueRenderers` directly on `<Console>`.
+
+## Component configuration
+
+Use `valueRenderers` on `<Console>` for host-owned value rendering, or register `consoleExtensionPoints.valueRenderer` for reusable addon behavior. Both customize individual values while retaining the surrounding message.
+
+`getConsoleValueType(value)` returns the discriminator used by a value renderer's `type` field. Renderer callbacks receive readonly context and can call `renderDefault()` to retain built-in behavior. Return `undefined` to allow fallback.

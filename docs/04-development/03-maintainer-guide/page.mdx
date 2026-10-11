@@ -97,7 +97,7 @@ The package is intentionally split into a few responsibilities.
 `Console` has two rendering modes:
 
 - `mode="console"` renders normalized `ConsoleMessageData` values
-- `mode="ansi"` renders process-output entries with ANSI styling through `anser`
+- `mode="terminal"` renders process-output entries with ANSI styling through `anser`
 
 `ConsoleStdout` is the lower-level ANSI list renderer used when the surrounding console panel UI is not needed. ANSI mode is a process-output viewer, not a terminal emulator; application-specific shells, tabs, restart controls, and runtime orchestration belong outside the package.
 
@@ -343,12 +343,11 @@ npm run dev
 Examples use numbered directories as the source of truth for grouping and order:
 
 ```text
-docs/examples/
+packages/console/examples/
   00-ansi/
     01-terminal/
       example.tsx
-      index.tsx
-      meta.json
+      page.mdx
     02-typescript-compile-error/
       ...
   05-console-methods/
@@ -369,14 +368,20 @@ docs/examples/
 
 The numeric prefix on a group directory controls group order. The numeric prefix on an example directory controls order within that group. The suffix after the prefix becomes the runtime `groupId` or example `id`. Group display labels are derived from the group ID with `change-case` `sentenceCase()`.
 
-`meta.json` contains display metadata only:
+Each importing `page.mdx` contains display metadata and example-specific explanations:
 
-```json
-{
-  "label": "console.log",
-  "description": "Capture and render a standard console.log message."
-}
+```mdx
+---
+label: "console.log"
+description: "Capture and render a standard console.log message."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
 ```
+
+Each package owns its guides and runnable examples. Place a concept guide at `examples/<topic>/page.mdx` beside the individual runnable example folders, so users can learn and implement the concept in one menu area. Keep one runnable example per page. Package overviews and API references also belong in `examples/`. The menu follows the package directory structure.
 
 The examples index auto-discovers `NN-group/NN-example` directories, so examples do not need manual registration and ordering must not be duplicated in metadata.
 
@@ -384,7 +389,7 @@ When adding or reordering an example:
 
 1. place it under the appropriate numbered group directory
 2. use an `NN-example-name` directory prefix for its order
-3. include `example.tsx`, `index.tsx`, and `meta.json`
+3. include `example.tsx` and a `page.mdx` that imports its source
 4. change numeric prefixes to reorder groups or examples
 5. keep example code representative of the public package API
 6. avoid depending on private implementation details

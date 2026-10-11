@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   compileExampleProject,
@@ -27,6 +28,28 @@ afterEach(() => {
 });
 
 describe("runnable example project compilation", () => {
+  it.each([
+    "addons/annotations/examples/example.tsx",
+    "addons/filtering/examples/example.tsx",
+    "addons/imperative-scrolling/examples/example.tsx",
+    "addons/markdown/examples/example.tsx",
+    "addons/navigation/examples/example.tsx",
+    "addons/selection/examples/example.tsx",
+    "console/examples/70-extension-points/04-link-provider/01-component-prop/example.tsx",
+    "console/examples/70-extension-points/02-process-output-processor/01-component-prop/example.tsx",
+    "console/examples/70-extension-points/03-structured-output-parser/01-component-prop/example.tsx",
+  ])(
+    "compiles consolidated example %s with its workspace imports",
+    async (path) => {
+      const source = readFileSync(
+        new URL(`../packages/${path}`, import.meta.url),
+        "utf8",
+      );
+      const runtime = await compile("example.tsx", { "example.tsx": source });
+      expect(runtime.Component).toBeTypeOf("function");
+    },
+  );
+
   it("compiles a single-file React entry", async () => {
     const runtime = await compile("example.tsx", {
       "example.tsx": `

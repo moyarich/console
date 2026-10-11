@@ -1,0 +1,51 @@
+---
+label: "Plain messages"
+description: "Render ConsoleMessageData objects directly with no events or useConsoleMessages."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Pass `ConsoleMessageData[]` directly to `Console` when the host already owns the message data. No event emitter, proxy, or `useConsoleMessages` hook is required.
+
+## Structured messages
+
+See the [message model](#/package-console/usage/plain-messages/message-model) for the contract and options.
+
+```tsx
+<Console
+  messages={[
+    {
+      method: "log",
+      data: ["Result", { user: { id: 42 }, roles: ["admin"] }],
+      depth: 0,
+    },
+  ]}
+/>
+```
+
+### Structured console mode
+
+Structured mode is the default.
+
+Values stay structured instead of being flattened to strings. Objects, arrays, Maps, Sets, typed values, errors, and nested data can therefore be inspected in the UI.
+
+Structured mode also understands metadata produced by the proxy, including group depth, table columns, timestamps, sources, and `console.dir()` expansion depth.
+
+## Configure the panel
+
+| Option                | Default            | What it changes                                                                                        |
+| --------------------- | ------------------ | ------------------------------------------------------------------------------------------------------ |
+| `title`               | `"Console"`        | Panel heading.                                                                                         |
+| `subtitle`            | Mode-specific text | Text beneath the heading.                                                                              |
+| `showHeader`          | `true`             | Show the panel header.                                                                                 |
+| `onClear`             | Unset              | Supply a function that clears your message array; without it the built-in clear action is unavailable. |
+| `showClearButton`     | `true`             | Show the clear command when `onClear` is supplied.                                                     |
+| `autoScroll`          | `true`             | Follow new output while the viewer stays near the bottom.                                              |
+| `emptyMessage`        | Mode-specific text | Text shown when there is no visible output.                                                            |
+| `className` / `style` | Unset              | Application-owned layout and styling.                                                                  |
+
+Structured mode is `mode="console"` and is also the default. `messages` takes precedence over `output.messages` when both are supplied. `error` appends a synthetic error message. `onMessagesChange` receives the unfiltered source list.
+
+If you are building your own surrounding layout, `ConsoleMessage` renders one message, `ConsoleValue` renders one inspectable value, and `ConsoleTable` renders table data. The full `<Console>` component assembles these surfaces and their panel behavior for you.

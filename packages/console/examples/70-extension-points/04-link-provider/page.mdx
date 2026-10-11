@@ -1,0 +1,29 @@
+---
+label: "Link Provider"
+title: "consoleExtensionPoints.linkProvider"
+description: "Detect application-specific links and attach custom actions to them."
+---
+
+Detect application-specific links and attach custom actions to them.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="linkProvider"
+/>
+
+## Component-prop example
+
+See the [working component-prop example](#/package-console/extension-points/link-provider/component-prop). Switch between structured and terminal modes to use the same provider against both input shapes.
+
+## Provider behavior
+
+`provideLinks(context)` receives readonly text and rendering metadata. Return link ranges, or return nothing when the provider does not recognize the text. Ranges use inclusive `start` and exclusive `end` offsets into that text.
+
+Explicit links are considered before providers, then built-in web detection. Ranges starting earlier in the text win overlaps, with candidate order breaking equal-start ties. Invalid ranges and unsafe navigation targets are discarded; a provider exception does not prevent later providers from running. `detectLinks` defaults to `true`.
+
+For application-owned text outside a complete Console, `ConsoleLinkedText` accepts `text` and a link context. `detectWebLinks`, `resolveConsoleLinks`, and `isSafeConsoleLinkTarget` are available when you need to discover or validate ranges yourself.

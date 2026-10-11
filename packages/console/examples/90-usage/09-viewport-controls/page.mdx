@@ -1,0 +1,28 @@
+---
+label: "Viewport controls"
+description: "Imperative scrolling, focusing, and message navigation through the Console handle."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="Viewport controls"
+/>
+
+Use a `ConsoleHandle` ref when surrounding application UI needs to navigate the console without reaching into its DOM. This example defines the messages and connects every button to the live Console instance.
+
+- **Top**, **Latest output**, and **Jump to message 24** demonstrate scrolling by position and stable message ID.
+- **Focus console** moves keyboard focus into the Console.
+- **Check position** reads `isAtTop()` and `isAtBottom()`.
+- **Try missing message** demonstrates the `false` result when a message is not rendered.
+- **Append output** lets you compare new output while viewing older messages versus following the latest output.
+
+`isAtBottom()` uses the same near-bottom threshold as smart auto-scroll. Calling `scrollToBottom()` restores pinned-to-latest behavior; scrolling to the top or an older message leaves the viewport unpinned so new output does not immediately snap it back down.
+
+`scrollToMessage(id)` targets stable logical message IDs. Structured messages use `ConsoleMessageData.id`; terminal/process entries use `ConsoleStdoutEntry.id`.
+
+For addon-owned navigation through `consoleServices.viewport` and ready-made panel actions, see the [Imperative scrolling addon guide and working example](#/package-addons-imperative-scrolling/overview).
+
+The public handle exposes navigation without exposing the root DOM node, scroll element, addon manager, or extension registries.

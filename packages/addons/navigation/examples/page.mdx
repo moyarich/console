@@ -1,0 +1,22 @@
+---
+label: Navigation
+title: "@moyarich/console-addon-navigation"
+description: Stable-ID navigation for important structured Console messages.
+---
+
+# @moyarich/console-addon-navigation
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Navigation traverses the current visible/filtered set and scrolls targets through the existing viewport service.
+
+The controller can navigate errors, warnings, annotations/bookmarks, or jump directly to a stable message ID. It uses the existing Console data and viewport services and does not mutate source messages.
+
+## Keyboard shortcuts
+
+- `F8`: next error
+- `Shift+F8`: previous error
+- `Alt+ArrowDown`: next warning
+- `Alt+ArrowUp`: previous warning

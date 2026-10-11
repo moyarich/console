@@ -1,0 +1,14 @@
+---
+label: "Iframe"
+description: "Send and receive console transport events between a parent page and iframe without unmounting either side."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Receiving options and cleanup
+
+`listenForConsolePostMessages` requires `events`. Its optional `channel` defaults to `"default"`; `origin` accepts a string, RegExp, or predicate; `source` matches a specific message source; and `targetWindow` defaults to the current window. The returned function removes the listener. Call it when the receiver is torn down.
+
+The listener validates source, origin, envelope, and channel before deserializing and delivering the event. Transport constants are `CONSOLE_TRANSPORT_TYPE` (`"CONSOLE_PANEL"`), `CONSOLE_TRANSPORT_VERSION` (`1`), and `DEFAULT_CONSOLE_CHANNEL` (`"default"`). `isConsoleEnvelope` validates shape without deserializing.

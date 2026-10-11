@@ -1,0 +1,10 @@
+---
+label: "console.table"
+description: "Render tabular data passed to console.table."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+`ConsoleTable` accepts the original `data` and optional `columns` for column selection/order. `normalizeConsoleTableData(data)` wraps scalar entries in a Value column and preserves row-like object entries; use it when you need the same normalization outside the renderer.

@@ -1,0 +1,24 @@
+---
+title: "@moyarich/console"
+description: "Render structured messages and terminal output in a React application."
+---
+
+# @moyarich/console
+
+Use this package to display console output in React. It provides the Console component, message-state hook, console producers, terminal rendering, and transport helpers.
+
+## Start with the data you have
+
+- [Structured messages](#/package-console/usage/plain-messages): pass your existing message array to `<Console>`.
+- [Console calls](#/package-console/events/react-hooks/message-state): use `useConsoleMessages` to collect calls and render their history.
+- [Process output](#/package-console/ansi/terminal): render stdout/stderr strings with `mode="terminal"`.
+
+Each page includes runnable source and explains the options used by that example. Import components and hooks from `@moyarich/console`, and load `@moyarich/console/styles.css`.
+
+## Add behavior when you need it
+
+[Viewport controls](#/package-console/usage/viewport-controls) scroll and focus the output. [Theming](#/package-console/usage/theming) changes its appearance. [Extension points](#/package-console/extension-points) customize rendering, filtering, links, and actions.
+
+Ready-made addon packages appear under **Addons** in the menu. Start with that addon's guide and runnable example, then pass its instance to the Console `addons` prop.
+
+Use [@moyarich/console-core](#/package-console-core/overview) when you are building an addon or a headless host. You do not need to create a core manager to render a Console or use a ready-made addon: the React component manages addon activation and cleanup.

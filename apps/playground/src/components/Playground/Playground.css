@@ -185,3 +185,18 @@
 .documentation-page a:hover {
   color: var(--_playground-component-accent-strong, #4f46e5);
 }
+
+.sidebar-package-directory {
+  margin-top: 18px;
+}
+
+.sidebar-package-directory-title {
+  display: block;
+  padding: 8px 6px;
+}
+
+.sidebar-package-directory-children {
+  margin-left: 10px;
+  padding-left: 8px;
+  border-left: 1px solid var(--_playground-component-border);
+}

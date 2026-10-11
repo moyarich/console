@@ -1,0 +1,12 @@
+---
+label: "Deduplication and reset"
+description: "Ignore repeated message IDs and clear message state when the session changes."
+---
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Click **Add messages** repeatedly: the stable log ID appears once, while each debug message is appended. Click **Start new session** to change `resetKey` and clear the current messages. Then add messages for the new session.
+
+See [Message state](#/package-console/events/react-hooks/message-state) for hook options.

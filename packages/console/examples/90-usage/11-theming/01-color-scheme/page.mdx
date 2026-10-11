@@ -1,0 +1,55 @@
+---
+label: "Inherited color scheme"
+description: "Set the standard `color-scheme` property on a host container when multiple console surfaces should inherit the same appearance. Built-in colors use `light-dark()`, so `light`, `dark`, and `light dark` work without a `prefers-color-scheme` media query. The portaled context menu preserves the computed scheme."
+---
+
+import colorSchemeSource from "./color-scheme.tsx?raw";
+
+## Inherited color scheme
+
+Set the standard `color-scheme` property on a host container when multiple console surfaces should inherit the same appearance. Built-in colors use `light-dark()`, so `light`, `dark`, and `light dark` work without a `prefers-color-scheme` media query. The portaled context menu preserves the computed scheme.
+
+<RunnableExample
+  source={colorSchemeSource}
+  sourcePath="color-scheme.tsx"
+  title="Inherited color scheme"
+/>
+
+## Light output theme
+
+See the [API reference](#/package-console/usage/theming) for the contract and options.
+
+```css
+.my-console-theme {
+  --console-panel-color-scheme: light;
+  --console-color-scheme: light;
+  --console-context-menu-color-scheme: light;
+
+  --console-panel-background-color: #ffffff;
+  --console-panel-color: #172033;
+  --console-panel-border: 1px solid #d8dee8;
+  --console-panel-header-border-bottom: 1px solid #e2e8f0;
+
+  --console-background-color: #f8fafc;
+  --console-color: #172033;
+  --console-entry-border-bottom: 1px solid #e2e8f0;
+  --console-muted-color: #667085;
+  --console-subtle-color: #98a2b3;
+
+  --console-string-color: #b42318;
+  --console-number-color: #175cd3;
+  --console-null-color: #7a5af8;
+  --console-symbol-color: #027a48;
+
+  --console-context-menu-background-color: #ffffff;
+  --console-context-menu-color: #172033;
+  --console-context-menu-border: 1px solid #d8dee8;
+  --console-context-menu-separator-background-color: #d8dee8;
+}
+```
+
+```tsx
+<div className="my-console-theme">
+  <Console messages={messages} />
+</div>
+```

@@ -1,0 +1,20 @@
+---
+label: "Component prop"
+description: "Message actions receive the selected message and index. Use predicates to disable or hide commands based on message metadata."
+---
+
+import messageActionsSource from "./message-actions.tsx?raw";
+
+## Per-message actions
+
+Message actions receive the selected message and index. Use predicates to disable or hide commands based on message metadata.
+
+<RunnableExample
+  source={messageActionsSource}
+  sourcePath="message-actions.tsx"
+  title="Message actions"
+/>
+
+## Panel and message actions
+
+See the [API reference](#/package-console/extension-points/message-action) for the contract and options.

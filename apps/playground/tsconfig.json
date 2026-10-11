@@ -42,8 +42,7 @@
     "src",
     "vite.config.ts",
     "../../docs",
-    "../../packages/*/docs",
-    "../../packages/addons/*/docs",
-    "../../packages/addons/annotations/docs"
+    "../../packages/*/examples",
+    "../../packages/addons/*/examples"
   ]
 }

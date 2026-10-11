@@ -1,0 +1,48 @@
+import { useState } from "react";
+import { Console, useConsoleMessages } from "@moyarich/console";
+import "@moyarich/console/styles.css";
+
+export default function DeduplicationAndResetExample() {
+  const [session, setSession] = useState(1);
+  const { messages, append, clear } = useConsoleMessages({
+    resetKey: session,
+  });
+
+  const addMessages = () => {
+    append({
+      id: `deduplicated-message-${session}`,
+      method: "log",
+      data: ["This id is only added once", { session }],
+      depth: 0,
+    });
+
+    append({
+      method: "debug",
+      data: ["Debug details", new Map([["session", session]])],
+      depth: 0,
+    });
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <div className="button-row">
+        <button type="button" onClick={addMessages}>
+          Add messages
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setSession((current) => current + 1)}
+        >
+          Start new session
+        </button>
+      </div>
+
+      <Console
+        messages={messages}
+        onClear={clear}
+        subtitle="Deduplicate stable message IDs and reset messages for a new session"
+      />
+    </div>
+  );
+}

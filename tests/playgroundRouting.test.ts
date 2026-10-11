@@ -22,7 +22,7 @@ function module(
 }
 
 const examples = createMdxSection({
-  id: "examples",
+  id: "package-console",
   label: "Examples",
   modules: {
     "./70-extension-points/page.mdx": module("Extension points", [
@@ -43,59 +43,42 @@ const examples = createMdxSection({
 describe("playground hash routing", () => {
   it("opens a navigation group's first example", () => {
     expect(
-      resolvePlaygroundPath("/examples/extension-points/output-renderer", [
-        examples,
-      ])?.page.id,
+      resolvePlaygroundPath(
+        "/package-console/extension-points/output-renderer",
+        [examples],
+      )?.page.id,
     ).toBe("extension-points/output-renderer/structured");
   });
 
-  it("preserves moved output surface links and group links", () => {
+  it("rejects former route aliases", () => {
     for (const path of [
-      "/examples/addons/custom/output-surfaces",
-      "/examples/addons/custom/output-surfaces/structured",
+      "/examples/extension-points",
+      "/package-console/addons/custom/output-surfaces",
+      "/package-console/extension-points/process-output-processor/overview",
+      "/package-console/docs/extension-points",
     ]) {
-      expect(resolvePlaygroundPath(path, [examples])?.page.id).toBe(
-        "extension-points/output-renderer/structured",
-      );
+      expect(resolvePlaygroundPath(path, [examples])).toBeUndefined();
     }
-    expect(
-      resolvePlaygroundPath("/examples/addons/custom/extension-points", [
-        examples,
-      ])?.page.id,
-    ).toBe("extension-points");
-    expect(
-      resolvePlaygroundPath(
-        "/examples/addons/custom/extension-points/consoleextensionpointsprocessoutputprocessor",
-        [examples],
-      )?.page.id,
-    ).toBe("extension-points/process-output-processor");
-  });
-  it("preserves former extension-point overview links", () => {
-    expect(
-      resolvePlaygroundPath(
-        "/examples/extension-points/process-output-processor/overview",
-        [examples],
-      )?.page.id,
-    ).toBe("extension-points/process-output-processor");
   });
   it("builds shareable nested page routes", () => {
-    expect(buildPlaygroundPath("examples", "extension-points")).toBe(
-      "/examples/extension-points",
+    expect(buildPlaygroundPath("package-console", "extension-points")).toBe(
+      "/package-console/extension-points",
     );
   });
 
   it("resolves a nested page before treating the route tail as an outline", () => {
-    const route = resolvePlaygroundPath("/examples/extension-points/overview", [
-      examples,
-    ]);
+    const route = resolvePlaygroundPath(
+      "/package-console/extension-points/process-output-processor",
+      [examples],
+    );
 
-    expect(route?.page.id).toBe("extension-points");
+    expect(route?.page.id).toBe("extension-points/process-output-processor");
     expect(route?.outline).toBeUndefined();
   });
 
   it("resolves an exported MDX heading as the final route segment", () => {
     const route = resolvePlaygroundPath(
-      "/examples/extension-points/overview/introduction",
+      "/package-console/extension-points/introduction",
       [examples],
     );
 
@@ -105,11 +88,11 @@ describe("playground hash routing", () => {
 
   it("rejects unknown page and heading routes", () => {
     expect(
-      resolvePlaygroundPath("/examples/addons/missing", [examples]),
+      resolvePlaygroundPath("/package-console/addons/missing", [examples]),
     ).toBeUndefined();
 
     expect(
-      resolvePlaygroundPath("/examples/extension-points/overview/missing", [
+      resolvePlaygroundPath("/package-console/extension-points/missing", [
         examples,
       ]),
     ).toBeUndefined();

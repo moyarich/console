@@ -1,0 +1,17 @@
+---
+title: "@moyarich/console-addon-imperative-scrolling"
+label: "Package guide"
+description: "Add scrolling and focus commands to the Console panel menu."
+---
+
+# @moyarich/console-addon-imperative-scrolling
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Open the Console ellipsis menu and choose **Scroll to top**, **Latest output**, or **Focus output**. Toggle addon activation to see those commands appear and disappear. Append output to compare pinned and unpinned behavior.
+
+The example creates one stable addon with `useMemo` and passes it to `addons`. It uses `disabledAddonIds` with `IMPERATIVE_SCROLLING_ADDON_ID` to unload the addon temporarily. The Console owns activation and cleanup.
+
+These commands use the shared viewport service. For application-owned buttons and message-ID navigation, use the [ConsoleHandle example](#/package-console/usage/viewport-controls).

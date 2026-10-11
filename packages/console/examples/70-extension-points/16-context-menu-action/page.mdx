@@ -1,0 +1,29 @@
+---
+label: "Context Menu Action"
+title: "consoleExtensionPoints.contextMenuAction"
+description: "Add an action to the context menu and inspect the selected target kind."
+---
+
+Add an action to the context menu and inspect the selected target kind.
+
+## Example
+
+import source from "./example.tsx?raw";
+
+<RunnableExample
+  source={source}
+  sourcePath="example.tsx"
+  title="contextMenuAction"
+/>
+
+## Component-prop example
+
+See the [working example](#/package-console/extension-points/context-menu-action/component-prop) for configuring `contextMenuActions` directly on `<Console>`.
+
+## Component configuration
+
+The `contextMenuActions` component prop receives a context with `kind: "console" | "object" | "message"`. Object contexts include `value`; message contexts include `message`, its visible `index`, and the visible `messages` list. Use addon registration for reusable commands.
+
+Action descriptors support `id`, `label`, `onSelect`, optional `icon`, `ariaLabel`, `variant`, and `separatorBefore`. `visible` and `disabled` accept booleans or context predicates. Custom menu commands participate in Arrow Up/Down, Home, and End navigation. Messages become focusable when custom context or message actions are configured.
+
+For a custom copy command, `formatConsoleObjectForCopy(value)` returns readable JSON when possible, otherwise the object's string form. Pass that text to `writeClipboardText(text)`, which returns a promise and uses the Clipboard API with a fallback when needed.
