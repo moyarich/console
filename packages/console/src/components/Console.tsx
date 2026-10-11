@@ -1060,7 +1060,7 @@ function ConsoleTerminalMode({
       hasMessages={messages.length > 0}
       isEmpty={resolvedEntries.length === 0 && !hasCustomOutput}
       scrollKey={resolvedEntries}
-      copyText={virtualize && !hasCustomOutput ? resolvedEntries.map(({ output }) => output.data).join("\\n") : undefined}
+      copyText={virtualize && !hasCustomOutput ? resolvedEntries.map(({ output }) => output.data).join("\n") : undefined}
       panelActions={resolvedPanelActions}
       contextMenuActions={resolvedContextMenuActions}
       frameDecorators={resolvedFrameDecorators}
