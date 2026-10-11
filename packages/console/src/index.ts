@@ -56,8 +56,6 @@ export type {
   ConsoleServiceToken,
   CreateConsoleAddonManagerOptions,
 } from "./addons";
-export { CodeBlock } from "./components/CodeBlock/CodeBlock";
-export type { CodeBlockProps } from "./components/CodeBlock/CodeBlock";
 export { Console } from "./components/Console";
 export type {
   ConsoleTerminalModeProps,
