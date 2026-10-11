@@ -1,10 +1,25 @@
+/* Search match colors can be themed independently from the Console panel. */
 .console-search-highlight {
-  background: var(--moya-console-search-highlight-bg, #ffdf70);
-  color: var(--moya-console-search-highlight-fg, #231c00);
+  --_console-search-highlight-background-color: var(
+    --console-search-highlight-background-color,
+    light-dark(#ffdf70, #745b16)
+  );
+  --_console-search-highlight-color: var(
+    --console-search-highlight-color,
+    light-dark(#231c00, #fff7d6)
+  );
+  --_console-search-highlight-active-color: var(
+    --console-search-highlight-active-color,
+    var(--console-header-icon-color, currentColor)
+  );
+
+  background: var(--_console-search-highlight-background-color);
+  color: var(--_console-search-highlight-color);
   border-radius: 2px;
   padding: 0 0.2em;
 }
+
 .console-search-highlight[data-active] {
-  outline: 2px solid var(--moya-console-search-highlight-active, currentColor);
+  outline: 2px solid var(--_console-search-highlight-active-color);
   outline-offset: 1px;
 }
