@@ -20,4 +20,4 @@ Version 1 stores structured messages using the core tagged-value serializer and 
 
 Use `stringifyConsoleSession(createConsoleSession(...))` for new snapshots, then `parseConsoleSession(json)` to restore. The returned session is hydrated for rendering. When saving a restored session again, construct a fresh snapshot from its hydrated messages or entries before stringifying rather than assuming an already-hydrated session is still the serialized wire representation.
 
-Snapshots with unknown versions, invalid modes, invalid retention counts, or malformed entry records throw errors. If a future version is introduced, implement an explicit migration instead of silently accepting it as version 1.
+Snapshots with unknown versions, invalid modes, invalid retention counts, or malformed entry records throw errors. For a future format version, implement an explicit migration rather than silently accepting it as version 1.
