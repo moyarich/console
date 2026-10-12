@@ -1,0 +1,30 @@
+---
+label: Virtualization
+title: Virtualized output
+description: Render large retained logs without mounting every message row.
+---
+
+# Virtualized output
+
+When you display thousands of retained messages or process-output entries, enable opt-in windowing:
+
+```tsx
+<Console messages={messages} virtualize />
+<Console mode="terminal" messages={entries} virtualize />
+```
+
+Virtualization limits **mounted React rows**, not retained data. The producer remains responsible for retention, filtering, and disposal.
+
+## Viewport behavior
+
+The virtual viewport initially estimates row heights at 32px, with six extra rows on each side. Expanded inspectable objects can increase row height, and heights are remeasured on resize. Supply the available height and scroll container from the host application; virtualization does not force a fixed panel height.
+
+Use stable, unique message `id` values, especially when filtering or reordering entries. `scrollToMessage(id, { block: "center" })` can reach retained messages outside the mounted window. Messages excluded by active filters cannot be scrolled to in that view.
+
+Search inspects data snapshots rather than only mounted DOM nodes. With virtualization enabled, built-in terminal copy includes all resolved entries rather than just visible rows. Custom output renderers must implement their own windowing when appropriate.
+
+## Performance testing
+
+The regression suite includes a 10,000-message structured-render test and virtual-range checks covering 10,000 and 100,000 rows. These assert bounded mounted-row ranges; **they are not browser frame-rate or memory benchmarks**.
+
+Benchmark your actual workload with expensive decorators and parsers, nested inspectable values, resizing, and continuously appended output. Also verify keyboard and screen-reader behavior using the [high-volume accessibility guide](../36-high-volume-accessibility/page.mdx).
