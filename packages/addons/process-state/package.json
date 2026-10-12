@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-process-state",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Observable process state from OSC terminal control sequences",
   "license": "MIT",
   "type": "module",
@@ -31,10 +31,10 @@
   },
   "devDependencies": {
     "@moyarich/console-core": "0.1.0",
-    "@types/react": "^19.1.12",
-    "react": "^19.2.7",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "react": "^19.2.7",
+    "@types/react": "^19.1.12"
   },
   "repository": {
     "type": "git",

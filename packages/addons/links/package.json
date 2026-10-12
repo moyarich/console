@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-links",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Opt-in HTTP/HTTPS detection through Console link-provider extensions.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-metadata",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Optional source and timestamp presentation for Console messages and process output",
   "license": "MIT",
   "type": "module",

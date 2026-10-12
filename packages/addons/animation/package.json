@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-animation",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Opt-in entry animations for structured console and terminal output.",
   "license": "MIT",
   "type": "module",
@@ -27,14 +27,14 @@
   },
   "peerDependencies": {
     "@moyarich/console-core": "^0.1.0",
-    "motion": "^12.0.0",
-    "react": ">=18"
+    "react": ">=18",
+    "motion": "^12.0.0"
   },
   "devDependencies": {
     "@moyarich/console-core": "0.1.0",
     "@types/react": "^19.1.12",
-    "motion": "^12.0.0",
     "react": "^19.2.7",
+    "motion": "^12.0.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   },
