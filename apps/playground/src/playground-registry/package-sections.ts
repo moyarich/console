@@ -7,7 +7,7 @@ export const PACKAGE_SECTIONS = createPackageSections(
     ["./*/examples/**/page.mdx", "./addons/*/examples/**/page.mdx"],
     { base: "../../../../packages", eager: true },
   ),
-  import.meta.glob<{ name: string }>(
+  import.meta.glob<{ name: string; playgroundOverviewMode?: "visible" | "hidden" | "disabled" }>(
     ["./*/package.json", "./addons/*/package.json"],
     { base: "../../../../packages", eager: true, import: "default" },
   ),
