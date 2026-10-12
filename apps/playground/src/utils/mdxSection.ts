@@ -173,10 +173,7 @@ export function createMdxSection({
     }
 
     if (parts.length === 1) {
-      const meta = parsePageMeta(
-        pageModule.frontmatter,
-        path,
-      );
+      const meta = parsePageMeta(pageModule.frontmatter, path);
       if (meta.navigation === "disabled") continue;
       const page: MdxSectionPage = {
         id: "overview",
