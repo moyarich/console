@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -75,7 +76,7 @@ export function createConsoleMetadataAddon(
               <time className="console-metadata-timestamp">{timestamp}</time>
             )}
           </div>
-          {context.renderDefault()}
+          {context.renderDefault() as ReactNode}
         </div>
       );
     },
