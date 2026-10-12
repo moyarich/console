@@ -1,0 +1,22 @@
+---
+label: xterm terminal
+title: "@moyarich/console-addon-xterm"
+description: Optional xterm.js terminal emulator for Console process output.
+---
+
+# Optional xterm.js renderer
+
+The addon uses `consoleExtensionPoints.outputRenderer` for **terminal mode only**. It introduces no xterm-specific core props. Toggling it removes or reinstates the renderer while keeping the original process chunks.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+## Behavior and limits
+
+- Raw ANSI/VT sequences are interpreted by xterm.js; stream classification and process-control metadata stay attached to the host's source entries and are not rendered as a separate UI.
+- xterm supports text selection and its native link behavior, but links and built-in Console message actions/highlighting are **not** forwarded. The terminal is read-only (`disableStdin`).
+- The addon enables xterm's screen-reader mode. Large streams can still require screen-reader testing; use the built-in renderer for core virtualization and search.
+- Resizing the outer panel does not currently call an xterm fit addon or send a PTY resize signal. The host must coordinate PTY dimensions separately.
+- Incremental append writes avoid unnecessary replay. Source history edits, removal, or clearing cause an xterm reset/replay. The terminal instance is disposed on unmount.
+- This addon adds `@xterm/xterm` only to its own workspace. Consumers that omit the addon do not need xterm.js.
