@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { createHash } from "node:crypto";
 import type { Program } from "estree";
 
 interface Node {
@@ -10,11 +11,23 @@ interface Node {
 }
 
 /** Export only readable content and explicitly embedded raw example sources. */
-export default function remarkSearchIndex() {
+export interface SearchDocument {
+  key: string;
+  text: string;
+  frontmatter: string;
+}
+export default function remarkSearchIndex(
+  options: {
+    onDocument?: (document: SearchDocument) => void;
+    external?: boolean;
+  } = {},
+) {
   return async (tree: Node, file: { path: string }) => {
     const parts: string[] = [];
     const examples = new Set<string>();
+    let frontmatter = "";
     function visit(node: Node) {
+      if (node.type === "yaml") frontmatter = node.value ?? "";
       if (["text", "inlineCode", "code"].includes(node.type) && node.value) {
         parts.push(node.value);
       }
@@ -39,9 +52,13 @@ export default function remarkSearchIndex() {
     visit(tree);
     for (const path of examples) parts.push(await readFile(path, "utf8"));
     const searchText = parts.join("\n");
+    const key = createHash("sha256").update(file.path).digest("hex");
+    options.onDocument?.({ key, text: searchText, frontmatter });
+    const exportName = options.external ? "searchKey" : "searchText";
+    const exportValue = options.external ? key : searchText;
     tree.children?.push({
       type: "mdxjsEsm",
-      value: `export const searchText = ${JSON.stringify(searchText)};`,
+      value: `export const ${exportName} = ${JSON.stringify(exportValue)};`,
       data: {
         estree: {
           type: "Program",
@@ -58,8 +75,8 @@ export default function remarkSearchIndex() {
                 declarations: [
                   {
                     type: "VariableDeclarator",
-                    id: { type: "Identifier", name: "searchText" },
-                    init: { type: "Literal", value: searchText },
+                    id: { type: "Identifier", name: exportName },
+                    init: { type: "Literal", value: exportValue },
                   },
                 ],
               },

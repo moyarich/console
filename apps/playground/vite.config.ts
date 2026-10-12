@@ -8,7 +8,8 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
-import remarkSearchIndex from "./remarkSearchIndex";
+import { sqliteSearchPlugin } from "./sqliteSearchPlugin";
+const search = sqliteSearchPlugin();
 
 function workspaceSource(path: string) {
   return fileURLToPath(new URL(`../../packages/${path}`, import.meta.url));
@@ -20,6 +21,7 @@ export default defineConfig({
     format: "es",
   },
   plugins: [
+    search.plugin,
     {
       enforce: "pre",
       ...mdx({
@@ -27,7 +29,7 @@ export default defineConfig({
         remarkPlugins: [
           remarkFrontmatter,
           remarkGfm,
-          remarkSearchIndex,
+          search.remark,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
         ],
         rehypePlugins: [rehypeSlug, rehypeExtractToc, rehypeExportToc],

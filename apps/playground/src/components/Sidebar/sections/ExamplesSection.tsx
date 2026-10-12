@@ -11,9 +11,9 @@ import {
   Waypoints,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
-import { filterSidebarItems } from "../../../utils/sidebarSearch";
+import { useSidebarSearch } from "../../../search/useSidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface ExamplesSectionProps {
@@ -181,10 +181,11 @@ export function ExamplesSection({
   );
 
   const normalizedQuery = query.trim().toLowerCase();
-  const navigationItems = useMemo(
-    () => filterSidebarItems(section.items, normalizedQuery),
-    [normalizedQuery, section.items],
-  );
+  const {
+    items: navigationItems,
+    loading,
+    error,
+  } = useSidebarSearch(section.items, normalizedQuery);
   const searching = normalizedQuery.length > 0;
 
   function toggleGroup(groupId: string) {
@@ -225,6 +226,11 @@ export function ExamplesSection({
       </div>
 
       <div className="sidebar-groups">
+        {(loading || error) && (
+          <p className="sidebar-empty" role="status">
+            {error ?? "Searching…"}
+          </p>
+        )}
         <ExampleTree
           items={navigationItems}
           value={value}
@@ -235,7 +241,7 @@ export function ExamplesSection({
           onToggleGroup={toggleGroup}
         />
 
-        {!navigationItems.length && (
+        {!navigationItems.length && !loading && !error && (
           <div className="sidebar-empty">
             <Search aria-hidden="true" />
             <strong>No examples found</strong>

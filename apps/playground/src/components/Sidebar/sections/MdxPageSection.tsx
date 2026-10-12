@@ -1,7 +1,7 @@
 import { ChevronDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
-import { filterSidebarItems } from "../../../utils/sidebarSearch";
+import { useSidebarSearch } from "../../../search/useSidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface MdxPageSectionProps {
@@ -117,10 +117,11 @@ export function MdxPageSection({
   );
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredItems = useMemo(
-    () => filterSidebarItems(section.items, normalizedQuery),
-    [section.items, normalizedQuery],
-  );
+  const {
+    items: filteredItems,
+    loading,
+    error,
+  } = useSidebarSearch(section.items, normalizedQuery);
   const headingId = `sidebar-${section.id}-title`;
 
   function toggleGroup(groupId: string) {
@@ -157,6 +158,11 @@ export function MdxPageSection({
         />
       </label>
       <div className="sidebar-section-items">
+        {(loading || error) && (
+          <p className="sidebar-empty" role="status">
+            {error ?? "Searching…"}
+          </p>
+        )}
         <MdxSectionItems
           items={filteredItems}
           value={value}
@@ -166,7 +172,7 @@ export function MdxPageSection({
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
-        {filteredItems.length === 0 && (
+        {filteredItems.length === 0 && !loading && !error && (
           <p className="sidebar-empty" role="status">
             No matching pages
           </p>
