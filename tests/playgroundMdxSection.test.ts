@@ -19,11 +19,21 @@ describe("playground MDX sections", () => {
       "./page.mdx": module("Overview"),
       "./01-guide/page.mdx": module("Guide"),
     };
-    const hidden = createMdxSection({ id: "docs", label: "Docs", modules, overviewMode: "hidden" });
+    const hidden = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules,
+      overviewMode: "hidden",
+    });
     expect(hidden.getPage("overview")?.label).toBe("Overview");
     expect(hidden.pages.map((page) => page.id)).toEqual(["overview", "guide"]);
     expect(hidden.items.map((item) => item.id)).toEqual(["guide"]);
-    const disabled = createMdxSection({ id: "docs", label: "Docs", modules, overviewMode: "disabled" });
+    const disabled = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules,
+      overviewMode: "disabled",
+    });
     expect(disabled.getPage("overview")).toBeUndefined();
     expect(disabled.defaultPage?.id).toBe("guide");
   });
