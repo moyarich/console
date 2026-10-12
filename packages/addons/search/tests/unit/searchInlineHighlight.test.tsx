@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { ConsoleLinkedText } from "../packages/console/src/links";
-import { ConsoleTextHighlightContext } from "../packages/console/src/textHighlights";
+import { ConsoleLinkedText } from "../../../../../packages/console/src/links";
+import { ConsoleTextHighlightContext } from "../../../../../packages/console/src/textHighlights";
 import { ConsoleStdout } from "@moyarich/console";
 import {
   consoleExtensionPoints,
