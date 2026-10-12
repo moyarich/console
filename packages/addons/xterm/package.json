@@ -34,8 +34,8 @@
     "@xterm/xterm": "^6.0.0"
   },
   "devDependencies": {
-    "@moyarich/console": "0.1.0",
-    "@moyarich/console-core": "0.1.0",
+    "@moyarich/console": "0.1.1",
+    "@moyarich/console-core": "0.1.1",
     "@types/react": "^19.1.12",
     "react": "^19.2.7",
     "typescript": "^5.9.2",
