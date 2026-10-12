@@ -1,4 +1,4 @@
-import { createMdxSection, type MdxPageModule } from "@src/utils/mdxSection";
+import { createMdxSection, type MdxPageModule } from "@src/content/mdxSection";
 
 const modules = import.meta.glob<MdxPageModule>("./**/page.mdx", {
   base: "../../../../docs",
