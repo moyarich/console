@@ -92,7 +92,6 @@ function MdxSectionItems({
                   value={value}
                   outlineValue={outlineValue}
                   collapsedGroupIds={collapsedGroupIds}
-          searching={Boolean(normalizedQuery)}
                   searching={searching}
                   onChange={onChange}
                   onToggleGroup={onToggleGroup}
@@ -166,6 +165,7 @@ export function MdxPageSection({
           value={value}
           outlineValue={outlineValue}
           collapsedGroupIds={collapsedGroupIds}
+          searching={Boolean(normalizedQuery)}
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
