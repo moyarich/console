@@ -14,6 +14,19 @@ function module(label: string): MdxPageModule {
 }
 
 describe("playground MDX sections", () => {
+  it("accepts canonical frontmatter while retaining legacy meta compatibility", () => {
+    const section = createMdxSection({
+      id: "docs",
+      label: "Docs",
+      modules: {
+        "./page.mdx": { default: Page, frontmatter: { label: "Home", navigation: "hidden" } },
+        "./01-guide/page.mdx": module("Guide"),
+      },
+    });
+    expect(section.getPage("overview")?.label).toBe("Home");
+    expect(section.items.map((item) => item.id)).toEqual(["guide"]);
+  });
+
   it("supports visible, hidden, and disabled pages through MDX frontmatter", () => {
     const modules = {
       "./page.mdx": {
