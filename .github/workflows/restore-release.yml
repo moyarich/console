@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Package selector: all, package name, or directory'
+        description: "Package selector: all, package name, or directory"
         required: true
         default: all
         type: string
