@@ -1,5 +1,5 @@
 import { createPackageNavigation } from "./packageNavigation";
-import type { MdxPageModule } from "../utils/mdxSection";
+import type { MdxPageModule } from "../content/mdxSection";
 import { createPackageSections } from "./createPackageSections";
 
 /** Statically declared workspace globs required for Vite's build-time discovery. */
