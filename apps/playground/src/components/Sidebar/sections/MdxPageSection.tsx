@@ -1,6 +1,6 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { MdxSection, MdxSectionItem } from "../../../utils/mdxSection";
+import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface MdxPageSectionProps {
