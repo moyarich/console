@@ -19,7 +19,7 @@ A processor receives `output` (the latest immutable state), `text` (ANSI-strippe
 
 ## Reusable addon example
 
-This example uses three ordered processors: normalize a worker prefix, enrich runtime metadata, and promote a task event to a structured value. The metadata is visible to later processors, but it is **not rendered automatically**; the promoted value demonstrates how downstream consumers can use it.
+This example uses two ordered processors: the first normalizes a worker prefix and enriches runtime metadata; the second promotes a task event to a structured value. The metadata is visible to later processors, but it is **not rendered automatically**; the promoted value demonstrates how downstream consumers can use it.
 
 import source from "./example.tsx?raw";
 
