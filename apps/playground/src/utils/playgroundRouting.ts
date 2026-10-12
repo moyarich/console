@@ -1,5 +1,5 @@
 import type { Toc } from "@stefanprobst/rehype-extract-toc";
-import type { MdxSection, MdxSectionItem, MdxSectionPage } from "./mdxSection";
+import type { MdxSection, MdxSectionItem, MdxSectionPage } from "../content/mdxSection";
 
 /** A heading in a page outline, including any nested headings. */
 type TocEntry = Toc[number];
