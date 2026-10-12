@@ -1,0 +1,66 @@
+.console-progress-indicator {
+  --_progress-fg: var(
+    --console-progress-color,
+    var(--console-color-accent, currentColor)
+  );
+  --_progress-track: var(
+    --console-progress-track,
+    color-mix(in srgb, currentColor 12%, transparent)
+  );
+  --_progress-text: var(--console-progress-text, inherit);
+  /* This overlay has no layout height: updates cannot resize or scroll the terminal. */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--console-progress-gap, 0.75rem);
+  box-sizing: border-box;
+  height: 0;
+  min-height: 0;
+  padding: 0 var(--console-progress-inline-padding, 0.75rem);
+  pointer-events: none;
+  color: var(--_progress-text);
+  font: inherit;
+  transform: translateY(var(--console-progress-offset, 0.25rem));
+}
+.console-progress-indicator__label {
+  flex: none;
+  font-size: 0.8em;
+}
+.console-progress-indicator__track {
+  flex: 1;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--_progress-track);
+  overflow: hidden;
+}
+.console-progress-indicator__fill {
+  height: 100%;
+  background: var(--_progress-fg);
+  transition: width 120ms linear;
+}
+.console-progress-indicator[data-state="2"] .console-progress-indicator__fill {
+  background: var(--console-progress-error, #b42318);
+}
+.console-progress-indicator[data-state="4"] .console-progress-indicator__fill {
+  background: var(--console-progress-paused, #a46b00);
+}
+.console-progress-indicator[data-state="3"] .console-progress-indicator__fill {
+  animation: console-progress-motion 1.5s ease-in-out infinite alternate;
+}
+@keyframes console-progress-motion {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(230%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-progress-indicator__fill {
+    transition: none;
+    animation: none !important;
+  }
+}

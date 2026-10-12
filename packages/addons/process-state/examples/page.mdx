@@ -6,10 +6,25 @@ description: Extract safe semantic process metadata from supported OSC control s
 
 # Process-state addon
 
-Register `createConsoleProcessStateAddon()` on the terminal Console. The addon processes raw chunks before normalization, removes recognized OSC controls from rendered text, and exposes `consoleProcessStateService` for host observers. The addon instance also exposes its `controller`, with `getState()`, `getEvents()`, and `subscribe(listener)`.
+Register `createConsoleProcessStateAddon()` on the terminal Console. For an opt-in visual indicator use `createConsoleProcessStateAddon({ indicator: true })`. The default is headless. The addon processes raw chunks before normalization, removes recognized OSC controls from rendered text, and exposes `consoleProcessStateService` for host observers. The addon instance also exposes its `controller`, with `getState()`, `getEvents()`, and `subscribe(listener)`.
 
 Supported protocols are OSC `9;4` progress, `9;9` current working directory, `133` prompt and command lifecycle, and `777;notify` notification requests. Both BEL and ST terminators are recognized. Notifications are **data only**: no operating-system notifications are triggered. Title and message payloads are sanitized and length-limited. Unknown OSC codes are preserved as source text.
 
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
+
+## Progress examples
+
+The interactive example demonstrates normal determinate updates, clamping values above 100%, indeterminate progress, pause, error, completion at 100%, and clear/reset. The indicator is independent of terminal text and does not need any xterm progress dependency.
+
+| OSC sequence          | Effect                               |
+| --------------------- | ------------------------------------ |
+| `ESC ] 9;4;1;75 BEL`  | Normal progress at 75%               |
+| `ESC ] 9;4;1;150 BEL` | Clamp to 100%                        |
+| `ESC ] 9;4;3 BEL`     | Indeterminate, retain previous value |
+| `ESC ] 9;4;4;0 BEL`   | Paused, retain previous value        |
+| `ESC ] 9;4;2;0 BEL`   | Error, retain previous value         |
+| `ESC ] 9;4;0 BEL`     | Reset to zero and hide indicator     |
+
+Customize colors and layout with `--console-progress-color`, `--console-progress-track`, `--console-progress-error`, `--console-progress-paused`, `--console-progress-width`, and `--console-progress-offset`. The optional indicator stays outside the scrollable terminal surface.
