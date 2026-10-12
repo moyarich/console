@@ -109,14 +109,23 @@ jobs:
           {
             echo "# Package draft selection"
             echo
+            echo "**$COUNT packages selected for release drafting**"
+            echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            printf '| Trigger | `%s` |\n' "$EVENT_NAME"
-            echo "| Selected packages | **$COUNT** |"
+            printf '| Trigger | `%s` |\\n' "$EVENT_NAME"
+            printf '| Package selector | `%s` |\\n' "${INPUT_PACKAGE:-changed packages}"
             echo
-            echo '~~~json'
-            jq . <<< "$SELECTED"
-            echo '~~~'
+            echo "## Selected packages"
+            echo
+            echo "| Type | Package | Version | Directory |"
+            echo "| --- | --- | --- | --- |"
+            jq -r '.[] | [
+              (if .directory == "packages/console-core" or .directory == "packages/console" then "Core" else "Addon" end),
+              ("`" + .name + "`"),
+              ("`" + .version + "`"),
+              ("`" + .directory + "`")
+            ] | "| " + join(" | ") + " |"' <<< "$SELECTED"
           } >> "$GITHUB_STEP_SUMMARY"
 
   draft:
