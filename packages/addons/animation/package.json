@@ -31,7 +31,7 @@
     "react": ">=18"
   },
   "devDependencies": {
-    "@moyarich/console-core": "0.1.0",
+    "@moyarich/console-core": "0.1.1",
     "@types/react": "^19.1.12",
     "motion": "^12.0.0",
     "react": "^19.2.7",
