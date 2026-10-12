@@ -65,6 +65,9 @@ jobs:
       matrix: ${{ steps.select.outputs.matrix }}
       count: ${{ steps.select.outputs.count }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - id: select
         env:
           SELECTOR: ${{ inputs.package }}
@@ -77,6 +80,30 @@ jobs:
           else
             SELECTED="$(jq -cn --argjson packages "$PACKAGES_JSON" --arg selector "$SELECTOR" '[ $packages[] | select(.directory == $selector or .name == $selector) ]')"
           fi
+          # Topologically order selected packages before publishing.
+          SELECTED="$(SELECTED="$SELECTED" node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const selected = JSON.parse(process.env.SELECTED);
+          const byName = new Map(selected.map(pkg => [pkg.name, pkg]));
+          const done = new Set(), visiting = new Set(), sorted = [];
+          function visit(pkg) {
+            if (done.has(pkg.name)) return;
+            if (visiting.has(pkg.name)) throw new Error(`Workspace dependency cycle: ${pkg.name}`);
+            visiting.add(pkg.name);
+            const manifest = JSON.parse(readFileSync(`${pkg.directory}/package.json`, 'utf8'));
+            const dependencies = { ...manifest.dependencies, ...manifest.optionalDependencies, ...manifest.peerDependencies };
+            for (const name of Object.keys(dependencies).sort()) {
+              const dependency = byName.get(name);
+              if (dependency) visit(dependency);
+            }
+            visiting.delete(pkg.name);
+            done.add(pkg.name);
+            sorted.push(pkg);
+          }
+          for (const pkg of selected) visit(pkg);
+          process.stdout.write(JSON.stringify(sorted));
+          NODE
+          )"
           COUNT="$(jq 'length' <<< "$SELECTED")"
           if [ "$COUNT" -eq 0 ]; then
             echo "::error::No publishable packages matched $SELECTOR"
@@ -93,6 +120,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.select-packages.outputs.count != '0'
     strategy:
       fail-fast: false
+      max-parallel: 1 # Publish selected packages in dependency order.
       matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
     concurrency:
       group: npm-publish-${{ github.repository }}-${{ matrix.directory }}
