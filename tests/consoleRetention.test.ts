@@ -56,6 +56,12 @@ describe("bounded Console history", () => {
       history,
     );
   });
+  it("counts discarded initial entries even when retention is zero", () => {
+    const history = retainConsoleHistory([message("old"), message("new")], 0);
+    expect(history.messages).toEqual([]);
+    expect(history.droppedCount).toBe(2);
+    expect(clearConsoleHistory().droppedCount).toBe(0);
+  });
   it("supports zero retention", () => {
     const next = appendConsoleRetainedMessage(
       { messages: [], droppedCount: 0 },
