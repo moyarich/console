@@ -154,9 +154,9 @@ jobs:
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
-            printf '| Package selector | \`%s\` |\\n' "$SELECTOR"
-            printf '| Version mode | \`%s\` |\\n' "$VERSION_MODE"
-            printf '| Dry run | \`%s\` |\\n' "${{ inputs.dry-run }}"
+            printf '| Package selector | `%s` |\n' "$SELECTOR"
+            printf '| Version mode | `%s` |\n' "$VERSION_MODE"
+            printf '| Dry run | `%s` |\n' "${{ inputs.dry-run }}"
             echo
             echo "## Packages"
             echo
@@ -164,9 +164,9 @@ jobs:
             echo "| --- | --- | --- | --- |"
             jq -r '.[] | [
               (if .directory == "packages/console-core" or .directory == "packages/console" then "Core" else "Addon" end),
-              ("\`" + .name + "\`"),
-              ("\`" + .currentVersion + "\`"),
-              ("\`" + .version + "\`")
+              ("`" + .name + "`"),
+              ("`" + .currentVersion + "`"),
+              ("`" + .version + "`")
             ] | "| " + join(" | ") + " |"' <<< "$SELECTED"
           } >> "$GITHUB_STEP_SUMMARY"
 
