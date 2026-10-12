@@ -60,8 +60,6 @@ interface CreateMdxSectionOptions {
   label: string;
   modules: Record<string, MdxPageModule>;
   defaultPageId?: string;
-  /** Controls whether a root page.mdx is listed, link-only, or omitted. */
-  overviewMode?: "visible" | "hidden" | "disabled";
 }
 
 interface MutableMdxSectionGroup {
@@ -162,7 +160,6 @@ export function createMdxSection({
   label,
   modules,
   defaultPageId,
-  overviewMode = "visible",
 }: CreateMdxSectionOptions): MdxSection {
   const root = new Map<string, MutableMdxSectionItem>();
 
@@ -176,8 +173,8 @@ export function createMdxSection({
     }
 
     if (parts.length === 1) {
-      if (overviewMode === "disabled") continue;
       const meta = parsePageMeta(pageModule.meta, path);
+      if (meta.navigation === "disabled") continue;
       const page: MdxSectionPage = {
         id: "overview",
         order: Number.MIN_SAFE_INTEGER,
@@ -213,6 +210,7 @@ export function createMdxSection({
     const pageDirectory = directories.at(-1)!;
     const groupDirectories = directories.slice(0, -1);
     const meta = parsePageMeta(pageModule.meta, path);
+    if (meta.navigation === "disabled") continue;
     const pageId = directories.map((directory) => directory.id).join("/");
     const page: MdxSectionPage = {
       id: pageId,
@@ -288,12 +286,18 @@ export function createMdxSection({
 
   const allItems = sortItems(root.values());
   const pages = collectPages(allItems);
-  const items =
-    overviewMode === "hidden"
-      ? allItems.filter(
-          (item) => item.type !== "page" || item.page.id !== "overview",
-        )
-      : allItems;
+  // Hidden pages retain their URLs but are omitted from the menu, at any depth.
+  const hideNavigationPages = (entries: readonly MdxSectionItem[]): MdxSectionItem[] =>
+    entries.flatMap((item): MdxSectionItem[] => {
+      if (item.type === "page") {
+        return item.page.meta.navigation === "hidden" ? [] : [item];
+      }
+      const children = hideNavigationPages(item.group.items);
+      return children.length
+        ? [{ ...item, group: { ...item.group, items: children } }]
+        : [];
+    });
+  const items = hideNavigationPages(allItems);
   const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {
