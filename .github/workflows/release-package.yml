@@ -15,7 +15,7 @@ on:
         description: Resolve each package version
         type: choice
         required: true
-        default: package-json
+        default: auto
         options: [auto, bump, package-json, exact]
       initial-version:
         description: Initial release version for auto mode
