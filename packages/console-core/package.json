@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-core",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Core addon SDK and runtime contracts for @moyarich/console hosts and addons.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-diagnostics",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "First-party console pipeline diagnostics addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "@moyarich/console-core": "^0.1.0"
   },
   "devDependencies": {
-    "@moyarich/console-core": "0.1.1",
+    "@moyarich/console-core": "0.1.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   },

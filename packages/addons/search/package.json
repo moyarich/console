@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-search",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Optional text search and match navigation for Console",
   "license": "MIT",
   "type": "module",
@@ -30,11 +30,11 @@
     "react": ">=18"
   },
   "devDependencies": {
-    "@moyarich/console-core": "0.1.1",
-    "@types/react": "^19.1.12",
-    "react": "^19.2.7",
+    "@moyarich/console-core": "0.1.0",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "react": "^19.2.7",
+    "@types/react": "^19.1.12"
   },
   "repository": {
     "type": "git",

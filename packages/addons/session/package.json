@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-session",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Versioned Console session snapshot and restore helpers",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "@moyarich/console": "^0.1.0"
   },
   "devDependencies": {
-    "@moyarich/console": "0.1.1",
+    "@moyarich/console": "0.1.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   },
