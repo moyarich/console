@@ -1,5 +1,5 @@
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../utils/mdxSection";
 import { PageOutlineItems } from "./PageOutlineItems";
 
@@ -15,6 +15,7 @@ interface MdxSectionItemsProps {
   value?: string;
   outlineValue?: string;
   collapsedGroupIds: ReadonlySet<string>;
+  searching: boolean;
   onChange: (id: string, outlineId?: string) => void;
   onToggleGroup: (id: string) => void;
 }
@@ -24,6 +25,7 @@ function MdxSectionItems({
   value,
   outlineValue,
   collapsedGroupIds,
+  searching,
   onChange,
   onToggleGroup,
 }: MdxSectionItemsProps) {
@@ -66,7 +68,7 @@ function MdxSectionItems({
           );
         }
 
-        const collapsed = collapsedGroupIds.has(item.group.id);
+        const collapsed = !searching && collapsedGroupIds.has(item.group.id);
 
         return (
           <div className="sidebar-tree-group" key={item.id}>
@@ -90,6 +92,8 @@ function MdxSectionItems({
                   value={value}
                   outlineValue={outlineValue}
                   collapsedGroupIds={collapsedGroupIds}
+          searching={Boolean(normalizedQuery)}
+                  searching={searching}
                   onChange={onChange}
                   onToggleGroup={onToggleGroup}
                 />
@@ -102,6 +106,19 @@ function MdxSectionItems({
   );
 }
 
+/** Preserve ancestor groups when filtering the documentation tree. */
+function filterItems(items: readonly MdxSectionItem[], query: string, ancestors: readonly string[] = []): MdxSectionItem[] {
+  if (!query) return [...items];
+  return items.flatMap((item): MdxSectionItem[] => {
+    if (item.type === "page") {
+      const searchable = [item.page.label, item.page.description ?? "", item.page.id, ...ancestors].join(" ").toLowerCase();
+      return searchable.includes(query) ? [item] : [];
+    }
+    const children = filterItems(item.group.items, query, [...ancestors, item.group.label]);
+    return children.length ? [{ ...item, group: { ...item.group, items: children } }] : [];
+  });
+}
+
 export function MdxPageSection({
   section,
   value,
@@ -111,6 +128,9 @@ export function MdxPageSection({
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const [query, setQuery] = useState("");
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredItems = useMemo(() => filterItems(section.items, normalizedQuery), [section.items, normalizedQuery]);
   const headingId = `sidebar-${section.id}-title`;
 
   function toggleGroup(groupId: string) {
@@ -136,15 +156,20 @@ export function MdxPageSection({
         </div>
       </div>
 
+      <label className="sidebar-search" style={{ margin: "0 6px" }}>
+        <Search aria-hidden="true" />
+        <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${section.label}…`} aria-label={`Search ${section.label}`} />
+      </label>
       <div className="sidebar-section-items">
         <MdxSectionItems
-          items={section.items}
+          items={filteredItems}
           value={value}
           outlineValue={outlineValue}
           collapsedGroupIds={collapsedGroupIds}
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
+        {filteredItems.length === 0 && <p className="sidebar-empty" role="status">No matching pages</p>}
       </div>
     </section>
   );
