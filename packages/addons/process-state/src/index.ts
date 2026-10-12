@@ -124,7 +124,7 @@ function interpret(payload: string): ProcessStateEvent | undefined {
     const value = parts[3] === undefined ? undefined : Number(parts[3]);
     if (
       parts[3] !== undefined &&
-      (!/^\d{1,3}$/.test(parts[3]) || value < 0 || value > 100)
+      (!/^\d{1,3}$/.test(parts[3]) || (value ?? -1) < 0 || (value ?? 101) > 100)
     )
       return undefined;
     return {
