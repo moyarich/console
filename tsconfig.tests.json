@@ -13,6 +13,7 @@
   },
   "include": [
     "tests",
+    "apps/playground/src/search/modules.d.ts",
     "packages/addons/*/tests",
     "stories",
     ".storybook",
