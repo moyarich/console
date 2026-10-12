@@ -5,7 +5,6 @@ import { parsePageMeta, type PageMeta } from "./pageMetadata";
 
 export interface MdxPageModule {
   default: ComponentType;
-  meta?: unknown;
   frontmatter?: unknown;
   tableOfContents?: Toc;
 }
@@ -175,7 +174,7 @@ export function createMdxSection({
 
     if (parts.length === 1) {
       const meta = parsePageMeta(
-        pageModule.frontmatter ?? pageModule.meta,
+        pageModule.frontmatter,
         path,
       );
       if (meta.navigation === "disabled") continue;
@@ -213,7 +212,7 @@ export function createMdxSection({
       );
     const pageDirectory = directories.at(-1)!;
     const groupDirectories = directories.slice(0, -1);
-    const meta = parsePageMeta(pageModule.meta, path);
+    const meta = parsePageMeta(pageModule.frontmatter, path);
     if (meta.navigation === "disabled") continue;
     const pageId = directories.map((directory) => directory.id).join("/");
     const page: MdxSectionPage = {
