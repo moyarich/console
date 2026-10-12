@@ -11,7 +11,7 @@ it("uses canonical package routes for every package documentation link", () => {
   const modules = Object.fromEntries(
     paths.map((path) => [
       `./${path}`,
-      { default: () => null, meta: { label: "Page" } },
+      { default: () => null, frontmatter: { label: "Page" } },
     ]),
   );
   const owners = [
