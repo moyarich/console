@@ -1,15 +1,14 @@
 # Changelog
 
-## Unreleased
-
-### Fixed
-
-- Keep the outer Console surface from scrolling or expanding with xterm output.
-- Fit xterm columns and rows to the available panel height and width as its container resizes.
-
 ## 0.1.0
 
 ### Added
 
-- Opt-in xterm.js terminal output renderer with append-only streaming, replay on source replacement, and unmount disposal.
-- Terminal selection and ANSI/VT escape handling, preserving the built-in renderer when the addon is absent.
+- Use xterm.js as an optional terminal renderer, including ANSI/VT escape handling and terminal text selection.
+- Stream append-only output efficiently, replay content when the source is replaced, and dispose terminal resources on unmount.
+- Keep Console's built-in output renderer available when the addon is not installed.
+
+### Fixed
+
+- Prevent the outer Console surface from expanding or scrolling unexpectedly as xterm output grows.
+- Fit terminal columns and rows to the available panel dimensions as the container resizes.
