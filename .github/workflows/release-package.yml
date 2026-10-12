@@ -199,16 +199,42 @@ jobs:
           const selected = JSON.parse(process.env.PACKAGES).include;
           const lockPath = "package-lock.json";
           const lock = JSON.parse(readFileSync(lockPath, "utf8"));
-          for (const pkg of selected) {
-            const manifestPath = `${pkg.directory}/package.json`;
+          const selectedByName = new Map(selected.map(pkg => [pkg.name, pkg]));
+          const workspaceEntries = Object.entries(lock.packages ?? {})
+            .filter(([directory, meta]) => directory && !directory.startsWith("node_modules/") && meta.name);
+          const files = [];
+          for (const [directory, meta] of workspaceEntries) {
+            const manifestPath = `${directory}/package.json`;
             const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-            if (manifest.name !== pkg.name) throw Error(`Package name mismatch: ${pkg.directory}`);
-            if (!lock.packages?.[pkg.directory]) throw Error(`Workspace missing from lockfile: ${pkg.directory}`);
-            manifest.version = pkg.version;
-            lock.packages[pkg.directory].version = pkg.version;
-            writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+            if (manifest.name !== meta.name) throw Error(`Workspace mismatch: ${directory}`);
+            const target = selectedByName.get(manifest.name);
+            if (target) {
+              if (target.directory !== directory) throw Error(`Selected directory mismatch: ${manifest.name}`);
+              manifest.version = target.version;
+              meta.version = target.version;
+            }
+            // Keep local exact-version dependencies in sync with the selected
+            // packages so npm ci uses the workspace symlinks, not npm registry.
+            for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
+              if (!manifest[field]) continue;
+              for (const [name, range] of Object.entries(manifest[field])) {
+                const dependency = selectedByName.get(name);
+                if (!dependency || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(range)) continue;
+                manifest[field][name] = dependency.version;
+              }
+            }
+            for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
+              if (manifest[field]) meta[field] = { ...manifest[field] };
+            }
+            files.push([manifestPath, manifest]);
           }
-          writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
+          for (const pkg of selected) {
+            if (!workspaceEntries.some(([directory]) => directory === pkg.directory)) {
+              throw Error(`Selected workspace missing from lockfile: ${pkg.directory}`);
+            }
+          }
+          for (const [path, value] of files) writeFileSync(path, JSON.stringify(value, null, 2) + "\\n");
+          writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\\n");
           NODE
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
