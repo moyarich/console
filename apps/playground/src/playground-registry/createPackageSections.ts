@@ -23,7 +23,9 @@ export function createPackageSections(
     if (!path.startsWith("./") || !path.endsWith("/page.mdx")) {
       throw new Error(`Invalid package page path "${path}".`);
     }
-    const owner = owners.find((candidate) => path.startsWith(`./${candidate}/`));
+    const owner = owners.find((candidate) =>
+      path.startsWith(`./${candidate}/`),
+    );
     if (!owner) {
       throw new Error(`Missing package metadata for page "${path}".`);
     }
