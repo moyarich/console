@@ -9,7 +9,6 @@ export function XtermOutput({ entries }: { entries: readonly (ConsoleStdoutEntry
   const element = useRef<HTMLDivElement>(null);
   const terminal = useRef<Terminal | null>(null);
   const written = useRef<readonly (ConsoleStdoutEntry | string)[]>([]);
-  const generation = useRef(0);
   useEffect(() => {
     if (!element.current) return;
     const instance = new Terminal({
@@ -21,7 +20,6 @@ export function XtermOutput({ entries }: { entries: readonly (ConsoleStdoutEntry
     instance.open(element.current);
     terminal.current = instance;
     written.current = [];
-    generation.current++;
     return () => {
       generation.current++;
       terminal.current = null;
