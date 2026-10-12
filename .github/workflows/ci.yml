@@ -11,13 +11,6 @@ permissions:
   packages: read
 
 jobs:
-  node:
-    name: Shared Node checks
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_node-ci.yml@v0
-    with:
-      package-directory: "."
-      node-version: "24"
-
   repository-checks:
     name: Repository checks
     runs-on: ubuntu-latest
@@ -72,7 +65,19 @@ jobs:
             cat .prettierignore >> /tmp/console-prettier-ignore
           fi
           npx prettier . --check --ignore-path /tmp/console-prettier-ignore
-      - run: npm run build:packages
-      - run: npm run build:playground
-      - run: npm run build-storybook
-      - run: npm run pack:packages
+      # Build once; downstream tests and tarball validation reuse these outputs.
+      - name: Build workspaces
+        run: npm run build:packages
+      - name: Test
+        run: npm test
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build Storybook
+        run: npm run build-storybook
+      - name: Validate package tarballs without rebuilding
+        run: |
+          node scripts/run-addon-workspaces.mjs pack
+          npm pack --workspace @moyarich/console-core --dry-run
+          npm pack --workspace @moyarich/console --dry-run
