@@ -10,15 +10,23 @@ on:
         options:
           - packages/console-core
           - packages/console
-          - packages/addons/imperative-scrolling
+          - packages/addons/animation
+          - packages/addons/annotations
+          - packages/addons/console-feed
           - packages/addons/data-export
           - packages/addons/diagnostics
           - packages/addons/filtering
+          - packages/addons/imperative-scrolling
+          - packages/addons/links
           - packages/addons/markdown
-          - packages/addons/annotations
+          - packages/addons/metadata
           - packages/addons/navigation
-          - packages/addons/selection
+          - packages/addons/process-state
           - packages/addons/resizable
+          - packages/addons/search
+          - packages/addons/selection
+          - packages/addons/session
+          - packages/addons/xterm
       registry:
         description: Publish destination
         required: true
