@@ -1,4 +1,9 @@
-import { useContext, useSyncExternalStore, type ReactNode } from "react";
+import {
+  Fragment,
+  useContext,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { ConsoleTextHighlightContext } from "./textHighlights";
 import type {
   ConsoleLink as CoreConsoleLink,
@@ -217,12 +222,14 @@ export function ConsoleLinkedText({
       if (rangeEnd <= rangeStart) continue;
       if (cursor < rangeStart) {
         pieces.push(
-          renderText(
-            text.slice(cursor, rangeStart),
-            `${key}-plain-${index}`,
-            cursor,
-            rangeStart,
-          ),
+          <Fragment key={`${key}-plain-${index}`}>
+            {renderText(
+              text.slice(cursor, rangeStart),
+              `${key}-plain-${index}`,
+              cursor,
+              rangeStart,
+            )}
+          </Fragment>,
         );
       }
       pieces.push(
@@ -242,10 +249,13 @@ export function ConsoleLinkedText({
       );
       cursor = rangeEnd;
     }
-    if (cursor < end)
+    if (cursor < end) {
       pieces.push(
-        renderText(text.slice(cursor, end), `${key}-tail`, cursor, end),
+        <Fragment key={`${key}-tail`}>
+          {renderText(text.slice(cursor, end), `${key}-tail`, cursor, end)}
+        </Fragment>,
       );
+    }
     return pieces.length ? <>{pieces}</> : renderText(value, key, start, end);
   };
   const resolved = resolveConsoleLinks(text, context, {
@@ -263,12 +273,14 @@ export function ConsoleLinkedText({
   resolved.forEach((link, index) => {
     if (offset < link.start) {
       parts.push(
-        highlightText(
-          text.slice(offset, link.start),
-          `text-${index}`,
-          offset,
-          link.start,
-        ),
+        <Fragment key={`text-${index}`}>
+          {highlightText(
+            text.slice(offset, link.start),
+            `text-${index}`,
+            offset,
+            link.start,
+          )}
+        </Fragment>,
       );
     }
 
@@ -320,7 +332,9 @@ export function ConsoleLinkedText({
 
   if (offset < text.length) {
     parts.push(
-      highlightText(text.slice(offset), "text-end", offset, text.length),
+      <Fragment key="text-end">
+        {highlightText(text.slice(offset), "text-end", offset, text.length)}
+      </Fragment>,
     );
   }
 
