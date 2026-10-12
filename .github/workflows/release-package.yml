@@ -8,6 +8,38 @@ on:
         required: true
         default: all
         type: string
+      version-mode:
+        description: Resolve each package version
+        type: choice
+        required: true
+        default: package-json
+        options: [auto, bump, package-json, exact]
+      initial-version:
+        description: Initial release version for auto mode
+        type: string
+        required: true
+        default: "0.1.0"
+      version-bump:
+        description: SemVer increment for bump mode
+        type: choice
+        required: true
+        default: patch
+        options: [patch, minor, major, prepatch, preminor, premajor, prerelease]
+      exact-version:
+        description: Version for exact mode (all selected packages)
+        type: string
+        required: false
+        default: ""
+      update-major-tag:
+        description: Update package-scoped major compatibility alias
+        type: boolean
+        required: true
+        default: true
+      draft:
+        description: Keep the GitHub Releases in draft state
+        type: boolean
+        required: true
+        default: false
       dry-run:
         description: Validate without creating a GitHub Release, tag, or package
         required: true
@@ -46,11 +78,16 @@ jobs:
         with:
           ref: main
           persist-credentials: false
+          fetch-depth: 0
       - name: Select packages
         id: package
         env:
           SELECTOR: ${{ inputs.package }}
           PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
+          VERSION_MODE: ${{ inputs.version-mode }}
+          VERSION_BUMP: ${{ inputs.version-bump }}
+          EXACT_VERSION: ${{ inputs.exact-version }}
+          INITIAL_VERSION: ${{ inputs.initial-version }}
         shell: bash
         run: |
           set -euo pipefail
@@ -58,6 +95,49 @@ jobs:
             if $selector == "all" then $packages
             else [$packages[] | select(.name == $selector or .directory == $selector)] end
           ')"
+          SELECTED="$(SELECTED="$SELECTED" node --input-type=module <<'NODE'
+          import { execFileSync } from "node:child_process";
+          const selected=JSON.parse(process.env.SELECTED);
+          const valid=v=>/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(v);
+          function bump(version, kind) {
+            const match=version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?/);
+            if (!match) throw Error("Invalid current version: "+version);
+            let major=+match[1],minor=+match[2],patch=+match[3],pre=match[4];
+            if(kind==="major") return `${major+1}.0.0`;
+            if(kind==="minor") return `${major}.${minor+1}.0`;
+            if(kind==="patch") return `${major}.${minor}.${patch+1}`;
+            if(kind==="premajor") return `${major+1}.0.0-0`;
+            if(kind==="preminor") return `${major}.${minor+1}.0-0`;
+            if(kind==="prepatch") return `${major}.${minor}.${patch+1}-0`;
+            if(kind==="prerelease") {
+              if(!pre) return `${major}.${minor}.${patch+1}-0`;
+              const parts=pre.split("."),last=parts.at(-1);
+              if(/^\d+$/.test(last)) parts[parts.length-1]=String(+last+1);
+              else parts.push("0");
+              return `${major}.${minor}.${patch}-${parts.join(".")}`;
+            }
+            throw Error("Unsupported bump: "+kind);
+          }
+          const packages=selected.map(pkg=>{
+            const current=pkg.version;
+            let version=current;
+            if(process.env.VERSION_MODE==="exact") version=process.env.EXACT_VERSION;
+            if(process.env.VERSION_MODE==="bump") version=bump(current,process.env.VERSION_BUMP);
+            if(process.env.VERSION_MODE==="auto") {
+              const tags=execFileSync("git",["tag","-l",pkg.directory+"@*"],{encoding:"utf8"}).split("\n").map(x=>x.trim()).filter(Boolean);
+              const previous=tags.map(tag=>tag.slice(pkg.directory.length+1)).filter(valid).filter(v=>!v.includes("-")).sort((a,b)=>{
+                const x=a.split(".").map(Number),y=b.split(".").map(Number);
+                for(let i=0;i<3;i++) if(x[i]!==y[i]) return x[i]-y[i];
+                return 0;
+              }).at(-1);
+              version=previous?bump(previous,"patch"):process.env.INITIAL_VERSION;
+            }
+            if(!valid(version)) throw Error("Invalid resolved SemVer for "+pkg.name+": "+version);
+            return {...pkg,currentVersion:current,version};
+          });
+          process.stdout.write(JSON.stringify(packages));
+          NODE
+          )"
           COUNT="$(jq 'length' <<< "$SELECTED")"
           if [ "$COUNT" -eq 0 ]; then
             echo "::error::No publishable packages matched $SELECTOR"
@@ -69,10 +149,47 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Selected $COUNT publishable packages" >> "$GITHUB_STEP_SUMMARY"
 
+  prepare-versions:
+    name: Prepare package versions
+    needs: select
+    if: ${{ !inputs.dry-run && inputs.version-mode != 'package-json' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Update selected manifests and lockfile
+        env:
+          PACKAGES: ${{ needs.select.outputs.matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGES="$PACKAGES" node --input-type=module <<'NODE'
+          import { execFileSync } from "node:child_process";
+          const selected=JSON.parse(process.env.PACKAGES).include;
+          for(const pkg of selected) {
+            execFileSync("npm",["pkg","set",`version=${pkg.version}`,"--workspace",pkg.name],{stdio:"inherit"});
+          }
+          NODE
+          npm install --package-lock-only --ignore-scripts --include=optional
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add packages package-lock.json
+            git commit -m "release: prepare selected package versions"
+            git push origin HEAD:main
+          fi
+
   gate:
     name: Validate package release
-    needs: select
-    if: ${{ needs.select.outputs.count != '0' }}
+    needs: [select, prepare-versions]
+    if: ${{ always() && needs.select.result == 'success' && (needs.prepare-versions.result == 'success' || needs.prepare-versions.result == 'skipped') && needs.select.outputs.count != '0' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
@@ -82,6 +199,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -113,5 +232,7 @@ jobs:
       changelog-file: ${{ format('{0}/CHANGELOG.md', matrix.directory) }}
       target-ref: main
       create-tag: true
-      draft: false
+      major-tag: ${{ format('{0}@v{1}', matrix.directory, split(matrix.version, '.')[0]) }}
+      update-major-tag: ${{ inputs.update-major-tag }}
+      draft: ${{ inputs.draft }}
       dry-run: ${{ inputs.dry-run }}
