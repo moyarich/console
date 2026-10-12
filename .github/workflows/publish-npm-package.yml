@@ -37,6 +37,27 @@ on:
           - npm
           - github
           - all
+      version-mode:
+        description: Publish manifest version or an exact version
+        required: true
+        default: package-json
+        type: choice
+        options: [package-json, exact]
+      exact-version:
+        description: Version when using exact mode
+        required: false
+        default: ""
+        type: string
+      verify-git-tag:
+        description: Require matching package Git tag before publishing
+        required: true
+        default: true
+        type: boolean
+      node-version:
+        description: Node.js version for publishing
+        required: true
+        default: "24"
+        type: string
       dry-run:
         description: Preview publishing without changing the npm registry
         required: true
@@ -52,6 +73,8 @@ permissions: {}
 
 jobs:
   discover-packages:
+    permissions:
+      contents: read
     uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
     with:
       packages-directory: packages
@@ -138,12 +161,13 @@ jobs:
     with:
       target-branch: main
       package-directory: ${{ matrix.directory }}
-      version-mode: package-json
+      version-mode: ${{ inputs.version-mode }}
+      exact-version: ${{ inputs.exact-version }}
       registry: ${{ inputs.registry }}
       dry-run: ${{ inputs.dry-run }}
       tag: ${{ inputs.tag }}
-      verify-git-tag: true
-      node-version: "24"
+      verify-git-tag: ${{ inputs.verify-git-tag }}
+      node-version: ${{ inputs.node-version }}
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
   publish-console:
@@ -164,12 +188,13 @@ jobs:
     with:
       target-branch: main
       package-directory: ${{ matrix.directory }}
-      version-mode: package-json
+      version-mode: ${{ inputs.version-mode }}
+      exact-version: ${{ inputs.exact-version }}
       registry: ${{ inputs.registry }}
       dry-run: ${{ inputs.dry-run }}
       tag: ${{ inputs.tag }}
-      verify-git-tag: true
-      node-version: "24"
+      verify-git-tag: ${{ inputs.verify-git-tag }}
+      node-version: ${{ inputs.node-version }}
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
   publish-addons:
@@ -190,11 +215,12 @@ jobs:
     with:
       target-branch: main
       package-directory: ${{ matrix.directory }}
-      version-mode: package-json
+      version-mode: ${{ inputs.version-mode }}
+      exact-version: ${{ inputs.exact-version }}
       registry: ${{ inputs.registry }}
       dry-run: ${{ inputs.dry-run }}
       tag: ${{ inputs.tag }}
-      verify-git-tag: true
-      node-version: "24"
+      verify-git-tag: ${{ inputs.verify-git-tag }}
+      node-version: ${{ inputs.node-version }}
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
