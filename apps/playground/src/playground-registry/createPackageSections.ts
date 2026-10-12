@@ -13,7 +13,7 @@ export function createPackageSections(
   modules: Record<string, MdxPageModule>,
   packages: Record<
     string,
-    { name: string; playgroundOverviewMode?: "visible" | "hidden" | "disabled" }
+    { name: string }
   >,
 ): PackageSection[] {
   const grouped = new Map<string, Record<string, MdxPageModule>>();
@@ -46,7 +46,6 @@ export function createPackageSections(
           id: `package-${owner.replaceAll("/", "-")}`,
           label: metadata.name,
           modules: pages,
-          overviewMode: metadata.playgroundOverviewMode ?? "visible",
         }),
       };
     });
