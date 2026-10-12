@@ -147,7 +147,28 @@ jobs:
             echo "matrix=$(jq -cn --argjson packages "$SELECTED" '{include: $packages}')"
             echo "count=$COUNT"
           } >> "$GITHUB_OUTPUT"
-          echo "Selected $COUNT publishable packages" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "# Package release selection"
+            echo
+            echo "**$COUNT publishable packages selected**"
+            echo
+            echo "| Setting | Value |"
+            echo "| --- | --- |"
+            printf '| Package selector | \`%s\` |\\n' "$SELECTOR"
+            printf '| Version mode | \`%s\` |\\n' "$VERSION_MODE"
+            printf '| Dry run | \`%s\` |\\n' "${{ inputs.dry-run }}"
+            echo
+            echo "## Packages"
+            echo
+            echo "| Type | Package | Current version | Release version |"
+            echo "| --- | --- | --- | --- |"
+            jq -r '.[] | [
+              (if .directory == "packages/console-core" or .directory == "packages/console" then "Core" else "Addon" end),
+              ("\`" + .name + "\`"),
+              ("\`" + .currentVersion + "\`"),
+              ("\`" + .version + "\`")
+            ] | "| " + join(" | ") + " |"' <<< "$SELECTED"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   prepare-versions:
     name: Prepare package versions
