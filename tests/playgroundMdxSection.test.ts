@@ -14,6 +14,20 @@ function module(label: string): MdxPageModule {
 }
 
 describe("playground MDX sections", () => {
+  it("supports hidden and disabled root overview modes", () => {
+    const modules = {
+      "./page.mdx": module("Overview"),
+      "./01-guide/page.mdx": module("Guide"),
+    };
+    const hidden = createMdxSection({ id: "docs", label: "Docs", modules, overviewMode: "hidden" });
+    expect(hidden.getPage("overview")?.label).toBe("Overview");
+    expect(hidden.pages.map((page) => page.id)).toEqual(["overview", "guide"]);
+    expect(hidden.items.map((item) => item.id)).toEqual(["guide"]);
+    const disabled = createMdxSection({ id: "docs", label: "Docs", modules, overviewMode: "disabled" });
+    expect(disabled.getPage("overview")).toBeUndefined();
+    expect(disabled.defaultPage?.id).toBe("guide");
+  });
+
   it("supports a root page.mdx as the section overview and default page", () => {
     const section = createMdxSection({
       id: "docs",
