@@ -1,6 +1,4 @@
 .console-panel .console-surface:has(.console-xterm-output) {
-  /* Xterm has its own scroll viewport. The outer Console scroller must not
-     scroll or grow as terminal rows are written. */
   min-height: 0;
   min-width: 0;
   overflow: hidden;
@@ -8,9 +6,7 @@
   flex-direction: column;
 }
 
-.console-panel
-  .console-surface:has(.console-xterm-output)
-  > .console-scroll-end-spacer {
+.console-panel .console-surface:has(.console-xterm-output) > .console-scroll-end-spacer {
   display: none;
 }
 
@@ -30,5 +26,5 @@
   box-sizing: border-box;
   height: 100%;
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--console-xterm-padding, 0.5rem);
 }
