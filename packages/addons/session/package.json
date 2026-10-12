@@ -47,5 +47,8 @@
     "addon",
     "session",
     "persistence"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }

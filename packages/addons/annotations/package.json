@@ -51,5 +51,8 @@
     "annotations",
     "bookmarks",
     "developer-tools"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }

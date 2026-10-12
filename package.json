@@ -23,11 +23,11 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "checks": "npm run format && npm run lint && npm run typecheck",
+    "checks": "npm run format:check && npm run lint && npm run typecheck",
     "hooks:install": "git config core.hooksPath .githooks",
-    "build:addons": "node scripts/run-addon-workspaces.mjs build",
+    "build:addons": "npm run build --workspaces --if-present",
     "build:core": "npm run build --workspace @moyarich/console-core",
-    "build:packages": "npm run build:package && npm run build:addons",
+    "build:packages": "npm run build --workspaces --if-present",
     "pack:packages": "npm run build:packages && node scripts/run-addon-workspaces.mjs pack && npm pack --workspace @moyarich/console-core --dry-run && npm pack --workspace @moyarich/console --dry-run"
   },
   "engines": {

@@ -53,5 +53,8 @@
   "sideEffects": [
     "./src/components/ConsoleSearchControls/ConsoleSearchControls.css",
     "./src/components/ConsoleSearchHighlight/ConsoleSearchHighlight.css"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }
