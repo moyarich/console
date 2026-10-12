@@ -44,9 +44,7 @@ export function createPackageSections(
       // A single collection folder is the content root, irrespective of its name.
       // When several collections coexist, preserve their paths to avoid collisions.
       const names = Object.keys(pages);
-      const roots = new Set(
-        names.map((path) => path.slice(2).split("/")[0]),
-      );
+      const roots = new Set(names.map((path) => path.slice(2).split("/")[0]));
       const modules =
         roots.size === 1 && names.every((path) => path.split("/").length > 2)
           ? Object.fromEntries(
