@@ -1,4 +1,5 @@
 import * as MetadataAddonPackage from "@moyarich/console-addon-metadata";
+import * as ProcessStateAddonPackage from "@moyarich/console-addon-process-state";
 import * as AnnotationsAddonPackage from "@moyarich/console-addon-annotations";
 import * as AnimationAddonPackage from "@moyarich/console-addon-animation";
 import * as NavigationAddonPackage from "@moyarich/console-addon-navigation";
@@ -23,6 +24,7 @@ import * as JSXRuntime from "react/jsx-runtime";
 /** Built-in dependencies available to all runnable playground examples. */
 export const DEFAULT_RUNTIME_MODULES: Readonly<Record<string, unknown>> = {
   "@moyarich/console-addon-metadata": MetadataAddonPackage,
+  "@moyarich/console-addon-process-state": ProcessStateAddonPackage,
   "@moyarich/console-addon-annotations": AnnotationsAddonPackage,
   "@moyarich/console-addon-animation": AnimationAddonPackage,
   "@moyarich/console-addon-navigation": NavigationAddonPackage,

@@ -1,0 +1,15 @@
+---
+label: Process state
+title: Process-state metadata addon
+description: Extract safe semantic process metadata from supported OSC control sequences.
+---
+
+# Process-state addon
+
+Register `createConsoleProcessStateAddon()` on the terminal Console. The addon processes raw chunks before normalization, removes recognized OSC controls from rendered text, and exposes `consoleProcessStateService` for host observers. The addon instance also exposes its `controller`, with `getState()`, `getEvents()`, and `subscribe(listener)`.
+
+Supported protocols are OSC `9;4` progress, `9;9` current working directory, `133` prompt and command lifecycle, and `777;notify` notification requests. Both BEL and ST terminators are recognized. Notifications are **data only**: no operating-system notifications are triggered. Title and message payloads are sanitized and length-limited. Unknown OSC codes are preserved as source text.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
