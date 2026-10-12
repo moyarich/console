@@ -41,14 +41,16 @@ export function getMetadataLabels(
   context: ConsoleOutputEntryDecoratorContext,
   options: ConsoleMetadataOptions = {},
 ): { source?: string; timestamp?: string } {
-  const raw = context.mode === "console" ? context.message : context.entry.metadata;
+  const raw =
+    context.mode === "console" ? context.message : context.entry.metadata;
   const source = options.source === false ? undefined : raw?.source;
   const time = options.timestamp === false ? undefined : raw?.timestamp;
   const mode = options.mode ?? "absolute";
-  const timestamp = typeof time === "number" && Number.isFinite(time)
-    ? (options.formatTimestamp?.(time, mode) ??
-      formatMetadataTimestamp(time, mode, options.now?.() ?? Date.now()))
-    : undefined;
+  const timestamp =
+    typeof time === "number" && Number.isFinite(time)
+      ? (options.formatTimestamp?.(time, mode) ??
+        formatMetadataTimestamp(time, mode, options.now?.() ?? Date.now()))
+      : undefined;
   return {
     source: typeof source === "string" && source.trim() ? source : undefined,
     timestamp: timestamp || undefined,
@@ -56,7 +58,9 @@ export function getMetadataLabels(
 }
 
 /** Wraps the host-rendered entry without editing its source data. */
-export function createConsoleMetadataAddon(options: ConsoleMetadataOptions = {}): ConsoleAddon {
+export function createConsoleMetadataAddon(
+  options: ConsoleMetadataOptions = {},
+): ConsoleAddon {
   const decorator: ConsoleOutputEntryDecorator = {
     render(context) {
       const { source, timestamp } = getMetadataLabels(context, options);
@@ -64,8 +68,12 @@ export function createConsoleMetadataAddon(options: ConsoleMetadataOptions = {})
       return (
         <div className="console-metadata-entry">
           <div className="console-metadata-labels">
-            {source && <span className="console-metadata-source">{source}</span>}
-            {timestamp && <time className="console-metadata-timestamp">{timestamp}</time>}
+            {source && (
+              <span className="console-metadata-source">{source}</span>
+            )}
+            {timestamp && (
+              <time className="console-metadata-timestamp">{timestamp}</time>
+            )}
           </div>
           {context.renderDefault()}
         </div>
@@ -75,9 +83,13 @@ export function createConsoleMetadataAddon(options: ConsoleMetadataOptions = {})
   return {
     id: CONSOLE_METADATA_ADDON_ID,
     activate(host) {
-      host.extensions.register(consoleExtensionPoints.outputEntryDecorator, decorator, {
-        id: `${CONSOLE_METADATA_ADDON_ID}:output-entry`,
-      });
+      host.extensions.register(
+        consoleExtensionPoints.outputEntryDecorator,
+        decorator,
+        {
+          id: `${CONSOLE_METADATA_ADDON_ID}:output-entry`,
+        },
+      );
     },
   };
 }
