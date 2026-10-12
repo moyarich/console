@@ -11,15 +11,23 @@ import {
 } from "@moyarich/console-addon-xterm";
 
 const xtermCss = readFileSync(
-  fileURLToPath(new URL("../packages/addons/xterm/src/XtermOutput.css", import.meta.url)),
+  fileURLToPath(
+    new URL("../packages/addons/xterm/src/XtermOutput.css", import.meta.url),
+  ),
   "utf8",
 );
 
 describe("optional xterm renderer", () => {
   it("keeps outer Console scroll fixed while xterm owns its scroll viewport", () => {
-    expect(xtermCss).toContain(".console-panel .console-surface:has(.console-xterm-output)");
-    expect(xtermCss).toMatch(/\.console-surface:has\(\.console-xterm-output\)[^{]*\{[^}]*min-height: 0;[^}]*overflow: hidden;/s);
-    expect(xtermCss).toMatch(/\.console-xterm-output \{[^}]*flex: 1 1 0;[^}]*height: 0;/s);
+    expect(xtermCss).toContain(
+      ".console-panel .console-surface:has(.console-xterm-output)",
+    );
+    expect(xtermCss).toMatch(
+      /\.console-surface:has\(\.console-xterm-output\)[^{]*\{[^}]*min-height: 0;[^}]*overflow: hidden;/s,
+    );
+    expect(xtermCss).toMatch(
+      /\.console-xterm-output \{[^}]*flex: 1 1 0;[^}]*height: 0;/s,
+    );
     expect(xtermCss).toContain(".console-scroll-end-spacer");
   });
 

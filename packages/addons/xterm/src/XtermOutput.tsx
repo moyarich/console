@@ -47,7 +47,8 @@ export function XtermOutput({
     instance.open(element.current);
     const container = element.current;
     const resizeToContainer = () => {
-      const screen = instance.element?.querySelector<HTMLElement>(".xterm-screen");
+      const screen =
+        instance.element?.querySelector<HTMLElement>(".xterm-screen");
       if (!screen || !container.isConnected) return;
       const cellWidth = screen.offsetWidth / instance.cols;
       const cellHeight = screen.offsetHeight / instance.rows;
@@ -55,14 +56,28 @@ export function XtermOutput({
       // Match the 0.5rem padding on each side of the xterm element.
       const xtermElement = instance.element;
       const styles = xtermElement ? getComputedStyle(xtermElement) : null;
-      const horizontalPadding = styles ? parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight) : 0;
-      const verticalPadding = styles ? parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom) : 0;
-      const cols = Math.max(2, Math.floor((container.clientWidth - horizontalPadding) / cellWidth));
-      const rows = Math.max(1, Math.floor((container.clientHeight - verticalPadding) / cellHeight));
-      if (cols !== instance.cols || rows !== instance.rows) instance.resize(cols, rows);
+      const horizontalPadding = styles
+        ? parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight)
+        : 0;
+      const verticalPadding = styles
+        ? parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom)
+        : 0;
+      const cols = Math.max(
+        2,
+        Math.floor((container.clientWidth - horizontalPadding) / cellWidth),
+      );
+      const rows = Math.max(
+        1,
+        Math.floor((container.clientHeight - verticalPadding) / cellHeight),
+      );
+      if (cols !== instance.cols || rows !== instance.rows)
+        instance.resize(cols, rows);
     };
     resizeToContainer();
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resizeToContainer);
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(resizeToContainer);
     observer?.observe(container);
     terminal.current = instance;
     written.current = [];
