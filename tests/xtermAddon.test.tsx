@@ -22,6 +22,14 @@ describe("optional xterm renderer", () => {
     ).toContain("ready");
   });
 
+  it("appends new output and replays replacements or clear operations", () => {
+    const previous = [{ id: "a", data: "one" }];
+    expect(isAppendOnly(previous, [...previous, { id: "b", data: "two" }])).toBe(true);
+    expect(isAppendOnly(previous, [{ id: "a", data: "changed" }])).toBe(false);
+    expect(isAppendOnly(previous, [])).toBe(false);
+    expect(isAppendOnly([], [])).toBe(true);
+  });
+
   it("creates a distinct removable addon with no source mutation", () => {
     const addon = createConsoleXtermAddon();
     expect(addon.id).toBe("@moyarich/console-addon-xterm");
