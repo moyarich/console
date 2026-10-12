@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: Package name or package directory
+        description: all, package name, or package directory
         required: true
+        default: all
         type: string
       dry-run:
         description: Validate without creating a GitHub Release, tag, or package
@@ -20,87 +21,59 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  discover-packages:
+    name: Discover publishable packages
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
+    with:
+      packages-directory: packages
+      use-workspaces: true
+      require-publish-config: true
+
   select:
-    name: Resolve package
+    name: Resolve release selection
+    needs: discover-packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
     outputs:
-      name: ${{ steps.package.outputs.name }}
-      directory: ${{ steps.package.outputs.directory }}
-      version: ${{ steps.package.outputs.version }}
-      tag: ${{ steps.package.outputs.tag }}
-      release-name: ${{ steps.package.outputs.release-name }}
+      matrix: ${{ steps.package.outputs.matrix }}
+      count: ${{ steps.package.outputs.count }}
     steps:
       - name: Checkout main
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@v7
         with:
           ref: main
-          fetch-depth: 0
-
-      - name: Resolve package
+          persist-credentials: false
+      - name: Select packages
         id: package
         env:
           SELECTOR: ${{ inputs.package }}
+          PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
         shell: bash
         run: |
           set -euo pipefail
-
-          SELECTOR="$SELECTOR" node --input-type=module <<'NODE' > /tmp/package.json
-          import fs from "node:fs";
-          import path from "node:path";
-
-          function walk(directory) {
-            return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-              const target = path.join(directory, entry.name);
-              if (entry.isDirectory()) return walk(target);
-              return entry.name === "package.json" ? [target] : [];
-            });
-          }
-
-          const packages = walk("packages")
-            .map((manifestPath) => {
-              const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-              return {
-                name: manifest.name,
-                version: manifest.version,
-                directory: path.dirname(manifestPath).replaceAll("\\", "/"),
-                private: manifest.private === true,
-              };
-            })
-            .filter((pkg) => pkg.name && pkg.version && !pkg.private);
-
-          const selected = packages.filter(
-            (pkg) => pkg.name === process.env.SELECTOR || pkg.directory === process.env.SELECTOR,
-          );
-
-          if (selected.length !== 1) {
-            console.error(`Expected exactly one package for selector "${process.env.SELECTOR}", found ${selected.length}.`);
-            process.exit(1);
-          }
-
-          process.stdout.write(JSON.stringify(selected[0]));
-          NODE
-
-          RESULT="$(cat /tmp/package.json)"
-
-          NAME="$(jq -r '.name' <<< "$RESULT")"
-          DIRECTORY="$(jq -r '.directory' <<< "$RESULT")"
-          VERSION="$(jq -r '.version' <<< "$RESULT")"
-          TAG="$DIRECTORY@$VERSION"
-          RELEASE_NAME="$NAME v$VERSION"
-
+          SELECTED="$(jq -cn --argjson packages "$PACKAGES_JSON" --arg selector "$SELECTOR" '
+            if $selector == "all" then $packages
+            else [$packages[] | select(.name == $selector or .directory == $selector)] end
+          ')"
+          COUNT="$(jq 'length' <<< "$SELECTED")"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error::No publishable packages matched $SELECTOR"
+            exit 1
+          fi
           {
-            echo "name=$NAME"
-            echo "directory=$DIRECTORY"
-            echo "version=$VERSION"
-            echo "tag=$TAG"
-            echo "release-name=$RELEASE_NAME"
+            echo "matrix=$(jq -cn --argjson packages "$SELECTED" '{include: $packages}')"
+            echo "count=$COUNT"
           } >> "$GITHUB_OUTPUT"
+          echo "Selected $COUNT publishable packages" >> "$GITHUB_STEP_SUMMARY"
 
   gate:
     name: Validate package release
     needs: select
+    if: ${{ needs.select.outputs.count != '0' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -116,7 +89,7 @@ jobs:
       # Only validate the selected package artifact at release time.
       - name: Build and pack selected package
         env:
-          PACKAGE_NAME: ${{ needs.select.outputs.name }}
+          PACKAGE_NAME: ${{ matrix.name }}
         run: |
           npm run build --workspace "$PACKAGE_NAME"
           npm pack --workspace "$PACKAGE_NAME" --dry-run
@@ -124,14 +97,18 @@ jobs:
   release:
     name: GitHub package release
     needs: [select, gate]
+    if: ${{ needs.select.outputs.count != '0' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     permissions:
       contents: write
     uses: moyarich/reusable-workflows/.github/workflows/reusable_release.yml@v0
     with:
-      version: ${{ needs.select.outputs.version }}
-      release-tag: ${{ needs.select.outputs.tag }}
-      release-name: ${{ needs.select.outputs.release-name }}
-      changelog-file: ${{ format('{0}/CHANGELOG.md', needs.select.outputs.directory) }}
+      version: ${{ matrix.version }}
+      release-tag: ${{ format('{0}@{1}', matrix.directory, matrix.version) }}
+      release-name: ${{ format('{0} v{1}', matrix.name, matrix.version) }}
+      changelog-file: ${{ format('{0}/CHANGELOG.md', matrix.directory) }}
       target-ref: main
       create-tag: true
       draft: false
