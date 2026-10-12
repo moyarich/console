@@ -1,15 +1,12 @@
 # Changelog
 
-## Unreleased
-
-### Added
-
-- Opt-in accessible progress strip via `createConsoleProcessStateAddon({ indicator: true })` or the standalone `ConsoleProgressIndicator`; remains headless by default.
-- Native OSC 9;4 progress semantics: clear, normal, error, indeterminate, pause and 0–100 clamping without any xterm dependency.
-
 ## 0.1.0
 
 ### Added
 
-- Stateful OSC 9;4 progress, OSC 9;9 cwd, OSC 133 command lifecycle and OSC 777 notification parsing.
-- A subscribable, host-accessible process-state service. Notifications are only data; no OS notification side effects.
+- Track terminal progress, current directory, command lifecycle, and notifications through OSC 9;4, OSC 9;9, OSC 133, and OSC 777 sequences.
+- Access parsed process state through a subscribable controller and host service without requiring xterm.js.
+- Display an accessible progress strip with `createConsoleProcessStateAddon({ indicator: true })` or the standalone `ConsoleProgressIndicator`; the addon remains headless by default.
+- Support OSC 9;4 progress states for clear, normal, error, indeterminate, and pause, with percentage values clamped to 0–100.
+
+Notifications are exposed as data; they do not trigger operating-system notifications.

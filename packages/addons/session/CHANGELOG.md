@@ -1,14 +1,13 @@
 # Changelog
 
-## Unreleased
-
-### Fixed
-
-- Preserve JSON-safe rich terminal metadata across session save/restore, including cyclic values.
-- Reject terminal entries with malformed metadata.
-
 ## 0.1.0
 
 ### Added
 
-- Versioned Console session create, stringify and parse helpers with dropped-history metadata.
+- Create, serialize, parse, and restore versioned Console sessions for structured messages and terminal output.
+- Preserve dropped-history counts in session snapshots.
+
+### Fixed
+
+- Preserve JSON-safe rich terminal metadata when saving and restoring sessions, including cyclic values.
+- Reject malformed terminal metadata instead of accepting invalid snapshots.
