@@ -112,7 +112,8 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --include=optional
-      - run: npm run lint && npm run format:check && npm run typecheck && npm test
+      # Repository-wide lint, formatting, tests and typechecking already run in CI.
+      # Only validate the selected package artifact at release time.
       - name: Build and pack selected package
         env:
           PACKAGE_NAME: ${{ needs.select.outputs.name }}
