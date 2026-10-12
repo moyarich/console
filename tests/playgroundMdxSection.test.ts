@@ -19,7 +19,10 @@ describe("playground MDX sections", () => {
       id: "docs",
       label: "Docs",
       modules: {
-        "./page.mdx": { default: Page, frontmatter: { label: "Home", navigation: "hidden" } },
+        "./page.mdx": {
+          default: Page,
+          frontmatter: { label: "Home", navigation: "hidden" },
+        },
         "./01-guide/page.mdx": module("Guide"),
       },
     });
