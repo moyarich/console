@@ -58,3 +58,21 @@ const restore = captureConsole({
 // later
 restore();
 ```
+
+## Bounded history and discarded messages
+
+`useConsoleMessages({ maxMessages: 1000 })` retains the newest messages and reports `droppedCount` when older entries are discarded. `retainedCount` is derived directly from `messages.length`. Initial messages and direct `setMessages` replacements obey the same retention limit. `clear()` and changes to `resetKey` reset both history and the dropped counter.
+
+```tsx
+const { messages, droppedCount, retainedCount, clear } = useConsoleMessages({
+  maxMessages: 1000,
+});
+
+return <>
+  {droppedCount > 0 && <p role="status">{droppedCount} older messages discarded</p>}
+  <Console messages={messages} onClear={clear} />
+  <small>{retainedCount} messages retained</small>
+</>;
+```
+
+Session snapshots and exports only include the messages still retained. If dropped-history accounting should appear in an exported report or restored session, persist `droppedCount` separately as application metadata; dropped messages cannot be recovered from the current history.
