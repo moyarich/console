@@ -2,7 +2,7 @@ import {
   createMdxSection,
   type MdxPageModule,
   type MdxSection,
-} from "../utils/mdxSection";
+} from "../content/mdxSection";
 
 export interface PackageSection extends MdxSection {
   directory: string;
