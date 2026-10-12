@@ -5,6 +5,23 @@ import "@xterm/xterm/css/xterm.css";
 import "./XtermOutput.css";
 
 /** Terminal instance lifecycle is owned by the addon; incoming source chunks remain immutable. */
+/** Whether retained terminal chunks can be appended without replaying prior output. */
+export function isAppendOnly(
+  previous: readonly (ConsoleStdoutEntry | string)[],
+  next: readonly (ConsoleStdoutEntry | string)[],
+): boolean {
+  return previous.length <= next.length && previous.every((entry, i) => {
+    const current = next[i];
+    return entry === current || (
+      typeof entry !== "string" && typeof current !== "string" &&
+      current !== undefined &&
+      entry.id === current.id &&
+      entry.data === current.data &&
+      entry.stream === current.stream
+    );
+  });
+}
+
 export function XtermOutput({
   entries,
 }: {
@@ -48,6 +65,22 @@ export function XtermOutput({
             entry.data === (entries[i] as ConsoleStdoutEntry).data &&
             entry.stream === (entries[i] as ConsoleStdoutEntry).stream),
       );
+    if (!appendOnly) instance.reset();
+    const start = appendOnly ? old.length : 0;
+    for (let i = start; i < entries.length; i++) {
+      const entry = entries[i]!;
+      instance.write(typeof entry === "string" ? entry : entry.data);
+    }
+    written.current = [...entries];
+  }, [entries]);
+  return (
+    <div
+      ref={element}
+      className="console-xterm-output"
+      aria-label="Terminal output"
+    />
+  );
+}    const appendOnly = isAppendOnly(old, entries);
     if (!appendOnly) instance.reset();
     const start = appendOnly ? old.length : 0;
     for (let i = start; i < entries.length; i++) {
