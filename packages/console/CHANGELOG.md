@@ -10,3 +10,8 @@
 - Capture existing console calls or create independent console-compatible producers.
 - Message management, transport, and serialization tools for embedded developer experiences, including iframe and WebSocket integrations.
 - Extensible rendering, links, actions, and utility APIs for application-owned Console interfaces.
+
+### Release preparation
+
+- Document opt-in large-log virtualization, output viewport behavior, package add-ons, and the embedded playground's runnable examples.
+- Maintain compatibility between the React Console package and its independently released core SDK and addons.
