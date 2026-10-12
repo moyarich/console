@@ -87,7 +87,7 @@ export type {
   ConsoleObjectActionContext,
   ConsoleSurfaceActionContext,
 } from "./actions";
-export { ConsoleStdout } from "./components/ConsoleStdout";
+export { ConsoleStdout, strictJsonOutputParser } from "./components/ConsoleStdout";
 export { Terminal } from "./components/Terminal";
 export type { TerminalOutputEntry, TerminalProps } from "./components/Terminal";
 export type {
