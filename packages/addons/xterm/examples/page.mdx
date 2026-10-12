@@ -20,3 +20,5 @@ import source from "./example.tsx?raw";
 - Resizing the outer panel does not currently call an xterm fit addon or send a PTY resize signal. The host must coordinate PTY dimensions separately.
 - Incremental append writes avoid unnecessary replay. Source history edits, removal, or clearing cause an xterm reset/replay. The terminal instance is disposed on unmount.
 - This addon adds `@xterm/xterm` only to its own workspace. Consumers that omit the addon do not need xterm.js.
+
+The addon is intended for displaying captured output, not as an interactive PTY input bridge. For interactive shells, integrate input and resize events in the host separately.
