@@ -29,7 +29,7 @@
     "@moyarich/console-core": "^0.1.0"
   },
   "devDependencies": {
-    "@moyarich/console-core": "0.1.0",
+    "@moyarich/console-core": "0.1.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   },
