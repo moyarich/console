@@ -5,6 +5,7 @@ import {
   createConsoleXtermAddon,
   xtermOutputRenderer,
   XtermOutput,
+  isAppendOnly,
 } from "@moyarich/console-addon-xterm";
 
 describe("optional xterm renderer", () => {
