@@ -17,8 +17,27 @@ import source from "./example.tsx?raw";
 - Raw ANSI/VT sequences are interpreted by xterm.js; stream classification and process-control metadata stay attached to the host's source entries and are not rendered as a separate UI.
 - xterm supports text selection and its native link behavior, but links and built-in Console message actions/highlighting are **not** forwarded. The terminal is read-only (`disableStdin`).
 - The addon enables xterm's screen-reader mode. Large streams can still require screen-reader testing; use the built-in renderer for core virtualization and search.
-- Resizing the outer panel does not currently call an xterm fit addon or send a PTY resize signal. The host must coordinate PTY dimensions separately.
+- Resizing the outer panel updates xterm's rows and columns based on available space. This does not send PTY resize signals; the host must coordinate process dimensions separately.
 - Incremental append writes avoid unnecessary replay. Source history edits, removal, or clearing cause an xterm reset/replay. The terminal instance is disposed on unmount.
 - This addon adds `@xterm/xterm` only to its own workspace. Consumers that omit the addon do not need xterm.js.
 
 The addon is intended for displaying captured output, not as an interactive PTY input bridge. For interactive shells, integrate input and resize events in the host separately.
+
+## Customizing dimensions
+
+The terminal fits the Console output area's available height and width; its **content does not grow the outer scroller**. Set the Console `height` or `--console-panel-height` to choose the overall panel height, and `--console-min-height` if you need a smaller output surface than the default minimum. The addon exposes `--console-xterm-padding` (default `0.5rem`) and `--console-xterm-background`.
+
+```tsx
+<Console
+  mode="terminal"
+  messages={entries}
+  addons={[xtermAddon]}
+  style={{
+    height: 360,
+    "--console-min-height": "0px",
+    "--console-xterm-padding": "12px",
+  } as React.CSSProperties}
+/>
+```
+
+Xterm's internal viewport handles scrollback. Keep the flex/overflow constraints intact when applying additional component styles; overriding them can reintroduce layout jumps.
