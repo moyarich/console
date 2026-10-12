@@ -114,7 +114,13 @@ export function createProcessStateController(): ProcessStateController {
 }
 
 const sanitize = (value: string) =>
-  value.replace(/[\x00-\x1f\x7f\x9b]/g, "").slice(0, 1024);
+  Array.from(value)
+    .filter((character) => {
+      const code = character.charCodeAt(0);
+      return code >= 32 && code !== 127 && code !== 155;
+    })
+    .join("")
+    .slice(0, 1024);
 
 function interpret(payload: string): ProcessStateEvent | undefined {
   const parts = payload.split(";");
