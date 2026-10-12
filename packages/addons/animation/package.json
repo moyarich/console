@@ -27,14 +27,14 @@
   },
   "peerDependencies": {
     "@moyarich/console-core": "^0.1.0",
-    "react": ">=18",
-    "motion": "^12.0.0"
+    "motion": "^12.0.0",
+    "react": ">=18"
   },
   "devDependencies": {
     "@moyarich/console-core": "0.1.0",
     "@types/react": "^19.1.12",
-    "react": "^19.2.7",
     "motion": "^12.0.0",
+    "react": "^19.2.7",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   },
