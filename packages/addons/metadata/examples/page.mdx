@@ -1,0 +1,17 @@
+---
+label: Metadata
+title: Optional source and timestamp decoration
+description: Present existing structured and terminal metadata without changing captured output.
+---
+
+# Metadata addon
+
+The addon wraps individual host-rendered entries through `outputEntryDecorator` and never mutates source entries.
+
+import source from "./example.tsx?raw";
+
+<RunnableExample source={source} sourcePath="example.tsx" />
+
+Use `createConsoleMetadataAddon({ source: true, timestamp: false })` for source only, or `{ source: false, timestamp: true }` for timestamps only. `mode` accepts `"absolute"` and `"relative"`. Customize display with `formatTimestamp(timestamp, mode)`, and supply `now()` to control relative reference time.
+
+In terminal mode, labels read `entry.metadata.source` and `entry.metadata.timestamp` where available. They are not inferred from stdout/stderr classification or synthesized when absent. The addon is opt-in and removable; disabling it returns to default rendering. CSS tokens: `--console-metadata-color` and `--console-metadata-gap`.
