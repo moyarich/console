@@ -211,9 +211,6 @@ jobs:
     name: Validate package release
     needs: [select, prepare-versions]
     if: ${{ always() && needs.select.result == 'success' && (needs.prepare-versions.result == 'success' || needs.prepare-versions.result == 'skipped') && needs.select.outputs.count != '0' }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -227,14 +224,19 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --include=optional
-      # Repository-wide lint, formatting, tests and typechecking already run in CI.
-      # Only validate the selected package artifact at release time.
-      - name: Build and pack selected package
+      - name: Build workspace dependencies once
+        run: npm run build --workspaces --if-present
+      - name: Validate every selected package tarball
         env:
-          PACKAGE_NAME: ${{ matrix.name }}
+          PACKAGE_MATRIX: ${{ needs.select.outputs.matrix }}
+        shell: bash
         run: |
-          npm run build --workspace "$PACKAGE_NAME"
-          npm pack --workspace "$PACKAGE_NAME" --dry-run
+          set -euo pipefail
+          jq -r '.include[].name' <<< "$PACKAGE_MATRIX" | while IFS= read -r package; do
+            echo "::group::Validate $package"
+            npm pack --workspace "$package" --dry-run
+            echo "::endgroup::"
+          done
 
   release:
     name: GitHub package release
