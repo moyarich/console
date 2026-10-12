@@ -32,11 +32,13 @@ The terminal fits the Console output area's available height and width; its **co
   mode="terminal"
   messages={entries}
   addons={[xtermAddon]}
-  style={{
-    height: 360,
-    "--console-min-height": "0px",
-    "--console-xterm-padding": "12px",
-  } as React.CSSProperties}
+  style={
+    {
+      height: 360,
+      "--console-min-height": "0px",
+      "--console-xterm-padding": "12px",
+    } as React.CSSProperties
+  }
 />
 ```
 
