@@ -270,10 +270,10 @@ export function ConsoleLinkedText({
       parts.push(
         <Fragment key={`text-${index}`}>
           {highlightText(
-          text.slice(offset, link.start),
-          `text-${index}`,
-          offset,
-          link.start,
+            text.slice(offset, link.start),
+            `text-${index}`,
+            offset,
+            link.start,
           )}
         </Fragment>,
       );
@@ -327,7 +327,9 @@ export function ConsoleLinkedText({
 
   if (offset < text.length) {
     parts.push(
-      highlightText(text.slice(offset), "text-end", offset, text.length),
+      <Fragment key="text-end">
+        {highlightText(text.slice(offset), "text-end", offset, text.length)}
+      </Fragment>,
     );
   }
 
