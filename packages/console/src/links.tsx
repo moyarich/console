@@ -1,4 +1,9 @@
-import { Fragment, useContext, useSyncExternalStore, type ReactNode } from "react";
+import {
+  Fragment,
+  useContext,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { ConsoleTextHighlightContext } from "./textHighlights";
 import type {
   ConsoleLink as CoreConsoleLink,

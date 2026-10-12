@@ -34,7 +34,10 @@ describe("ConsoleLinkedText keys", () => {
             getRanges: () => [{ start: 7, end: 14 }],
           }}
         >
-          <ConsoleLinkedText text="before example after" context={{ mode: "console" }} />
+          <ConsoleLinkedText
+            text="before example after"
+            context={{ mode: "console" }}
+          />
         </ConsoleTextHighlightContext.Provider>,
       );
       expect(html).toContain("console-search-highlight");
