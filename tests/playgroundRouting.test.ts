@@ -16,7 +16,7 @@ function module(
 ): MdxPageModule {
   return {
     default: Page,
-    meta: { label },
+    frontmatter: { label },
     tableOfContents,
   };
 }
