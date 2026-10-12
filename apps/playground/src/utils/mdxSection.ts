@@ -60,6 +60,8 @@ interface CreateMdxSectionOptions {
   label: string;
   modules: Record<string, MdxPageModule>;
   defaultPageId?: string;
+  /** Controls whether a root page.mdx is listed, link-only, or omitted. */
+  overviewMode?: "visible" | "hidden" | "disabled";
 }
 
 interface MutableMdxSectionGroup {
@@ -160,6 +162,7 @@ export function createMdxSection({
   label,
   modules,
   defaultPageId,
+  overviewMode = "visible",
 }: CreateMdxSectionOptions): MdxSection {
   const root = new Map<string, MutableMdxSectionItem>();
 
@@ -173,6 +176,7 @@ export function createMdxSection({
     }
 
     if (parts.length === 1) {
+      if (overviewMode === "disabled") continue;
       const meta = parsePageMeta(pageModule.meta, path);
       const page: MdxSectionPage = {
         id: "overview",
@@ -282,8 +286,11 @@ export function createMdxSection({
     });
   }
 
-  const items = sortItems(root.values());
-  const pages = collectPages(items);
+  const allItems = sortItems(root.values());
+  const pages = collectPages(allItems);
+  const items = overviewMode === "hidden"
+    ? allItems.filter((item) => item.type !== "page" || item.page.id !== "overview")
+    : allItems;
   const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {
