@@ -7,8 +7,8 @@ import type {
   MdxSectionGroup,
   MdxSectionItem,
   MdxSectionPage,
-} from "../utils/mdxSection";
-import { resolvePageTocOptions } from "../utils/pageMetadata";
+} from "../content/mdxSection";
+import { resolvePageTocOptions } from "../content/pageMetadata";
 import { buildPlaygroundPath } from "../utils/playgroundRouting";
 
 type TocEntry = Toc[number];
