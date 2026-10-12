@@ -48,5 +48,8 @@
     "links",
     "web-links",
     "terminal"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }
