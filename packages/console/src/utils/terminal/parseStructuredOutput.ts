@@ -9,8 +9,12 @@ import type {
   ConsoleStructuredOutputParserContext,
 } from "./types";
 
+/** Built-in last-resort parser for complete JSON objects and arrays. */
+export const strictJsonOutputParser: ConsoleStructuredOutputParser = ({ text }) =>
+  parseStrictJsonOutput(text);
+
 /**
- * Runs custom structured-output parsers before optional strict JSON parsing.
+ * Runs all structured-output parsers in order, including optional strict JSON.
  *
  * Parser exceptions are contained so extension code cannot prevent the
  * original process output from rendering.
@@ -44,7 +48,11 @@ export function parseStructuredOutput(
           metadata: processMetadata,
         };
 
-  for (const parser of parsers ?? []) {
+  const chain = shouldParseStrictJson
+    ? [...(parsers ?? []), strictJsonOutputParser]
+    : (parsers ?? []);
+
+  for (const parser of chain) {
     try {
       const value = parser(context);
 
@@ -56,5 +64,5 @@ export function parseStructuredOutput(
     }
   }
 
-  return shouldParseStrictJson ? parseStrictJsonOutput(text) : undefined;
+  return undefined;
 }
