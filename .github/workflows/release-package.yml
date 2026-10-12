@@ -213,14 +213,35 @@ jobs:
               manifest.version = target.version;
               meta.version = target.version;
             }
-            // Keep local exact-version dependencies in sync with the selected
-            // packages so npm ci uses the workspace symlinks, not npm registry.
+            // Update only local dependencies whose declared range would reject
+            // the selected release version. Preserve compatible caret, tilde,
+            // wildcard, and other ranges to avoid unnecessary manifest churn.
+            const accepts = (range, version) => {
+              if (range === "*" || range === "latest") return true;
+              const parse = text => {
+                const m = text.match(/^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z.-]+))?$/);
+                return m ? m.slice(1, 4).map(Number) : null;
+              };
+              const actual = parse(version);
+              if (!actual) return false;
+              const prefix = range.startsWith("^") || range.startsWith("~") ? range[0] : "";
+              const required = parse(prefix ? range.slice(1) : range);
+              if (!required) return false;
+              const compare = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+              if (!prefix) return range === version;
+              if (compare(actual, required) < 0) return false;
+              if (prefix === "~") return actual[0] === required[0] && actual[1] === required[1];
+              if (required[0] > 0) return actual[0] === required[0];
+              if (required[1] > 0) return actual[0] === 0 && actual[1] === required[1];
+              return actual[0] === 0 && actual[1] === 0 && actual[2] === required[2];
+            };
             for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
               if (!manifest[field]) continue;
               for (const [name, range] of Object.entries(manifest[field])) {
                 const dependency = selectedByName.get(name);
-                if (!dependency || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(range)) continue;
-                manifest[field][name] = dependency.version;
+                if (!dependency || accepts(range, dependency.version)) continue;
+                const prefix = range.startsWith("^") || range.startsWith("~") ? range[0] : "";
+                manifest[field][name] = prefix + dependency.version;
               }
             }
             for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
