@@ -39,10 +39,10 @@ on:
         required: true
         default: true
       draft:
-        description: Keep the GitHub Releases in draft state
+        description: Prepare draft GitHub Releases (disable only to explicitly finalize)
         type: boolean
         required: true
-        default: false
+        default: true
       dry-run:
         description: Validate without creating a GitHub Release, tag, or package
         required: true
