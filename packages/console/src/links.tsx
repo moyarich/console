@@ -219,10 +219,10 @@ export function ConsoleLinkedText({
         pieces.push(
           <Fragment key={`${key}-plain-${index}`}>
             {renderText(
-            text.slice(cursor, rangeStart),
-            `${key}-plain-${index}`,
-            cursor,
-            rangeStart,
+              text.slice(cursor, rangeStart),
+              `${key}-plain-${index}`,
+              cursor,
+              rangeStart,
             )}
           </Fragment>,
         );
@@ -244,10 +244,13 @@ export function ConsoleLinkedText({
       );
       cursor = rangeEnd;
     }
-    if (cursor < end)
+    if (cursor < end) {
       pieces.push(
-        renderText(text.slice(cursor, end), `${key}-tail`, cursor, end),
+        <Fragment key={`${key}-tail`}>
+          {renderText(text.slice(cursor, end), `${key}-tail`, cursor, end)}
+        </Fragment>,
       );
+    }
     return pieces.length ? <>{pieces}</> : renderText(value, key, start, end);
   };
   const resolved = resolveConsoleLinks(text, context, {
