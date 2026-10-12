@@ -49,6 +49,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
+    include: [
+      "tests/**/*.test.ts",
+      "tests/**/*.test.tsx",
+      "packages/addons/*/tests/**/*.test.ts",
+      "packages/addons/*/tests/**/*.test.tsx",
+    ],
   },
 });
