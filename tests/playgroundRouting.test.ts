@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createMdxSection,
   type MdxPageModule,
-} from "../apps/playground/src/utils/mdxSection";
+} from "../apps/playground/src/content/mdxSection";
 import {
   buildPlaygroundPath,
   resolvePlaygroundPath,
@@ -16,7 +16,7 @@ function module(
 ): MdxPageModule {
   return {
     default: Page,
-    meta: { label },
+    frontmatter: { label },
     tableOfContents,
   };
 }

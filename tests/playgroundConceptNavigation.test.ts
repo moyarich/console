@@ -10,7 +10,7 @@ it("keeps the console theming guide and its examples in the same topic", () => {
       .filter((path) => path.endsWith("page.mdx"))
       .map((path) => [
         `./console/examples/${path}`,
-        { default: () => null, meta: { label: "Page" } },
+        { default: () => null, frontmatter: { label: "Page" } },
       ]),
   );
   const [section] = createPackageSections(modules, {
@@ -39,7 +39,7 @@ it("groups component-prop examples with their corresponding extension points", (
       .map((path) => {
         return [
           `./console/examples/${path}`,
-          { default: () => null, meta: { label: "Page" } },
+          { default: () => null, frontmatter: { label: "Page" } },
         ];
       }),
   );

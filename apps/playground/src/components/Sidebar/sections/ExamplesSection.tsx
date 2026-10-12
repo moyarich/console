@@ -12,7 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { MdxSection, MdxSectionItem } from "../../../utils/mdxSection";
+import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface ExamplesSectionProps {

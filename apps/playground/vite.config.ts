@@ -26,7 +26,7 @@ export default defineConfig({
         remarkPlugins: [
           remarkFrontmatter,
           remarkGfm,
-          [remarkMdxFrontmatter, { name: "meta" }],
+          [remarkMdxFrontmatter, { name: "frontmatter" }],
         ],
         rehypePlugins: [rehypeSlug, rehypeExtractToc, rehypeExportToc],
       }),

@@ -11,7 +11,7 @@ import { buildPlaygroundPath } from "@src/utils/playgroundRouting";
 import { PACKAGE_NAVIGATION } from "@src/playground-registry/package-sections";
 import { REPOSITORY_DOCS_SECTIONS } from "@src/playground-registry/repository-docs-sections";
 import type { PackageNavigationItem } from "@src/playground-registry/packageNavigation";
-import type { MdxSection } from "@src/utils/mdxSection";
+import type { MdxSection } from "@src/content/mdxSection";
 import { Sidebar } from "@src/components/Sidebar";
 import { MdxPageSection } from "@src/components/Sidebar/sections/MdxPageSection";
 

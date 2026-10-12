@@ -2,7 +2,7 @@ import {
   createMdxSection,
   type MdxPageModule,
   type MdxSection,
-} from "../utils/mdxSection";
+} from "../content/mdxSection";
 
 export interface PackageSection extends MdxSection {
   directory: string;
@@ -14,18 +14,25 @@ export function createPackageSections(
   packages: Record<string, { name: string }>,
 ): PackageSection[] {
   const grouped = new Map<string, Record<string, MdxPageModule>>();
+  const owners = Object.keys(packages)
+    .filter((path) => path.endsWith("/package.json"))
+    .map((path) => path.slice(2, -"/package.json".length))
+    .sort((a, b) => b.length - a.length);
+
   for (const [path, page] of Object.entries(modules)) {
-    const match = /^\.\/(.+?)\/examples\/(.+\/)?page\.mdx$/.exec(path);
-    if (!match) throw new Error(`Invalid package page path "${path}".`);
-    const [, owner, relative = ""] = match;
-    const pages = grouped.get(owner!) ?? {};
-    pages[`./${relative}page.mdx`] = page;
-    grouped.set(owner!, pages);
-  }
-  for (const owner of grouped.keys()) {
-    if (!packages[`./${owner}/package.json`]) {
-      throw new Error(`Missing package metadata for "${owner}".`);
+    if (!path.startsWith("./") || !path.endsWith("/page.mdx")) {
+      throw new Error(`Invalid package page path "${path}".`);
     }
+    const owner = owners.find((candidate) =>
+      path.startsWith(`./${candidate}/`),
+    );
+    if (!owner) {
+      throw new Error(`Missing package metadata for page "${path}".`);
+    }
+    const relative = path.slice(owner.length + 3);
+    const pages = grouped.get(owner) ?? {};
+    pages[`./${relative}`] = page;
+    grouped.set(owner, pages);
   }
   return [...grouped]
     .sort(([a], [b]) =>
@@ -34,6 +41,19 @@ export function createPackageSections(
       ),
     )
     .map(([owner, pages]) => {
+      // A single collection folder is the content root, irrespective of its name.
+      // When several collections coexist, preserve their paths to avoid collisions.
+      const names = Object.keys(pages);
+      const roots = new Set(names.map((path) => path.slice(2).split("/")[0]));
+      const modules =
+        roots.size === 1 && names.every((path) => path.split("/").length > 2)
+          ? Object.fromEntries(
+              Object.entries(pages).map(([path, module]) => [
+                `./${path.slice(path.indexOf("/", 2) + 1)}`,
+                module,
+              ]),
+            )
+          : pages;
       const metadata = packages[`./${owner}/package.json`];
       if (!metadata)
         throw new Error(`Missing package metadata for "${owner}".`);
@@ -42,7 +62,7 @@ export function createPackageSections(
         ...createMdxSection({
           id: `package-${owner.replaceAll("/", "-")}`,
           label: metadata.name,
-          modules: pages,
+          modules,
         }),
       };
     });

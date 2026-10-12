@@ -5,7 +5,7 @@ import { parsePageMeta, type PageMeta } from "./pageMetadata";
 
 export interface MdxPageModule {
   default: ComponentType;
-  meta?: unknown;
+  frontmatter?: unknown;
   tableOfContents?: Toc;
 }
 
@@ -173,7 +173,8 @@ export function createMdxSection({
     }
 
     if (parts.length === 1) {
-      const meta = parsePageMeta(pageModule.meta, path);
+      const meta = parsePageMeta(pageModule.frontmatter, path);
+      if (meta.navigation === "disabled") continue;
       const page: MdxSectionPage = {
         id: "overview",
         order: Number.MIN_SAFE_INTEGER,
@@ -208,7 +209,8 @@ export function createMdxSection({
       );
     const pageDirectory = directories.at(-1)!;
     const groupDirectories = directories.slice(0, -1);
-    const meta = parsePageMeta(pageModule.meta, path);
+    const meta = parsePageMeta(pageModule.frontmatter, path);
+    if (meta.navigation === "disabled") continue;
     const pageId = directories.map((directory) => directory.id).join("/");
     const page: MdxSectionPage = {
       id: pageId,
@@ -282,8 +284,22 @@ export function createMdxSection({
     });
   }
 
-  const items = sortItems(root.values());
-  const pages = collectPages(items);
+  const allItems = sortItems(root.values());
+  const pages = collectPages(allItems);
+  // Hidden pages retain their URLs but are omitted from the menu, at any depth.
+  const hideNavigationPages = (
+    entries: readonly MdxSectionItem[],
+  ): MdxSectionItem[] =>
+    entries.flatMap((item): MdxSectionItem[] => {
+      if (item.type === "page") {
+        return item.page.meta.navigation === "hidden" ? [] : [item];
+      }
+      const children = hideNavigationPages(item.group.items);
+      return children.length
+        ? [{ ...item, group: { ...item.group, items: children } }]
+        : [];
+    });
+  const items = hideNavigationPages(allItems);
   const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {

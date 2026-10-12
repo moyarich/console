@@ -1,7 +1,10 @@
 import { expect, it } from "vitest";
 import { createPackageSections } from "../apps/playground/src/playground-registry/createPackageSections";
-import type { MdxPageModule } from "../apps/playground/src/utils/mdxSection";
-const page: MdxPageModule = { default: () => null, meta: { label: "Page" } };
+import type { MdxPageModule } from "../apps/playground/src/content/mdxSection";
+const page: MdxPageModule = {
+  default: () => null,
+  frontmatter: { label: "Page" },
+};
 
 it("discovers packages and keeps each package's guides and examples together", () => {
   const sections = createPackageSections(
@@ -70,4 +73,31 @@ it("lists an addon guide beside its examples when no separate docs exist", () =>
     "filtering",
   ]);
   expect(sections[0]!.items.every((item) => item.type === "page")).toBe(true);
+});
+
+it("accepts arbitrary collection directories without content-type conventions", () => {
+  const sections = createPackageSections(
+    {
+      "./widget/blog/page.mdx": page,
+      "./widget/blog/01-post/page.mdx": page,
+      "./widget/docs/01-install/page.mdx": page,
+    },
+    { "./widget/package.json": { name: "@acme/widget" } },
+  );
+  expect(sections[0]!.pages.map(({ id }) => id)).toEqual([
+    "blog",
+    "blog/post",
+    "docs/install",
+  ]);
+});
+
+it("treats a sole arbitrary collection folder as the source root", () => {
+  const sections = createPackageSections(
+    {
+      "./widget/articles/page.mdx": page,
+      "./widget/articles/01-intro/page.mdx": page,
+    },
+    { "./widget/package.json": { name: "@acme/widget" } },
+  );
+  expect(sections[0]!.pages.map(({ id }) => id)).toEqual(["overview", "intro"]);
 });

@@ -1,15 +1,20 @@
 import { createPackageNavigation } from "./packageNavigation";
-import type { MdxPageModule } from "../utils/mdxSection";
+import type { MdxPageModule } from "../content/mdxSection";
 import { createPackageSections } from "./createPackageSections";
 
+/** Statically declared workspace globs required for Vite's build-time discovery. */
 export const PACKAGE_SECTIONS = createPackageSections(
   import.meta.glob<MdxPageModule>(
-    ["./*/examples/**/page.mdx", "./addons/*/examples/**/page.mdx"],
+    ["./*/**/page.mdx", "./addons/*/**/page.mdx"],
     { base: "../../../../packages", eager: true },
   ),
   import.meta.glob<{ name: string }>(
     ["./*/package.json", "./addons/*/package.json"],
-    { base: "../../../../packages", eager: true, import: "default" },
+    {
+      base: "../../../../packages",
+      eager: true,
+      import: "default",
+    },
   ),
 );
 

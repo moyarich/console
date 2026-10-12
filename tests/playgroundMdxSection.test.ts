@@ -2,18 +2,42 @@ import { describe, expect, it } from "vitest";
 import {
   createMdxSection,
   type MdxPageModule,
-} from "../apps/playground/src/utils/mdxSection";
+} from "../apps/playground/src/content/mdxSection";
 
 const Page = () => null;
 
 function module(label: string): MdxPageModule {
   return {
     default: Page,
-    meta: { label },
+    frontmatter: { label },
   };
 }
 
 describe("playground MDX sections", () => {
+  it("supports visible, hidden, and disabled pages through MDX frontmatter", () => {
+    const modules = {
+      "./page.mdx": {
+        ...module("Overview"),
+        frontmatter: { label: "Overview", navigation: "hidden" },
+      },
+      "./01-guide/page.mdx": module("Guide"),
+      "./02-private/page.mdx": {
+        ...module("Private"),
+        frontmatter: { label: "Private", navigation: "disabled" },
+      },
+      "./03-nested/page.mdx": {
+        ...module("Nested"),
+        frontmatter: { label: "Nested", navigation: "hidden" },
+      },
+    };
+    const section = createMdxSection({ id: "docs", label: "Docs", modules });
+    expect(section.getPage("overview")?.label).toBe("Overview");
+    expect(section.getPage("nested")?.label).toBe("Nested");
+    expect(section.getPage("private")).toBeUndefined();
+    expect(section.items.map((item) => item.id)).toEqual(["guide"]);
+    expect(section.defaultPage?.id).toBe("overview");
+  });
+
   it("supports a root page.mdx as the section overview and default page", () => {
     const section = createMdxSection({
       id: "docs",
