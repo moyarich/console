@@ -5,7 +5,6 @@ import {
   Layers3,
   Puzzle,
   Radio,
-  Search,
   SquareTerminal,
   Terminal,
   Waypoints,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
-import { useSidebarSearch } from "../../../search/useSidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface ExamplesSectionProps {
@@ -154,7 +152,7 @@ function ExampleTree({
                   items={item.group.items}
                   value={value}
                   outlineValue={outlineValue}
-                  searching={searching}
+                  searching={false}
                   collapsedGroupIds={collapsedGroupIds}
                   onChange={onChange}
                   onToggleGroup={onToggleGroup}
@@ -175,18 +173,10 @@ export function ExamplesSection({
   outlineValue,
   onChange,
 }: ExamplesSectionProps) {
-  const [query, setQuery] = useState("");
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<Set<string>>(
     () => new Set(),
   );
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const {
-    items: navigationItems,
-    loading,
-    error,
-  } = useSidebarSearch(section.items, normalizedQuery);
-  const searching = normalizedQuery.length > 0;
 
   function toggleGroup(groupId: string) {
     setCollapsedGroupIds((current) => {
@@ -213,26 +203,11 @@ export function ExamplesSection({
           <span className="sidebar-count">{section.pages.length}</span>
         </div>
 
-        <label className="sidebar-search">
-          <Search aria-hidden="true" />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search examples…"
-            aria-label="Search examples"
-          />
-        </label>
       </div>
 
       <div className="sidebar-groups">
-        {(loading || error) && (
-          <p className="sidebar-empty" role="status">
-            {error ?? "Searching…"}
-          </p>
-        )}
         <ExampleTree
-          items={navigationItems}
+          items={section.items}
           value={value}
           outlineValue={outlineValue}
           searching={searching}
@@ -241,13 +216,6 @@ export function ExamplesSection({
           onToggleGroup={toggleGroup}
         />
 
-        {!navigationItems.length && !loading && !error && (
-          <div className="sidebar-empty">
-            <Search aria-hidden="true" />
-            <strong>No examples found</strong>
-            <span>Try log, table, ANSI, transport, or addon.</span>
-          </div>
-        )}
       </div>
     </section>
   );
