@@ -30,4 +30,4 @@ export function createConsoleXtermAddon(): ConsoleAddon {
   };
 }
 
-export { XtermOutput } from "./XtermOutput";
+export { XtermOutput, isAppendOnly } from "./XtermOutput";
