@@ -19,3 +19,5 @@ Disabling automatic scrolling while paused lets people inspect older output. Res
 `bufferedCount` counts appended entries while paused. If the source history is cleared, buffered count becomes zero; when a source is replaced, the replacement's entries are counted as new, not a negative delta. `resume()` immediately displays the latest retained source in order, and the hook stops reporting buffered entries. `clearView()` blanks the frozen view without clearing capture; call your capture store's `clear()` separately to discard retained source output.
 
 For custom controls, use `paused`, `pause()`, `resume()`, `clearView()`, and `bufferedCount`. Pass `autoScroll={!view.paused}` to the structured or terminal Console surface so the view doesn't jump while someone is reading older output. Source retention and capture continue independently of the paused presentation.
+
+When connecting a process-output stream, retain the complete source separately and pass only `view.displayed` to the Console terminal renderer. This keeps capture independent of presentation while paused.
