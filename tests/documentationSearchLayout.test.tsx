@@ -29,7 +29,7 @@ describe("documentation sidebar search", () => {
       </DocumentationSearch>,
     );
 
-    expect((html.match(/type="search"/g) ?? [])).toHaveLength(1);
+    expect(html.match(/type="search"/g) ?? []).toHaveLength(1);
     expect(html).toContain('aria-label="Search documentation"');
     expect(html).not.toContain("Search examples");
   });
