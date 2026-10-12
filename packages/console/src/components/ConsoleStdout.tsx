@@ -20,7 +20,11 @@ import {
 import { getAnsiTokenRanges } from "../utils/terminal/getAnsiTokenRanges";
 import { getAnsiTokenStyle } from "../utils/terminal/getAnsiTokenStyle";
 import { hasAnsiClearLine } from "../utils/terminal/hasAnsiClearLine";
-import { parseStructuredOutput } from "../utils/terminal/parseStructuredOutput";
+import {
+  parseStructuredOutput,
+  strictJsonOutputParser,
+} from "../utils/terminal/parseStructuredOutput";
+export { strictJsonOutputParser };
 import type { ConsoleStructuredOutputParser } from "../utils/terminal/types";
 
 export type {

@@ -19,3 +19,9 @@ import source from "./example.tsx?raw";
 ## Component configuration
 
 For application-owned configuration, see the [working component-prop example](#/package-console/extension-points/structured-output-parser/component-prop). Use addon registration when the contribution should be reusable across hosts.
+
+## Parser order and strict JSON
+
+The host's direct `structuredOutputParsers` run first, followed by addon contributions registered at `consoleExtensionPoints.structuredOutputParser`. When `parseStructuredOutput` is enabled, the built-in `strictJsonOutputParser` runs **last** through the same parser chain. You can also import `strictJsonOutputParser` directly to compose a custom chain.
+
+ANSI sequences are stripped before every parser receives `context.text`. Parsers may return `undefined` to continue; exceptions are isolated. The strict JSON parser promotes only complete objects and arrays, leaving scalar or malformed JSON as regular terminal output. Process-output processors run before structured-output parsing.
