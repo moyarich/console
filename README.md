@@ -117,27 +117,27 @@ Each publishable package owns its concept guides and runnable examples. Keep exp
 
 This monorepo publishes **19 independently versioned packages**: Console, Console Core, and 17 optional addons. The playground is private and is not published.
 
-| Package | Purpose |
-| --- | --- |
-| `@moyarich/console` | React console and ANSI process-output UI |
-| `@moyarich/console-core` | Shared addon SDK and runtime contracts |
-| `@moyarich/console-addon-animation` | Animated process-output display |
-| `@moyarich/console-addon-annotations` | Message annotations and labels |
-| `@moyarich/console-addon-console-feed` | Console feed integration |
-| `@moyarich/console-addon-data-export` | Data-level output export |
-| `@moyarich/console-addon-diagnostics` | Console diagnostics |
-| `@moyarich/console-addon-filtering` | Output filtering |
-| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls |
-| `@moyarich/console-addon-links` | HTTP/HTTPS link detection |
-| `@moyarich/console-addon-markdown` | GitHub Flavored Markdown rendering |
-| `@moyarich/console-addon-metadata` | Message metadata |
-| `@moyarich/console-addon-navigation` | Message navigation |
-| `@moyarich/console-addon-process-state` | Process execution state |
-| `@moyarich/console-addon-resizable` | Resizable console frame |
-| `@moyarich/console-addon-search` | Search across output |
-| `@moyarich/console-addon-selection` | Message selection |
-| `@moyarich/console-addon-session` | Session serialization |
-| `@moyarich/console-addon-xterm` | xterm.js terminal renderer |
+| Package                                        | Purpose                                  |
+| ---------------------------------------------- | ---------------------------------------- |
+| `@moyarich/console`                            | React console and ANSI process-output UI |
+| `@moyarich/console-core`                       | Shared addon SDK and runtime contracts   |
+| `@moyarich/console-addon-animation`            | Animated process-output display          |
+| `@moyarich/console-addon-annotations`          | Message annotations and labels           |
+| `@moyarich/console-addon-console-feed`         | Console feed integration                 |
+| `@moyarich/console-addon-data-export`          | Data-level output export                 |
+| `@moyarich/console-addon-diagnostics`          | Console diagnostics                      |
+| `@moyarich/console-addon-filtering`            | Output filtering                         |
+| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls             |
+| `@moyarich/console-addon-links`                | HTTP/HTTPS link detection                |
+| `@moyarich/console-addon-markdown`             | GitHub Flavored Markdown rendering       |
+| `@moyarich/console-addon-metadata`             | Message metadata                         |
+| `@moyarich/console-addon-navigation`           | Message navigation                       |
+| `@moyarich/console-addon-process-state`        | Process execution state                  |
+| `@moyarich/console-addon-resizable`            | Resizable console frame                  |
+| `@moyarich/console-addon-search`               | Search across output                     |
+| `@moyarich/console-addon-selection`            | Message selection                        |
+| `@moyarich/console-addon-session`              | Session serialization                    |
+| `@moyarich/console-addon-xterm`                | xterm.js terminal renderer               |
 
 All packages maintain their own `package.json` version and `CHANGELOG.md`. Core functionality does not require the optional addons. Install only the addons your application needs, and see the package's `examples/` directory for its guides and runnable examples.
 
