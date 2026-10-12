@@ -11,9 +11,7 @@ import {
 } from "@moyarich/console-addon-xterm";
 
 const xtermCss = readFileSync(
-  fileURLToPath(
-    new URL("../packages/addons/xterm/src/XtermOutput.css", import.meta.url),
-  ),
+  fileURLToPath(new URL("../../src/XtermOutput.css", import.meta.url)),
   "utf8",
 );
 

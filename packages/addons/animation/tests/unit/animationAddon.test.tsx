@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { AnimationSequence } from "../packages/addons/animation/src/AnimationSequence";
-import { TypewriterEntry } from "../packages/addons/animation/src/components/TypewriterEntry/TypewriterEntry";
+import { AnimationSequence } from "../../../../../packages/addons/animation/src/AnimationSequence";
+import { TypewriterEntry } from "../../../../../packages/addons/animation/src/components/TypewriterEntry/TypewriterEntry";
 import { describe, expect, it } from "vitest";
 import {
   Console,
