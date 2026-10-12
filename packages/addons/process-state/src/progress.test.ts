@@ -16,7 +16,7 @@ describe("OSC 9;4 native progress", () => {
   it("clamps percentages and preserves normal text", () => {
     const { controller, write } = setup();
     const output = write("hello\x1b]9;4;1;999\x07world");
-    expect(output.data).toBe("helloworld");
+    expect(output?.data).toBe("helloworld");
     expect(controller.getState().progress).toEqual({ state: 1, value: 100 });
   });
 
@@ -35,8 +35,8 @@ describe("OSC 9;4 native progress", () => {
 
   it("supports split OSC and ST termination", () => {
     const { controller, write } = setup();
-    expect(write("\x1b]9;4;1;").data).toBe("");
-    expect(write("64\x1b\\done").data).toBe("done");
+    expect(write("\x1b]9;4;1;")?.data).toBe("");
+    expect(write("64\x1b\\done")?.data).toBe("done");
     expect(controller.getState().progress).toEqual({ state: 1, value: 64 });
   });
 
