@@ -50,6 +50,7 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
           PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -90,6 +91,23 @@ jobs:
             )"
           fi
 
+          # Drafts only: existing published GitHub Releases are immutable history.
+          # A first npm publication does not require re-drafting its GitHub Release.
+          BEFORE_FILTER="$(jq 'length' <<< "$SELECTED")"
+          PUBLISHED_TAGS="$(
+            gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" |
+              jq -c '[.[][] | select(.draft == false) | .tag_name]'
+          )"
+          SELECTED="$(
+            jq -cn --argjson packages "$SELECTED" --argjson tags "$PUBLISHED_TAGS" '
+              [$packages[] | select((.directory + "@" + .version) as $tag | ($tags | index($tag)) == null)]
+            '
+          )"
+          SKIPPED="$((BEFORE_FILTER - $(jq 'length' <<< "$SELECTED")))"
+          if [ "$SKIPPED" -gt 0 ]; then
+            echo "Skipping $SKIPPED packages with already-published GitHub Releases."
+          fi
+
           COUNT="$(jq 'length' <<< "$SELECTED")"
 
           if [ "$EVENT_NAME" = "workflow_dispatch" ] &&
@@ -109,7 +127,9 @@ jobs:
           {
             echo "# Package draft selection"
             echo
-            echo "**$COUNT packages selected for release drafting**"
+            echo "**$COUNT packages eligible for release drafting**"
+            echo
+            echo "$SKIPPED packages skipped because their exact GitHub Release tags are already published."
             echo
             echo "| Setting | Value |"
             echo "| --- | --- |"
