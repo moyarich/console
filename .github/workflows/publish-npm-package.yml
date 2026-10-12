@@ -4,10 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: Package directory to publish
+        description: Package directory to publish, or all packages
         required: true
         type: choice
         options:
+          - all
           - packages/console-core
           - packages/console
           - packages/addons/animation
@@ -49,21 +50,60 @@ on:
 
 permissions: {}
 
-concurrency:
-  group: npm-publish-${{ inputs.package }}
-  cancel-in-progress: false
-
 jobs:
+  discover-packages:
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
+    with:
+      packages-directory: packages
+      use-workspaces: true
+      require-publish-config: true
+
+  select-packages:
+    needs: discover-packages
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+      count: ${{ steps.select.outputs.count }}
+    steps:
+      - id: select
+        env:
+          SELECTOR: ${{ inputs.package }}
+          PACKAGES_JSON: ${{ needs.discover-packages.outputs.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$SELECTOR" = "all" ]; then
+            SELECTED="$PACKAGES_JSON"
+          else
+            SELECTED="$(jq -cn --argjson packages "$PACKAGES_JSON" --arg selector "$SELECTOR" '[ $packages[] | select(.directory == $selector or .name == $selector) ]')"
+          fi
+          COUNT="$(jq 'length' <<< "$SELECTED")"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error::No publishable packages matched $SELECTOR"
+            exit 1
+          fi
+          {
+            echo "matrix=$(jq -cn --argjson packages "$SELECTED" '{include:$packages}')"
+            echo "count=$COUNT"
+          } >> "$GITHUB_OUTPUT"
+
   publish:
-    name: Publish selected package
-    if: github.ref == 'refs/heads/main'
+    name: Publish · ${{ matrix.name }}
+    needs: select-packages
+    if: github.ref == 'refs/heads/main' && needs.select-packages.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
+    concurrency:
+      group: npm-publish-${{ github.repository }}-${{ matrix.directory }}
+      cancel-in-progress: false
     permissions:
       contents: write
       packages: write
     uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@v0
     with:
       target-branch: main
-      package-directory: ${{ inputs.package }}
+      package-directory: ${{ matrix.directory }}
       version-mode: package-json
       registry: ${{ inputs.registry }}
       dry-run: ${{ inputs.dry-run }}
