@@ -61,5 +61,8 @@
     "./src/components/ResizableConsoleFrame/ResizableConsoleFrame.css",
     "./dist/index.js",
     "./dist/index.cjs"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }
