@@ -10,8 +10,9 @@ import type {
 } from "./types";
 
 /** Built-in last-resort parser for complete JSON objects and arrays. */
-export const strictJsonOutputParser: ConsoleStructuredOutputParser = ({ text }) =>
-  parseStrictJsonOutput(text);
+export const strictJsonOutputParser: ConsoleStructuredOutputParser = ({
+  text,
+}) => parseStrictJsonOutput(text);
 
 /**
  * Runs all structured-output parsers in order, including optional strict JSON.
