@@ -142,6 +142,31 @@ jobs:
             echo "console=$(jq -cn --argjson packages "$SELECTED" '{include: [$packages[] | select(.directory == "packages/console")]}' )"
             echo "addons=$(jq -cn --argjson packages "$SELECTED" '{include: [$packages[] | select(.directory != "packages/console-core" and .directory != "packages/console")]}' )"
           } >> "$GITHUB_OUTPUT"
+          {
+            echo "# Package publishing selection"
+            echo
+            echo "**$COUNT publishable packages selected**"
+            echo
+            echo "| Setting | Value |"
+            echo "| --- | --- |"
+            printf '| Package selector | `%s` |\\n' "$SELECTOR"
+            printf '| Registry | `%s` |\\n' "${{ inputs.registry }}"
+            printf '| Version mode | `%s` |\\n' "${{ inputs.version-mode }}"
+            printf '| Dry run | `%s` |\\n' "${{ inputs.dry-run }}"
+            echo
+            echo "## Publish order"
+            echo
+            echo "Console Core → Console → addons (dependency stages)"
+            echo
+            echo "| Stage | Package | Version | Directory |"
+            echo "| --- | --- | --- | --- |"
+            jq -r '.[] | [
+              (if .directory == "packages/console-core" then "1 · Core" elif .directory == "packages/console" then "2 · Console" else "3 · Addon" end),
+              ("`" + .name + "`"),
+              ("`" + .version + "`"),
+              ("`" + .directory + "`")
+            ] | "| " + join(" | ") + " |"' <<< "$SELECTED"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   publish-core:
     name: Publish · ${{ matrix.name }}
