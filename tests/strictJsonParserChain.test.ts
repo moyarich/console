@@ -36,7 +36,7 @@ describe("ordered strict JSON structured-output parser", () => {
     const value = parse('{"a":1}', true, [
       (context) => {
         order.push("first");
-        expect(context.metadata.stage).toBe("processed");
+        expect(context.metadata?.stage).toBe("processed");
         throw new Error("isolated");
       },
       (context) => {
