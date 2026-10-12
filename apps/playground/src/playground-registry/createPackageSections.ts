@@ -14,18 +14,23 @@ export function createPackageSections(
   packages: Record<string, { name: string }>,
 ): PackageSection[] {
   const grouped = new Map<string, Record<string, MdxPageModule>>();
+  const owners = Object.keys(packages)
+    .filter((path) => path.endsWith("/package.json"))
+    .map((path) => path.slice(2, -"/package.json".length))
+    .sort((a, b) => b.length - a.length);
+
   for (const [path, page] of Object.entries(modules)) {
-    const match = /^\.\/(.+?)\/examples\/(.+\/)?page\.mdx$/.exec(path);
-    if (!match) throw new Error(`Invalid package page path "${path}".`);
-    const [, owner, relative = ""] = match;
-    const pages = grouped.get(owner!) ?? {};
-    pages[`./${relative}page.mdx`] = page;
-    grouped.set(owner!, pages);
-  }
-  for (const owner of grouped.keys()) {
-    if (!packages[`./${owner}/package.json`]) {
-      throw new Error(`Missing package metadata for "${owner}".`);
+    if (!path.startsWith("./") || !path.endsWith("/page.mdx")) {
+      throw new Error(`Invalid package page path "${path}".`);
     }
+    const owner = owners.find((candidate) => path.startsWith(`./${candidate}/`));
+    if (!owner) {
+      throw new Error(`Missing package metadata for page "${path}".`);
+    }
+    const relative = path.slice(owner.length + 3);
+    const pages = grouped.get(owner) ?? {};
+    pages[`./${relative}`] = page;
+    grouped.set(owner, pages);
   }
   return [...grouped]
     .sort(([a], [b]) =>
