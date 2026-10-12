@@ -287,7 +287,9 @@ export function createMdxSection({
   const allItems = sortItems(root.values());
   const pages = collectPages(allItems);
   // Hidden pages retain their URLs but are omitted from the menu, at any depth.
-  const hideNavigationPages = (entries: readonly MdxSectionItem[]): MdxSectionItem[] =>
+  const hideNavigationPages = (
+    entries: readonly MdxSectionItem[],
+  ): MdxSectionItem[] =>
     entries.flatMap((item): MdxSectionItem[] => {
       if (item.type === "page") {
         return item.page.meta.navigation === "hidden" ? [] : [item];

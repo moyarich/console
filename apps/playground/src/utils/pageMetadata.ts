@@ -61,8 +61,13 @@ export function parsePageMeta(value: unknown, sourcePath: string): PageMeta {
     );
   }
   assertOptionalString(metadata, "description", sourcePath);
-  if (metadata.navigation !== undefined && !["visible", "hidden", "disabled"].includes(String(metadata.navigation))) {
-    throw new Error(`Invalid frontmatter metadata in ${sourcePath}: "navigation" must be visible, hidden, or disabled.`);
+  if (
+    metadata.navigation !== undefined &&
+    !["visible", "hidden", "disabled"].includes(String(metadata.navigation))
+  ) {
+    throw new Error(
+      `Invalid frontmatter metadata in ${sourcePath}: "navigation" must be visible, hidden, or disabled.`,
+    );
   }
   assertOptionalString(metadata, "outlineLabelPrefix", sourcePath);
 

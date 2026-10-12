@@ -16,10 +16,19 @@ function module(label: string): MdxPageModule {
 describe("playground MDX sections", () => {
   it("supports visible, hidden, and disabled pages through MDX frontmatter", () => {
     const modules = {
-      "./page.mdx": { ...module("Overview"), meta: { label: "Overview", navigation: "hidden" } },
+      "./page.mdx": {
+        ...module("Overview"),
+        meta: { label: "Overview", navigation: "hidden" },
+      },
       "./01-guide/page.mdx": module("Guide"),
-      "./02-private/page.mdx": { ...module("Private"), meta: { label: "Private", navigation: "disabled" } },
-      "./03-nested/page.mdx": { ...module("Nested"), meta: { label: "Nested", navigation: "hidden" } },
+      "./02-private/page.mdx": {
+        ...module("Private"),
+        meta: { label: "Private", navigation: "disabled" },
+      },
+      "./03-nested/page.mdx": {
+        ...module("Nested"),
+        meta: { label: "Nested", navigation: "hidden" },
+      },
     };
     const section = createMdxSection({ id: "docs", label: "Docs", modules });
     expect(section.getPage("overview")?.label).toBe("Overview");
