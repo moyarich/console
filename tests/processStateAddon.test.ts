@@ -43,9 +43,13 @@ describe("OSC process-state parser", () => {
   });
   it("preserves unknown/malformed sequences and source entries", () => {
     const { controller, write } = decoder();
-    const raw = "\x1b]9;4;1;999\x07";
-    expect(write(raw)).toMatchObject({ data: raw });
-    expect(controller.getEvents()).toHaveLength(0);
+    const validProgress = "\x1b]9;4;1;999\x07";
+    expect(write(validProgress)).toMatchObject({ data: "", omit: true });
+    expect(controller.getState().progress).toEqual({ state: 1, value: 100 });
+    expect(controller.getEvents()).toHaveLength(1);
+    const malformed = "\x1b]9;4;1;not-a-number\x07";
+    expect(write(malformed)).toMatchObject({ data: malformed });
+    expect(controller.getEvents()).toHaveLength(1);
     expect(write("\x1b]100;unknown\x07text")).toMatchObject({
       data: "\x1b]100;unknown\x07text",
     });
