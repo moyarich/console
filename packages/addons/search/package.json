@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-search",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Optional text search and match navigation for Console",
   "license": "MIT",
   "type": "module",

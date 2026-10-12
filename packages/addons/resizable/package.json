@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-resizable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "First-party resizable frame addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",

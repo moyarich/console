@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-console-feed",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Optional feed-style renderer for structured Console messages",
   "license": "MIT",
   "type": "module",

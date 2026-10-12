@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-imperative-scrolling",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "First-party imperative scrolling addon for @moyarich/console hosts.",
   "license": "MIT",
   "type": "module",
