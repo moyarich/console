@@ -56,5 +56,8 @@
     "./src/ProgressIndicator.css",
     "./dist/index.js",
     "./dist/index.cjs"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards",
+  "private": false
 }
