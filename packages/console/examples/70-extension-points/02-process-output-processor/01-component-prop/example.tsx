@@ -38,8 +38,16 @@ const processors: ConsoleProcessOutputProcessor[] = [
 ];
 
 const initial: ConsoleStdoutEntry[] = [
-  { id: "start", data: `${ESC}36m[worker] TASK START compile app${ESC}0m`, stream: "stdout" },
-  { id: "plain", data: `${ESC}33m[worker] compiling 42 modules...${ESC}0m`, stream: "stdout" },
+  {
+    id: "start",
+    data: `${ESC}36m[worker] TASK START compile app${ESC}0m`,
+    stream: "stdout",
+  },
+  {
+    id: "plain",
+    data: `${ESC}33m[worker] compiling 42 modules...${ESC}0m`,
+    stream: "stdout",
+  },
 ];
 let nextId = 0;
 
@@ -61,9 +69,15 @@ export default function ProcessOutputProcessorsExample() {
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <div className="button-row">
-        <button type="button" onClick={addEntry}>Append task event</button>
-        <button type="button" onClick={() => setMessages(initial)}>Reset sample</button>
-        <button type="button" onClick={() => setMessages([])}>Clear output</button>
+        <button type="button" onClick={addEntry}>
+          Append task event
+        </button>
+        <button type="button" onClick={() => setMessages(initial)}>
+          Reset sample
+        </button>
+        <button type="button" onClick={() => setMessages([])}>
+          Clear output
+        </button>
       </div>
       <Console
         mode="terminal"
