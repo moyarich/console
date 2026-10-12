@@ -148,3 +148,7 @@ vite.config.ts.timestamp-*
 
 # Storybook build output
 storybook-static/
+
+# Playwright browser test artifacts
+/test-results/
+/playwright-report/

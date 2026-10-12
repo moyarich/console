@@ -15,6 +15,20 @@ import type { MdxSection } from "@src/content/mdxSection";
 import { Sidebar } from "@src/components/Sidebar";
 import { MdxPageSection } from "@src/components/Sidebar/sections/MdxPageSection";
 
+import { DocumentationSearch } from "@src/components/Sidebar/DocumentationSearch";
+
+function collectSections(
+  items: readonly PackageNavigationItem[],
+): MdxSection[] {
+  return items.flatMap((item) =>
+    item.type === "package" ? [item.section] : collectSections(item.items),
+  );
+}
+const documentationSections = [
+  ...collectSections(PACKAGE_NAVIGATION),
+  REPOSITORY_DOCS_SECTIONS,
+];
+
 export function Playground() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -88,11 +102,17 @@ export function Playground() {
     <div className="layout-content">
       <aside className="layout-sidebar documentation-sidebar">
         <Sidebar aria-label="Console documentation">
-          <PackageNavigation
-            items={PACKAGE_NAVIGATION}
-            renderSection={renderSection}
-          />
-          {renderSection(REPOSITORY_DOCS_SECTIONS)}
+          <DocumentationSearch
+            sections={documentationSections}
+            currentPath={location.pathname}
+            onNavigate={navigate}
+          >
+            <PackageNavigation
+              items={PACKAGE_NAVIGATION}
+              renderSection={renderSection}
+            />
+            {renderSection(REPOSITORY_DOCS_SECTIONS)}
+          </DocumentationSearch>
         </Sidebar>
       </aside>
 

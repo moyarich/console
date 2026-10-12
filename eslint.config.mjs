@@ -13,6 +13,8 @@ export default tseslint.config(
       "**/demo/artifacts/**",
       "storybook-static/**",
       "coverage/**",
+      "test-results/**",
+      "playwright-report/**",
     ],
   },
   js.configs.recommended,

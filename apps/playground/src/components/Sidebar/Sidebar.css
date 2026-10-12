@@ -308,3 +308,24 @@
   font-size: 0.72rem;
   line-height: 1.5;
 }
+
+.sidebar-documentation-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 18px;
+  background: var(--_sidebar-surface);
+}
+
+.sidebar-search-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.sidebar-search-result small,
+.sidebar-search-count {
+  color: var(--_sidebar-text-muted);
+  font-size: 0.75rem;
+}

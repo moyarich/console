@@ -1,11 +1,11 @@
 import type { MdxSectionItem } from "../content/mdxSection";
 
-function words(text: string): string[] {
+export function words(text: string): string[] {
   return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
 }
 
 /** Allow one typo in a complete word, including an adjacent transposition. */
-function nearWord(query: string, word: string): boolean {
+export function nearWord(query: string, word: string): boolean {
   if (query.length < 4 || Math.abs(query.length - word.length) > 1)
     return false;
   let index = 0;
@@ -53,4 +53,28 @@ export function filterSidebarItems(
       ? [{ ...item, group: { ...item.group, items: children } }]
       : [];
   });
+}
+
+export function filterSidebarByKeys(
+  items: readonly MdxSectionItem[],
+  keys: ReadonlySet<string>,
+): MdxSectionItem[] {
+  const ranks = new Map([...keys].map((key, index) => [key, index]));
+  function rank(item: MdxSectionItem): number {
+    return item.type === "page"
+      ? (ranks.get(item.page.searchKey ?? "") ?? Infinity)
+      : Math.min(...item.group.items.map(rank));
+  }
+  return items
+    .flatMap((item): MdxSectionItem[] => {
+      if (item.type === "page")
+        return item.page.searchKey && keys.has(item.page.searchKey)
+          ? [item]
+          : [];
+      const children = filterSidebarByKeys(item.group.items, keys);
+      return children.length
+        ? [{ ...item, group: { ...item.group, items: children } }]
+        : [];
+    })
+    .sort((a, b) => rank(a) - rank(b));
 }
