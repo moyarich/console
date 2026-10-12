@@ -195,13 +195,21 @@ jobs:
         run: |
           set -euo pipefail
           PACKAGES="$PACKAGES" node --input-type=module <<'NODE'
-          import { execFileSync } from "node:child_process";
-          const selected=JSON.parse(process.env.PACKAGES).include;
-          for(const pkg of selected) {
-            execFileSync("npm",["pkg","set",`version=${pkg.version}`,"--workspace",pkg.name],{stdio:"inherit"});
+          import { readFileSync, writeFileSync } from "node:fs";
+          const selected = JSON.parse(process.env.PACKAGES).include;
+          const lockPath = "package-lock.json";
+          const lock = JSON.parse(readFileSync(lockPath, "utf8"));
+          for (const pkg of selected) {
+            const manifestPath = `${pkg.directory}/package.json`;
+            const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+            if (manifest.name !== pkg.name) throw Error(`Package name mismatch: ${pkg.directory}`);
+            if (!lock.packages?.[pkg.directory]) throw Error(`Workspace missing from lockfile: ${pkg.directory}`);
+            manifest.version = pkg.version;
+            lock.packages[pkg.directory].version = pkg.version;
+            writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
           }
+          writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
           NODE
-          npm install --package-lock-only --ignore-scripts --include=optional
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
