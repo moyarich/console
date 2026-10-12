@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { appendConsoleRetainedMessage, retainConsoleHistory, clearConsoleHistory } from "../packages/console/src/hooks/useConsoleMessages";
+import {
+  appendConsoleRetainedMessage,
+  retainConsoleHistory,
+  clearConsoleHistory,
+} from "../packages/console/src/hooks/useConsoleMessages";
 import type { ConsoleMessageData } from "@moyarich/console";
 
 function message(id: string): ConsoleMessageData {
@@ -8,7 +12,10 @@ function message(id: string): ConsoleMessageData {
 
 describe("bounded Console history", () => {
   it("trims oversized initial history with accurate loss accounting", () => {
-    const history = retainConsoleHistory([message("1"), message("2"), message("3")], 1);
+    const history = retainConsoleHistory(
+      [message("1"), message("2"), message("3")],
+      1,
+    );
     expect(history.messages.map((item) => item.id)).toEqual(["3"]);
     expect(history.droppedCount).toBe(2);
   });
@@ -26,7 +33,9 @@ describe("bounded Console history", () => {
   it("resets dropped accounting and visible history together", () => {
     const cleared = clearConsoleHistory();
     expect(cleared).toEqual({ messages: [], droppedCount: 0 });
-    expect(appendConsoleRetainedMessage(cleared, message("fresh"), 3).droppedCount).toBe(0);
+    expect(
+      appendConsoleRetainedMessage(cleared, message("fresh"), 3).droppedCount,
+    ).toBe(0);
   });
 
   it("retains only the newest entries and tracks single and multiple trims", () => {

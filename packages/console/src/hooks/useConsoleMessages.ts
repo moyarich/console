@@ -113,15 +113,18 @@ export function useConsoleMessages({
   );
   const { messages, droppedCount } = history;
   const setMessages: Dispatch<SetStateAction<ConsoleMessageData[]>> =
-    useCallback((updater) => {
-      setHistory((current) =>
-        retainConsoleHistory(
-          typeof updater === "function" ? updater(current.messages) : updater,
-          maxMessages,
-          current.droppedCount,
-        ),
-      );
-    }, [maxMessages]);
+    useCallback(
+      (updater) => {
+        setHistory((current) =>
+          retainConsoleHistory(
+            typeof updater === "function" ? updater(current.messages) : updater,
+            maxMessages,
+            current.droppedCount,
+          ),
+        );
+      },
+      [maxMessages],
+    );
 
   const handleMessage = useCallback(
     (message: ConsoleMessageData) => {
