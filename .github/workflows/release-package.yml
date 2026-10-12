@@ -298,8 +298,8 @@ jobs:
 
   release:
     name: GitHub package release
-    needs: [select, gate]
-    if: ${{ needs.select.outputs.count != '0' }}
+    needs: [select, prepare-versions, gate]
+    if: ${{ always() && needs.select.result == 'success' && (needs.prepare-versions.result == 'success' || needs.prepare-versions.result == 'skipped') && needs.gate.result == 'success' && needs.select.outputs.count != '0' }}
     strategy:
       fail-fast: false
       max-parallel: 1 # Avoid concurrent release/tag mutations and GitHub release-index races.
