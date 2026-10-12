@@ -1,5 +1,8 @@
 import { createElement } from "react";
-import { ConsoleProgressIndicator, type ConsoleProgressIndicatorOptions } from "./ProgressIndicator";
+import {
+  ConsoleProgressIndicator,
+  type ConsoleProgressIndicatorOptions,
+} from "./ProgressIndicator";
 export { ConsoleProgressIndicator } from "./ProgressIndicator";
 export type { ConsoleProgressIndicatorOptions } from "./ProgressIndicator";
 
@@ -82,10 +85,20 @@ export function createProcessStateController(): ProcessStateController {
       switch (event.type) {
         case "progress": {
           const previous = state.progress?.value ?? 0;
-          const value = event.state === 0 ? 0 : event.state === 3 ? previous : (event.state === 2 || event.state === 4) && !event.value ? previous : (event.value ?? previous);
+          const value =
+            event.state === 0
+              ? 0
+              : event.state === 3
+                ? previous
+                : (event.state === 2 || event.state === 4) && !event.value
+                  ? previous
+                  : (event.value ?? previous);
           state = {
             ...state,
-            progress: { state: event.state, value: Math.max(0, Math.min(100, value)) },
+            progress: {
+              state: event.state,
+              value: Math.max(0, Math.min(100, value)),
+            },
           };
           break;
         }
@@ -132,10 +145,12 @@ function interpret(payload: string): ProcessStateEvent | undefined {
   if (parts[0] === "9" && parts[1] === "4") {
     if (!/^[0-4]$/.test(parts[2] ?? "")) return undefined;
     if (parts.length > 4) return undefined;
-    const numeric = parts[3] === undefined || parts[3] === "" ? undefined : parts[3];
+    const numeric =
+      parts[3] === undefined || parts[3] === "" ? undefined : parts[3];
     if (numeric !== undefined && !/^\d+$/.test(numeric)) return undefined;
     if (parts[2] === "1" && numeric === undefined) return undefined;
-    const value = numeric === undefined ? undefined : Math.min(100, Number(numeric));
+    const value =
+      numeric === undefined ? undefined : Math.min(100, Number(numeric));
     return {
       type: "progress",
       state: Number(parts[2]),
@@ -258,7 +273,9 @@ export function createConsoleProcessStateAddon(
   options: ProcessStateController | ProcessStateAddonOptions = {},
 ): ProcessStateAddon {
   const isController = "apply" in options;
-  const controller = isController ? options : (options.controller ?? createProcessStateController());
+  const controller = isController
+    ? options
+    : (options.controller ?? createProcessStateController());
   const indicator = isController ? false : options.indicator;
   return {
     id: CONSOLE_PROCESS_STATE_ADDON_ID,
@@ -273,14 +290,19 @@ export function createConsoleProcessStateAddon(
         },
       );
       if (indicator) {
-        host.extensions.register(consoleExtensionPoints.panelElement, {
-          id: CONSOLE_PROCESS_STATE_ADDON_ID + ":indicator",
-          placement: "before-output",
-          render: () => createElement(ConsoleProgressIndicator, {
-            controller,
-            ...(typeof indicator === "object" ? indicator : {}),
-          }),
-        }, { id: CONSOLE_PROCESS_STATE_ADDON_ID + ":indicator" });
+        host.extensions.register(
+          consoleExtensionPoints.panelElement,
+          {
+            id: CONSOLE_PROCESS_STATE_ADDON_ID + ":indicator",
+            placement: "before-output",
+            render: () =>
+              createElement(ConsoleProgressIndicator, {
+                controller,
+                ...(typeof indicator === "object" ? indicator : {}),
+              }),
+          },
+          { id: CONSOLE_PROCESS_STATE_ADDON_ID + ":indicator" },
+        );
       }
     },
   };

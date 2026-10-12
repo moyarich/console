@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { createProcessStateController, createProcessStateParser } from "./index";
+import {
+  createProcessStateController,
+  createProcessStateParser,
+} from "./index";
 
 describe("OSC 9;4 native progress", () => {
   const setup = () => {
     const controller = createProcessStateController();
     const parser = createProcessStateParser(controller);
-    const write = (data: string) => parser.parse({ output: { data } } as Parameters<typeof parser.parse>[0]);
+    const write = (data: string) =>
+      parser.parse({ output: { data } } as Parameters<typeof parser.parse>[0]);
     return { controller, parser, write };
   };
 
