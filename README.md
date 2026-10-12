@@ -50,14 +50,34 @@ Use the console-compatible producer from event handlers or runtime callbacks to 
 - [Console examples and guides](packages/console/examples/page.mdx)
 - [High-volume output accessibility](packages/console/examples/36-high-volume-accessibility/page.mdx)
 - [Virtualized output guide](packages/console/examples/38-virtualization/page.mdx)
-- [Development documentation](docs/04-development/01-local-development/page.mdx)
-- [Release process](docs/04-development/04-release-process/page.mdx)
 
 ## Packages and addons
 
-The toolkit includes `@moyarich/console`, shared `@moyarich/console-core` contracts, and optional addons for capabilities such as search, filtering, links, navigation, selection, Markdown, and xterm.js rendering.
+Console is a family of independently installable packages. Start with `@moyarich/console`, then add only the capabilities your application needs.
 
-Install only the addons you need. Explore the [examples and API documentation](https://moyarich.github.io/console/) for package-specific usage.
+| Package | What it provides |
+| --- | --- |
+| `@moyarich/console` | React console UI for structured messages and process output |
+| `@moyarich/console-core` | Shared contracts for building and integrating addons |
+| `@moyarich/console-addon-animation` | Animated process-output display |
+| `@moyarich/console-addon-annotations` | Message annotations and labels |
+| `@moyarich/console-addon-console-feed` | Console feed integration |
+| `@moyarich/console-addon-data-export` | Export console output data |
+| `@moyarich/console-addon-diagnostics` | Console diagnostics |
+| `@moyarich/console-addon-filtering` | Filter output |
+| `@moyarich/console-addon-imperative-scrolling` | Programmatic scrolling and viewport controls |
+| `@moyarich/console-addon-links` | Detect and interact with links |
+| `@moyarich/console-addon-markdown` | Render GitHub Flavored Markdown |
+| `@moyarich/console-addon-metadata` | Display message metadata |
+| `@moyarich/console-addon-navigation` | Navigate between messages |
+| `@moyarich/console-addon-process-state` | Represent process execution state |
+| `@moyarich/console-addon-resizable` | Resize the console frame |
+| `@moyarich/console-addon-search` | Search console output |
+| `@moyarich/console-addon-selection` | Select messages |
+| `@moyarich/console-addon-session` | Serialize console sessions |
+| `@moyarich/console-addon-xterm` | Render output with xterm.js |
+
+Core console features work without optional addons. Each addon is installed separately. See the [interactive documentation](https://moyarich.github.io/console/) for usage examples and integration guidance.
 
 ## License
 
