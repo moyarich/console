@@ -29,10 +29,7 @@ export default function Example() {
   ]);
 
   const send = (state: number, percent?: number) => {
-    setMessages((entries) => [
-      ...entries,
-      OSC(state, percent),
-    ]);
+    setMessages((entries) => [...entries, OSC(state, percent)]);
   };
 
   return (
@@ -42,7 +39,9 @@ export default function Example() {
           <button
             key={label}
             type="button"
-            onClick={() => send(state, "percent" in rest ? rest.percent : undefined)}
+            onClick={() =>
+              send(state, "percent" in rest ? rest.percent : undefined)
+            }
           >
             {label}
           </button>

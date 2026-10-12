@@ -18,13 +18,13 @@ import source from "./example.tsx?raw";
 
 The interactive example demonstrates normal determinate updates, clamping values above 100%, indeterminate progress, pause, error, completion at 100%, and clear/reset. The indicator is independent of terminal text and does not need any xterm progress dependency.
 
-| OSC sequence | Effect |
-| --- | --- |
-| `ESC ] 9;4;1;75 BEL` | Normal progress at 75% |
-| `ESC ] 9;4;1;150 BEL` | Clamp to 100% |
-| `ESC ] 9;4;3 BEL` | Indeterminate, retain previous value |
-| `ESC ] 9;4;4;0 BEL` | Paused, retain previous value |
-| `ESC ] 9;4;2;0 BEL` | Error, retain previous value |
-| `ESC ] 9;4;0 BEL` | Reset to zero and hide indicator |
+| OSC sequence          | Effect                               |
+| --------------------- | ------------------------------------ |
+| `ESC ] 9;4;1;75 BEL`  | Normal progress at 75%               |
+| `ESC ] 9;4;1;150 BEL` | Clamp to 100%                        |
+| `ESC ] 9;4;3 BEL`     | Indeterminate, retain previous value |
+| `ESC ] 9;4;4;0 BEL`   | Paused, retain previous value        |
+| `ESC ] 9;4;2;0 BEL`   | Error, retain previous value         |
+| `ESC ] 9;4;0 BEL`     | Reset to zero and hide indicator     |
 
 Customize colors and layout with `--console-progress-color`, `--console-progress-track`, `--console-progress-error`, `--console-progress-paused`, `--console-progress-width`, and `--console-progress-offset`. The optional indicator stays outside the scrollable terminal surface.
