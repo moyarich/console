@@ -1,24 +1,32 @@
 # @moyarich/console-addon-markdown
 
-Render recognized Markdown in structured console values.
+Render Markdown in Console values. Render detected GitHub Flavored Markdown inside structured messages; ordinary strings remain plain text.
 
-GitHub Flavored Markdown output for Markdown strings; plain text stays unchanged.
-
-## Installation
+## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-markdown
 ```
 
-## Using the addon
+## Quick start
 
-The package exports `createConsoleMarkdownAddon()`, which creates an optional addon for the Console `addons` prop. Addons can be enabled independently; Console does not require this package to render output.
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleMarkdownAddon } from "@moyarich/console-addon-markdown";
 
-For runnable examples and available options, see the [package examples](./examples) and the [interactive documentation](https://moyarich.github.io/console/). See the [changelog](./CHANGELOG.md) for version-specific changes.
+const addons = [createConsoleMarkdownAddon()];
 
-## Compatibility
+// Pass your application's structured messages to Console.
+<Console messages={messages} addons={addons} />;
+```
 
-Check [package.json](./package.json) for package dependencies and peer requirements.
+The addon is optional and can be combined with other Console addons. The host application remains responsible for supplying and retaining messages.
+
+## Learn more
+
+Explore [runnable package examples](./examples) and the [Console documentation](https://moyarich.github.io/console/) for available settings and integration patterns.
+
+Review the [changelog](./CHANGELOG.md) for changes by version and [package metadata](./package.json) for dependency requirements.
 
 ## License
 

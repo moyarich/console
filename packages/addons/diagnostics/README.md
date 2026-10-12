@@ -1,24 +1,32 @@
 # @moyarich/console-addon-diagnostics
 
-Inspect Console processing through diagnostic reports.
+Inspect the Console output pipeline. Produce JSON reports of retained and visible output; terminal reports include raw, normalized, and processed entries.
 
-JSON reports covering retained and visible messages, or raw, normalized, and processed terminal output.
-
-## Installation
+## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-diagnostics
 ```
 
-## Using the addon
+## Quick start
 
-The package exports `createConsoleDiagnosticsAddon()`, which creates an optional addon for the Console `addons` prop. Addons can be enabled independently; Console does not require this package to render output.
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleDiagnosticsAddon } from "@moyarich/console-addon-diagnostics";
 
-For runnable examples and available options, see the [package examples](./examples) and the [interactive documentation](https://moyarich.github.io/console/). See the [changelog](./CHANGELOG.md) for version-specific changes.
+const addons = [createConsoleDiagnosticsAddon()];
 
-## Compatibility
+// Pass your application's structured messages to Console.
+<Console messages={messages} addons={addons} />;
+```
 
-Check [package.json](./package.json) for package dependencies and peer requirements.
+The addon is optional and can be combined with other Console addons. The host application remains responsible for supplying and retaining messages.
+
+## Learn more
+
+Explore [runnable package examples](./examples) and the [Console documentation](https://moyarich.github.io/console/) for available settings and integration patterns.
+
+Review the [changelog](./CHANGELOG.md) for changes by version and [package metadata](./package.json) for dependency requirements.
 
 ## License
 

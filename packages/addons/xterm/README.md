@@ -1,24 +1,32 @@
 # @moyarich/console-addon-xterm
 
-Render terminal output using xterm.js.
+Render terminal output with xterm.js. Use xterm.js for ANSI/VT terminal rendering, append-only streaming, and terminal-sized scrolling.
 
-Optional full terminal renderer, append-only streaming, ANSI/VT support, and resize handling.
-
-## Installation
+## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-xterm
 ```
 
-## Using the addon
+## Quick start
 
-The package exports `createConsoleXtermAddon()`, which creates an optional addon for the Console `addons` prop. Addons can be enabled independently; Console does not require this package to render output.
+```tsx
+import { Console } from "@moyarich/console";
+import { createConsoleXtermAddon } from "@moyarich/console-addon-xterm";
 
-For runnable examples and available options, see the [package examples](./examples) and the [interactive documentation](https://moyarich.github.io/console/). See the [changelog](./CHANGELOG.md) for version-specific changes.
+const addons = [createConsoleXtermAddon()];
 
-## Compatibility
+// Pass your application's terminal output entries to Console.
+<Console mode="terminal" messages={messages} addons={addons} />;
+```
 
-Check [package.json](./package.json) for package dependencies and peer requirements.
+The addon is optional and can be combined with other Console addons. Use terminal mode when passing process output.
+
+## Learn more
+
+Explore [runnable package examples](./examples) and the [Console documentation](https://moyarich.github.io/console/) for available settings and integration patterns.
+
+Review the [changelog](./CHANGELOG.md) for changes by version and [package metadata](./package.json) for dependency requirements.
 
 ## License
 
