@@ -7,6 +7,7 @@ export interface MdxPageModule {
   default: ComponentType;
   frontmatter?: unknown;
   tableOfContents?: Toc;
+  searchText?: string;
 }
 
 export interface OrderedDirectory {
@@ -21,6 +22,7 @@ export interface MdxSectionPage {
   label: string;
   description?: string;
   outline: Toc;
+  searchText?: string;
   meta: PageMeta;
   Page: ComponentType;
 }
@@ -181,6 +183,7 @@ export function createMdxSection({
         label: meta.label,
         description: meta.description,
         outline: pageModule.tableOfContents ?? [],
+        searchText: pageModule.searchText,
         meta,
         Page: pageModule.default,
       };
@@ -218,6 +221,7 @@ export function createMdxSection({
       label: meta.label,
       description: meta.description,
       outline: pageModule.tableOfContents ?? [],
+      searchText: pageModule.searchText,
       meta,
       Page: pageModule.default,
     };

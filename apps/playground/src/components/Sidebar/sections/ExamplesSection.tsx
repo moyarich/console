@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
+import { filterSidebarItems } from "../../../utils/sidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface ExamplesSectionProps {
@@ -71,53 +72,6 @@ function countPages(items: readonly MdxSectionItem[]): number {
       count + (item.type === "page" ? 1 : countPages(item.group.items)),
     0,
   );
-}
-
-function filterItems(
-  items: readonly MdxSectionItem[],
-  normalizedQuery: string,
-  ancestorLabels: readonly string[] = [],
-): MdxSectionItem[] {
-  if (!normalizedQuery) {
-    return [...items];
-  }
-
-  return items.flatMap<MdxSectionItem>((item) => {
-    if (item.type === "page") {
-      const matches = [
-        item.page.label,
-        item.page.description ?? "",
-        item.page.id,
-        ...ancestorLabels,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery);
-
-      return matches ? [item] : [];
-    }
-
-    const nextAncestorLabels = [...ancestorLabels, item.group.label];
-    const childItems = filterItems(
-      item.group.items,
-      normalizedQuery,
-      nextAncestorLabels,
-    );
-
-    if (!childItems.length) {
-      return [];
-    }
-
-    return [
-      {
-        ...item,
-        group: {
-          ...item.group,
-          items: childItems,
-        },
-      },
-    ];
-  });
 }
 
 function ExampleTree({
@@ -228,7 +182,7 @@ export function ExamplesSection({
 
   const normalizedQuery = query.trim().toLowerCase();
   const navigationItems = useMemo(
-    () => filterItems(section.items, normalizedQuery),
+    () => filterSidebarItems(section.items, normalizedQuery),
     [normalizedQuery, section.items],
   );
   const searching = normalizedQuery.length > 0;

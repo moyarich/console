@@ -8,6 +8,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
+import remarkSearchIndex from "./remarkSearchIndex";
 
 function workspaceSource(path: string) {
   return fileURLToPath(new URL(`../../packages/${path}`, import.meta.url));
@@ -26,6 +27,7 @@ export default defineConfig({
         remarkPlugins: [
           remarkFrontmatter,
           remarkGfm,
+          remarkSearchIndex,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
         ],
         rehypePlugins: [rehypeSlug, rehypeExtractToc, rehypeExportToc],
