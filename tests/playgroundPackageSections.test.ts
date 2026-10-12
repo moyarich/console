@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { createPackageSections } from "../apps/playground/src/playground-registry/createPackageSections";
-import type { MdxPageModule } from "../apps/playground/src/utils/mdxSection";
+import type { MdxPageModule } from "../apps/playground/src/content/mdxSection";
 const page: MdxPageModule = {
   default: () => null,
   frontmatter: { label: "Page" },
