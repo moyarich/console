@@ -1,21 +1,45 @@
 ---
 label: "Process Output Processor"
 title: "consoleExtensionPoints.processOutputProcessor"
-description: "Transform resolved ANSI/process output before the console renders it."
+description: "Compose ordered processors that normalize process output, enrich metadata, and promote structured events."
 ---
 
-Transform resolved ANSI/process output before the console renders it.
+# Process output processors
 
-## Example
+Use `processOutputProcessor` to transform and enrich **normalized terminal/process output** before rendering. Processors run in priority and registration order for addons; for the `processors` component prop they run in array order. Each sees the accumulated output from preceding processors.
+
+## Processing pipeline
+
+1. Raw stdout/stderr chunks are passed to optional `processControlParser` contributions (for OSC protocol state and control removal).
+2. Core normalizes carriage returns, line feeds, and logical output entries.
+3. Ordered `processOutputProcessor` contributions transform `data`, merge `metadata`, or promote a `structuredValue`.
+4. Structured-output rendering and the normal terminal renderer consume the resolved entries.
+
+A processor receives `output` (the latest immutable state), `text` (ANSI-stripped from the latest `output.data`), and the source entry's `id`, `stream`, and index. Return a **partial update**, or `undefined` to leave the entry unchanged. If a processor throws, the failure is isolated and later processors still run.
+
+## Reusable addon example
+
+This example uses two ordered processors: the first normalizes a worker prefix and enriches runtime metadata; the second promotes a task event to a structured value. The metadata is visible to later processors, but it is **not rendered automatically**; the promoted value demonstrates how downstream consumers can use it.
 
 import source from "./example.tsx?raw";
 
 <RunnableExample
   source={source}
   sourcePath="example.tsx"
-  title="processOutputProcessor"
+  title="Ordered addon processors"
 />
 
 ## Component configuration
 
-For application-owned configuration, see the [working component-prop example](#/package-console/extension-points/process-output-processor/component-prop). Use addon registration when the contribution should be reusable across hosts.
+For application-owned pipelines, use the [component-prop example](#/package-console/extension-points/process-output-processor/component-prop). It exposes controls to append entries and clear the output. Use addons when the processors should be reused across hosts.
+
+## Contract details
+
+- `data` replaces the ANSI string used by the output renderer.
+- `metadata` merges with metadata accumulated from earlier processors; consumers can read it via `output.metadata` or the resolved process-output APIs.
+- `structuredValue` promotes a recognized entry to structured presentation.
+- `links` attaches ranges for the current output text. Changing `data` invalidates prior link ranges; supply new ranges with the replacement if needed.
+- `processConsoleOutputEntry(entry, index, processors)` runs processors for one entry.
+- `resolveConsoleProcessOutput(entries, processors, controlParsers)` applies control parsing, normalization, and processing, returning resolved entries and control events.
+
+For debugging, inspect the resolved output returned by `resolveConsoleProcessOutput` to verify each transformation and its metadata. This is preferable to assuming metadata produces a visible label in the terminal. The processor does not rewrite captured source entries.

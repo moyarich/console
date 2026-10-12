@@ -3,44 +3,69 @@ import {
   Console,
   consoleExtensionPoints,
   type ConsoleAddon,
+  type ConsoleProcessOutputProcessor,
 } from "@moyarich/console";
 import "@moyarich/console/styles.css";
+
+const processors: ConsoleProcessOutputProcessor[] = [
+  {
+    id: "strip-worker-prefix",
+    process({ output, text }) {
+      if (!text.startsWith("[worker] ")) return;
+      return {
+        data: output.data.replace("[worker] ", ""),
+        metadata: { runtime: "worker" },
+      };
+    },
+  },
+  {
+    id: "mark-task-status",
+    process({ text, output }) {
+      const match = /^TASK (START|DONE) (.+)$/.exec(text);
+      if (!match) return;
+      return {
+        metadata: { taskStatus: match[1]?.toLowerCase() },
+        structuredValue: {
+          kind: "task",
+          status: match[1]?.toLowerCase(),
+          task: match[2],
+          runtime: output.metadata.runtime,
+        },
+      };
+    },
+  },
+];
 
 function createProcessOutputProcessorAddon(): ConsoleAddon {
   return {
     id: "example.process-output-processor",
     activate(host) {
-      host.extensions.register(
-        consoleExtensionPoints.processOutputProcessor,
-        {
-          id: "build-status",
-          process({ output }) {
-            if (!output.data.includes("BUILD_OK")) return;
-
-            return {
-              data: output.data.replace("BUILD_OK", "Build complete"),
-              metadata: { phase: "build", complete: true },
-            };
-          },
-        },
-        { id: "build-status" },
-      );
+      for (const processor of processors) {
+        host.extensions.register(
+          consoleExtensionPoints.processOutputProcessor,
+          processor,
+          { id: processor.id },
+        );
+      }
     },
   };
 }
 
-const messages = ["Compiling...\n", "BUILD_OK\n"];
+const messages = [
+  "[worker] TASK START compile app\n",
+  "[worker] Compiling 42 modules...\n",
+  "[worker] TASK DONE compile app\n",
+];
 
 export default function ProcessOutputProcessorExample() {
   const addons = useMemo(() => [createProcessOutputProcessorAddon()], []);
-
   return (
     <Console
       mode="terminal"
       messages={messages}
       addons={addons}
-      title="processOutputProcessor"
-      subtitle="Transform resolved process output before it is rendered."
+      title="Ordered addon processors"
+      subtitle="Normalize, enrich metadata, then promote task events"
     />
   );
 }
