@@ -115,17 +115,41 @@ Each publishable package owns its concept guides and runnable examples. Keep exp
 
 ## Packages
 
-The workspace contains the core contracts, React console package, and first-party addons.
+This monorepo publishes **19 independently versioned packages**: Console, Console Core, and 17 optional addons. The playground is private and is not published.
 
-| Package                                        | Purpose                                                                     |
-| ---------------------------------------------- | --------------------------------------------------------------------------- |
-| `@moyarich/console`                            | React console and ANSI process-output UI                                    |
-| `@moyarich/console-core`                       | Shared addon, extension-point, capability, service, and lifecycle contracts |
-| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls                                                |
-| `@moyarich/console-addon-data-export`          | Data-level output export                                                    |
-| `@moyarich/console-addon-diagnostics`          | Console diagnostics                                                         |
-| `@moyarich/console-addon-markdown`             | Automatic GitHub Flavored Markdown rendering for string values              |
-| `@moyarich/console-addon-resizable`            | Resizable console behavior                                                  |
+| Package | Purpose |
+| --- | --- |
+| `@moyarich/console` | React console and ANSI process-output UI |
+| `@moyarich/console-core` | Shared addon SDK and runtime contracts |
+| `@moyarich/console-addon-animation` | Animated process-output display |
+| `@moyarich/console-addon-annotations` | Message annotations and labels |
+| `@moyarich/console-addon-console-feed` | Console feed integration |
+| `@moyarich/console-addon-data-export` | Data-level output export |
+| `@moyarich/console-addon-diagnostics` | Console diagnostics |
+| `@moyarich/console-addon-filtering` | Output filtering |
+| `@moyarich/console-addon-imperative-scrolling` | Imperative viewport controls |
+| `@moyarich/console-addon-links` | HTTP/HTTPS link detection |
+| `@moyarich/console-addon-markdown` | GitHub Flavored Markdown rendering |
+| `@moyarich/console-addon-metadata` | Message metadata |
+| `@moyarich/console-addon-navigation` | Message navigation |
+| `@moyarich/console-addon-process-state` | Process execution state |
+| `@moyarich/console-addon-resizable` | Resizable console frame |
+| `@moyarich/console-addon-search` | Search across output |
+| `@moyarich/console-addon-selection` | Message selection |
+| `@moyarich/console-addon-session` | Session serialization |
+| `@moyarich/console-addon-xterm` | xterm.js terminal renderer |
+
+All packages maintain their own `package.json` version and `CHANGELOG.md`. Core functionality does not require the optional addons. Install only the addons your application needs, and see the package's `examples/` directory for its guides and runnable examples.
+
+## Multi-package release and publishing
+
+Run `npm ci --include=optional`, `npm run checks`, `npm test`, `npm run build:packages`, and `npm run pack:packages` before publishing. CI also builds Storybook and validates the package changelogs and tarballs.
+
+Use the GitHub Actions **Release package** workflow to create a versioned release for a selected package (run with `dry-run: true` first). The **Release Drafter** workflow maintains package-specific drafts using each package's changelog. Release tags use the form `packages/console@0.1.0` or `packages/addons/links@0.1.0` rather than a single repository version.
+
+The **Publish npm package** workflow can select one package or `all` to discover all publishable workspaces. Choose the target registry (`npm`, `github`, or `all`) and verify its `dry-run: true` result before setting `dry-run: false`. The workflow is restricted to `main`, requires appropriate registry credentials, and verifies package tags. Publish dependency packages before their dependents: `@moyarich/console-core` before `@moyarich/console` and core-dependent addons. Do not assume a successful matrix run establishes dependency ordering; confirm the required package versions exist in the destination registry before a live publish-all run.
+
+A release is not the same as publishing: creating a GitHub Release does not automatically upload every package to a registry.
 
 ## Scope
 
