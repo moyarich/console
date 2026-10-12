@@ -42,4 +42,4 @@ For application-owned pipelines, use the [component-prop example](#/package-cons
 - `processConsoleOutputEntry(entry, index, processors)` runs processors for one entry.
 - `resolveConsoleProcessOutput(entries, processors, controlParsers)` applies control parsing, normalization, and processing, returning resolved entries and control events.
 
-The processor does not rewrite captured source entries.
+For debugging, inspect the resolved output returned by `resolveConsoleProcessOutput` to verify each transformation and its metadata. This is preferable to assuming metadata produces a visible label in the terminal. The processor does not rewrite captured source entries.
