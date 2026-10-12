@@ -1,68 +1,27 @@
 ---
 label: "Component prop"
-description: "Compose ordered process-output plugins that transform ANSI chunks, add metadata, and promote recognized runtime events into structured values."
+description: "Compose application-owned, ordered process-output plugins that transform ANSI text, enrich metadata, and promote task events."
 ---
+
+# Application-owned processor pipeline
+
+Use the `processors` prop to control the order directly from your React application. The runnable example lets you append task events, reset the sample, and clear the current output.
 
 import source from "./example.tsx?raw";
 
 <RunnableExample source={source} sourcePath="example.tsx" />
 
-## Ordered process output processors
+## What the processors do
 
-See the [process-output processor contract](#/package-console/extension-points/process-output-processor) for the contract and options.
+1. `worker-prefix` removes the visible `[worker]` prefix and adds `metadata.runtime = "worker"`.
+2. `task-event` reads the **transformed** ANSI-stripped text and accumulated runtime metadata, then promotes recognized `TASK START` and `TASK DONE` lines into structured values.
 
-```tsx
-import type { ConsoleProcessOutputProcessor } from "@moyarich/console";
+This ordering is intentional: reversing these processors means the task parser sees the unnormalized prefix and misses the task event. `metadata` is available to later processors and resolved-output consumers but does **not** create a visible label on its own.
 
-const processors: ConsoleProcessOutputProcessor[] = [
-  {
-    id: "normalize-prefix",
-    process: ({ output, text }) => ({
-      data: text.startsWith("[worker] ")
-        ? output.data.replace("[worker] ", "")
-        : output.data,
-      metadata: { runtime: "worker" },
-    }),
-  },
-  {
-    id: "promote-task-event",
-    process: ({ output, text }) => {
-      if (!text.startsWith("TASK ")) {
-        return undefined;
-      }
+## Behavior and APIs
 
-      return {
-        structuredValue: {
-          kind: "task",
-          message: text.slice(5),
-          runtime: output.metadata.runtime,
-        },
-      };
-    },
-  },
-];
+Each processor receives `output`, ANSI-stripped `text`, `entry`, `index`, `id` and `stream`. A returned patch can replace `data`, add `metadata`, set `structuredValue`, or provide `links`. An exception in one processor does not block later processors. Replacing `data` invalidates link ranges created for earlier text.
 
-<Console mode="terminal" messages={entries} processors={processors} />;
-```
+For non-React use, call `processConsoleOutputEntry(entry, index, processors)`. For raw controls, line normalization, processors, and `controlEvents` in one pipeline, use `resolveConsoleProcessOutput(entries, processors, controlParsers)`. To retrieve entry/output pairs only, use `resolveConsoleProcessOutputEntries`.
 
-### Process output with ordered processors
-
-Use `processors` when process output needs runtime-specific normalization or enrichment before rendering. A processor receives immutable output state plus ANSI-stripped text and returns only the fields it wants to change:
-
-Processors run in array order. Each processor sees the successful output and metadata produced by earlier processors. If one throws, its changes are discarded and later processors continue from the last successful state, so a plugin failure cannot suppress the remaining output.
-
-A processor may:
-
-- replace `data` while preserving ANSI rendering for the resulting text
-- set `structuredValue` to promote a line into the normal value inspector
-- merge host/plugin data into `metadata`
-- return `links` using the shared `ConsoleLink` range contract
-- observe current ANSI-stripped text through `text` without changing output
-
-If a processor changes `data`, link ranges produced for earlier text are discarded because their offsets are no longer valid. A processor that transforms text can return replacement `links` for the new output in the same result. The generic metadata bag remains available for application-specific enrichment that does not yet have a dedicated contract.
-
-For non-React pipelines, `processConsoleOutputEntry(entry, index, processors)` applies the same ordered processor chain directly.
-
-## Reusing resolved output outside rendering
-
-`processConsoleOutputEntry(entry, index, processors)` processes one logical entry. `resolveConsoleProcessOutput(entries, processors, controlParsers)` runs controls, normalization, and processing, returning entry/output pairs plus `controlEvents`. `resolveConsoleProcessOutputEntries` returns just the pairs. Optional parser/processor arrays default to empty.
+See the [reusable addon approach and pipeline diagram](#/package-console/extension-points/process-output-processor).
