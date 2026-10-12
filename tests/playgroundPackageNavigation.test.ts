@@ -3,7 +3,7 @@ import { createPackageSections } from "../apps/playground/src/playground-registr
 import { createPackageNavigation } from "../apps/playground/src/playground-registry/packageNavigation";
 
 it("groups packages by directory rather than package-name prefixes", () => {
-  const page = { default: () => null, meta: { label: "Guide" } };
+  const page = { default: () => null, frontmatter: { label: "Guide" } };
   const sections = createPackageSections(
     {
       "./addons/annotations/examples/page.mdx": page,
