@@ -9,12 +9,12 @@ const Page = () => null;
 function module(label: string): MdxPageModule {
   return {
     default: Page,
-    meta: { label },
+    frontmatter: { label },
   };
 }
 
 describe("playground MDX sections", () => {
-  it("accepts canonical frontmatter while retaining legacy meta compatibility", () => {
+  it("accepts canonical frontmatter while retaining frontmatter metadata", () => {
     const section = createMdxSection({
       id: "docs",
       label: "Docs",
@@ -34,16 +34,16 @@ describe("playground MDX sections", () => {
     const modules = {
       "./page.mdx": {
         ...module("Overview"),
-        meta: { label: "Overview", navigation: "hidden" },
+        frontmatter: { label: "Overview", navigation: "hidden" },
       },
       "./01-guide/page.mdx": module("Guide"),
       "./02-private/page.mdx": {
         ...module("Private"),
-        meta: { label: "Private", navigation: "disabled" },
+        frontmatter: { label: "Private", navigation: "disabled" },
       },
       "./03-nested/page.mdx": {
         ...module("Nested"),
-        meta: { label: "Nested", navigation: "hidden" },
+        frontmatter: { label: "Nested", navigation: "hidden" },
       },
     };
     const section = createMdxSection({ id: "docs", label: "Docs", modules });
