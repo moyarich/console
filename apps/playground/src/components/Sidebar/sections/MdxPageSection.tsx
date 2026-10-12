@@ -1,6 +1,7 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
+import { filterSidebarItems } from "../../../utils/sidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface MdxPageSectionProps {
@@ -105,35 +106,6 @@ function MdxSectionItems({
   );
 }
 
-/** Preserve ancestor groups when filtering the documentation tree. */
-function filterItems(
-  items: readonly MdxSectionItem[],
-  query: string,
-  ancestors: readonly string[] = [],
-): MdxSectionItem[] {
-  if (!query) return [...items];
-  return items.flatMap((item): MdxSectionItem[] => {
-    if (item.type === "page") {
-      const searchable = [
-        item.page.label,
-        item.page.description ?? "",
-        item.page.id,
-        ...ancestors,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return searchable.includes(query) ? [item] : [];
-    }
-    const children = filterItems(item.group.items, query, [
-      ...ancestors,
-      item.group.label,
-    ]);
-    return children.length
-      ? [{ ...item, group: { ...item.group, items: children } }]
-      : [];
-  });
-}
-
 export function MdxPageSection({
   section,
   value,
@@ -146,7 +118,7 @@ export function MdxPageSection({
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
   const filteredItems = useMemo(
-    () => filterItems(section.items, normalizedQuery),
+    () => filterSidebarItems(section.items, normalizedQuery),
     [section.items, normalizedQuery],
   );
   const headingId = `sidebar-${section.id}-title`;
