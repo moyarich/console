@@ -1,4 +1,4 @@
-import { useContext, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useContext, useSyncExternalStore, type ReactNode } from "react";
 import { ConsoleTextHighlightContext } from "./textHighlights";
 import type {
   ConsoleLink as CoreConsoleLink,
@@ -217,12 +217,14 @@ export function ConsoleLinkedText({
       if (rangeEnd <= rangeStart) continue;
       if (cursor < rangeStart) {
         pieces.push(
-          renderText(
+          <Fragment key={`${key}-plain-${index}`}>
+            {renderText(
             text.slice(cursor, rangeStart),
             `${key}-plain-${index}`,
             cursor,
             rangeStart,
-          ),
+            )}
+          </Fragment>,
         );
       }
       pieces.push(
@@ -263,12 +265,14 @@ export function ConsoleLinkedText({
   resolved.forEach((link, index) => {
     if (offset < link.start) {
       parts.push(
-        highlightText(
+        <Fragment key={`text-${index}`}>
+          {highlightText(
           text.slice(offset, link.start),
           `text-${index}`,
           offset,
           link.start,
-        ),
+          )}
+        </Fragment>,
       );
     }
 
