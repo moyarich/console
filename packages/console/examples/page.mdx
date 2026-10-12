@@ -22,3 +22,9 @@ Each page includes runnable source and explains the options used by that example
 Ready-made addon packages appear under **Addons** in the menu. Start with that addon's guide and runnable example, then pass its instance to the Console `addons` prop.
 
 Use [@moyarich/console-core](#/package-console-core/overview) when you are building an addon or a headless host. You do not need to create a core manager to render a Console or use a ready-made addon: the React component manages addon activation and cleanup.
+
+## Release and dependency guidance
+
+`@moyarich/console` and `@moyarich/console-core` use independent package releases. Optional addons are published as `@moyarich/console-addon-*` packages, each with its own version and changelog. Install the addon your example needs; the private playground demonstrates them together but is not a published package.
+
+To use the separately published stylesheet explicitly, import `@moyarich/console/styles.css` once in the hosting application. Review the root README for the complete addon catalog, release-tag naming, and publish-all workflow.
