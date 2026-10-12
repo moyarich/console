@@ -106,15 +106,31 @@ function MdxSectionItems({
 }
 
 /** Preserve ancestor groups when filtering the documentation tree. */
-function filterItems(items: readonly MdxSectionItem[], query: string, ancestors: readonly string[] = []): MdxSectionItem[] {
+function filterItems(
+  items: readonly MdxSectionItem[],
+  query: string,
+  ancestors: readonly string[] = [],
+): MdxSectionItem[] {
   if (!query) return [...items];
   return items.flatMap((item): MdxSectionItem[] => {
     if (item.type === "page") {
-      const searchable = [item.page.label, item.page.description ?? "", item.page.id, ...ancestors].join(" ").toLowerCase();
+      const searchable = [
+        item.page.label,
+        item.page.description ?? "",
+        item.page.id,
+        ...ancestors,
+      ]
+        .join(" ")
+        .toLowerCase();
       return searchable.includes(query) ? [item] : [];
     }
-    const children = filterItems(item.group.items, query, [...ancestors, item.group.label]);
-    return children.length ? [{ ...item, group: { ...item.group, items: children } }] : [];
+    const children = filterItems(item.group.items, query, [
+      ...ancestors,
+      item.group.label,
+    ]);
+    return children.length
+      ? [{ ...item, group: { ...item.group, items: children } }]
+      : [];
   });
 }
 
@@ -129,7 +145,10 @@ export function MdxPageSection({
   );
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredItems = useMemo(() => filterItems(section.items, normalizedQuery), [section.items, normalizedQuery]);
+  const filteredItems = useMemo(
+    () => filterItems(section.items, normalizedQuery),
+    [section.items, normalizedQuery],
+  );
   const headingId = `sidebar-${section.id}-title`;
 
   function toggleGroup(groupId: string) {
@@ -157,7 +176,13 @@ export function MdxPageSection({
 
       <label className="sidebar-search" style={{ margin: "0 6px" }}>
         <Search aria-hidden="true" />
-        <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${section.label}…`} aria-label={`Search ${section.label}`} />
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={`Search ${section.label}…`}
+          aria-label={`Search ${section.label}`}
+        />
       </label>
       <div className="sidebar-section-items">
         <MdxSectionItems
@@ -169,7 +194,11 @@ export function MdxPageSection({
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
-        {filteredItems.length === 0 && <p className="sidebar-empty" role="status">No matching pages</p>}
+        {filteredItems.length === 0 && (
+          <p className="sidebar-empty" role="status">
+            No matching pages
+          </p>
+        )}
       </div>
     </section>
   );

@@ -288,9 +288,12 @@ export function createMdxSection({
 
   const allItems = sortItems(root.values());
   const pages = collectPages(allItems);
-  const items = overviewMode === "hidden"
-    ? allItems.filter((item) => item.type !== "page" || item.page.id !== "overview")
-    : allItems;
+  const items =
+    overviewMode === "hidden"
+      ? allItems.filter(
+          (item) => item.type !== "page" || item.page.id !== "overview",
+        )
+      : allItems;
   const getPage = (pageId: string) => pages.find((page) => page.id === pageId);
 
   return {

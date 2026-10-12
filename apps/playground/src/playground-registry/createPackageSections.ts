@@ -11,7 +11,10 @@ export interface PackageSection extends MdxSection {
 /** Group discovered documentation and examples by their owning workspace package. */
 export function createPackageSections(
   modules: Record<string, MdxPageModule>,
-  packages: Record<string, { name: string; playgroundOverviewMode?: "visible" | "hidden" | "disabled" }>,
+  packages: Record<
+    string,
+    { name: string; playgroundOverviewMode?: "visible" | "hidden" | "disabled" }
+  >,
 ): PackageSection[] {
   const grouped = new Map<string, Record<string, MdxPageModule>>();
   for (const [path, page] of Object.entries(modules)) {
