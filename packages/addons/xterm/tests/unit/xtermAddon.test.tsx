@@ -12,7 +12,7 @@ import {
 
 const xtermCss = readFileSync(
   fileURLToPath(
-    new URL("../packages/addons/xterm/src/XtermOutput.css", import.meta.url),
+    new URL("../../src/XtermOutput.css", import.meta.url),
   ),
   "utf8",
 );
