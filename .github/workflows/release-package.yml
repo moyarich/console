@@ -6,6 +6,7 @@ on:
       package:
         description: all, package name, or package directory
         required: true
+        default: all
         type: string
       dry-run:
         description: Validate without creating a GitHub Release, tag, or package
