@@ -11,7 +11,6 @@ export function countConsoleBufferedEntries<T>(
     : current.length;
 }
 
-
 /** Freeze a rendered view without stopping capture or mutating the source collection. */
 export function useConsoleOutputPause<T>(
   current: readonly T[],

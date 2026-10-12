@@ -15,7 +15,9 @@ describe("paused Console output", () => {
   it("counts the entire new source when prior history was cleared or replaced", () => {
     expect(countConsoleBufferedEntries(["old"], [])).toBe(0);
     expect(countConsoleBufferedEntries(["old"], ["new"])).toBe(1);
-    expect(countConsoleBufferedEntries(["old", "older"], ["new", "newer"])).toBe(2);
+    expect(
+      countConsoleBufferedEntries(["old", "older"], ["new", "newer"]),
+    ).toBe(2);
   });
 
   it("returns zero buffered entries when resumed baseline matches current", () => {
