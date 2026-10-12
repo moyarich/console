@@ -177,7 +177,6 @@ export function ExamplesSection({
     () => new Set(),
   );
 
-
   function toggleGroup(groupId: string) {
     setCollapsedGroupIds((current) => {
       const next = new Set(current);
@@ -202,7 +201,6 @@ export function ExamplesSection({
           <strong id="sidebar-examples-title">{section.label}</strong>
           <span className="sidebar-count">{section.pages.length}</span>
         </div>
-
       </div>
 
       <div className="sidebar-groups">
@@ -210,12 +208,11 @@ export function ExamplesSection({
           items={section.items}
           value={value}
           outlineValue={outlineValue}
-          searching={searching}
+          searching={false}
           collapsedGroupIds={collapsedGroupIds}
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
-
       </div>
     </section>
   );
