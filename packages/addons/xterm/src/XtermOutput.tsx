@@ -9,21 +9,29 @@ export function isAppendOnly(
   previous: readonly (ConsoleStdoutEntry | string)[],
   next: readonly (ConsoleStdoutEntry | string)[],
 ): boolean {
-  return previous.length <= next.length && previous.every((entry, i) => {
-    const current = next[i];
-    return entry === current || (
-      typeof entry !== "string" &&
-      typeof current !== "string" &&
-      current !== undefined &&
-      entry.id === current.id &&
-      entry.data === current.data &&
-      entry.stream === current.stream
-    );
-  });
+  return (
+    previous.length <= next.length &&
+    previous.every((entry, i) => {
+      const current = next[i];
+      return (
+        entry === current ||
+        (typeof entry !== "string" &&
+          typeof current !== "string" &&
+          current !== undefined &&
+          entry.id === current.id &&
+          entry.data === current.data &&
+          entry.stream === current.stream)
+      );
+    })
+  );
 }
 
 /** The addon owns terminal creation, updates, and disposal. */
-export function XtermOutput({ entries }: { entries: readonly (ConsoleStdoutEntry | string)[] }) {
+export function XtermOutput({
+  entries,
+}: {
+  entries: readonly (ConsoleStdoutEntry | string)[];
+}) {
   const element = useRef<HTMLDivElement>(null);
   const terminal = useRef<Terminal | null>(null);
   const written = useRef<readonly (ConsoleStdoutEntry | string)[]>([]);
@@ -59,5 +67,11 @@ export function XtermOutput({ entries }: { entries: readonly (ConsoleStdoutEntry
     written.current = [...entries];
   }, [entries]);
 
-  return <div ref={element} className="console-xterm-output" aria-label="Terminal output" />;
+  return (
+    <div
+      ref={element}
+      className="console-xterm-output"
+      aria-label="Terminal output"
+    />
+  );
 }

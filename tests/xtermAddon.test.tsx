@@ -24,7 +24,9 @@ describe("optional xterm renderer", () => {
 
   it("appends new output and replays replacements or clear operations", () => {
     const previous = [{ id: "a", data: "one" }];
-    expect(isAppendOnly(previous, [...previous, { id: "b", data: "two" }])).toBe(true);
+    expect(
+      isAppendOnly(previous, [...previous, { id: "b", data: "two" }]),
+    ).toBe(true);
     expect(isAppendOnly(previous, [{ id: "a", data: "changed" }])).toBe(false);
     expect(isAppendOnly(previous, [])).toBe(false);
     expect(isAppendOnly([], [])).toBe(true);
