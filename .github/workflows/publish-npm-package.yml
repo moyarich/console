@@ -64,6 +64,9 @@ jobs:
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
       count: ${{ steps.select.outputs.count }}
+      core: ${{ steps.select.outputs.core }}
+      console: ${{ steps.select.outputs.console }}
+      addons: ${{ steps.select.outputs.addons }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -112,16 +115,71 @@ jobs:
           {
             echo "matrix=$(jq -cn --argjson packages "$SELECTED" '{include:$packages}')"
             echo "count=$COUNT"
+            echo "core=$(jq -cn --argjson packages "$SELECTED" '{include: [$packages[] | select(.directory == "packages/console-core")]}' )"
+            echo "console=$(jq -cn --argjson packages "$SELECTED" '{include: [$packages[] | select(.directory == "packages/console")]}' )"
+            echo "addons=$(jq -cn --argjson packages "$SELECTED" '{include: [$packages[] | select(.directory != "packages/console-core" and .directory != "packages/console")]}' )"
           } >> "$GITHUB_OUTPUT"
 
-  publish:
+  publish-core:
     name: Publish · ${{ matrix.name }}
     needs: select-packages
-    if: github.ref == 'refs/heads/main' && needs.select-packages.outputs.count != '0'
+    if: github.ref == 'refs/heads/main' && fromJSON(needs.select-packages.outputs.core).include[0] != null
     strategy:
       fail-fast: false
-      max-parallel: 1 # Limit concurrent registry writes; matrix scheduling is not an ordering guarantee.
-      matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.select-packages.outputs.core) }}
+    concurrency:
+      group: npm-publish-${{ github.repository }}-${{ matrix.directory }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@v0
+    with:
+      target-branch: main
+      package-directory: ${{ matrix.directory }}
+      version-mode: package-json
+      registry: ${{ inputs.registry }}
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+  publish-console:
+    name: Publish · ${{ matrix.name }}
+    needs: [select-packages, publish-core]
+    if: github.ref == 'refs/heads/main' && !failure() && !cancelled() && fromJSON(needs.select-packages.outputs.console).include[0] != null
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.select-packages.outputs.console) }}
+    concurrency:
+      group: npm-publish-${{ github.repository }}-${{ matrix.directory }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      packages: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_npm-publish.yml@v0
+    with:
+      target-branch: main
+      package-directory: ${{ matrix.directory }}
+      version-mode: package-json
+      registry: ${{ inputs.registry }}
+      dry-run: ${{ inputs.dry-run }}
+      tag: ${{ inputs.tag }}
+      verify-git-tag: true
+      node-version: "24"
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+  publish-addons:
+    name: Publish · ${{ matrix.name }}
+    needs: [select-packages, publish-core, publish-console]
+    if: github.ref == 'refs/heads/main' && !failure() && !cancelled() && fromJSON(needs.select-packages.outputs.addons).include[0] != null
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.select-packages.outputs.addons) }}
     concurrency:
       group: npm-publish-${{ github.repository }}-${{ matrix.directory }}
       cancel-in-progress: false
