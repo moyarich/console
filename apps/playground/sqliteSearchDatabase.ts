@@ -32,7 +32,8 @@ export function buildSearchDatabase(
       );
       for (const [field, text] of [
         ["title", document.title],
-        ["content", `${document.description} ${document.body}`],
+        ["description", document.description],
+        ["content", document.body],
       ]) {
         for (const word of new Set(words(text!)))
           db.run("INSERT INTO tokens VALUES (?, ?, ?)", [
@@ -55,20 +56,39 @@ export function querySearchDatabase(db: Database, query: string): string[] {
   db.create_function("near_word", (term, word) =>
     Number(nearWord(String(term), String(word))),
   );
-  let keys: Set<string> | undefined;
+  let scores: Map<string, number> | undefined;
   for (const term of terms) {
     const result = db.exec(
-      `SELECT documents.key FROM tokens JOIN documents ON documents.id = tokens.doc_id WHERE word >= ? AND word < ?
-      UNION SELECT documents.key FROM tokens JOIN documents ON documents.id = tokens.doc_id WHERE field = 'title' AND near_word(?, word) = 1`,
-      [term, `${term}\uffff`, term],
+      `SELECT documents.key, MAX(CASE
+        WHEN word = ? AND field = 'title' THEN 8
+        WHEN field = 'title' AND word >= ? AND word < ? THEN 6
+        WHEN word = ? AND field = 'description' THEN 4
+        WHEN field = 'description' THEN 3
+        WHEN word = ? THEN 2
+        WHEN field = 'content' THEN 1
+        ELSE 0 END) AS score
+      FROM tokens JOIN documents ON documents.id = tokens.doc_id
+      WHERE (word >= ? AND word < ?)
+        OR (field = 'title' AND near_word(?, word) = 1)
+      GROUP BY documents.key`,
+      [term, term, `${term}\uffff`, term, term, term, `${term}\uffff`, term],
     );
-    const matches = new Set(
-      (result[0]?.values ?? []).map(([key]) => String(key)),
+    const matches = new Map(
+      (result[0]?.values ?? []).map(([key, score]) => [
+        String(key),
+        Number(score),
+      ]),
     );
-    keys = keys
-      ? new Set([...keys].filter((key) => matches.has(key)))
+    scores = scores
+      ? new Map(
+          [...scores].flatMap(([key, score]) =>
+            matches.has(key) ? [[key, score + matches.get(key)!]] : [],
+          ),
+        )
       : matches;
-    if (!keys.size) break;
+    if (!scores.size) break;
   }
-  return [...(keys ?? [])];
+  return [...(scores ?? [])]
+    .sort(([a, aScore], [b, bScore]) => bScore - aScore || a.localeCompare(b))
+    .map(([key]) => key);
 }

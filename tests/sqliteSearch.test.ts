@@ -65,6 +65,46 @@ describe("SQLite documentation search", () => {
       db.close();
     }
   });
+  it("ranks ANSI titles ahead of descriptions and incidental code mentions", async () => {
+    const SQL = await initSqlJs();
+    const db = new SQL.Database(
+      buildSearchDatabase(SQL, [
+        {
+          key: "a-code",
+          title: "Logging",
+          description: "",
+          body: "ansiColors()",
+        },
+        {
+          key: "b-body",
+          title: "Rendering",
+          description: "",
+          body: "ANSI output",
+        },
+        {
+          key: "c-description",
+          title: "Terminal",
+          description: "ANSI process output",
+          body: "",
+        },
+        { key: "d-title", title: "ANSI", description: "", body: "" },
+      ]),
+    );
+    try {
+      expect(querySearchDatabase(db, "ansi")).toEqual([
+        "d-title",
+        "c-description",
+        "b-body",
+        "a-code",
+      ]);
+      expect(querySearchDatabase(db, "ansi output")).toEqual([
+        "c-description",
+        "b-body",
+      ]);
+    } finally {
+      db.close();
+    }
+  });
   it("keeps content out of page JavaScript when using the external database", async () => {
     const captured: unknown[] = [];
     const result = String(

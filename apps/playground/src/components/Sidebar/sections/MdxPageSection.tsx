@@ -1,7 +1,6 @@
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import type { MdxSection, MdxSectionItem } from "../../../content/mdxSection";
-import { useSidebarSearch } from "../../../search/useSidebarSearch";
 import { PageOutlineItems } from "./PageOutlineItems";
 
 interface MdxPageSectionProps {
@@ -115,13 +114,6 @@ export function MdxPageSection({
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const [query, setQuery] = useState("");
-  const normalizedQuery = query.trim().toLowerCase();
-  const {
-    items: filteredItems,
-    loading,
-    error,
-  } = useSidebarSearch(section.items, normalizedQuery);
   const headingId = `sidebar-${section.id}-title`;
 
   function toggleGroup(groupId: string) {
@@ -147,36 +139,16 @@ export function MdxPageSection({
         </div>
       </div>
 
-      <label className="sidebar-search" style={{ margin: "0 6px" }}>
-        <Search aria-hidden="true" />
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={`Search ${section.label}…`}
-          aria-label={`Search ${section.label}`}
-        />
-      </label>
       <div className="sidebar-section-items">
-        {(loading || error) && (
-          <p className="sidebar-empty" role="status">
-            {error ?? "Searching…"}
-          </p>
-        )}
         <MdxSectionItems
-          items={filteredItems}
+          items={section.items}
           value={value}
           outlineValue={outlineValue}
           collapsedGroupIds={collapsedGroupIds}
-          searching={Boolean(normalizedQuery)}
+          searching={false}
           onChange={onChange}
           onToggleGroup={toggleGroup}
         />
-        {filteredItems.length === 0 && !loading && !error && (
-          <p className="sidebar-empty" role="status">
-            No matching pages
-          </p>
-        )}
       </div>
     </section>
   );

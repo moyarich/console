@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createMdxSection } from "../apps/playground/src/content/mdxSection";
-import { filterSidebarItems } from "../apps/playground/src/utils/sidebarSearch";
+import {
+  filterSidebarByKeys,
+  filterSidebarItems,
+} from "../apps/playground/src/utils/sidebarSearch";
 
 const section = createMdxSection({
   id: "examples",
@@ -67,4 +70,42 @@ describe("sidebar search", () => {
     expect(result[0]?.type).toBe("group");
     expect(labels(" ")).toEqual(["WebSocket", "HTTP", "Catalog"]);
   });
+});
+
+it("preserves relevance order across nested sidebar groups", () => {
+  const rankedSection = createMdxSection({
+    id: "ranked",
+    label: "Ranked",
+    modules: {
+      "./01-other/01-code/page.mdx": {
+        searchKey: "code",
+        default: () => null,
+        frontmatter: { label: "Code" },
+      },
+      "./02-terminal/01-description/page.mdx": {
+        searchKey: "description",
+        default: () => null,
+        frontmatter: { label: "Terminal" },
+      },
+      "./02-terminal/02-ansi/page.mdx": {
+        searchKey: "title",
+        default: () => null,
+        frontmatter: { label: "ANSI" },
+      },
+    },
+  });
+  const result = filterSidebarByKeys(
+    rankedSection.items,
+    new Set(["title", "description", "code"]),
+  );
+  const flatten = (items: readonly (typeof result)[number][]): string[] =>
+    items.flatMap((item) =>
+      item.type === "page" ? [item.page.searchKey!] : flatten(item.group.items),
+    );
+  expect(flatten(result)).toEqual(["title", "description", "code"]);
+  expect(flatten(rankedSection.items)).toEqual([
+    "code",
+    "description",
+    "title",
+  ]);
 });

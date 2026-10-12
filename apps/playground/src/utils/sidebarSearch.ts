@@ -59,12 +59,22 @@ export function filterSidebarByKeys(
   items: readonly MdxSectionItem[],
   keys: ReadonlySet<string>,
 ): MdxSectionItem[] {
-  return items.flatMap((item): MdxSectionItem[] => {
-    if (item.type === "page")
-      return item.page.searchKey && keys.has(item.page.searchKey) ? [item] : [];
-    const children = filterSidebarByKeys(item.group.items, keys);
-    return children.length
-      ? [{ ...item, group: { ...item.group, items: children } }]
-      : [];
-  });
+  const ranks = new Map([...keys].map((key, index) => [key, index]));
+  function rank(item: MdxSectionItem): number {
+    return item.type === "page"
+      ? (ranks.get(item.page.searchKey ?? "") ?? Infinity)
+      : Math.min(...item.group.items.map(rank));
+  }
+  return items
+    .flatMap((item): MdxSectionItem[] => {
+      if (item.type === "page")
+        return item.page.searchKey && keys.has(item.page.searchKey)
+          ? [item]
+          : [];
+      const children = filterSidebarByKeys(item.group.items, keys);
+      return children.length
+        ? [{ ...item, group: { ...item.group, items: children } }]
+        : [];
+    })
+    .sort((a, b) => rank(a) - rank(b));
 }
