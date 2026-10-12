@@ -68,11 +68,15 @@ const { messages, droppedCount, retainedCount, clear } = useConsoleMessages({
   maxMessages: 1000,
 });
 
-return <>
-  {droppedCount > 0 && <p role="status">{droppedCount} older messages discarded</p>}
-  <Console messages={messages} onClear={clear} />
-  <small>{retainedCount} messages retained</small>
-</>;
+return (
+  <>
+    {droppedCount > 0 && (
+      <p role="status">{droppedCount} older messages discarded</p>
+    )}
+    <Console messages={messages} onClear={clear} />
+    <small>{retainedCount} messages retained</small>
+  </>
+);
 ```
 
 Session snapshots and exports only include the messages still retained. If dropped-history accounting should appear in an exported report or restored session, persist `droppedCount` separately as application metadata; dropped messages cannot be recovered from the current history.
