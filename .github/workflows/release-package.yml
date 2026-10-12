@@ -1,5 +1,8 @@
 name: Release package
 
+run-name: >-
+  Release · ${{ inputs.package }} · ${{ inputs.version-mode }}${{ inputs.version-mode == 'bump' && format(':{0}', inputs.version-bump) || inputs.version-mode == 'exact' && format(':{0}', inputs.exact-version) || '' }} · ${{ inputs.draft && 'draft' || 'published' }} · dry-run=${{ inputs.dry-run }}
+
 on:
   workflow_dispatch:
     inputs:

@@ -1,5 +1,8 @@
 name: Publish npm package
 
+run-name: >-
+  Publish · ${{ inputs.package }} · ${{ inputs.registry }} · ${{ inputs.version-mode }}${{ inputs.version-mode == 'exact' && format(':{0}', inputs.exact-version) || '' }} · dry-run=${{ inputs.dry-run }}
+
 on:
   workflow_dispatch:
     inputs:
