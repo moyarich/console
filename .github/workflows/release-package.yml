@@ -133,7 +133,7 @@ jobs:
               version=previous?bump(previous,"patch"):process.env.INITIAL_VERSION;
             }
             if(!valid(version)) throw Error("Invalid resolved SemVer for "+pkg.name+": "+version);
-            return {...pkg,currentVersion:current,version};
+            return {...pkg,currentVersion:current,version,major:version.split(".")[0]};
           });
           process.stdout.write(JSON.stringify(packages));
           NODE
@@ -232,7 +232,7 @@ jobs:
       changelog-file: ${{ format('{0}/CHANGELOG.md', matrix.directory) }}
       target-ref: main
       create-tag: true
-      major-tag: ${{ format('{0}@v{1}', matrix.directory, split(matrix.version, '.')[0]) }}
+      major-tag: ${{ format('{0}@v{1}', matrix.directory, matrix.major) }}
       update-major-tag: ${{ inputs.update-major-tag }}
       draft: ${{ inputs.draft }}
       dry-run: ${{ inputs.dry-run }}
