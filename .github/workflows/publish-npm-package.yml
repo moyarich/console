@@ -70,4 +70,4 @@ jobs:
       dry-run: ${{ inputs.dry-run }}
       tag: ${{ inputs.tag }}
     secrets:
-      npm-token: ${{ secrets.NPM_TOKEN }}
+      npm-token: ${{ secrets._NPM_TOKEN }}
