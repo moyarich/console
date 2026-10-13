@@ -60,7 +60,7 @@ jobs:
     name: Discover publishable packages
     permissions:
       contents: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@v0
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@main
     with:
       packages-directory: packages
       use-workspaces: true
@@ -282,7 +282,7 @@ jobs:
       matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     permissions:
       contents: write
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_release.yml@v0
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_release.yml@main
     with:
       version: ${{ matrix.version }}
       release-tag: ${{ format('{0}@{1}', matrix.directory, matrix.version) }}
