@@ -82,6 +82,19 @@ jobs:
           ref: main
           persist-credentials: false
           fetch-depth: 0
+      - name: Checkout Workspace Tools version resolver
+        uses: actions/checkout@v7
+        with:
+          repository: moyarich/workspace-tools
+          ref: main
+          path: .github/workspace-tools-runtime
+          persist-credentials: false
+      - name: Build Workspace Tools version resolver
+        working-directory: .github/workspace-tools-runtime
+        shell: bash
+        run: |
+          npm ci --include=optional
+          npx vite build --config vite.cli.config.ts --mode workspace-release-identity
       - name: Select packages
         id: package
         env:
@@ -98,49 +111,12 @@ jobs:
             if $selector == "all" then $packages
             else [$packages[] | select(.name == $selector or .directory == $selector)] end
           ')"
-          SELECTED="$(SELECTED="$SELECTED" node --input-type=module <<'NODE'
-          import { execFileSync } from "node:child_process";
-          const selected=JSON.parse(process.env.SELECTED);
-          const valid=v=>/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(v);
-          function bump(version, kind) {
-            const match=version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?/);
-            if (!match) throw Error("Invalid current version: "+version);
-            let major=+match[1],minor=+match[2],patch=+match[3],pre=match[4];
-            if(kind==="major") return `${major+1}.0.0`;
-            if(kind==="minor") return `${major}.${minor+1}.0`;
-            if(kind==="patch") return `${major}.${minor}.${patch+1}`;
-            if(kind==="premajor") return `${major+1}.0.0-0`;
-            if(kind==="preminor") return `${major}.${minor+1}.0-0`;
-            if(kind==="prepatch") return `${major}.${minor}.${patch+1}-0`;
-            if(kind==="prerelease") {
-              if(!pre) return `${major}.${minor}.${patch+1}-0`;
-              const parts=pre.split("."),last=parts.at(-1);
-              if(/^\d+$/.test(last)) parts[parts.length-1]=String(+last+1);
-              else parts.push("0");
-              return `${major}.${minor}.${patch}-${parts.join(".")}`;
-            }
-            throw Error("Unsupported bump: "+kind);
-          }
-          const packages=selected.map(pkg=>{
-            const current=pkg.version;
-            let version=current;
-            if(process.env.VERSION_MODE==="exact") version=process.env.EXACT_VERSION;
-            if(process.env.VERSION_MODE==="bump") version=bump(current,process.env.VERSION_BUMP);
-            if(process.env.VERSION_MODE==="auto") {
-              const tags=execFileSync("git",["tag","-l",pkg.directory+"@*"],{encoding:"utf8"}).split("\n").map(x=>x.trim()).filter(Boolean);
-              const previous=tags.map(tag=>tag.slice(pkg.directory.length+1)).filter(valid).filter(v=>!v.includes("-")).sort((a,b)=>{
-                const x=a.split(".").map(Number),y=b.split(".").map(Number);
-                for(let i=0;i<3;i++) if(x[i]!==y[i]) return x[i]-y[i];
-                return 0;
-              }).at(-1);
-              version=previous?bump(previous,"patch"):process.env.INITIAL_VERSION;
-            }
-            if(!valid(version)) throw Error("Invalid resolved SemVer for "+pkg.name+": "+version);
-            return {...pkg,currentVersion:current,version,major:version.split(".")[0]};
-          });
-          process.stdout.write(JSON.stringify(packages));
-          NODE
-          )"
+          SELECTED="$(node .github/workspace-tools-runtime/dist/bin/workspace-release-identity.mjs resolve-versions \
+            --packages-json "$SELECTED" \
+            --mode "$VERSION_MODE" \
+            --bump "$VERSION_BUMP" \
+            --exact-version "$EXACT_VERSION" \
+            --initial-version "$INITIAL_VERSION")"
           COUNT="$(jq 'length' <<< "$SELECTED")"
           if [ "$COUNT" -eq 0 ]; then
             echo "::error::No publishable packages matched $SELECTOR"
