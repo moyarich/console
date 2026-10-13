@@ -86,7 +86,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: moyarich/workspace-tools
-          ref: feat/shared-release-version-resolution
+          ref: main
           path: .github/workspace-tools-runtime
           persist-credentials: false
       - name: Build Workspace Tools version resolver
