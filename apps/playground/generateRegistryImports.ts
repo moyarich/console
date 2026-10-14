@@ -10,7 +10,7 @@ export function generateRegistryImports(): void {
   const relativeBase = (base: string) =>
     relative(dirname(output), resolve(root, base)).split(sep).join("/");
   const glob = (include: readonly string[], base: string, options = "") =>
-    `import.meta.glob(${JSON.stringify([...include])}, { base: ${JSON.stringify(relativeBase(base))}, eager: true${options} })`;
+    `import.meta.glob(${JSON.stringify(include.map((pattern) => `./${pattern.replace(/^\\.\\//, "")}`))}, { base: ${JSON.stringify(relativeBase(base))}, eager: true${options} })`;
   const lines = [
     "// Generated from registry.config.ts. Do not edit manually.",
     'import type { MdxPageModule } from "../content/mdxSection";',
