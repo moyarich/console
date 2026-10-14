@@ -3,10 +3,10 @@ import initSqlJs from "sql.js";
 import {
   buildSearchDatabase,
   querySearchDatabase,
-} from "../apps/playground/sqliteSearchDatabase";
+} from "../apps/playground/src/search-sqlite/database";
 import { compile } from "@mdx-js/mdx";
 import remarkFrontmatter from "remark-frontmatter";
-import remarkSearchIndex from "../apps/playground/remarkSearchIndex";
+import remarkSearchIndex from "../apps/playground/src/search-sqlite/remarkSearchIndex";
 
 const documents = [
   {
@@ -133,6 +133,8 @@ describe("SQLite documentation search", () => {
         key: expect.any(String),
         text: "Search heading\nunique-body-token",
         frontmatter: "label: Search",
+        path: "/docs/page.mdx",
+        dependencies: [],
       },
     ]);
     expect(result).toContain("export const searchKey = ");
