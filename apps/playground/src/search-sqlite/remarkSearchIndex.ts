@@ -16,6 +16,7 @@ export interface SearchDocument {
   text: string;
   frontmatter: string;
   path: string;
+  dependencies: string[];
 }
 export default function remarkSearchIndex(
   options: {
@@ -59,6 +60,7 @@ export default function remarkSearchIndex(
       text: searchText,
       frontmatter,
       path: file.path,
+      dependencies: [...examples],
     });
     const exportName = options.external ? "searchKey" : "searchText";
     const exportValue = options.external ? key : searchText;
