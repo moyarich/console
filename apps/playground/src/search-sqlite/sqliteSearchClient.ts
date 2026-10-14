@@ -1,6 +1,15 @@
 import databaseUrl from "virtual:search-database";
 
 let worker: Worker | undefined;
+
+/** Drop the cached SQLite worker after Vite reindexes MDX content. */
+export function invalidateSqliteSearch(): void {
+  worker?.terminate();
+  worker = undefined;
+  for (const request of pending.values())
+    request.reject(new Error("Search index updated"));
+  pending.clear();
+}
 let nextId = 0;
 const pending = new Map<
   number,
