@@ -1,6 +1,6 @@
 import initSqlJs from "sql.js";
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url";
-import { querySearchDatabase } from "../../sqliteSearchDatabase";
+import { querySearchDatabase } from "./database";
 
 let database: Promise<import("sql.js").Database> | undefined;
 self.onmessage = async (

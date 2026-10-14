@@ -1,27 +1,42 @@
 import { useEffect, useState } from "react";
 import type { MdxSectionItem } from "../content/mdxSection";
 import { filterSidebarByKeys } from "../utils/sidebarSearch";
-import { searchSqlite } from "./sqliteSearchClient";
+import {
+  invalidateSqliteSearch,
+  searchSqlite,
+} from "../search-sqlite/sqliteSearchClient";
 
 export function useSidebarSearch(
   items: readonly MdxSectionItem[],
   query: string,
 ) {
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    if (!import.meta.hot) return;
+    const onUpdate = () => {
+      invalidateSqliteSearch();
+      setRevision((value) => value + 1);
+    };
+    import.meta.hot.on("sqlite-search:updated", onUpdate);
+    return () => import.meta.hot?.off("sqlite-search:updated", onUpdate);
+  }, []);
   const [result, setResult] = useState<{
     query: string;
     keys: string[];
+    revision: number;
     error?: string;
-  }>({ query: "", keys: [] });
+  }>({ query: "", keys: [], revision: -1 });
   useEffect(() => {
     if (!query) return;
     let cancelled = false;
     const timer = setTimeout(() => {
       searchSqlite(query).then(
         (keys) => {
-          if (!cancelled) setResult({ query, keys });
+          if (!cancelled) setResult({ query, keys, revision });
         },
         (error: Error) => {
-          if (!cancelled) setResult({ query, keys: [], error: error.message });
+          if (!cancelled)
+            setResult({ query, keys: [], revision, error: error.message });
         },
       );
     }, 100);
@@ -29,8 +44,9 @@ export function useSidebarSearch(
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [query]);
-  const loading = Boolean(query) && result.query !== query;
+  }, [query, revision]);
+  const loading =
+    Boolean(query) && (result.query !== query || result.revision !== revision);
   return {
     items: !query
       ? [...items]
