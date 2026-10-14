@@ -1,5 +1,6 @@
 import initSqlJs from "sql.js";
-import type { Plugin } from "vite";
+import { resolve } from "node:path";
+import type { Plugin, ViteDevServer } from "vite";
 import {
   buildSearchDatabase,
   type IndexedDocument,
@@ -9,6 +10,9 @@ import { toIndexedDocument } from "../src/search-sqlite/indexDocument";
 
 export function sqliteSearchPlugin() {
   const documents = new Map<string, IndexedDocument>();
+  const paths = new Map<string, string>();
+  let devServer: ViteDevServer | undefined;
+  const refresh = () => devServer?.ws.send("sqlite-search:updated", {});
   const virtualId = "virtual:search-database";
   const resolvedId = `\0${virtualId}`;
   let reference: string;
@@ -20,8 +24,10 @@ export function sqliteSearchPlugin() {
     remarkSearchIndex,
     {
       external: true,
-      onDocument(document: { key: string; text: string; frontmatter: string }) {
+      onDocument(document: { key: string; text: string; frontmatter: string; path: string }) {
+        paths.set(resolve(document.path), document.key);
         documents.set(document.key, toIndexedDocument(document));
+        refresh();
       },
     },
   ];
@@ -29,6 +35,7 @@ export function sqliteSearchPlugin() {
     name: "sqlite-search-index",
     buildStart() {
       documents.clear();
+      paths.clear();
     },
     resolveId(id) {
       if (id === virtualId) return resolvedId;
@@ -48,6 +55,14 @@ export function sqliteSearchPlugin() {
         );
     },
     configureServer(server) {
+      devServer = server;
+      server.watcher.on("unlink", (path) => {
+        const key = paths.get(resolve(path));
+        if (!key) return;
+        paths.delete(resolve(path));
+        documents.delete(key);
+        refresh();
+      });
       server.middlewares.use(async (request, response, next) => {
         if (
           request.url?.split("?")[0] !== `${server.config.base}@search.sqlite`
