@@ -11,6 +11,16 @@ import { toIndexedDocument } from "../src/search-sqlite/indexDocument";
 export function sqliteSearchPlugin() {
   const documents = new Map<string, IndexedDocument>();
   const paths = new Map<string, string>();
+  const dependencies = new Map<string, Set<string>>();
+  const sourceDependencies = new Map<string, Set<string>>();
+  function removeDependencies(source: string) {
+    for (const dependency of sourceDependencies.get(source) ?? []) {
+      const sources = dependencies.get(dependency);
+      sources?.delete(source);
+      if (!sources?.size) dependencies.delete(dependency);
+    }
+    sourceDependencies.delete(source);
+  }
   let devServer: ViteDevServer | undefined;
   const refresh = () => devServer?.ws.send("sqlite-search:updated", {});
   const virtualId = "virtual:search-database";
@@ -29,8 +39,18 @@ export function sqliteSearchPlugin() {
         text: string;
         frontmatter: string;
         path: string;
+        dependencies: string[];
       }) {
-        paths.set(resolve(document.path), document.key);
+        const source = resolve(document.path);
+        removeDependencies(source);
+        paths.set(source, document.key);
+        const imports = new Set(document.dependencies.map((path) => resolve(path)));
+        sourceDependencies.set(source, imports);
+        for (const dependency of imports) {
+          if (!dependencies.has(dependency)) dependencies.set(dependency, new Set());
+          dependencies.get(dependency)!.add(source);
+          devServer?.watcher.add(dependency);
+        }
         documents.set(document.key, toIndexedDocument(document));
         refresh();
       },
@@ -41,6 +61,8 @@ export function sqliteSearchPlugin() {
     buildStart() {
       documents.clear();
       paths.clear();
+      dependencies.clear();
+      sourceDependencies.clear();
     },
     resolveId(id) {
       if (id === virtualId) return resolvedId;
@@ -61,10 +83,24 @@ export function sqliteSearchPlugin() {
     },
     configureServer(server) {
       devServer = server;
+      async function reindexDependents(path: string) {
+        const sources = [...(dependencies.get(resolve(path)) ?? [])];
+        for (const source of sources) {
+          for (const mod of server.moduleGraph.getModulesByFile(source) ?? []) {
+            server.moduleGraph.invalidateModule(mod);
+            await server.transformRequest(mod.url);
+          }
+        }
+      }
+      server.watcher.on("change", (path) => {
+        void reindexDependents(path).catch((error: unknown) => server.config.logger.error(String(error)));
+      });
       server.watcher.on("unlink", (path) => {
+        void reindexDependents(path).catch((error: unknown) => server.config.logger.error(String(error)));
         const key = paths.get(resolve(path));
         if (!key) return;
         paths.delete(resolve(path));
+        removeDependencies(resolve(path));
         documents.delete(key);
         refresh();
       });
