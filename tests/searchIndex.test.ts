@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { compile } from "@mdx-js/mdx";
 import { describe, expect, it } from "vitest";
-import remarkSearchIndex from "../apps/playground/remarkSearchIndex";
+import remarkSearchIndex from "../apps/playground/src/search-sqlite/remarkSearchIndex";
 
 describe("build-time search index", () => {
   it("indexes prose, headings, inline and fenced code, and imported raw examples", async () => {
