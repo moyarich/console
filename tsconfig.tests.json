@@ -2,7 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "vite/client"],
     "paths": {
       "@moyarich/console": ["./packages/console/src/index.ts"],
       "@moyarich/console-core": ["./packages/console-core/src/index.ts"],
@@ -13,7 +13,7 @@
   },
   "include": [
     "tests",
-    "apps/playground/src/search/modules.d.ts",
+    "apps/playground/src/search-sqlite/modules.d.ts",
     "packages/addons/*/tests",
     "stories",
     ".storybook",

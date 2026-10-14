@@ -2,8 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 // Sidebar rendering does not need the browser-only SQLite search worker.
-vi.mock("../apps/playground/src/search/sqliteSearchClient", () => ({
+vi.mock("../apps/playground/src/search-sqlite/sqliteSearchClient", () => ({
   searchSqlite: vi.fn(async () => []),
+  invalidateSqliteSearch: vi.fn(),
 }));
 import { createMdxSection } from "../apps/playground/src/content/mdxSection";
 import { DocumentationSearch } from "../apps/playground/src/components/Sidebar/DocumentationSearch";
