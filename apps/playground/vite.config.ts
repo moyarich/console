@@ -8,7 +8,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
-import { sqliteSearchPlugin } from "./sqliteSearchPlugin";
+import { sqliteSearchPlugin } from "./vite-sqlite-plugin";
 const search = sqliteSearchPlugin();
 
 function workspaceSource(path: string) {
