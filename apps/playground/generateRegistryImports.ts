@@ -6,7 +6,10 @@ import registry from "./registry.config";
 /** Emit static import.meta.glob arguments required by Vite. */
 export function generateRegistryImports(): void {
   const root = dirname(fileURLToPath(import.meta.url));
-  const output = resolve(root, "src/playground-registry/registrySources.generated.ts");
+  const output = resolve(
+    root,
+    "src/playground-registry/registrySources.generated.ts",
+  );
   const relativeBase = (base: string) =>
     relative(dirname(output), resolve(root, base)).split(sep).join("/");
   const glob = (include: readonly string[], base: string, options = "") =>
@@ -21,6 +24,10 @@ export function generateRegistryImports(): void {
   ];
   const next = lines.join("\n");
   let current: string | undefined;
-  try { current = readFileSync(output, "utf8"); } catch { /* First generation. */ }
+  try {
+    current = readFileSync(output, "utf8");
+  } catch {
+    /* First generation. */
+  }
   if (current !== next) writeFileSync(output, next);
 }
