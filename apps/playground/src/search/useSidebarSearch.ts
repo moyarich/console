@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { MdxSectionItem } from "../content/mdxSection";
 import { filterSidebarByKeys } from "../utils/sidebarSearch";
-import { searchSqlite } from "./sqliteSearchClient";
+import { searchSqlite } from "../search-sqlite/sqliteSearchClient";
 
 export function useSidebarSearch(
   items: readonly MdxSectionItem[],
