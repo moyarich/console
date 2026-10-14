@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { relative, resolve, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import registry from "./registry.config";
@@ -10,7 +10,7 @@ export function generateRegistryImports(): void {
   const relativeBase = (base: string) =>
     relative(dirname(output), resolve(root, base)).split(sep).join("/");
   const glob = (include: readonly string[], base: string, options = "") =>
-    `import.meta.glob(${JSON.stringify(include.map((pattern) => `./${pattern.replace(/^\\.\\//, "")}`))}, { base: ${JSON.stringify(relativeBase(base))}, eager: true${options} })`;
+    `import.meta.glob(${JSON.stringify(include.map((pattern) => `./${pattern.replace(/^\.\//, "")}`))}, { base: ${JSON.stringify(relativeBase(base))}, eager: true${options} })`;
   const lines = [
     "// Generated from registry.config.ts. Do not edit manually.",
     'import type { MdxPageModule } from "../content/mdxSection";',
@@ -19,5 +19,8 @@ export function generateRegistryImports(): void {
     `export const PACKAGE_METADATA = ${glob(registry.sources.packages.metadata, registry.sources.packages.base, ', import: "default"')} as Record<string, { name: string }>;`,
     "",
   ];
-  writeFileSync(output, lines.join("\n"));
+  const next = lines.join("\n");
+  let current: string | undefined;
+  try { current = readFileSync(output, "utf8"); } catch { /* First generation. */ }
+  if (current !== next) writeFileSync(output, next);
 }
