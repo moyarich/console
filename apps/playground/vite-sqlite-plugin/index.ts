@@ -44,10 +44,13 @@ export function sqliteSearchPlugin() {
         const source = resolve(document.path);
         removeDependencies(source);
         paths.set(source, document.key);
-        const imports = new Set(document.dependencies.map((path) => resolve(path)));
+        const imports = new Set(
+          document.dependencies.map((path) => resolve(path)),
+        );
         sourceDependencies.set(source, imports);
         for (const dependency of imports) {
-          if (!dependencies.has(dependency)) dependencies.set(dependency, new Set());
+          if (!dependencies.has(dependency))
+            dependencies.set(dependency, new Set());
           dependencies.get(dependency)!.add(source);
           devServer?.watcher.add(dependency);
         }
@@ -93,10 +96,14 @@ export function sqliteSearchPlugin() {
         }
       }
       server.watcher.on("change", (path) => {
-        void reindexDependents(path).catch((error: unknown) => server.config.logger.error(String(error)));
+        void reindexDependents(path).catch((error: unknown) =>
+          server.config.logger.error(String(error)),
+        );
       });
       server.watcher.on("unlink", (path) => {
-        void reindexDependents(path).catch((error: unknown) => server.config.logger.error(String(error)));
+        void reindexDependents(path).catch((error: unknown) =>
+          server.config.logger.error(String(error)),
+        );
         const key = paths.get(resolve(path));
         if (!key) return;
         paths.delete(resolve(path));
