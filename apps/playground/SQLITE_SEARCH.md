@@ -27,6 +27,8 @@ sidebar; changing the query retries loading. Requests are debounced and obsolete
 responses cannot replace results for a newer query. Empty queries restore the full
 navigation tree without loading SQLite.
 
+In development, MDX transforms update the in-memory document index and notify the search client through Vite HMR. The client discards the cached SQLite worker, re-fetches the database, and repeats the current nonempty query. Deleting an indexed MDX file removes its document from the index. No `dist/` output or dev-server restart is needed.
+
 The dev server serves a generated database at `@search.sqlite`; production uses a
 hashed asset URL that respects Vite's configured base path for GitHub Pages.
 
