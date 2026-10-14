@@ -20,19 +20,19 @@ export function useSidebarSearch(
   const [result, setResult] = useState<{
     query: string;
     keys: string[];
+    revision: number;
     error?: string;
-  }>({ query: "", keys: [] });
+  }>({ query: "", keys: [], revision: -1 });
   useEffect(() => {
     if (!query) return;
-    setResult({ query: "", keys: [] });
     let cancelled = false;
     const timer = setTimeout(() => {
       searchSqlite(query).then(
         (keys) => {
-          if (!cancelled) setResult({ query, keys });
+          if (!cancelled) setResult({ query, keys, revision });
         },
         (error: Error) => {
-          if (!cancelled) setResult({ query, keys: [], error: error.message });
+          if (!cancelled) setResult({ query, keys: [], revision, error: error.message });
         },
       );
     }, 100);
@@ -41,7 +41,7 @@ export function useSidebarSearch(
       clearTimeout(timer);
     };
   }, [query, revision]);
-  const loading = Boolean(query) && result.query !== query;
+  const loading = Boolean(query) && (result.query !== query || result.revision !== revision);
   return {
     items: !query
       ? [...items]
