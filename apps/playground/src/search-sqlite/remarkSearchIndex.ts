@@ -54,7 +54,12 @@ export default function remarkSearchIndex(
     for (const path of examples) parts.push(await readFile(path, "utf8"));
     const searchText = parts.join("\n");
     const key = createHash("sha256").update(file.path).digest("hex");
-    options.onDocument?.({ key, text: searchText, frontmatter, path: file.path });
+    options.onDocument?.({
+      key,
+      text: searchText,
+      frontmatter,
+      path: file.path,
+    });
     const exportName = options.external ? "searchKey" : "searchText";
     const exportValue = options.external ? key : searchText;
     tree.children?.push({

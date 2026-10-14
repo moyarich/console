@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import type { MdxSectionItem } from "../content/mdxSection";
 import { filterSidebarByKeys } from "../utils/sidebarSearch";
-import { invalidateSqliteSearch, searchSqlite } from "../search-sqlite/sqliteSearchClient";
+import {
+  invalidateSqliteSearch,
+  searchSqlite,
+} from "../search-sqlite/sqliteSearchClient";
 
 export function useSidebarSearch(
   items: readonly MdxSectionItem[],
@@ -32,7 +35,8 @@ export function useSidebarSearch(
           if (!cancelled) setResult({ query, keys, revision });
         },
         (error: Error) => {
-          if (!cancelled) setResult({ query, keys: [], revision, error: error.message });
+          if (!cancelled)
+            setResult({ query, keys: [], revision, error: error.message });
         },
       );
     }, 100);
@@ -41,7 +45,8 @@ export function useSidebarSearch(
       clearTimeout(timer);
     };
   }, [query, revision]);
-  const loading = Boolean(query) && (result.query !== query || result.revision !== revision);
+  const loading =
+    Boolean(query) && (result.query !== query || result.revision !== revision);
   return {
     items: !query
       ? [...items]

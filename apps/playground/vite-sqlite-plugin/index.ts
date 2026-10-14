@@ -24,7 +24,12 @@ export function sqliteSearchPlugin() {
     remarkSearchIndex,
     {
       external: true,
-      onDocument(document: { key: string; text: string; frontmatter: string; path: string }) {
+      onDocument(document: {
+        key: string;
+        text: string;
+        frontmatter: string;
+        path: string;
+      }) {
         paths.set(resolve(document.path), document.key);
         documents.set(document.key, toIndexedDocument(document));
         refresh();
