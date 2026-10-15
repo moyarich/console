@@ -81,12 +81,12 @@ export function sqliteSearchPlugin() {
       });
       return `export default import.meta.ROLLUP_FILE_URL_${reference};`;
     },
-    async renderStart() {
-      if (reference)
-        this.setAssetSource(
-          reference,
-          buildSearchDatabase(await SQL, documents.values()),
-        );
+    async generateBundle(_options, bundle) {
+      if (!reference) return;
+      const asset = bundle[this.getFileName(reference)];
+      if (asset?.type === "asset") {
+        asset.source = buildSearchDatabase(await SQL, documents.values());
+      }
     },
     configureServer(server) {
       devServer = server;
