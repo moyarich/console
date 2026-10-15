@@ -7,12 +7,14 @@ on:
       - .github/workflows/release-package.yml
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
   single:
     name: Single package dry run
     permissions:
+      actions: read
       contents: write
     uses: moyarich/reusable-workflows/.github/workflows/reusable_workspace-package-release.yml@main
     with:
@@ -25,6 +27,7 @@ jobs:
   bulk:
     name: All packages dry run
     permissions:
+      actions: read
       contents: write
     uses: moyarich/reusable-workflows/.github/workflows/reusable_workspace-package-release.yml@main
     with:
