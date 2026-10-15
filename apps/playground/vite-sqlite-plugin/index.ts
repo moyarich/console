@@ -74,7 +74,11 @@ export function sqliteSearchPlugin() {
       if (id !== resolvedId) return;
       if (this.environment.config.command === "serve")
         return 'export default import.meta.env.BASE_URL + "@search.sqlite";';
-      reference = this.emitFile({ type: "asset", name: "search.sqlite" });
+      reference = this.emitFile({
+        type: "asset",
+        name: "search.sqlite",
+        source: new Uint8Array(),
+      });
       return `export default import.meta.ROLLUP_FILE_URL_${reference};`;
     },
     async renderStart() {
