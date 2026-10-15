@@ -38,7 +38,6 @@
     "@moyarich/console-addon-session": "*",
     "@moyarich/console-addon-xterm": "*",
     "@moyarich/console-core": "*",
-    "@moyarich/moyaforge-mdx": "^0.1.0",
     "@typefox/monaco-editor-react": "^8.0.2",
     "change-case": "^5.4.4",
     "lucide-react": "^1.47.0",
