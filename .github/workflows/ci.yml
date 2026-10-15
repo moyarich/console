@@ -60,11 +60,16 @@ jobs:
       # Keep the CI formatting scope identical to its formatter.
       - name: Check formatting
         run: |
-          printf '%s\n' '.github/workflows/' 'dist/' '.prettier-self-heal.ignore' > /tmp/console-prettier-ignore
+          # Ignore patterns are relative to the ignore file; keep it at the repo root.
           if [ -f .prettierignore ]; then
-            cat .prettierignore >> /tmp/console-prettier-ignore
+            cat .prettierignore > .prettier-self-heal.ignore
+            printf '\n' >> .prettier-self-heal.ignore
+          else
+            : > .prettier-self-heal.ignore
           fi
-          npx prettier . --check --ignore-path /tmp/console-prettier-ignore
+          printf '%s\n' '.github/workflows/' 'dist/' '.prettier-self-heal.ignore' >> .prettier-self-heal.ignore
+          trap 'rm -f .prettier-self-heal.ignore' EXIT
+          npx prettier . --check --ignore-path .prettier-self-heal.ignore
       # Build once; downstream tests and tarball validation reuse these outputs.
       - name: Build workspaces
         run: npm run build:packages
