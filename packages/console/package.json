@@ -92,5 +92,7 @@
     "websocket",
     "serialization",
     "typescript"
-  ]
+  ],
+  "publisher": "moyarich",
+  "author": "Moya Richards"
 }
