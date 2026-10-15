@@ -1,9 +1,6 @@
 name: Self-heal formatting
 
 on:
-  push:
-    branches-ignore:
-      - main
   workflow_dispatch:
     inputs:
       commit:

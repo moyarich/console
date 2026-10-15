@@ -1,13 +1,6 @@
 name: Self-heal package lock
 
 on:
-  push:
-    branches-ignore:
-      - main
-    paths:
-      - "package.json"
-      - "packages/**/package.json"
-      - "apps/**/package.json"
   workflow_dispatch:
     inputs:
       commit:
