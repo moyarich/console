@@ -23,6 +23,10 @@ on:
         description: Dependency install command
         type: string
         default: npm ci --ignore-scripts
+      dry-run:
+        description: Preview rebuilt distributions without committing
+        type: boolean
+        default: true
       node-caching:
         description: Node cache mode (npm or empty to disable)
         type: string
@@ -66,6 +70,7 @@ jobs:
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
       has-packages: ${{ steps.select.outputs.has-packages }}
+      single-package: ${{ steps.select.outputs.single-package }}
     steps:
       - name: Filter discovered packages
         id: select
@@ -95,6 +100,7 @@ jobs:
           const matrix = JSON.stringify({include: packages});
           fs.appendFileSync(process.env.GITHUB_OUTPUT, 'matrix=' + matrix + '\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has-packages=true\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'single-package=' + (packages.length === 1) + '\n');
           console.log('Selected ' + packages.map(p => p.directory).join(', '));
           NODE
 
@@ -106,8 +112,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
     permissions:
-      contents: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_check-dist.yml@main
+      contents: write
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_self-heal-dist.yml@main
     with:
       dist-path: ${{ inputs.dist-path || format('{0}/dist/', matrix.directory) }}
       build-command: ${{ inputs.build-command || format('npm run build --workspace {0}', matrix.name) }}
@@ -115,3 +121,8 @@ jobs:
       node-caching: ${{ inputs.node-caching }}
       artifact-name: ${{ format('dist-{0}', strategy.job-index) }}
       node-version: "24"
+      repair: true
+      commit: ${{ !inputs.dry-run && needs.select-packages.outputs.single-package == 'true' }}
+      target-branch: ${{ github.ref_name }}
+      expected-sha: ${{ github.sha }}
+      checkout-sha: ${{ github.sha }}
