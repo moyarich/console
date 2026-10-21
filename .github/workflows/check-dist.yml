@@ -1,28 +1,37 @@
 name: Check distribution
 
 run-name: >-
-  Check dist · ${{ inputs.packages }}
+  Check dist · ${{ inputs.package }}
 
 on:
   workflow_dispatch:
     inputs:
-      packages:
-        description: Package directory/name or all discovered workspace packages
+      package:
+        description: all, package directory, or package name
         type: string
         required: true
         default: all
       dist-path:
-        description: Committed distribution path override (for example actions/dist/); empty derives package dist/
+        description: "Distribution path template. Supports {packageDir}, {package}, {packageName}, {workspace}; blank uses repository configuration or {packageDir}/dist."
         type: string
         default: ""
       build-command:
-        description: Build command override (for example npm run build:cli); empty uses the selected workspace build
+        description: Build command override (for example npm run build:cli); 
+          empty uses the selected workspace build
         type: string
         default: ""
       install-command:
         description: Dependency install command
         type: string
         default: npm ci --ignore-scripts
+      dry-run:
+        description: Upload rebuilt artifacts, without committing or pushing
+        type: boolean
+        default: true
+      commit:
+        description: Commit updated output only when dry-run is false (single package only)
+        type: boolean
+        default: false
       node-caching:
         description: Node cache mode (npm or empty to disable)
         type: string
@@ -30,7 +39,7 @@ on:
       include-root-package:
         description: Include buildable root package in discovery
         type: boolean
-        default: false
+        default: true
       workspace-tools-source:
         description: Workspace Tools CLI source for discovery
         type: choice
@@ -49,7 +58,8 @@ jobs:
     name: Discover workspace packages
     permissions:
       contents: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@main
+    uses: 
+      moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@main
     with:
       packages-directory: packages
       use-workspaces: true
@@ -66,13 +76,18 @@ jobs:
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
       has-packages: ${{ steps.select.outputs.has-packages }}
+      single-package: ${{ steps.select.outputs.single-package }}
     steps:
+      - name: Checkout configuration
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Filter discovered packages
         id: select
         shell: bash
         env:
           DISCOVERED: ${{ needs.discover-packages.outputs.packages }}
-          PACKAGES: ${{ inputs.packages }}
+          PACKAGES: ${{ inputs.package }}
           DIST_PATH_OVERRIDE: ${{ inputs.dist-path }}
           BUILD_COMMAND_OVERRIDE: ${{ inputs.build-command }}
         run: |
@@ -81,6 +96,8 @@ jobs:
           const report = JSON.parse(process.env.DISCOVERED);
           const selected = process.env.PACKAGES.trim();
           const eligible = report.included;
+          const config = fs.existsSync('.github/check-dist.json') ? JSON.parse(fs.readFileSync('.github/check-dist.json', 'utf8')) : {};
+          const overrides = config.packages || {};
           const packages = selected === 'all'
             ? eligible
             : eligible.filter(p => p.directory === selected || p.name === selected);
@@ -88,13 +105,19 @@ jobs:
             console.error('::error title=No matching package::Select a discovered package directory/name or all.');
             process.exit(1);
           }
-          if (packages.length > 1 && (process.env.DIST_PATH_OVERRIDE || process.env.BUILD_COMMAND_OVERRIDE)) {
-            console.error('::error title=Ambiguous overrides::When selecting multiple packages, omit dist-path and build-command overrides or select one package.');
-            process.exit(1);
-          }
-          const matrix = JSON.stringify({include: packages});
+          const matrix = JSON.stringify({include: packages.map(p => {
+            const settings = overrides[p.directory] || overrides[p.name] || {};
+            const dir = p.directory === '.' ? 'root' : p.directory;
+            return {
+              ...p,
+              artifactSuffix: dir.replace(/^(packages|apps)\//, '').replace(/[^a-zA-Z0-9._-]+/g, '-'),
+              distTemplate: process.env.DIST_PATH_OVERRIDE || settings.distPath || '{packageDir}/dist',
+              buildCommand: process.env.BUILD_COMMAND_OVERRIDE || settings.buildCommand || (p.directory === '.' ? 'npm run build' : 'npm run build --workspace ' + p.name),
+            };
+          })});
           fs.appendFileSync(process.env.GITHUB_OUTPUT, 'matrix=' + matrix + '\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has-packages=true\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'single-package=' + (packages.length === 1) + '\n');
           console.log('Selected ' + packages.map(p => p.directory).join(', '));
           NODE
 
@@ -106,12 +129,20 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
     permissions:
-      contents: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_check-dist.yml@main
+      contents: write
+    uses: 
+      moyarich/reusable-workflows/.github/workflows/reusable_self-heal-dist.yml@main
     with:
-      dist-path: ${{ inputs.dist-path || format('{0}/dist/', matrix.directory) }}
-      build-command: ${{ inputs.build-command || format('npm run build --workspace {0}', matrix.name) }}
+      dist-path: ${{ matrix.distTemplate }}
+      build-command: ${{ matrix.buildCommand }}
       install-command: ${{ inputs.install-command }}
       node-caching: ${{ inputs.node-caching }}
-      artifact-name: ${{ format('dist-{0}', strategy.job-index) }}
+      package-name: ${{ matrix.name }}
+      package-directory: ${{ matrix.directory }}
+      artifact-name: ${{ format('dist-{0}', matrix.artifactSuffix) }}
       node-version: "24"
+      repair: true
+      commit: ${{ inputs.commit && !inputs.dry-run && needs.select-packages.outputs.single-package == 'true' }}
+      target-branch: ${{ github.ref_name }}
+      expected-sha: ${{ github.sha }}
+      checkout-sha: ${{ github.sha }}
