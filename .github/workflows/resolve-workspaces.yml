@@ -1,0 +1,71 @@
+name: Resolve workspaces
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: all, package name, or package directory
+        required: true
+        default: all
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout console
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Checkout shared workspace resolver
+        uses: actions/checkout@v7
+        with:
+          repository: moyarich/reusable-workflows
+          ref: main
+          path: .github/reusable-workflows-runtime
+          persist-credentials: false
+          sparse-checkout: src/actions/resolve-workspaces
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve workspace dependencies
+        id: resolve
+        uses: ./.github/reusable-workflows-runtime/src/actions/resolve-workspaces
+        with:
+          package: ${{ inputs.package }}
+          range: caret
+          write: 'false'
+          output: resolve-workspaces.json
+
+      - name: Publish workspace resolution summary
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const report = JSON.parse(readFileSync('resolve-workspaces.json', 'utf8'));
+          const rows = [
+            '# Workspace dependency resolution', '',
+            'Selector: `' + report.selector + '`', '',
+            '| Package | Directory | Dependency rewrites |',
+            '| --- | --- | ---: |',
+            ...report.packages.map(p => '| `' + p.name + '` | `' + p.directory + '` | ' + p.changes.length + ' |'),
+            '', '## Publish batches', '',
+            ...report.publish.batches.map(batch => 'Stage ' + (batch.level + 1) + ': ' + batch.packages.map(p => '`' + p + '`').join(', ')),
+            '', '> Read-only preview; package manifests were not changed.'
+          ];
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, rows.join('\n') + '\n');
+          NODE
+
+      - name: Upload resolution report
+        uses: actions/upload-artifact@v4
+        with:
+          name: resolve-workspaces
+          path: resolve-workspaces.json
