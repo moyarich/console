@@ -67,6 +67,11 @@ on:
         type: string
         required: false
         default: ""
+      commit-version-changes:
+        description: Commit prepared versions and lockfile before release
+        type: boolean
+        required: true
+        default: false
       update-major-tag:
         description: Update package-scoped major compatibility alias
         type: boolean
@@ -105,6 +110,7 @@ jobs:
       initial-version: ${{ inputs.initial-version }}
       version-bump: ${{ inputs.version-bump }}
       exact-version: ${{ inputs.exact-version }}
+      commit-version-changes: ${{ inputs.commit-version-changes }}
       update-major-tag: ${{ inputs.update-major-tag }}
       draft: ${{ inputs.draft }}
       dry-run: ${{ inputs.dry-run }}
