@@ -4,11 +4,32 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: all, package name, or package directory
+        description: Select a publishable workspace package
         required: true
-        default: all
-        type: string
+        default: "all"
+        type: choice
 
+        options:
+          - "all"
+          - "packages/addons/animation"
+          - "packages/addons/annotations"
+          - "packages/addons/console-feed"
+          - "packages/addons/data-export"
+          - "packages/addons/diagnostics"
+          - "packages/addons/filtering"
+          - "packages/addons/imperative-scrolling"
+          - "packages/addons/links"
+          - "packages/addons/markdown"
+          - "packages/addons/metadata"
+          - "packages/addons/navigation"
+          - "packages/addons/process-state"
+          - "packages/addons/resizable"
+          - "packages/addons/search"
+          - "packages/addons/selection"
+          - "packages/addons/session"
+          - "packages/addons/xterm"
+          - "packages/console"
+          - "packages/console-core"
 permissions:
   contents: read
 
@@ -24,7 +45,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Checkout shared workspace resolver
         uses: actions/checkout@v7
@@ -42,7 +63,7 @@ jobs:
         with:
           package: ${{ inputs.package }}
           range: caret
-          write: 'false'
+          write: "false"
           output: resolve-workspaces.json
 
       - name: Publish workspace resolution summary
