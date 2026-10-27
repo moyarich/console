@@ -26,25 +26,7 @@ on:
         default: all
         options:
           - all
-          - packages/addons/animation
-          - packages/addons/annotations
-          - packages/addons/console-feed
-          - packages/addons/data-export
-          - packages/addons/diagnostics
-          - packages/addons/filtering
-          - packages/addons/imperative-scrolling
-          - packages/addons/links
-          - packages/addons/markdown
-          - packages/addons/metadata
-          - packages/addons/navigation
-          - packages/addons/process-state
-          - packages/addons/resizable
-          - packages/addons/search
-          - packages/addons/selection
-          - packages/addons/session
-          - packages/addons/xterm
-          - packages/console
-          - packages/console-core
+          - "packages/example"
       version-mode:
         description: Resolve each package version
         type: choice
@@ -68,7 +50,7 @@ on:
         required: false
         default: ""
       commit-version-changes:
-        description: Commit prepared versions and lockfile before release
+        description: Commit prepared versions and lockfile to the selected branch before release
         type: boolean
         required: true
         default: false
@@ -78,8 +60,9 @@ on:
         required: true
         default: true
       draft:
-        description: Prepare draft GitHub Releases (disable only to explicitly
-          finalize)
+        description: |
+          Prepare draft GitHub Releases
+          (disable only to explicitly finalize)
         type: boolean
         required: true
         default: true

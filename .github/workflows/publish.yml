@@ -25,25 +25,7 @@ on:
         default: all
         options:
           - all
-          - packages/addons/animation
-          - packages/addons/annotations
-          - packages/addons/console-feed
-          - packages/addons/data-export
-          - packages/addons/diagnostics
-          - packages/addons/filtering
-          - packages/addons/imperative-scrolling
-          - packages/addons/links
-          - packages/addons/markdown
-          - packages/addons/metadata
-          - packages/addons/navigation
-          - packages/addons/process-state
-          - packages/addons/resizable
-          - packages/addons/search
-          - packages/addons/selection
-          - packages/addons/session
-          - packages/addons/xterm
-          - packages/console
-          - packages/console-core
+          - "packages/example"
       registry:
         description: Publish destination
         required: true
