@@ -116,7 +116,9 @@ function EditorShell() {
   const [messages, setMessages] =
     useState<ConsoleMessageData[]>(initialMessages);
 
-  const horizontalDock = isHorizontalDock(dock);
+  const effectiveDock =
+    workspaceSize.width < 600 && isHorizontalDock(dock) ? "bottom" : dock;
+  const horizontalDock = isHorizontalDock(effectiveDock);
   const resizeDirection: ConsoleResizeDirection = horizontalDock
     ? "horizontal"
     : "vertical";
@@ -131,11 +133,11 @@ function EditorShell() {
         minHeight: 150,
         maxWidth: Math.max(220, Math.min(620, workspaceSize.width - 220)),
         maxHeight: Math.max(150, Math.min(520, workspaceSize.height - 220)),
-        horizontalEdge: dock === "right" ? "start" : "end",
-        verticalEdge: dock === "bottom" ? "start" : "end",
+        horizontalEdge: effectiveDock === "right" ? "start" : "end",
+        verticalEdge: effectiveDock === "bottom" ? "start" : "end",
         style: darkResizeTheme,
       }),
-    [dock, resizeDirection, workspaceSize],
+    [effectiveDock, resizeDirection, workspaceSize],
   );
 
   const consolePane = minimized ? (
@@ -174,7 +176,7 @@ function EditorShell() {
       onClear={() => setMessages([])}
       autoScroll={false}
       title="Console"
-      subtitle={`Docked to ${dock}`}
+      subtitle={`Docked to ${effectiveDock}`}
       style={{
         width: "100%",
         height: "100%",
@@ -187,7 +189,7 @@ function EditorShell() {
           id: `dock-${position}`,
           label: `Dock ${label.toLowerCase()}`,
           icon: <Icon size={14} aria-hidden="true" />,
-          disabled: position === dock,
+          disabled: position === effectiveDock,
           onSelect: () => {
             setDock(position);
             setMinimized(false);
@@ -265,17 +267,17 @@ function EditorShell() {
 
   const minimizedTrack = "38px";
   const workspaceStyle =
-    dock === "left"
+    effectiveDock === "left"
       ? {
           gridTemplateColumns: `${minimized ? minimizedTrack : "auto"} minmax(0, 1fr)`,
           gridTemplateRows: "minmax(0, 1fr)",
         }
-      : dock === "right"
+      : effectiveDock === "right"
         ? {
             gridTemplateColumns: `minmax(0, 1fr) ${minimized ? minimizedTrack : "auto"}`,
             gridTemplateRows: "minmax(0, 1fr)",
           }
-        : dock === "top"
+        : effectiveDock === "top"
           ? {
               gridTemplateColumns: "minmax(0, 1fr)",
               gridTemplateRows: `${minimized ? minimizedTrack : "auto"} minmax(0, 1fr)`,
@@ -286,7 +288,7 @@ function EditorShell() {
             };
 
   const panes =
-    dock === "left" || dock === "top"
+    effectiveDock === "left" || effectiveDock === "top"
       ? [consolePane, editorPane]
       : [editorPane, consolePane];
 

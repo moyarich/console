@@ -494,6 +494,7 @@
    ========================================================================== */
 
 .console-panel {
+  container: console / inline-size;
   display: flex;
   width: var(--_console-panel-width);
   height: var(--_console-panel-height);
@@ -550,6 +551,7 @@
 }
 .console-panel .console-heading {
   display: flex;
+  flex: 1 1 0%;
   min-width: 0;
   align-items: flex-start;
   gap: 9px;
@@ -736,6 +738,7 @@
 
 .console-panel .console-panel-elements {
   display: flex;
+  flex-wrap: wrap;
   min-width: 0;
   align-items: center;
   gap: 8px;
@@ -773,6 +776,8 @@
 .console-panel .console-panel-elements-after-output .console-panel-element,
 .console-panel .console-panel-elements-footer .console-panel-element {
   width: 100%;
+  flex: 1 1 20rem;
+  max-width: 100%;
 }
 
 .console-panel .console-message-extension-shell {
@@ -1084,10 +1089,9 @@
 .console-panel .console-object-preview {
   min-width: 0;
   flex: 0 1 auto;
-  overflow: hidden;
   color: var(--_console-muted-color);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .console-panel .console-object-copy-button {
   position: absolute;
@@ -1168,10 +1172,9 @@
   width: auto;
   max-width: 45%;
   flex: 0 1 auto;
-  overflow: hidden;
   color: var(--_console-object-property-key-color);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .console-panel .console-property-separator {
   flex: 0 0 auto;
@@ -1493,4 +1496,36 @@
 
 .console-panel:dir(rtl) .console-property-value {
   flex: 0 1 auto;
+}
+
+/* Preserve complete output in both modes; scrolling affects output, not chrome. */
+.console-panel[data-console-output-overflow="scroll"]
+  :is(.console-message, .console-stdout-line) {
+  width: max-content;
+  min-width: 100%;
+  max-width: none;
+}
+.console-panel[data-console-output-overflow="scroll"] .console-values {
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+.console-panel[data-console-output-overflow="scroll"]
+  :is(
+    .console-string,
+    .console-stack,
+    .console-stdout-line,
+    .console-object-preview,
+    .console-property-key,
+    .console-property-value,
+    .console-html,
+    .console-function
+  ) {
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  max-width: none;
+}
+.console-panel[data-console-output-overflow="scroll"]
+  :is(.console-object-shell, .console-object, .console-object > summary) {
+  max-width: none;
 }

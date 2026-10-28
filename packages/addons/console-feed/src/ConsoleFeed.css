@@ -42,3 +42,12 @@
   font: inherit;
   overflow-wrap: anywhere;
 }
+
+.console-panel[data-console-output-overflow="scroll"] .console-feed {
+  width: max-content;
+  min-width: 100%;
+}
+.console-panel[data-console-output-overflow="scroll"] .console-feed-value {
+  white-space: pre;
+  overflow-wrap: normal;
+}
