@@ -140,3 +140,27 @@ test("localized filtering controls retain filter state across language changes",
   await locale.selectOption("pt-BR");
   await expect(page.getByRole("search", { name: "Filtros do console" }).getByRole("searchbox")).toHaveValue("Request failed");
 });
+
+for (const addon of [
+  "annotations",
+  "console-feed",
+  "data-export",
+  "diagnostics",
+  "imperative-scrolling",
+  "process-state",
+  "resizable",
+  "selection",
+  "xterm",
+]) {
+  test(`${addon} addon Storybook locale smoke check`, async ({ page }) => {
+    await page.goto(story(`console-addons-${addon}--localized`));
+    const select = page.getByLabel("Addon language");
+    await expect(select).toBeVisible();
+    await select.selectOption("en");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "en");
+    await select.selectOption("fr-CA");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "fr-CA");
+    await select.selectOption("pt-BR");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "pt-BR");
+  });
+}
