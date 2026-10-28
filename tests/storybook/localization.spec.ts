@@ -121,3 +121,22 @@ test("search addon en, es, fr and pt translate independently", async ({ page }) 
     await expect(page.getByText("Searchable message")).toBeVisible();
   }
 });
+
+test("localized filtering controls retain filter state across language changes", async ({ page }) => {
+  await page.goto(story("console-addons-filtering--localized"));
+  const locale = page.getByLabel("Locale");
+  const filter = page.getByRole("search", { name: "Filtros de la consola" });
+  const input = filter.getByRole("textbox");
+  await input.fill("Request failed");
+  await expect(page.getByText("Request failed")).toBeVisible();
+  await expect(page.getByText("Request complete")).toHaveCount(0);
+
+  await locale.selectOption("fr-CA");
+  const translatedFilter = page.getByRole("search", { name: "Filtres de la console" });
+  await expect(translatedFilter.getByRole("textbox")).toHaveValue("Request failed");
+  await expect(page.getByText("Request failed")).toBeVisible();
+  await expect(page.getByText("Request complete")).toHaveCount(0);
+
+  await locale.selectOption("pt-BR");
+  await expect(page.getByRole("search", { name: "Filtros do console" }).getByRole("textbox")).toHaveValue("Request failed");
+});
