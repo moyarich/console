@@ -76,7 +76,7 @@ export function MarkdownStory({ values, narrow = false }: { values: string[]; na
         subtitle="GFM inside structured console messages"
         messages={messages(...values)}
         addons={addons}
-        style={{ height: 540 }}
+        style={{ height: 540, width: "100%", minWidth: 0 }}
       />
     </div>
   );

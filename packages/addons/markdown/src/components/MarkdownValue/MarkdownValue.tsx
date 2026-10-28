@@ -166,7 +166,7 @@ function MarkdownCode({ className, children, ...props }: ComponentProps<"code">)
               {line.map((token, index) => (
                 <span key={index} style={{ color: token.color }}>{token.content}</span>
               ))}
-              {lineIndex < tokens.length - 1 ? "\\n" : null}
+              {lineIndex < tokens.length - 1 ? "\n" : null}
             </Fragment>
           ))
         : children}
