@@ -13,6 +13,20 @@ const config: StorybookConfig = {
         ? { base: process.env.STORYBOOK_BASE_PATH }
         : {}),
       esbuild: { jsx: "automatic" },
+      build: {
+        rolldownOptions: {
+          onwarn(warning, warn) {
+            // Storybook is browser-only: dependency RSC boundaries do not apply.
+            if (
+              warning.code === "MODULE_LEVEL_DIRECTIVE" &&
+              warning.message.includes('"use client"') &&
+              warning.message.includes("node_modules/")
+            )
+              return;
+            warn(warning);
+          },
+        },
+      },
       plugins: [persistenceLogsPlugin()],
       worker: {
         format: "es",
