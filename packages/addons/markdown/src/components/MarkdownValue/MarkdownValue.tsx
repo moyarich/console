@@ -50,7 +50,7 @@ function isBareAutolink(node: LinkNode, source: string): boolean {
   }
 
   return (
-    /^(?:https?:\\/\\/|www\\.)/i.test(raw) &&
+    /^(?:https?:\/\/|www\.)/i.test(raw) &&
     node.children?.length === 1 &&
     node.children[0]?.type === "text" &&
     node.children[0]?.value === raw
@@ -85,7 +85,7 @@ export function hasMarkdown(text: string): boolean {
 function isSafeHref(href: string | undefined): boolean {
   if (!href) return false;
   const normalized = href.trim();
-  if (!normalized || /[\\u0000-\\u001f\\u007f]/.test(normalized)) return false;
+  if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) return false;
 
   return (
     (normalized.startsWith("#") && !normalized.startsWith("##")) ||
@@ -102,7 +102,7 @@ function MarkdownLink({ href, ...props }: ComponentProps<"a">): ReactNode {
 
 /** Preserve the fenced code language for terminal-style labels and future highlighters. */
 function MarkdownCode({ className, ...props }: ComponentProps<"code">): ReactNode {
-  const language = /(?:^|\\s)language-([\\w+#.-]+)/.exec(className ?? "")?.[1];
+  const language = /(?:^|\s)language-([\w+#.-]+)/.exec(className ?? "")?.[1];
   return <code {...props} className={className} data-language={language} />;
 }
 
