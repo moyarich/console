@@ -66,7 +66,6 @@ const EMPTY_ANNOTATIONS: readonly ConsoleAnnotation[] = Object.freeze([]);
 
 const DEFAULT_BOOKMARK: ConsoleAnnotation = Object.freeze({
   id: CONSOLE_BOOKMARK_ANNOTATION_ID,
-  label: "Bookmark",
 });
 
 function normalizeId(value: string): string | undefined {
