@@ -48,10 +48,12 @@ export function createConsolePersistence(options: ConsolePersistenceOptions): Co
 
   const report = (error: unknown) => { options.onError?.(error); };
   function flush(): Promise<void> {
-    current = current.then(async () => {
-      while (queue.length) {
+    // Serialize batches even when multiple flush callers overlap.
+    const operation = current.catch(() => undefined).then(async () => {
+      while (queue.length > 0) {
         const batch = queue.slice(0, batchSize);
         try {
+          // All destinations must acknowledge a batch before dequeuing it.
           await Promise.all(adapters.map((adapter) => adapter.write(batch)));
           queue.splice(0, batch.length);
         } catch (error) {
@@ -61,11 +63,8 @@ export function createConsolePersistence(options: ConsolePersistenceOptions): Co
       }
       await Promise.all(adapters.map((adapter) => adapter.flush?.()));
     });
-    return current.catch((error) => {
-      // Recover the serialized write chain for subsequent explicit retries.
-      current = Promise.resolve();
-      throw error;
-    });
+    current = operation;
+    return operation;
   }
   function append(input: { kind: "console"; message: ConsoleMessageData } | { kind: "terminal"; entry: ConsoleStdoutEntry | string }) {
     if (closing) throw new Error("Persistence is closed");
