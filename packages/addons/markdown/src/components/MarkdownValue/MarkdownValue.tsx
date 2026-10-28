@@ -187,8 +187,10 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
         jsxs,
         components: {
           ...mdxComponents,
-          // Never allow a provider override to bypass URL validation.
-          a: MarkdownLink,
+          a: (props: ComponentProps<"a">) => {
+            const Link = mdxComponents.a ?? MarkdownLink;
+            return <Link {...props} href={isSafeHref(props.href) ? props.href : undefined} />;
+          },
           code: mdxComponents.code ?? MarkdownCode,
         },
       })}
