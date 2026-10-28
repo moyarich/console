@@ -1,6 +1,6 @@
 import { ConsoleTextHighlightContext } from "../textHighlights";
 import { resolveConsoleMessages, type ConsoleTranslations } from "../localization";
-import { resolveConsoleDirection, type ConsoleDirection } from "../locale";
+import { ConsoleLocaleContext, resolveConsoleDirection, type ConsoleDirection } from "../locale";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -1125,6 +1125,7 @@ export function Console({ ref, ...props }: ConsoleProps) {
     null;
 
   return (
+    <ConsoleLocaleContext.Provider value={{ locale: props.locale ?? "en", dir: props.dir, translations: props.translations }}>
     <ConsoleTextHighlightContext.Provider value={highlightProvider}>
       {props.mode === "terminal" ? (
         <ConsoleTerminalMode {...props} {...resolvedProps} />
@@ -1132,5 +1133,6 @@ export function Console({ ref, ...props }: ConsoleProps) {
         <ConsoleMessageMode {...props} {...resolvedProps} />
       )}
     </ConsoleTextHighlightContext.Provider>
+    </ConsoleLocaleContext.Provider>
   );
 }
