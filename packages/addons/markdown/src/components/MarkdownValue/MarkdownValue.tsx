@@ -50,7 +50,7 @@ function isBareAutolink(node: LinkNode, source: string): boolean {
   }
 
   return (
-    /^(?:https?:\/\/|www\.)/i.test(raw) &&
+    /^(?:https?:\\/\\/|www\\.)/i.test(raw) &&
     node.children?.length === 1 &&
     node.children[0]?.type === "text" &&
     node.children[0]?.value === raw
@@ -59,7 +59,6 @@ function isBareAutolink(node: LinkNode, source: string): boolean {
 
 /**
  * Returns true when a string contains Markdown syntax beyond a plain paragraph.
- *
  * Bare URLs are intentionally ignored because remark-gfm promotes them to link
  * nodes even when the producer did not intentionally emit Markdown.
  */
@@ -85,18 +84,26 @@ export function hasMarkdown(text: string): boolean {
 
 function isSafeHref(href: string | undefined): boolean {
   if (!href) return false;
+  const normalized = href.trim();
+  if (!normalized || /[\\u0000-\\u001f\\u007f]/.test(normalized)) return false;
 
   return (
-    href.startsWith("#") ||
-    href.startsWith("/") ||
-    href.startsWith("./") ||
-    href.startsWith("../") ||
-    /^(?:https?:|mailto:|tel:)/i.test(href)
+    (normalized.startsWith("#") && !normalized.startsWith("##")) ||
+    (normalized.startsWith("/") && !normalized.startsWith("//")) ||
+    normalized.startsWith("./") ||
+    normalized.startsWith("../") ||
+    /^(?:https?:|mailto:|tel:)/i.test(normalized)
   );
 }
 
 function MarkdownLink({ href, ...props }: ComponentProps<"a">): ReactNode {
   return <a {...props} href={isSafeHref(href) ? href : undefined} />;
+}
+
+/** Preserve the fenced code language for terminal-style labels and future highlighters. */
+function MarkdownCode({ className, ...props }: ComponentProps<"code">): ReactNode {
+  const language = /(?:^|\\s)language-([\\w+#.-]+)/.exec(className ?? "")?.[1];
+  return <code {...props} className={className} data-language={language} />;
 }
 
 /** Renders one Markdown string using the same GFM dialect used for detection. */
@@ -111,6 +118,7 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
         jsxs,
         components: {
           a: MarkdownLink,
+          code: MarkdownCode,
         },
       })}
     </div>
