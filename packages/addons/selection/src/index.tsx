@@ -205,8 +205,8 @@ function createMessageAction(
 ): ConsoleMessageAction<ReactNode> {
   return {
     id: `${CONSOLE_SELECTION_ADDON_ID}:toggle`,
-    label: resolveAddonMessages(locale, translations).selected,
-    ariaLabel: resolveAddonMessages(locale, translations).selectedMessage,
+    label: resolveAddonMessages(locale, translations).toggleSelection,
+    ariaLabel: resolveAddonMessages(locale, translations).toggleMessageSelection,
     visible({ message }) {
       return Boolean(message.id);
     },

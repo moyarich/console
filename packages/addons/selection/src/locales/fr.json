@@ -1,4 +1,6 @@
 {
   "selectedMessage": "Message sélectionné",
-  "selected": "Sélectionné"
+  "selected": "Sélectionné",
+  "toggleSelection": "Activer/désactiver la sélection",
+  "toggleMessageSelection": "Activer/désactiver la sélection du message"
 }

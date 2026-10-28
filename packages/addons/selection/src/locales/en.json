@@ -1,4 +1,6 @@
 {
   "selectedMessage": "Selected message",
-  "selected": "Selected"
+  "selected": "Selected",
+  "toggleSelection": "Toggle selection",
+  "toggleMessageSelection": "Toggle message selection"
 }
