@@ -12,7 +12,7 @@ function LocalizedProcessState() {
       <option value="fr-CA">Français</option><option value="pt-BR">Português (Brasil)</option>
       <option value="pt-PT">Português (Portugal)</option>
     </select></label>
-    <Console mode="terminal" messages={["Starting process..."]} addons={[addon]} style={{ width: "100%", height: 300 }} />
+    <Console locale={locale} mode="terminal" messages={["Starting process..."]} addons={[addon]} style={{ width: "100%", height: 300 }} />
   </div>;
 }
 const meta = { title: "Console/Addons/Process State", component: LocalizedProcessState } satisfies Meta<typeof LocalizedProcessState>;

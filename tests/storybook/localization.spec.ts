@@ -121,3 +121,46 @@ test("search addon en, es, fr and pt translate independently", async ({ page }) 
     await expect(page.getByText("Searchable message")).toBeVisible();
   }
 });
+
+test("localized filtering controls retain filter state across language changes", async ({ page }) => {
+  await page.goto(story("console-addons-filtering--localized"));
+  const locale = page.getByLabel("Locale");
+  const filter = page.getByRole("search", { name: "Filtros de la consola" });
+  const input = filter.getByRole("searchbox");
+  await input.fill("Request failed");
+  await expect(page.getByText("Request failed")).toBeVisible();
+  await expect(page.getByText("Request complete")).toHaveCount(0);
+
+  await locale.selectOption("fr-CA");
+  const translatedFilter = page.getByRole("search", { name: "Filtres de la console" });
+  await expect(translatedFilter.getByRole("searchbox")).toHaveValue("Request failed");
+  await expect(page.getByText("Request failed")).toBeVisible();
+  await expect(page.getByText("Request complete")).toHaveCount(0);
+
+  await locale.selectOption("pt-BR");
+  await expect(page.getByRole("search", { name: "Filtros do console" }).getByRole("searchbox")).toHaveValue("Request failed");
+});
+
+for (const addon of [
+  "annotations",
+  "console-feed",
+  "data-export",
+  "diagnostics",
+  "imperative-scrolling",
+  "process-state",
+  "resizable",
+  "selection",
+  "xterm",
+]) {
+  test(`${addon} addon Storybook locale smoke check`, async ({ page }) => {
+    await page.goto(story(`console-addons-${addon}--localized`));
+    const select = page.getByLabel("Addon language");
+    await expect(select).toBeVisible();
+    await select.selectOption("en");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "en");
+    await select.selectOption("fr-CA");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "fr-CA");
+    await select.selectOption("pt-BR");
+    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "pt-BR");
+  });
+}
