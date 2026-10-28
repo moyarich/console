@@ -37,7 +37,7 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Case sensitive
+        {t.caseSensitive}
       </label>
       <label>
         <input
@@ -50,7 +50,7 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Whole word
+        {t.wholeWord}
       </label>
       <label>
         <input
@@ -63,7 +63,7 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Regex
+        {t.regex}
       </label>
       <span role="status" aria-live="polite">
         {count === 0
