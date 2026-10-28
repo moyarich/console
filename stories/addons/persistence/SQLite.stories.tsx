@@ -12,12 +12,16 @@ function SQLiteExample() {
   const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
   useEffect(() => {
     let active = true;
-    void initSqlJs({ locateFile: () => wasmUrl }).then((SQL) => {
+    void initSqlJs({ locateFile: () => wasmUrl }).then(async (SQL) => {
       if (!active) return;
-      const db = new SQL.Database();
-      db.run("CREATE TABLE logs (sequence INTEGER PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL)");
+      const existing = await fetch("/__storybook_persistence/console.sqlite");
+      const bytes = existing.ok ? new Uint8Array(await existing.arrayBuffer()) : undefined;
+      if (!active) return;
+      const db = bytes ? new SQL.Database(bytes) : new SQL.Database();
+      db.run("CREATE TABLE IF NOT EXISTS logs (sequence INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, payload TEXT NOT NULL)");
       database.current = db;
       setReady(true);
+      setRows(Number(db.exec("SELECT COUNT(*) FROM logs")[0]?.values[0]?.[0] ?? 0));
     });
     return () => {
       active = false;
@@ -29,13 +33,19 @@ function SQLiteExample() {
     batchSize: 1,
     flushInterval: 0,
     adapters: [{
-      write(batch) {
+      async write(batch) {
         const db = database.current;
         if (!db) throw new Error("SQLite is not initialized");
-        const statement = db.prepare("INSERT INTO logs (sequence, kind, payload) VALUES (?, ?, ?)");
+        const statement = db.prepare("INSERT INTO logs (kind, payload) VALUES (?, ?)");
         try {
-          for (const record of batch) statement.run([record.sequence, record.kind, JSON.stringify(record)]);
+          for (const record of batch) statement.run([record.kind, JSON.stringify(record)]);
         } finally { statement.free(); }
+        const response = await fetch("/__storybook_persistence/console.sqlite", {
+          method: "POST",
+          headers: { "Content-Type": "application/octet-stream" },
+          body: new Uint8Array(db.export()),
+        });
+        if (!response.ok) throw new Error(`SQLite persistence failed: ${response.status}`);
         setRows(Number(db.exec("SELECT COUNT(*) FROM logs")[0]?.values[0]?.[0] ?? 0));
       },
     }],
@@ -47,7 +57,7 @@ function SQLiteExample() {
   return <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>
     <button type="button" disabled={!ready} onClick={add}>Write SQLite log</button>
     <Console messages={messages} addons={[addon]} />
-    <p role="status">{ready ? `${rows} rows persisted in in-memory SQLite` : "Loading SQLite…"}</p>
+    <p role="status">{ready ? `${rows} rows persisted in logs/persistence/console.sqlite` : "Loading SQLite…"}</p>
   </div>;
 }
 const meta = { title: "Addons/Persistence", component: SQLiteExample } satisfies Meta<typeof SQLiteExample>;
