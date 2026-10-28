@@ -8,8 +8,8 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
-import { sqliteSearchPlugin } from "./vite-sqlite-plugin";
-import { generateRegistryImports } from "./generateRegistryImports";
+import { sqliteSearchPlugin } from "./vite-sqlite-plugin/index.ts";
+import { generateRegistryImports } from "./generateRegistryImports.ts";
 
 generateRegistryImports();
 const search = sqliteSearchPlugin();

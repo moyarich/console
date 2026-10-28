@@ -1,6 +1,6 @@
 import { parse } from "yaml";
-import type { IndexedDocument } from "./database";
-import type { SearchDocument } from "./remarkSearchIndex";
+import type { IndexedDocument } from "./database.ts";
+import type { SearchDocument } from "./remarkSearchIndex.ts";
 
 export function toIndexedDocument(document: SearchDocument): IndexedDocument {
   const meta = parse(document.frontmatter) ?? {};

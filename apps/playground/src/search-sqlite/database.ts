@@ -1,5 +1,5 @@
 import type { Database, SqlJsStatic } from "sql.js";
-import { words, nearWord } from "../utils/sidebarSearch";
+import { words, nearWord } from "../utils/sidebarSearch.ts";
 
 export interface IndexedDocument {
   key: string;

@@ -4,9 +4,9 @@ import type { Plugin, ViteDevServer } from "vite";
 import {
   buildSearchDatabase,
   type IndexedDocument,
-} from "../src/search-sqlite/database";
-import remarkSearchIndex from "../src/search-sqlite/remarkSearchIndex";
-import { toIndexedDocument } from "../src/search-sqlite/indexDocument";
+} from "../src/search-sqlite/database.ts";
+import remarkSearchIndex from "../src/search-sqlite/remarkSearchIndex.ts";
+import { toIndexedDocument } from "../src/search-sqlite/indexDocument.ts";
 
 export function sqliteSearchPlugin() {
   const documents = new Map<string, IndexedDocument>();
