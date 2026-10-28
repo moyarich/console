@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { mergeConfig } from "vite";
 import type { StorybookConfig } from "@storybook/react-vite";
+import { persistenceLogsPlugin } from "./persistence-logs";
 
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(ts|tsx)"],
@@ -9,6 +10,7 @@ const config: StorybookConfig = {
   viteFinal: (config) =>
     mergeConfig(config, {
       esbuild: { jsx: "automatic" },
+      plugins: [persistenceLogsPlugin()],
       worker: {
         format: "es",
       },
