@@ -67,5 +67,8 @@
   ],
   "publisher": "moyarich",
   "author": "Moya Richards",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "@mdx-js/react": "^3.1.1"
+  }
 }
