@@ -13,6 +13,10 @@ test("Console language switch keeps original log payload and updates translated 
   await expect(consoleRoot).toHaveAttribute("lang", "fr-CA");
   await expect(page.getByText("Application started")).toBeVisible();
 
+  await locale.selectOption("pt-BR");
+  await expect(consoleRoot).toHaveAttribute("lang", "pt-BR");
+  await expect(page.getByText("Application started")).toBeVisible();
+
   await locale.selectOption("de");
   await expect(consoleRoot).toHaveAttribute("lang", "de");
   await expect(page.getByText("Application started")).toBeVisible();
@@ -44,6 +48,8 @@ test("filtering addon switches independently and preserves output", async ({ pag
   await expect(page.getByRole("search", { name: "Console filters" })).toBeVisible();
   await locale.selectOption("fr-CA");
   await expect(page.getByRole("search", { name: "Filtres de la console" })).toBeVisible();
+  await locale.selectOption("pt-BR");
+  await expect(page.getByRole("search", { name: "Filtros do console" })).toBeVisible();
   await expect(page.getByText("Request complete")).toBeVisible();
 });
 
@@ -55,6 +61,8 @@ test("search addon switches labels and keeps original messages", async ({ page }
   await expect(page.getByRole("search", { name: "Console search" })).toBeVisible();
   await locale.selectOption("fr-CA");
   await expect(page.getByRole("search", { name: "Recherche dans la console" })).toBeVisible();
+  await locale.selectOption("pt-PT");
+  await expect(page.getByRole("search", { name: "Pesquisar no console" })).toBeVisible();
   await expect(page.getByText("Searchable message")).toBeVisible();
 });
 

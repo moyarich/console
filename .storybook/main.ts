@@ -18,6 +18,26 @@ const config: StorybookConfig = {
         dedupe: ["vscode"],
         alias: [
           {
+            find: "@moyarich/console-addon-search",
+            replacement: fileURLToPath(new URL("../packages/addons/search/src/index.ts", import.meta.url)),
+          },
+          {
+            find: "@moyarich/console-addon-selection",
+            replacement: fileURLToPath(new URL("../packages/addons/selection/src/index.tsx", import.meta.url)),
+          },
+          {
+            find: "@moyarich/console-addon-annotations",
+            replacement: fileURLToPath(new URL("../packages/addons/annotations/src/index.tsx", import.meta.url)),
+          },
+          {
+            find: "@moyarich/console-addon-console-feed",
+            replacement: fileURLToPath(new URL("../packages/addons/console-feed/src/index.tsx", import.meta.url)),
+          },
+          {
+            find: "@moyarich/console-addon-xterm",
+            replacement: fileURLToPath(new URL("../packages/addons/xterm/src/index.tsx", import.meta.url)),
+          },
+          {
             find: "@moyarich/console-core",
             replacement: fileURLToPath(
               new URL("../packages/console-core/src/index.ts", import.meta.url),

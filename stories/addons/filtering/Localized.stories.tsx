@@ -17,6 +17,8 @@ function LocalizedFiltering() {
         <option value="en-US">English</option>
         <option value="es-MX">Español</option>
         <option value="fr-CA">Français</option>
+        <option value="pt-BR">Português (Brasil)</option>
+        <option value="pt-PT">Português (Portugal)</option>
       </select>
     </label>
     <Console locale={locale} messages={entries} addons={[addon]} style={{ height: 340, width: "100%" }} />

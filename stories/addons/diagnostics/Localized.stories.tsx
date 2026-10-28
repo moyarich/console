@@ -12,6 +12,8 @@ function LocalizedAddon() {
         <option value="en">English</option>
         <option value="es-MX">Español</option>
         <option value="fr-CA">Français</option>
+        <option value="pt-BR">Português (Brasil)</option>
+        <option value="pt-PT">Português (Portugal)</option>
       </select>
     </label>
     <Console locale={locale} messages={[{ id: "message-1", method: "info", depth: 0, data: ["Message content is preserved"] }]} addons={[addon]} style={{ width: "100%", height: 330 }} />
