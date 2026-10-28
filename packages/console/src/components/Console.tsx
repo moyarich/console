@@ -1,5 +1,6 @@
 import { ConsoleTextHighlightContext } from "../textHighlights";
 import { resolveConsoleMessages, type ConsoleTranslations } from "../localization";
+import { ConsoleLocaleContext, resolveConsoleDirection, type ConsoleDirection } from "../locale";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -98,6 +99,8 @@ export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 interface ConsoleSharedProps {
   /** BCP 47 locale for built-in console UI strings. @default "en" */
   locale?: string;
+  /** Writing direction for localized UI; auto resolves from locale. */
+  dir?: ConsoleDirection | "auto";
   /** Override any built-in localized UI labels. */
   translations?: ConsoleTranslations;
   /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
@@ -391,6 +394,7 @@ function ConsoleFrame({
   contextMenuActions,
   title,
   locale = "en",
+  dir = "auto",
   translations,
   subtitle,
   emptyMessage,
@@ -409,6 +413,7 @@ function ConsoleFrame({
 }: ConsoleFrameProps) {
   const strings = useMemo(() => resolveConsoleMessages(locale, translations), [locale, translations]);
   const resolvedTitle = title ?? strings.title;
+  const resolvedDirection = resolveConsoleDirection(locale, dir);
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
     onClear?.();
