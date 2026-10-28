@@ -1,5 +1,6 @@
 import { Braces, Copy, Trash2 } from "lucide-react";
 import { englishConsoleMessages, type ConsoleMessages } from "../localization";
+import { resolveConsoleDirection, useConsoleLocale } from "../locale";
 import {
   useCallback,
   useEffect,
@@ -128,6 +129,8 @@ export function ConsoleContextMenu({
   clearDisabled = false,
   onClear,
 }: ConsoleContextMenuProps) {
+  const localeOptions = useConsoleLocale();
+  const direction = resolveConsoleDirection(localeOptions.locale, localeOptions.dir);
   const targetRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const focusOriginRef = useRef<HTMLElement | null>(null);
@@ -380,6 +383,8 @@ export function ConsoleContextMenu({
             ref={menuRef}
             className="console-context-menu"
             role="menu"
+            lang={localeOptions.locale}
+            dir={direction}
             aria-label={translations.actions}
             tabIndex={-1}
             style={{
