@@ -57,8 +57,8 @@ export type {
   CreateConsoleAddonManagerOptions,
 } from "./addons";
 export { Console } from "./components/Console";
-export { createConsoleFormatters, resolveConsoleDirection, useConsoleLocale, ConsoleLocaleContext } from "./locale";
-export type { ConsoleDirection, ConsoleLocaleOptions } from "./locale";
+export { createConsoleFormatters, resolveConsoleDirection, useConsoleLocale, useConsoleAddonMessages, resolveConsoleAddonMessages, ConsoleLocaleContext } from "./locale";
+export type { ConsoleDirection, ConsoleLocaleOptions, ConsoleAddonMessages, ConsoleAddonTranslations } from "./locale";
 export { consoleLocales, englishConsoleMessages, resolveConsoleMessages } from "./localization";
 export type { ConsoleMessages, ConsoleTranslations } from "./localization";
 export type {
