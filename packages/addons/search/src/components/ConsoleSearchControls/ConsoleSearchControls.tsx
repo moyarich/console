@@ -1,3 +1,4 @@
+import { useConsoleAddonMessages } from "@moyarich/console";
 import { useSyncExternalStore } from "react";
 import type { ConsoleSearchController } from "../../index";
 import "./ConsoleSearchControls.css";
@@ -13,15 +14,16 @@ export function ConsoleSearchControls({
     controller.getState,
   );
   const count = state.matches.length;
+  const t = useConsoleAddonMessages();
   return (
-    <section className="console-search-controls" aria-label="Console search">
+    <section className="console-search-controls" aria-label={t.search}>
       <label>
-        <span className="console-search-controls-label">Search output</span>
+        <span className="console-search-controls-label">{t.searchOutput}</span>
         <input
           type="search"
           value={state.query}
           onChange={(event) => controller.setQuery(event.target.value)}
-          aria-label="Search console output"
+          aria-label={t.searchConsoleOutput}
         />
       </label>
       <label>
@@ -65,24 +67,24 @@ export function ConsoleSearchControls({
       </label>
       <span role="status" aria-live="polite">
         {count === 0
-          ? "No matches"
-          : `${state.activeIndex + 1} of ${count} matches`}
+          ? t.noMatches
+          : t.matchCount.replace("{current}", String(state.activeIndex + 1)).replace("{total}", String(count))}
       </span>
       <button
         type="button"
         onClick={() => controller.previous()}
         disabled={!count}
-        aria-label="Previous search result"
+        aria-label={t.previousResult}
       >
-        Previous
+        {t.previous}
       </button>
       <button
         type="button"
         onClick={() => controller.next()}
         disabled={!count}
-        aria-label="Next search result"
+        aria-label={t.nextResult}
       >
-        Next
+        {t.next}
       </button>
       {state.error && <span role="alert">{state.error}</span>}
     </section>

@@ -1,3 +1,4 @@
+import { useConsoleAddonMessages } from "@moyarich/console";
 import { useId, useMemo, useSyncExternalStore } from "react";
 import type { ConsoleMessageData } from "@moyarich/console-core";
 import {
@@ -46,6 +47,7 @@ export function ConsoleFilteringControls({
   style,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
+  const t = useConsoleAddonMessages();
   const methodPopoverId = useId();
   const availableSources = useMemo(
     () => normalizeSources(messages, sources),
@@ -69,24 +71,24 @@ export function ConsoleFilteringControls({
   const methodLabel =
     state.methods === null ||
     enabledMethods.length === CONSOLE_FILTERING_METHODS.length
-      ? "All levels"
+      ? t.allLevels
       : enabledMethods.length === 0
-        ? "No levels"
-        : `${enabledMethods.length} levels`;
+        ? t.noLevels
+        : t.levels.replace("{count}", String(enabledMethods.length));
 
   return (
     <div
       className={`console-filtering-controls ${className}`.trim()}
       role="search"
-      aria-label="Console filters"
+      aria-label={t.filters}
       style={style}
     >
       <input
         className="console-filtering-search-input"
         type="search"
-        aria-label="Filter console output"
+        aria-label={t.filterOutput}
         value={state.text}
-        placeholder="Filter console output"
+        placeholder={t.filterOutput}
         onChange={(event) => controller.setText(event.currentTarget.value)}
       />
 
@@ -105,7 +107,7 @@ export function ConsoleFilteringControls({
             className="console-filtering-method-popover"
             popover="auto"
             role="group"
-            aria-label="Message levels"
+            aria-label={t.messageLevels}
           >
             {CONSOLE_FILTERING_METHODS.map((method) => {
               const enabled =
@@ -133,7 +135,7 @@ export function ConsoleFilteringControls({
         {availableSources.length > 0 && (
           <select
             className="console-filtering-source-select"
-            aria-label="Filter by source"
+            aria-label={t.filterSource}
             value={sourceValue}
             onChange={(event) =>
               controller.setSources(
@@ -141,10 +143,10 @@ export function ConsoleFilteringControls({
               )
             }
           >
-            <option value="">All sources</option>
+            <option value="">{t.allSources}</option>
             {hasCustomSourceSelection && (
               <option value="__custom__" disabled>
-                Custom sources
+                {t.customSources}
               </option>
             )}
             {availableSources.map((source) => (
@@ -159,10 +161,10 @@ export function ConsoleFilteringControls({
           <button
             type="button"
             className="console-filtering-reset"
-            aria-label="Reset console filters"
+            aria-label={t.resetFilters}
             onClick={() => controller.reset()}
           >
-            Reset
+            {t.reset}
           </button>
         )}
       </div>
