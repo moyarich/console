@@ -1,0 +1,13 @@
+{
+  "filters": "Filtros do console",
+  "filterOutput": "Filtrar saída do console",
+  "allLevels": "Todos os níveis",
+  "noLevels": "Nenhum nível",
+  "levels": "{count} níveis",
+  "messageLevels": "Níveis de mensagem",
+  "filterSource": "Filtrar por origem",
+  "allSources": "Todas as origens",
+  "customSources": "Origens personalizadas",
+  "resetFilters": "Redefinir filtros do console",
+  "reset": "Redefinir"
+}

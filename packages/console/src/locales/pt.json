@@ -1,0 +1,11 @@
+{
+  "title": "Console",
+  "actions": "Ações do console",
+  "copyObject": "Copiar objeto",
+  "copyOutput": "Copiar saída do console",
+  "clear": "Limpar console",
+  "consoleSubtitle": "Saída de execução de console.*()",
+  "terminalSubtitle": "Saída do processo com suporte a ANSI",
+  "emptyConsole": "Ainda não há saída do console.",
+  "emptyTerminal": "Ainda não há saída do processo."
+}
