@@ -56,13 +56,13 @@ test("filtering addon switches independently and preserves output", async ({ pag
 test("search addon switches labels and keeps original messages", async ({ page }) => {
   await page.goto(story("console-addons-search--localized"));
   const locale = page.getByLabel("Addon language");
-  await expect(page.getByRole("search", { name: "Buscar en la consola" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Buscar en la consola" })).toBeVisible();
   await locale.selectOption("en");
-  await expect(page.getByRole("search", { name: "Console search" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Console search" })).toBeVisible();
   await locale.selectOption("fr-CA");
-  await expect(page.getByRole("search", { name: "Recherche dans la console" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Recherche dans la console" })).toBeVisible();
   await locale.selectOption("pt-PT");
-  await expect(page.getByRole("search", { name: "Pesquisar no console" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Pesquisar no console" })).toBeVisible();
   await expect(page.getByText("Searchable message")).toBeVisible();
 });
 
