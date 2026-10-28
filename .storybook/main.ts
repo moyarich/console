@@ -9,6 +9,9 @@ const config: StorybookConfig = {
   addons: ["@storybook/addon-vitest"],
   viteFinal: (config) =>
     mergeConfig(config, {
+      ...(process.env.STORYBOOK_BASE_PATH
+        ? { base: process.env.STORYBOOK_BASE_PATH }
+        : {}),
       esbuild: { jsx: "automatic" },
       plugins: [persistenceLogsPlugin()],
       worker: {
