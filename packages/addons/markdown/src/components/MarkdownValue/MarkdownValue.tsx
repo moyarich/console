@@ -1,4 +1,6 @@
-import type { ComponentProps, ReactNode } from "react";
+import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import type { HighlighterCore } from "shiki";
+import { useMDXComponents } from "@mdx-js/react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import remarkGfm from "remark-gfm";
@@ -103,15 +105,79 @@ function MarkdownLink({ href, ...props }: ComponentProps<"a">): ReactNode {
   return <a {...props} href={isSafeHref(href) ? href : undefined} />;
 }
 
-/** Preserve the fenced code language for terminal-style labels and future highlighters. */
-function MarkdownCode({ className, ...props }: ComponentProps<"code">): ReactNode {
-  const language = /(?:^|\s)language-([\w+#.-]+)/.exec(className ?? "")?.[1];
-  return <code {...props} className={className} data-language={language} />;
+/** Load Shiki once and share its language grammars across code fences. */
+const supportedLanguages = [
+  "bash", "css", "html", "javascript", "json", "markdown",
+  "python", "sh", "tsx", "typescript", "yaml",
+] as const;
+
+const aliases: Record<string, (typeof supportedLanguages)[number]> = {
+  js: "javascript",
+  ts: "typescript",
+  py: "python",
+  yml: "yaml",
+  shell: "bash",
+  jsx: "tsx",
+};
+type HighlightedLine = { content: string; color?: string }[];
+
+let highlighterPromise: Promise<HighlighterCore> | undefined;
+function getHighlighter(): Promise<HighlighterCore> {
+  highlighterPromise ??= import("shiki").then(({ createHighlighter }) =>
+    createHighlighter({ themes: ["github-dark"], langs: [...supportedLanguages] }),
+  );
+  return highlighterPromise;
+}
+
+function MarkdownCode({ className, children, ...props }: ComponentProps<"code">): ReactNode {
+  const language = /(?:^|\\s)language-([\\w+#.-]+)/.exec(className ?? "")?.[1];
+  const code = typeof children === "string" ? children : undefined;
+  const normalizedLanguage = language
+    ? (aliases[language.toLowerCase()] ?? language.toLowerCase())
+    : undefined;
+  const [tokens, setTokens] = useState<HighlightedLine[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setTokens(null);
+    if (!code || !normalizedLanguage ||
+        !supportedLanguages.some((lang) => lang === normalizedLanguage)) {
+      return () => { active = false; };
+    }
+    void getHighlighter()
+      .then((highlighter) => {
+        const result = highlighter.codeToTokens(code, {
+          lang: normalizedLanguage,
+          theme: "github-dark",
+        });
+        if (active) setTokens(result.tokens);
+      })
+      .catch(() => {
+        if (active) setTokens(null);
+      });
+    return () => { active = false; };
+  }, [code, normalizedLanguage]);
+
+  return (
+    <code {...props} className={className} data-language={language} data-highlighted={tokens ? "true" : undefined}>
+      {tokens
+        ? tokens.map((line, lineIndex) => (
+            <Fragment key={lineIndex}>
+              {line.map((token, index) => (
+                <span key={index} style={{ color: token.color }}>{token.content}</span>
+              ))}
+              {lineIndex < tokens.length - 1 ? "\\n" : null}
+            </Fragment>
+          ))
+        : children}
+    </code>
+  );
 }
 
 /** Renders one Markdown string using the same GFM dialect used for detection. */
 export function MarkdownValue({ text }: { text: string }): ReactNode {
   const tree = markdownRenderer.runSync(markdownRenderer.parse(text));
+  const mdxComponents = useMDXComponents();
 
   return (
     <div className="console-markdown-value">
@@ -120,8 +186,12 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
         jsx,
         jsxs,
         components: {
-          a: MarkdownLink,
-          code: MarkdownCode,
+          ...mdxComponents,
+          a: (props: ComponentProps<"a">) => {
+            const Link = mdxComponents.a ?? MarkdownLink;
+            return <Link {...props} href={isSafeHref(props.href) ? props.href : undefined} />;
+          },
+          code: mdxComponents.code ?? MarkdownCode,
         },
       })}
     </div>

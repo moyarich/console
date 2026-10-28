@@ -107,3 +107,10 @@
 @media (forced-colors: active) {
   .console-markdown-value :is(pre, blockquote, th, td) { border-color: CanvasText; }
 }
+
+/* Shiki's github-dark token colors need a dark code surface in every host theme. */
+.console-markdown-value pre:has(code[data-highlighted="true"]) {
+  background: #0d1117;
+  color: #e6edf3;
+  border-color: #30363d;
+}
