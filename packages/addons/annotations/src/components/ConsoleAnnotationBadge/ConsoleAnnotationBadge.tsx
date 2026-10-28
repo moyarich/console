@@ -1,3 +1,4 @@
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 import { useSyncExternalStore } from "react";
 import type {
   ConsoleAnnotation,
@@ -19,11 +20,16 @@ function useAnnotations(
 export function ConsoleAnnotationBadge({
   controller,
   messageId,
+  locale = "en",
+  translations,
 }: {
   controller: ConsoleAnnotationsController;
   messageId: string;
+  locale?: string;
+  translations?: AddonTranslations;
 }) {
   const annotations = useAnnotations(controller, messageId);
+  const labels = resolveAddonMessages(locale, translations);
   if (annotations.length === 0) return null;
 
   const label = annotations
@@ -32,7 +38,7 @@ export function ConsoleAnnotationBadge({
 
   return (
     <span
-      aria-label={`Annotations: ${label}`}
+      aria-label={`${labels.annotations}: ${label}`}
       title={label}
       style={{
         display: "inline-flex",

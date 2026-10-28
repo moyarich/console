@@ -1,8 +1,11 @@
+import { resolveProcessStateMessages, type ProcessStateTranslations } from "./localization";
 import { useSyncExternalStore, type CSSProperties } from "react";
 import type { ProcessStateController } from "./index";
 import "./ProgressIndicator.css";
 
 export interface ConsoleProgressIndicatorOptions {
+  locale?: string;
+  translations?: ProcessStateTranslations;
   className?: string;
   style?: CSSProperties;
   /** Custom label for the determinate progress mode. */
@@ -22,6 +25,8 @@ export function ConsoleProgressIndicator({
   style,
   format,
   showCleared = false,
+  locale = "en",
+  translations,
 }: ConsoleProgressIndicatorProps) {
   const state = useSyncExternalStore(
     controller.subscribe,
@@ -29,18 +34,19 @@ export function ConsoleProgressIndicator({
     controller.getState,
   );
   const progress = state.progress;
+  const labels = resolveProcessStateMessages(locale, translations);
   if (!progress || (progress.state === 0 && !showCleared)) return null;
   const value = progress.value ?? 0;
   const label =
     progress.state === 0
-      ? "Progress cleared"
+      ? labels.cleared
       : progress.state === 3
-        ? "Working"
+        ? labels.working
         : progress.state === 2
-          ? "Process error"
+          ? labels.error
           : progress.state === 4
-            ? "Paused"
-            : "In progress";
+            ? labels.paused
+            : labels.progress;
   const description =
     progress.state === 0
       ? label

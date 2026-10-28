@@ -202,6 +202,8 @@ export function createConsoleAnnotationsController(): ConsoleAnnotationsControll
 
 function createDecoration(
   controller: ConsoleAnnotationsController,
+  locale?: string,
+  translations?: AddonTranslations,
 ): ConsoleMessageDecoration<ReactNode> {
   return {
     id: `${CONSOLE_ANNOTATIONS_ADDON_ID}:decoration`,
@@ -217,6 +219,8 @@ function createDecoration(
         <ConsoleAnnotationBadge
           controller={controller}
           messageId={message.id}
+          locale={locale}
+          translations={translations}
         />
       );
     },
@@ -269,7 +273,7 @@ export function createConsoleAnnotationsAddon(
         if (withDecoration) {
           decorationRegistration = host.extensions.register(
             consoleExtensionPoints.messageDecoration,
-            createDecoration(controller),
+            createDecoration(controller, options.locale, options.translations),
             { id: `${CONSOLE_ANNOTATIONS_ADDON_ID}:decoration` },
           );
         }
