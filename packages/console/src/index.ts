@@ -57,6 +57,8 @@ export type {
   CreateConsoleAddonManagerOptions,
 } from "./addons";
 export { Console } from "./components/Console";
+export { consoleLocales, englishConsoleMessages, resolveConsoleMessages } from "./localization";
+export type { ConsoleMessages, ConsoleTranslations } from "./localization";
 export type {
   ConsoleTerminalModeProps,
   ConsoleHandle,
