@@ -158,7 +158,7 @@ function MarkdownCode({ className, children, ...props }: ComponentProps<"code">)
   }, [code, normalizedLanguage]);
 
   return (
-    <code {...props} className={className} data-language={language}>
+    <code {...props} className={className} data-language={language} data-highlighted={tokens ? "true" : undefined}>
       {tokens
         ? tokens.map((line, lineIndex) => (
             <Fragment key={lineIndex}>
