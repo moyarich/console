@@ -6,18 +6,16 @@ import {
   PanelTop,
 } from "lucide-react";
 import { useMemo, useState, type CSSProperties } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Console,
   type ConsoleMessageData,
-  type ConsoleMessageModeProps,
 } from "@moyarich/console";
 import {
   createResizableConsoleAddon,
   type ConsoleResizeDirection,
 } from "@moyarich/console-addon-resizable";
-import { MonacoEditor } from "../apps/playground/src/components/MonacoEditor";
-import ResizableConsoleExample from "../packages/addons/resizable/examples/example";
+import { MonacoEditor } from "../../../apps/playground/src/components/MonacoEditor";
+export { default as ResizableConsoleExample } from "../../../packages/addons/resizable/examples/example";
 
 type DockPosition = "top" | "right" | "bottom" | "left";
 
@@ -89,7 +87,7 @@ function isHorizontalDock(dock: DockPosition) {
   return dock === "left" || dock === "right";
 }
 
-function EditorShell() {
+export function EditorShell() {
   const [dock, setDock] = useState<DockPosition>("bottom");
   const [minimized, setMinimized] = useState(false);
   const [source, setSource] = useState(initialSource);
@@ -336,43 +334,3 @@ function EditorShell() {
   );
 }
 
-const meta = {
-  title: "Addons/Resizable Console",
-  component: Console,
-  parameters: {
-    layout: "fullscreen",
-  },
-} satisfies Meta<ConsoleMessageModeProps>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Standalone: Story = {
-  render: () => (
-    <div style={{ padding: 24 }}>
-      <ResizableConsoleExample />
-    </div>
-  ),
-  args: {
-    messages: [],
-  },
-};
-
-export const DockableEditorShell: Story = {
-  render: () => (
-    <div
-      style={{
-        width: "100%",
-        minWidth: 0,
-        minHeight: 0,
-        padding: 24,
-        overflow: "hidden",
-      }}
-    >
-      <EditorShell />
-    </div>
-  ),
-  args: {
-    messages: [],
-  },
-};

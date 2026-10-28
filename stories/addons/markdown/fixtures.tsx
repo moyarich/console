@@ -1,11 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Console, type ConsoleMessageData } from "@moyarich/console";
 import { createConsoleMarkdownAddon } from "@moyarich/console-addon-markdown";
 import "@moyarich/console/styles.css";
 
 const addons = [createConsoleMarkdownAddon()];
 
-const samples = {
+export const samples = {
   overview: [
     "# Markdown in the console",
     "",
@@ -69,7 +68,7 @@ function messages(...values: string[]): ConsoleMessageData[] {
   }));
 }
 
-function MarkdownStory({ values, narrow = false }: { values: string[]; narrow?: boolean }) {
+export function MarkdownStory({ values, narrow = false }: { values: string[]; narrow?: boolean }) {
   return (
     <div style={{ width: "100%", maxWidth: narrow ? 400 : 900 }}>
       <Console
@@ -83,19 +82,3 @@ function MarkdownStory({ values, narrow = false }: { values: string[]; narrow?: 
   );
 }
 
-const meta = {
-  title: "Addons/Markdown",
-  component: MarkdownStory,
-  args: { values: [samples.overview] },
-} satisfies Meta<typeof MarkdownStory>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Overview: Story = {};
-export const CodeFences: Story = { args: { values: [samples.code] } };
-export const TablesAndOverflow: Story = { args: { values: [samples.tables], narrow: true } };
-export const PlainTextFallback: Story = { args: { values: [samples.plain, "Just a plain log line"] } };
-export const MixedOutput: Story = {
-  args: { values: [samples.plain, samples.overview, samples.code, samples.tables] },
-};
