@@ -1,3 +1,4 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
 import { Fragment } from "react";
 import type { ConsoleMessageData } from "@moyarich/console";
 
@@ -32,11 +33,16 @@ function displayValue(value: unknown): string {
 /** Accessible, lightweight feed presentation for retained console messages. */
 export function ConsoleFeed({
   messages,
+  locale = "en",
+  translations,
 }: {
   messages: readonly ConsoleMessageData[];
+  locale?: string;
+  translations?: AddonTranslations;
 }) {
+  const labels = resolveAddonMessages(locale, translations);
   return (
-    <div className="console-feed" aria-label="Console message feed">
+    <div className="console-feed" aria-label={labels.feed}>
       {messages.map((message, index) => {
         const severity =
           message.method === "error" ||

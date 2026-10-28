@@ -1,3 +1,4 @@
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 import "./ResizableConsoleFrame.css";
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
 import {
@@ -22,6 +23,8 @@ export interface ConsoleResizeSize {
 }
 
 export interface ResizableConsoleAddonOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   /** Resize axis. Logical block/inline map to vertical/horizontal in the default writing mode. @default "both" */
   direction?: ConsoleResizeDirection;
   /** Initial width used when horizontal resizing is active. @default 720 */
@@ -119,7 +122,10 @@ export function ResizableConsoleFrame({
     className = "",
     style,
     onResize,
+    locale = "en",
+    translations,
   } = options;
+  const labels = resolveAddonMessages(locale, translations);
   const axes = resolveConsoleResizeAxes(direction);
   const frameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<ResizeDrag | null>(null);
@@ -271,8 +277,8 @@ export function ResizableConsoleFrame({
         className="console-resize-handle"
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize console horizontally"
-        title="Drag to resize horizontally"
+        aria-label={labels.horizontal}
+        title={labels.horizontalTitle}
         tabIndex={0}
         data-console-resize-axis="horizontal"
         data-active={activeAxis === "horizontal" || undefined}
@@ -298,8 +304,8 @@ export function ResizableConsoleFrame({
         className="console-resize-handle"
         role="separator"
         aria-orientation="horizontal"
-        aria-label="Resize console vertically"
-        title="Drag to resize vertically"
+        aria-label={labels.vertical}
+        title={labels.verticalTitle}
         tabIndex={0}
         data-console-resize-axis="vertical"
         data-active={activeAxis === "vertical" || undefined}
@@ -324,8 +330,8 @@ export function ResizableConsoleFrame({
       <div
         className="console-resize-corner-handle"
         role="separator"
-        aria-label="Resize console in both directions"
-        title="Drag to resize width and height"
+        aria-label={labels.both}
+        title={labels.bothTitle}
         tabIndex={0}
         data-console-resize-axis="both"
         data-active={activeAxis === "both" || undefined}

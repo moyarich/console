@@ -1,3 +1,6 @@
+import type { AddonTranslations } from "./localization";
+export { resolveAddonMessages } from "./localization";
+export type { AddonTranslations } from "./localization";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -15,13 +18,16 @@ export const xtermOutputRenderer: ConsoleOutputRenderer = {
   },
 };
 
-export function createConsoleXtermAddon(): ConsoleAddon {
+export function createConsoleXtermAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon {
   return {
     id: CONSOLE_XTERM_ADDON_ID,
     activate(host) {
       host.extensions.register(
         consoleExtensionPoints.outputRenderer,
-        xtermOutputRenderer,
+        { ...xtermOutputRenderer, render(context) {
+          if (context.mode !== "terminal") return undefined;
+          return <XtermOutput entries={context.entries} {...options} />;
+        } },
         {
           id: `${CONSOLE_XTERM_ADDON_ID}:output-renderer`,
         },

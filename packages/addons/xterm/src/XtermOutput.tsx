@@ -1,3 +1,4 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
 import { useEffect, useRef } from "react";
 import { Terminal } from "@xterm/xterm";
 import type { ConsoleStdoutEntry } from "@moyarich/console";
@@ -29,9 +30,14 @@ export function isAppendOnly(
 /** The addon owns terminal creation, updates, and disposal. */
 export function XtermOutput({
   entries,
+  locale = "en",
+  translations,
 }: {
   entries: readonly (ConsoleStdoutEntry | string)[];
+  locale?: string;
+  translations?: AddonTranslations;
 }) {
+  const labels = resolveAddonMessages(locale, translations);
   const element = useRef<HTMLDivElement>(null);
   const terminal = useRef<Terminal | null>(null);
   const written = useRef<readonly (ConsoleStdoutEntry | string)[]>([]);
@@ -106,7 +112,7 @@ export function XtermOutput({
     <div
       ref={element}
       className="console-xterm-output"
-      aria-label="Terminal output"
+      aria-label={labels.terminal}
     />
   );
 }
