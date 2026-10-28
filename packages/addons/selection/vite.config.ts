@@ -15,7 +15,7 @@ export default defineConfig({
       fileName: (format) => (format === "es" ? "index.js" : "index.cjs"),
     },
     rollupOptions: {
-      external: ["@moyarich/console-core", "react", "react/jsx-runtime"],
+      external: ["@moyarich/console", "@moyarich/console-core", "react", "react/jsx-runtime"],
     },
   },
 });

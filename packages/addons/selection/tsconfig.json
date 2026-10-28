@@ -3,8 +3,15 @@
   "compilerOptions": {
     "noEmit": true,
     "paths": {
-      "@moyarich/console-core": ["../../console-core/src/index.ts"]
+      "@moyarich/console-core": [
+        "../../console-core/src/index.ts"
+      ],
+      "@moyarich/console": [
+        "../../console/src/index.ts"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
