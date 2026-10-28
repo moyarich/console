@@ -47,6 +47,20 @@ test("docked console resizes with keyboard, stays in its workspace, and restores
     .click();
   await expect(frame).toBeVisible();
   await expect(page.locator(".monaco-editor .view-lines")).toBeVisible();
+  const tokens = page
+    .locator(".monaco-editor .view-line")
+    .first()
+    .locator("span[class^='mtk']");
+  await expect
+    .poll(
+      async () =>
+        new Set(
+          await tokens.evaluateAll((elements) =>
+            elements.map((element) => getComputedStyle(element).color),
+          ),
+        ).size,
+    )
+    .toBeGreaterThan(1);
   expect(errors).toEqual([]);
 });
 

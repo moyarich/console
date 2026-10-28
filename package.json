@@ -42,6 +42,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.0",
+    "@storybook/addon-vitest": "^10.6.5",
     "@storybook/react-vite": "^10.6.0",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
@@ -58,7 +59,10 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.70.0",
     "vite": "^8.0.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@vitest/browser-playwright": "4.1.11",
+    "@vitest/coverage-v8": "4.1.11",
+    "playwright": "latest"
   },
   "overrides": {
     "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@^37.1.0"

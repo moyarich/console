@@ -6,7 +6,7 @@ import { persistenceLogsPlugin } from "./persistence-logs";
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(ts|tsx)"],
   framework: "@storybook/react-vite",
-  addons: [],
+  addons: ["@storybook/addon-vitest"],
   viteFinal: (config) =>
     mergeConfig(config, {
       esbuild: { jsx: "automatic" },

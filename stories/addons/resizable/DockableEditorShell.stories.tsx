@@ -246,7 +246,7 @@ function EditorShell() {
       >
         <MonacoEditor
           path="src/App.tsx"
-          language="typescriptreact"
+          language="typescript"
           value={source}
           width="100%"
           height="100%"
