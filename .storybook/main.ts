@@ -55,6 +55,10 @@ const config: StorybookConfig = {
             ),
           },
           {
+            find: "@moyarich/console-addon-persistence",
+            replacement: fileURLToPath(new URL("../packages/addons/persistence/src/index.ts", import.meta.url)),
+          },
+          {
             find: "@moyarich/console-addon-markdown",
             replacement: fileURLToPath(
               new URL(
