@@ -72,7 +72,15 @@
 .console-markdown-value pre:has(code[class*="language-"]) { padding-top: 1.85em; }
 .console-markdown-value pre code[class*="language-"]::before {
   content: attr(data-language);
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.2em 1em;
+  border-bottom: 1px solid var(--markdown-border);
+  color: var(--markdown-muted);
+  font-size: 0.85em;
+  font-weight: 600;
 }
 .console-markdown-value table {
   display: block;
