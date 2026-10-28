@@ -18,6 +18,10 @@ const config: StorybookConfig = {
         dedupe: ["vscode"],
         alias: [
           {
+            find: "@moyarich/console-addon-process-state",
+            replacement: fileURLToPath(new URL("../packages/addons/process-state/src/index.ts", import.meta.url)),
+          },
+          {
             find: "@moyarich/console-addon-search",
             replacement: fileURLToPath(new URL("../packages/addons/search/src/index.ts", import.meta.url)),
           },
