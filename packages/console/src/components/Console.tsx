@@ -1,4 +1,6 @@
 import { ConsoleTextHighlightContext } from "../textHighlights";
+import { resolveConsoleMessages, type ConsoleTranslations } from "../localization";
+import { ConsoleLocaleContext, resolveConsoleDirection, type ConsoleDirection } from "../locale";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -95,6 +97,12 @@ export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and terminal console modes. */
 interface ConsoleSharedProps {
+  /** BCP 47 locale for built-in console UI strings. @default "en" */
+  locale?: string;
+  /** Writing direction for localized UI; auto resolves from locale. */
+  dir?: ConsoleDirection | "auto";
+  /** Override any built-in localized UI labels. */
+  translations?: ConsoleTranslations;
   /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
   virtualize?: boolean;
   /** Imperative navigation ref for the mounted console viewport. */
@@ -384,7 +392,10 @@ function ConsoleFrame({
   actions,
   panelActions,
   contextMenuActions,
-  title = "Console",
+  title,
+  locale = "en",
+  dir = "auto",
+  translations,
   subtitle,
   emptyMessage,
   className = "",
@@ -400,6 +411,9 @@ function ConsoleFrame({
   emptyStateRenderers,
   keyboardShortcuts,
 }: ConsoleFrameProps) {
+  const strings = useMemo(() => resolveConsoleMessages(locale, translations), [locale, translations]);
+  const resolvedTitle = title ?? strings.title;
+  const resolvedDirection = resolveConsoleDirection(locale, dir);
   const actionsPopoverId = useId();
   const clear = useCallback(() => {
     onClear?.();
@@ -471,6 +485,8 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      lang={locale}
+      dir={resolvedDirection}
       tabIndex={keyboardShortcuts?.length ? 0 : undefined}
       onKeyDown={handleKeyDown}
     >
@@ -489,7 +505,7 @@ function ConsoleFrame({
                 aria-hidden="true"
               />
               <div className="console-heading-copy">
-                <h2>{title}</h2>
+                <h2>{resolvedTitle}</h2>
                 {subtitle && <p>{subtitle}</p>}
               </div>
             </div>
@@ -505,10 +521,10 @@ function ConsoleFrame({
                 <button
                   type="button"
                   className="console-actions-trigger"
-                  aria-label="Console actions"
+                  aria-label={strings.actions}
                   aria-haspopup="menu"
                   popoverTarget={actionsPopoverId}
-                  title="Console actions"
+                  title={strings.actions}
                 >
                   <MoreHorizontal size={18} aria-hidden="true" />
                 </button>
@@ -517,7 +533,7 @@ function ConsoleFrame({
                   id={actionsPopoverId}
                   className="console-actions-popover"
                   popover="auto"
-                  aria-label="Console actions"
+                  aria-label={strings.actions}
                   onClickCapture={(event) => {
                     const target = event.target;
 
@@ -602,6 +618,7 @@ function ConsoleFrame({
       )}
 
       <ConsoleContextMenu
+        translations={strings}
         mode={mode}
         hasMessages={hasMessages}
         actions={contextMenuActions}
@@ -614,7 +631,7 @@ function ConsoleFrame({
           ref={surfaceRef}
           className="console-surface"
           role="log"
-          aria-label={outputLabel ?? title}
+          aria-label={outputLabel ?? resolvedTitle}
           aria-live={announcementMode}
           aria-relevant="additions"
           aria-atomic="false"
@@ -681,8 +698,8 @@ function ConsoleMessageMode({
   linkProviders,
   addonExtensions,
   data,
-  subtitle = "Runtime output from console.*()",
-  emptyMessage = "No console output yet.",
+  subtitle,
+  emptyMessage,
   ...frameProps
 }: ConsoleMessageModeProps & ConsoleResolvedAddonProps) {
   const resolvedMessageRenderers = mergeContributions(
@@ -919,8 +936,8 @@ function ConsoleMessageMode({
     <ConsoleFrame
       {...frameProps}
       mode="console"
-      subtitle={subtitle}
-      emptyMessage={emptyMessage}
+      subtitle={subtitle ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).consoleSubtitle}
+      emptyMessage={emptyMessage ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).emptyConsole}
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0 && !hasCustomOutput}
       scrollKey={visibleMessages}
@@ -953,8 +970,8 @@ function ConsoleTerminalMode({
   linkProviders,
   addonExtensions,
   data,
-  subtitle = "ANSI-aware process output",
-  emptyMessage = "No process output yet.",
+  subtitle,
+  emptyMessage,
   ...frameProps
 }: ConsoleTerminalModeProps & ConsoleResolvedAddonProps) {
   const resolvedProcessControlParsers = mergeContributions(
@@ -1055,8 +1072,8 @@ function ConsoleTerminalMode({
     <ConsoleFrame
       {...frameProps}
       mode="terminal"
-      subtitle={subtitle}
-      emptyMessage={emptyMessage}
+      subtitle={subtitle ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).terminalSubtitle}
+      emptyMessage={emptyMessage ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).emptyTerminal}
       hasMessages={messages.length > 0}
       isEmpty={resolvedEntries.length === 0 && !hasCustomOutput}
       scrollKey={resolvedEntries}
@@ -1108,6 +1125,7 @@ export function Console({ ref, ...props }: ConsoleProps) {
     null;
 
   return (
+    <ConsoleLocaleContext.Provider value={{ locale: props.locale ?? "en", dir: props.dir, translations: props.translations }}>
     <ConsoleTextHighlightContext.Provider value={highlightProvider}>
       {props.mode === "terminal" ? (
         <ConsoleTerminalMode {...props} {...resolvedProps} />
@@ -1115,5 +1133,6 @@ export function Console({ ref, ...props }: ConsoleProps) {
         <ConsoleMessageMode {...props} {...resolvedProps} />
       )}
     </ConsoleTextHighlightContext.Provider>
+    </ConsoleLocaleContext.Provider>
   );
 }

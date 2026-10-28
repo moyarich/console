@@ -1,0 +1,14 @@
+{
+  "search": "Buscar en la consola",
+  "searchOutput": "Buscar en la salida",
+  "searchConsoleOutput": "Buscar en la salida de la consola",
+  "caseSensitive": "Distinguir mayúsculas",
+  "wholeWord": "Palabra completa",
+  "regex": "Expresión regular",
+  "noMatches": "Sin resultados",
+  "matchCount": "{current} de {total} resultados",
+  "previousResult": "Resultado anterior",
+  "nextResult": "Resultado siguiente",
+  "previous": "Anterior",
+  "next": "Siguiente"
+}

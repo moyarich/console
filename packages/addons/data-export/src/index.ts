@@ -1,3 +1,6 @@
+import { resolveDataExportMessages, type DataExportTranslations } from "./localization";
+export { resolveDataExportMessages } from "./localization";
+export type { DataExportTranslations } from "./localization";
 import Anser from "anser";
 import {
   consoleExtensionPoints,
@@ -51,6 +54,8 @@ export interface ConsoleDataExportActionsOptions {
 }
 
 export interface ConsoleDataExportAddonOptions {
+  locale?: string;
+  translations?: DataExportTranslations;
   /** Optional action contribution configuration. */
   actions?: ConsoleDataExportActionsOptions;
   /** Base filename used by download actions. @default "console-export" */
@@ -411,7 +416,10 @@ export function createConsoleDataExportAddon(
       scope = "visible",
     } = {},
     fileName = "console-export",
+    locale = "en",
+    translations,
   } = options;
+  const labels = resolveDataExportMessages(locale, translations);
 
   return {
     id: CONSOLE_DATA_EXPORT_ADDON_ID,
@@ -425,7 +433,7 @@ export function createConsoleDataExportAddon(
       if (copyJson) {
         const action: ConsolePanelAction = {
           id: actionIds.copyJson,
-          label: "Copy as JSON",
+          label: labels.copyJson,
           disabled,
           onSelect: () => service.copy({ format: "json", scope }),
         };
@@ -433,7 +441,7 @@ export function createConsoleDataExportAddon(
         registerPanelAction(host, action);
         registerContextMenuAction(host, {
           id: actionIds.copyJson,
-          label: "Copy as JSON",
+          label: labels.copyJson,
           visible: (context) => context.kind === "console",
           disabled,
           onSelect: () => service.copy({ format: "json", scope }),
@@ -443,7 +451,7 @@ export function createConsoleDataExportAddon(
       if (downloadText) {
         registerPanelAction(host, {
           id: actionIds.downloadText,
-          label: "Download text",
+          label: labels.downloadText,
           disabled,
           onSelect: () => service.download({ format: "text", scope, fileName }),
         });
@@ -452,7 +460,7 @@ export function createConsoleDataExportAddon(
       if (downloadJson) {
         registerPanelAction(host, {
           id: actionIds.downloadJson,
-          label: "Download JSON",
+          label: labels.downloadJson,
           disabled,
           onSelect: () => service.download({ format: "json", scope, fileName }),
         });

@@ -1,11 +1,16 @@
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 import { useSyncExternalStore } from "react";
 import type { ConsoleSearchController } from "../../index";
 import "./ConsoleSearchControls.css";
 
 export function ConsoleSearchControls({
   controller,
+  locale = "en",
+  translations,
 }: {
   controller: ConsoleSearchController;
+  locale?: string;
+  translations?: AddonTranslations;
 }) {
   const state = useSyncExternalStore(
     controller.subscribe,
@@ -13,15 +18,16 @@ export function ConsoleSearchControls({
     controller.getState,
   );
   const count = state.matches.length;
+  const t = resolveAddonMessages(locale, translations);
   return (
-    <section className="console-search-controls" aria-label="Console search">
+    <section className="console-search-controls" aria-label={t.search}>
       <label>
-        <span className="console-search-controls-label">Search output</span>
+        <span className="console-search-controls-label">{t.searchOutput}</span>
         <input
           type="search"
           value={state.query}
           onChange={(event) => controller.setQuery(event.target.value)}
-          aria-label="Search console output"
+          aria-label={t.searchConsoleOutput}
         />
       </label>
       <label>
@@ -35,7 +41,7 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Case sensitive
+        {t.caseSensitive}
       </label>
       <label>
         <input
@@ -48,7 +54,7 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Whole word
+        {t.wholeWord}
       </label>
       <label>
         <input
@@ -61,28 +67,28 @@ export function ConsoleSearchControls({
             })
           }
         />{" "}
-        Regex
+        {t.regex}
       </label>
       <span role="status" aria-live="polite">
         {count === 0
-          ? "No matches"
-          : `${state.activeIndex + 1} of ${count} matches`}
+          ? t.noMatches
+          : t.matchCount.replace("{current}", String(state.activeIndex + 1)).replace("{total}", String(count))}
       </span>
       <button
         type="button"
         onClick={() => controller.previous()}
         disabled={!count}
-        aria-label="Previous search result"
+        aria-label={t.previousResult}
       >
-        Previous
+        {t.previous}
       </button>
       <button
         type="button"
         onClick={() => controller.next()}
         disabled={!count}
-        aria-label="Next search result"
+        aria-label={t.nextResult}
       >
-        Next
+        {t.next}
       </button>
       {state.error && <span role="alert">{state.error}</span>}
     </section>

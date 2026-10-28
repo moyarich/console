@@ -1,3 +1,6 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
+export { resolveAddonMessages } from "./localization";
+export type { AddonTranslations } from "./localization";
 import {
   consoleExtensionPoints,
   consoleServices,
@@ -10,6 +13,8 @@ export const IMPERATIVE_SCROLLING_ADDON_ID =
   "@moyarich/console-addon-imperative-scrolling";
 
 export interface ImperativeScrollingAddonOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   /** Contribute a panel action that scrolls to the first logical row. @default true */
   scrollToTopAction?: boolean;
   /** Contribute a panel action that scrolls to the latest output. @default true */
@@ -46,7 +51,10 @@ export function createImperativeScrollingAddon(
     scrollToTopAction = true,
     scrollToBottomAction = true,
     focusAction = true,
+    locale = "en",
+    translations,
   } = options;
+  const labels = resolveAddonMessages(locale, translations);
 
   return {
     id: IMPERATIVE_SCROLLING_ADDON_ID,
@@ -57,7 +65,7 @@ export function createImperativeScrollingAddon(
       if (scrollToTopAction) {
         registerPanelAction(host, {
           id: actionRegistrationIds.scrollToTop,
-          label: "Scroll to top",
+          label: labels.top,
           onSelect: () => viewport.scrollToTop(),
         });
       }
@@ -65,7 +73,7 @@ export function createImperativeScrollingAddon(
       if (scrollToBottomAction) {
         registerPanelAction(host, {
           id: actionRegistrationIds.scrollToBottom,
-          label: "Latest output",
+          label: labels.bottom,
           onSelect: () => viewport.scrollToBottom(),
         });
       }
@@ -73,7 +81,7 @@ export function createImperativeScrollingAddon(
       if (focusAction) {
         registerPanelAction(host, {
           id: actionRegistrationIds.focus,
-          label: "Focus output",
+          label: labels.focus,
           onSelect: () => viewport.focus(),
         });
       }

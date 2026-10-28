@@ -1,4 +1,6 @@
 import { Braces, Copy, Trash2 } from "lucide-react";
+import { englishConsoleMessages, type ConsoleMessages } from "../localization";
+import { resolveConsoleDirection, useConsoleLocale } from "../locale";
 import {
   useCallback,
   useEffect,
@@ -29,6 +31,8 @@ import type { ContextMenuThemeStyle } from "../utils/console/style/types";
 
 /** Props for the console's built-in right-click action surface. */
 export interface ConsoleContextMenuProps {
+  /** Localized labels for built-in menu items. */
+  translations?: ConsoleMessages;
   /** Console surface wrapped by the context-menu provider. */
   children: ReactNode;
   /** Current console rendering mode. */
@@ -115,6 +119,7 @@ function ConsoleActionMenuItem<TContext>({
  * accessible menu portal with built-in and host-defined actions.
  */
 export function ConsoleContextMenu({
+  translations = englishConsoleMessages,
   children,
   mode,
   hasMessages,
@@ -124,6 +129,8 @@ export function ConsoleContextMenu({
   clearDisabled = false,
   onClear,
 }: ConsoleContextMenuProps) {
+  const localeOptions = useConsoleLocale();
+  const direction = resolveConsoleDirection(localeOptions.locale, localeOptions.dir);
   const targetRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const focusOriginRef = useRef<HTMLElement | null>(null);
@@ -376,7 +383,9 @@ export function ConsoleContextMenu({
             ref={menuRef}
             className="console-context-menu"
             role="menu"
-            aria-label="Console actions"
+            lang={localeOptions.locale}
+            dir={direction}
+            aria-label={translations.actions}
             tabIndex={-1}
             style={{
               left: menu.x,
@@ -424,7 +433,7 @@ export function ConsoleContextMenu({
                 }}
               >
                 <Braces size={15} aria-hidden="true" />
-                <span>Copy object</span>
+                <span>{translations.copyObject}</span>
               </button>
             )}
 
@@ -436,7 +445,7 @@ export function ConsoleContextMenu({
               onClick={handleCopyConsole}
             >
               <Copy size={15} aria-hidden="true" />
-              <span>Copy console output</span>
+              <span>{translations.copyOutput}</span>
             </button>
 
             <div className="console-context-menu-separator" role="separator" />
@@ -452,7 +461,7 @@ export function ConsoleContextMenu({
               }}
             >
               <Trash2 size={15} aria-hidden="true" />
-              <span>Clear console</span>
+              <span>{translations.clear}</span>
             </button>
           </div>,
           document.body,

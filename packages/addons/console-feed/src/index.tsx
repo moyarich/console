@@ -1,3 +1,6 @@
+import type { AddonTranslations } from "./localization";
+export { resolveAddonMessages } from "./localization";
+export type { AddonTranslations } from "./localization";
 import {
   consoleExtensionPoints,
   type ConsoleAddon,
@@ -18,13 +21,16 @@ export const consoleFeedOutputRenderer: ConsoleOutputRenderer = {
   },
 };
 
-export function createConsoleFeedAddon(): ConsoleAddon {
+export function createConsoleFeedAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon {
   return {
     id: CONSOLE_FEED_ADDON_ID,
     activate(host) {
       host.extensions.register(
         consoleExtensionPoints.outputRenderer,
-        consoleFeedOutputRenderer,
+        { ...consoleFeedOutputRenderer, render(context) {
+          if (context.mode !== "console") return undefined;
+          return <ConsoleFeed messages={context.messages} {...options} />;
+        } },
         {
           id: `${CONSOLE_FEED_ADDON_ID}:output-renderer`,
         },

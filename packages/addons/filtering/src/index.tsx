@@ -1,3 +1,6 @@
+import type { AddonTranslations } from "./localization";
+export { resolveAddonMessages as resolveConsoleFilteringMessages } from "./localization";
+export type { AddonTranslations as ConsoleFilteringTranslations } from "./localization";
 import { useSyncExternalStore, type CSSProperties } from "react";
 import {
   consoleExtensionPoints,
@@ -71,6 +74,8 @@ export interface ConsoleFilteringController {
 }
 
 export interface ConsoleFilteringControlsOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   /** Explicit source choices. When omitted, sources are discovered from retained messages. */
   sources?: readonly string[];
   /** Additional class name applied to the addon-owned controls. */

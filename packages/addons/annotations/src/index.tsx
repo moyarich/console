@@ -1,3 +1,6 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
+export { resolveAddonMessages } from "./localization";
+export type { AddonTranslations } from "./localization";
 import type { ReactNode } from "react";
 import { ConsoleAnnotationBadge } from "./components/ConsoleAnnotationBadge/ConsoleAnnotationBadge";
 export { ConsoleAnnotationBadge } from "./components/ConsoleAnnotationBadge/ConsoleAnnotationBadge";
@@ -39,6 +42,8 @@ export interface ConsoleAnnotationsController {
 }
 
 export interface ConsoleAnnotationsAddonOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   /** Reuse host-owned annotation state. */
   controller?: ConsoleAnnotationsController;
   /** Register the default badge decoration. @default true */
@@ -220,11 +225,13 @@ function createDecoration(
 
 function createBookmarkAction(
   controller: ConsoleAnnotationsController,
+  locale?: string,
+  translations?: AddonTranslations,
 ): ConsoleMessageAction<ReactNode> {
   return {
     id: `${CONSOLE_ANNOTATIONS_ADDON_ID}:bookmark`,
-    label: "Toggle bookmark",
-    ariaLabel: "Toggle message bookmark",
+    label: resolveAddonMessages(locale, translations).toggle,
+    ariaLabel: resolveAddonMessages(locale, translations).toggleMessage,
     visible({ message }) {
       return Boolean(message.id);
     },
@@ -270,7 +277,7 @@ export function createConsoleAnnotationsAddon(
         if (withBookmarkAction) {
           actionRegistration = host.extensions.register(
             consoleExtensionPoints.messageAction,
-            createBookmarkAction(controller),
+            createBookmarkAction(controller, options.locale, options.translations),
             { id: `${CONSOLE_ANNOTATIONS_ADDON_ID}:bookmark` },
           );
         }

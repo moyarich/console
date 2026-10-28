@@ -1,0 +1,14 @@
+{
+  "search": "Recherche dans la console",
+  "searchOutput": "Rechercher dans la sortie",
+  "searchConsoleOutput": "Rechercher dans la sortie de la console",
+  "caseSensitive": "Respecter la casse",
+  "wholeWord": "Mot entier",
+  "regex": "Expression régulière",
+  "noMatches": "Aucun résultat",
+  "matchCount": "{current} sur {total} résultats",
+  "previousResult": "Résultat précédent",
+  "nextResult": "Résultat suivant",
+  "previous": "Précédent",
+  "next": "Suivant"
+}
