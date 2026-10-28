@@ -1,0 +1,8 @@
+{
+  "horizontal": "Resize console horizontally",
+  "horizontalTitle": "Drag to resize horizontally",
+  "vertical": "Resize console vertically",
+  "verticalTitle": "Drag to resize vertically",
+  "both": "Resize console in both directions",
+  "bothTitle": "Drag to resize width and height"
+}
