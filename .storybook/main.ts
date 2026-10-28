@@ -12,6 +12,16 @@ const config: StorybookConfig = {
       ...(process.env.STORYBOOK_BASE_PATH
         ? { base: process.env.STORYBOOK_BASE_PATH }
         : {}),
+      ...(process.env.STORYBOOK_UNIFIED_DEV
+        ? {
+            server: {
+              ws: {
+                clientPort: Number(process.env.DEV_PORT ?? 5173),
+                path: "/hmr",
+              },
+            },
+          }
+        : {}),
       esbuild: { jsx: "automatic" },
       build: {
         rolldownOptions: {

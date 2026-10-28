@@ -10,7 +10,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @moyarich/console-playground",
+    "dev": "node scripts/dev.mjs",
     "build": "npm run build --workspaces --if-present",
     "build:package": "npm run build:core && npm run build --workspace @moyarich/console",
     "build:playground": "npm run build --workspace @moyarich/console-playground",
@@ -30,7 +30,8 @@
     "build:packages": "npm run build --workspaces --if-present",
     "pack:packages": "npm run build:packages && node scripts/run-addon-workspaces.mjs pack && npm pack --workspace @moyarich/console-core --dry-run && npm pack --workspace @moyarich/console --dry-run",
     "test:browser": "playwright test",
-    "build:pages": "node scripts/build-pages.mjs"
+    "build:pages": "node scripts/build-pages.mjs",
+    "dev:playground": "npm run dev --workspace @moyarich/console-playground"
   },
   "engines": {
     "node": "^22.13.0 || >=24"

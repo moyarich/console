@@ -82,3 +82,14 @@ Core console features work without optional addons. Each addon is installed sepa
 ## License
 
 MIT
+
+## Local development
+
+Run `npm run dev` to start the playground and Storybook together:
+
+- Playground: <http://localhost:5173/>
+- Storybook: <http://localhost:5173/storybook/>
+
+Both support hot reload and link to each other. Ctrl+C stops both servers. Storybook runs internally on port 6007; set `DEV_PORT` or `STORYBOOK_DEV_PORT` to change the ports.
+
+Use `npm run dev:playground` or `npm run storybook` to start an individual server. Run `npx playwright test -c playwright.dev.config.ts` to check navigation and live connections through the unified server.

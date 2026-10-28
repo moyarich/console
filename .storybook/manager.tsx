@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { addons, types } from "storybook/manager-api";
 
 function PlaygroundLink() {
-  // Pages serves Storybook beside the playground; dev uses separate servers.
+  // The unified dev server and Pages both mount Storybook at /storybook/.
   const location = new URL(window.location.href);
   const href = /\/storybook\/?$/.test(location.pathname)
     ? new URL(

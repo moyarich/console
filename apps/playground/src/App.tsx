@@ -97,11 +97,7 @@ export function App() {
             <nav aria-label="Site navigation">
               <a
                 className="topbar-link"
-                href={
-                  import.meta.env.DEV
-                    ? `${window.location.protocol}//${window.location.hostname}:6006/`
-                    : `${import.meta.env.BASE_URL}storybook/`
-                }
+                href={`${import.meta.env.BASE_URL}storybook/`}
               >
                 Storybook
               </a>
