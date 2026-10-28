@@ -1,5 +1,6 @@
 {
   "bookmark": "Signet",
   "toggle": "Basculer le signet",
-  "toggleMessage": "Basculer le signet du message"
+  "toggleMessage": "Basculer le signet du message",
+  "annotations": "Annotations"
 }

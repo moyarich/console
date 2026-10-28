@@ -4,6 +4,8 @@ import {
   type ConsoleProgressIndicatorOptions,
 } from "./ProgressIndicator";
 export { ConsoleProgressIndicator } from "./ProgressIndicator";
+export { resolveProcessStateMessages } from "./localization";
+export type { ProcessStateTranslations } from "./localization";
 export type { ConsoleProgressIndicatorOptions } from "./ProgressIndicator";
 
 import {

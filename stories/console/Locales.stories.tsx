@@ -23,6 +23,8 @@ function LocalesExample() {
           <option value="en">English</option>
           <option value="es-MX">Español (México)</option>
           <option value="fr-CA">Français (Canada)</option>
+        <option value="pt-BR">Português (Brasil)</option>
+        <option value="pt-PT">Português (Portugal)</option>
           <option value="de">Deutsch (English fallback)</option>
         </select>
       </label>

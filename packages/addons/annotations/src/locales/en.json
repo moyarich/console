@@ -1,5 +1,6 @@
 {
   "bookmark": "Bookmark",
   "toggle": "Toggle bookmark",
-  "toggleMessage": "Toggle message bookmark"
+  "toggleMessage": "Toggle message bookmark",
+  "annotations": "Annotations"
 }

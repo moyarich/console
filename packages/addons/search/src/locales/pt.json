@@ -1,0 +1,14 @@
+{
+  "search": "Pesquisar no console",
+  "searchOutput": "Pesquisar na saída",
+  "searchConsoleOutput": "Pesquisar na saída do console",
+  "caseSensitive": "Diferenciar maiúsculas de minúsculas",
+  "wholeWord": "Palavra inteira",
+  "regex": "Expressão regular",
+  "noMatches": "Nenhuma correspondência",
+  "matchCount": "{current} de {total} correspondências",
+  "previousResult": "Resultado anterior",
+  "nextResult": "Próximo resultado",
+  "previous": "Anterior",
+  "next": "Próximo"
+}
