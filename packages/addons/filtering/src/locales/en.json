@@ -1,0 +1,13 @@
+{
+  "filters": "Console filters",
+  "filterOutput": "Filter console output",
+  "allLevels": "All levels",
+  "noLevels": "No levels",
+  "levels": "{count} levels",
+  "messageLevels": "Message levels",
+  "filterSource": "Filter by source",
+  "allSources": "All sources",
+  "customSources": "Custom sources",
+  "resetFilters": "Reset console filters",
+  "reset": "Reset"
+}

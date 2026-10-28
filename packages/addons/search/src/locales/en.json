@@ -1,0 +1,14 @@
+{
+  "search": "Console search",
+  "searchOutput": "Search output",
+  "searchConsoleOutput": "Search console output",
+  "caseSensitive": "Case sensitive",
+  "wholeWord": "Whole word",
+  "regex": "Regex",
+  "noMatches": "No matches",
+  "matchCount": "{current} of {total} matches",
+  "previousResult": "Previous search result",
+  "nextResult": "Next search result",
+  "previous": "Previous",
+  "next": "Next"
+}
