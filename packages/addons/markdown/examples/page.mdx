@@ -13,3 +13,15 @@ import source from "./example.tsx?raw";
 The source models a GitHub Actions `$GITHUB_STEP_SUMMARY` containing headings, a table, inline code, and a list. It also includes an ordinary multiline log to demonstrate fallback rendering.
 
 The addon contributes a value renderer that recognizes meaningful Markdown in complete string values. It takes over only when the parsed document contains more than plain paragraphs, text, and line breaks. Plain text, multiline logs, and bare URLs retain normal Console rendering. Producers can keep logging ordinary strings.
+
+## Storybook coverage
+
+The **Addons/Markdown** stories demonstrate the updated terminal-style presentation:
+
+- **Overview:** headings, emphasis, links, lists, task lists, and blockquotes.
+- **Code Fences:** language labels, fenced code, and long-line overflow.
+- **Tables and Overflow:** GFM table alignment inside a narrow console.
+- **Plain Text Fallback:** unformatted logs and bare URLs remain plain.
+- **Mixed Output:** Markdown and ordinary process output together.
+
+Run `npm run storybook` to inspect these examples interactively.
