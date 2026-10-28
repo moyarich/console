@@ -34,7 +34,7 @@ const messages: ConsoleMessageData[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Markdown",
+  title: "Addons/Markdown",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;

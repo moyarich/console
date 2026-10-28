@@ -275,6 +275,6 @@
   }
 
   .console-filtering-method-menu {
-    margin-right: auto;
+    margin-inline-end: auto;
   }
 }

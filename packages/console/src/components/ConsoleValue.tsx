@@ -97,7 +97,7 @@ function renderPrimitive(
 
   if (typeof value === "string")
     return (
-      <span className="console-string">
+      <span className="console-string" dir="auto">
         "
         <ConsoleLinkedText
           text={value}
@@ -321,7 +321,7 @@ export function ConsoleValue({
 }: ConsoleValueProps) {
   const renderDefault = () =>
     valueDisplay === "string" ? (
-      <span className="console-string">
+      <span className="console-string" dir="auto">
         <ConsoleLinkedText
           text={stringifyConsoleValue(value)}
           context={{

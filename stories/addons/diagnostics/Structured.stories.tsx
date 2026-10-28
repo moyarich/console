@@ -14,7 +14,7 @@ const messages: ConsoleMessageData[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Diagnostics/Structured",
+  title: "Addons/Diagnostics",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;
@@ -36,6 +36,6 @@ function StructuredDiagnosticsStory() {
   );
 }
 
-export const Default: Story = {
+export const Structured: Story = {
   render: () => <StructuredDiagnosticsStory />,
 };

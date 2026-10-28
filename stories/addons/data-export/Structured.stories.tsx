@@ -21,7 +21,7 @@ const messages: ConsoleMessageData[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Data export/Structured",
+  title: "Addons/Data Export",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;
@@ -46,6 +46,6 @@ function StructuredDataExportStory() {
   );
 }
 
-export const Default: Story = {
+export const Structured: Story = {
   render: () => <StructuredDataExportStory />,
 };

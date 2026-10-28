@@ -6,51 +6,119 @@
   );
   --_console-search-color: var(
     --console-search-color,
-    var(--console-panel-color, inherit)
+    var(--console-panel-color, light-dark(#27272a, #f4f4f5))
   );
   --_console-search-border-color: var(
     --console-search-border-color,
-    var(--console-panel-color, currentColor)
+    color-mix(in srgb, var(--_console-search-color) 16%, transparent)
   );
-  --_console-search-focus-color: var(
-    --console-search-focus-color,
-    var(--console-header-icon-color, currentColor)
-  );
+  --_console-search-focus-color: var(--console-search-focus-color, #635bff);
 
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.5rem;
-  border-bottom: 1px solid var(--_console-search-border-color);
+  box-sizing: border-box;
+  flex: 1 1 22rem;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
   background: var(--_console-search-background-color);
   color: var(--_console-search-color);
-  font: inherit;
+  font:
+    400 12px/1.4 ui-sans-serif,
+    system-ui,
+    sans-serif;
 }
 
-.console-search-controls label {
-  display: inline-flex;
+.console-search-controls-row {
+  display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 4px;
+  min-width: 0;
+  padding-inline-end: 4px;
+  border: 1px solid var(--_console-search-border-color);
+  border-radius: 8px;
+  background: color-mix(
+    in srgb,
+    var(--_console-search-color) 3%,
+    var(--_console-search-background-color)
+  );
+}
+
+.console-search-controls-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding-inline-start: 10px;
+}
+
+.console-search-controls-field svg {
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .console-search-controls input[type="search"] {
-  min-width: 12rem;
-  max-width: 100%;
-  background: var(--_console-search-background-color);
-  color: var(--_console-search-color);
-  border: 1px solid var(--_console-search-border-color);
-  border-radius: 4px;
-  padding: 0.3rem 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 9px 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.console-search-controls input::placeholder {
+  color: inherit;
+  opacity: 0.55;
+}
+
+.console-search-controls-row:focus-within {
+  border-color: var(--_console-search-focus-color);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--_console-search-focus-color) 15%, transparent);
+}
+
+.console-search-controls-row [role="status"] {
+  max-width: 10rem;
+  font-size: 11px;
+  opacity: 0.65;
 }
 
 .console-search-controls button {
-  border: 1px solid var(--_console-search-border-color);
-  background: var(--_console-search-background-color);
-  color: var(--_console-search-color);
-  padding: 0.3rem 0.5rem;
-  border-radius: 4px;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
   cursor: pointer;
+}
+
+.console-search-controls button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--_console-search-color) 9%, transparent);
+}
+
+.console-search-controls-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.console-search-controls-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.console-search-controls input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--_console-search-focus-color);
 }
 
 .console-search-controls :focus-visible {
@@ -58,7 +126,16 @@
   outline-offset: 2px;
 }
 
+.console-search-controls input[type="search"]:focus-visible {
+  outline: none;
+}
+
 .console-search-controls button:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: default;
+}
+
+.console-search-controls-error {
+  color: var(--console-error-color, light-dark(#b42318, #fda4af));
+  overflow-wrap: anywhere;
 }

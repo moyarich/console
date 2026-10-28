@@ -19,7 +19,7 @@ const processors: ConsoleProcessOutputProcessor[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Diagnostics/ANSI",
+  title: "Addons/Diagnostics",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;
@@ -43,6 +43,6 @@ function AnsiDiagnosticsStory() {
   );
 }
 
-export const Default: Story = {
+export const Ansi: Story = {
   render: () => <AnsiDiagnosticsStory />,
 };

@@ -18,28 +18,100 @@ const config: StorybookConfig = {
         dedupe: ["vscode"],
         alias: [
           {
+            find: "@moyarich/console-addon-animation",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/animation/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-metadata",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/metadata/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-navigation",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/navigation/src/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-session",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/session/src/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-links",
+            replacement: fileURLToPath(
+              new URL("../packages/addons/links/src/index.ts", import.meta.url),
+            ),
+          },
+          {
             find: "@moyarich/console-addon-process-state",
-            replacement: fileURLToPath(new URL("../packages/addons/process-state/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/process-state/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-search",
-            replacement: fileURLToPath(new URL("../packages/addons/search/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/search/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-selection",
-            replacement: fileURLToPath(new URL("../packages/addons/selection/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/selection/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-annotations",
-            replacement: fileURLToPath(new URL("../packages/addons/annotations/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/annotations/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-console-feed",
-            replacement: fileURLToPath(new URL("../packages/addons/console-feed/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/console-feed/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-xterm",
-            replacement: fileURLToPath(new URL("../packages/addons/xterm/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/xterm/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-core",
@@ -82,7 +154,12 @@ const config: StorybookConfig = {
           },
           {
             find: "@moyarich/console-addon-persistence",
-            replacement: fileURLToPath(new URL("../packages/addons/persistence/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/persistence/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-markdown",

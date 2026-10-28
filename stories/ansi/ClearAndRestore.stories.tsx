@@ -16,7 +16,7 @@ function ClearableOutputStory(args: ConsoleTerminalModeProps) {
 }
 
 const meta = {
-  title: "Console/ANSI Process Output",
+  title: "Console/Terminal",
   component: Console,
   args: {
     mode: "terminal",

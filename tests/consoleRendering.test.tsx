@@ -148,7 +148,7 @@ describe("Console rendering", () => {
       { method: "log", data: ["inside"], depth: 1 },
     ]);
     expect(html).toContain('data-method="group"');
-    expect(html).toContain("padding-left:30px");
+    expect(html).toContain("padding-inline-start:30px");
   });
 
   it("filters visible messages", () => {

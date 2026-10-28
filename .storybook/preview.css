@@ -1,0 +1,54 @@
+/* Host styling for story controls; Console and addon UI own their styles. */
+@layer storybook-host {
+  body {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    color: light-dark(#172033, #f4f4f5);
+    background-color: light-dark(#ffffff, #09090b);
+    line-height: 1.5;
+  }
+
+  :where(button, input, select, textarea):not(
+    :where(.console-panel, .console-panel *)
+  ) {
+    box-sizing: border-box;
+    font: inherit;
+    color: inherit;
+    accent-color: #635bff;
+  }
+
+  :where(
+    button,
+    select,
+    textarea,
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"])
+  ):not(:where(.console-panel, .console-panel *)) {
+    border: 1px solid light-dark(#cbd5e1, #52525b);
+    border-radius: 6px;
+    padding: 6px 10px;
+    background-color: light-dark(#ffffff, #18181b);
+  }
+
+  :where(button):not(:where(.console-panel, .console-panel *)) {
+    cursor: pointer;
+  }
+
+  :where(button:hover:not(:disabled)):not(
+    :where(.console-panel, .console-panel *)
+  ) {
+    background-color: light-dark(#f1f5f9, #27272a);
+  }
+
+  :where(button, input, select, textarea):focus-visible:not(
+      :where(.console-panel, .console-panel *)
+    ) {
+    outline: 2px solid #635bff;
+    outline-offset: 2px;
+  }
+
+  :where(button, input, select, textarea):disabled:not(
+      :where(.console-panel, .console-panel *)
+    ) {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

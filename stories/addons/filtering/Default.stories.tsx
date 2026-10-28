@@ -49,7 +49,7 @@ const messages: ConsoleMessageData[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Filtering",
+  title: "Addons/Filtering",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;

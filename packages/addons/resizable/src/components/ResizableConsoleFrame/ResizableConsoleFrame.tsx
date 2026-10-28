@@ -1,4 +1,7 @@
-import { resolveAddonMessages, type AddonTranslations } from "../../localization";
+import {
+  resolveAddonMessages,
+  type AddonTranslations,
+} from "../../localization";
 import "./ResizableConsoleFrame.css";
 import { GripHorizontal, GripVertical, MoveDiagonal2 } from "lucide-react";
 import {
@@ -8,6 +11,7 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent,
+  type KeyboardEvent,
   type ReactNode,
 } from "react";
 import type { ConsoleMode } from "@moyarich/console-core";
@@ -267,6 +271,51 @@ export function ResizableConsoleFrame({
     });
   };
 
+  const resizeWithKeyboard = (
+    event: KeyboardEvent<HTMLElement>,
+    axis: ResizeAxis,
+  ) => {
+    const horizontal =
+      axis !== "vertical" &&
+      (event.key === "ArrowLeft" || event.key === "ArrowRight");
+    const vertical =
+      axis !== "horizontal" &&
+      (event.key === "ArrowUp" || event.key === "ArrowDown");
+    const frame = frameRef.current;
+    if (!frame || (!horizontal && !vertical)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const bounds = frame.getBoundingClientRect();
+    const parentWidth =
+      frame.parentElement?.getBoundingClientRect().width ?? Infinity;
+    const step = event.shiftKey ? 50 : 10;
+    let nextWidth = bounds.width;
+    let nextHeight = bounds.height;
+    if (horizontal) {
+      const sign =
+        (event.key === "ArrowRight" ? 1 : -1) *
+        (horizontalEdge === "end" ? 1 : -1);
+      nextWidth = clamp(
+        bounds.width + sign * step,
+        minWidth,
+        Math.min(maxWidth ?? parentWidth, parentWidth),
+      );
+      setWidth(nextWidth);
+    }
+    if (vertical) {
+      const sign =
+        (event.key === "ArrowDown" ? 1 : -1) *
+        (verticalEdge === "end" ? 1 : -1);
+      nextHeight = clamp(
+        bounds.height + sign * step,
+        minHeight,
+        maxHeight ?? Infinity,
+      );
+      setHeight(nextHeight);
+    }
+    onResize?.({ width: nextWidth, height: nextHeight });
+  };
+
   const renderHorizontalHandle = () => {
     if (!axes.horizontal) {
       return null;
@@ -277,10 +326,14 @@ export function ResizableConsoleFrame({
         className="console-resize-handle"
         role="separator"
         aria-orientation="vertical"
+        aria-valuemin={minWidth}
+        aria-valuemax={maxWidth}
+        aria-valuenow={typeof width === "number" ? width : undefined}
         aria-label={labels.horizontal}
         title={labels.horizontalTitle}
         tabIndex={0}
         data-console-resize-axis="horizontal"
+        onKeyDown={(event) => resizeWithKeyboard(event, "horizontal")}
         data-active={activeAxis === "horizontal" || undefined}
         onPointerDown={(event) => startResize(event, "horizontal")}
         onPointerMove={moveResize}
@@ -304,10 +357,14 @@ export function ResizableConsoleFrame({
         className="console-resize-handle"
         role="separator"
         aria-orientation="horizontal"
+        aria-valuemin={minHeight}
+        aria-valuemax={maxHeight}
+        aria-valuenow={typeof height === "number" ? height : undefined}
         aria-label={labels.vertical}
         title={labels.verticalTitle}
         tabIndex={0}
         data-console-resize-axis="vertical"
+        onKeyDown={(event) => resizeWithKeyboard(event, "vertical")}
         data-active={activeAxis === "vertical" || undefined}
         onPointerDown={(event) => startResize(event, "vertical")}
         onPointerMove={moveResize}
@@ -334,6 +391,7 @@ export function ResizableConsoleFrame({
         title={labels.bothTitle}
         tabIndex={0}
         data-console-resize-axis="both"
+        onKeyDown={(event) => resizeWithKeyboard(event, "both")}
         data-active={activeAxis === "both" || undefined}
         onPointerDown={(event) => startResize(event, "both")}
         onPointerMove={moveResize}
