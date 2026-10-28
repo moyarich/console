@@ -1,6 +1,6 @@
 import { ConsoleTextHighlightContext } from "../textHighlights";
 import { resolveConsoleMessages, type ConsoleTranslations } from "../localization";
-import { ConsoleLocaleContext, resolveConsoleDirection, type ConsoleDirection } from "../locale";
+import { resolveConsoleDirection, type ConsoleDirection } from "../locale";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -485,6 +485,8 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      lang={locale}
+      dir={resolvedDirection}
       tabIndex={keyboardShortcuts?.length ? 0 : undefined}
       onKeyDown={handleKeyDown}
     >
