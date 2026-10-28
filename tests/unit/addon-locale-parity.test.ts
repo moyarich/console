@@ -71,8 +71,8 @@ describe("localized addon dictionaries", () => {
         const dictionary = translated as Record<string, string>;
         expect(Object.keys(dictionary).sort()).toEqual(Object.keys(source).sort());
         for (const key of Object.keys(source)) {
-          expect(dictionary[key].trim(), `${name}.${key} should not be empty`).not.toBe("");
-          expect(tokens(dictionary[key]), `${name}.${key} placeholders`).toEqual(tokens(source[key]));
+          expect(dictionary[key]!.trim(), `${name}.${key} should not be empty`).not.toBe("");
+          expect(tokens(dictionary[key]!), `${name}.${key} placeholders`).toEqual(tokens(source[key]!));
         }
       }
     });
