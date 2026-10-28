@@ -1,6 +1,7 @@
 import en from "./locales/en.json";
 import es from "./locales/es.json";
 import fr from "./locales/fr.json";
+import pt from "./locales/pt.json";
 
 /** Localizable chrome strings; message payloads are never translated. */
 export interface ConsoleMessages {
@@ -22,6 +23,7 @@ export const consoleLocales: Readonly<Record<string, ConsoleTranslations>> = Obj
   en,
   es,
   fr,
+  pt,
 });
 
 /** Prefer a full BCP 47 language tag, then its primary language, then English. */
