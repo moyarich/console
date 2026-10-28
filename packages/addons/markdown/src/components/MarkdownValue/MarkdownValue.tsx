@@ -85,7 +85,10 @@ export function hasMarkdown(text: string): boolean {
 function isSafeHref(href: string | undefined): boolean {
   if (!href) return false;
   const normalized = href.trim();
-  if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) return false;
+  if (!normalized || [...normalized].some((char) => {
+    const code = char.charCodeAt(0);
+    return code <= 31 || code === 127;
+  })) return false;
 
   return (
     (normalized.startsWith("#") && !normalized.startsWith("##")) ||
