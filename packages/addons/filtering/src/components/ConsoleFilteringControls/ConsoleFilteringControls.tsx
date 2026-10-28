@@ -1,4 +1,4 @@
-import { resolveAddonMessages, type AddonTranslations } from "../../localization";
+import { resolveAddonMessages } from "../../localization";
 import { useId, useMemo, useSyncExternalStore } from "react";
 import type { ConsoleMessageData } from "@moyarich/console-core";
 import {
