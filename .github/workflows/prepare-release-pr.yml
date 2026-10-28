@@ -15,17 +15,17 @@ on:
         required: true
         default: auto
       initial-version:
-        description: Initial package version for auto mode
+        description: First release version in auto mode
         type: string
         default: "0.1.0"
       version-bump:
-        description: Version bump
+        description: SemVer increment for bump mode
         type: choice
         options: [patch, minor, major, prepatch, preminor, premajor, prerelease]
         required: true
         default: patch
       exact-version:
-        description: Exact version when using exact mode
+        description: Exact version for exact mode
         type: string
         default: ""
       dry-run:
