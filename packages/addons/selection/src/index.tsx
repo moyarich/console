@@ -1,3 +1,6 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
+export { resolveAddonMessages as resolveConsoleSelectionMessages } from "./localization";
+export type { AddonTranslations as ConsoleSelectionTranslations } from "./localization";
 import { type ReactNode } from "react";
 import { SelectedMessageIndicator } from "./components/SelectedMessageIndicator/SelectedMessageIndicator";
 export { SelectedMessageIndicator } from "./components/SelectedMessageIndicator/SelectedMessageIndicator";
@@ -32,6 +35,8 @@ export interface ConsoleSelectionController {
 }
 
 export interface ConsoleSelectionAddonOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   controller?: ConsoleSelectionController;
   decoration?: boolean;
   messageAction?: boolean;
@@ -176,6 +181,8 @@ export function createConsoleSelectionController(
 
 function createDecoration(
   controller: ConsoleSelectionController,
+  locale?: string,
+  translations?: AddonTranslations,
 ): ConsoleMessageDecoration<ReactNode> {
   return {
     id: `${CONSOLE_SELECTION_ADDON_ID}:selected`,
@@ -186,18 +193,20 @@ function createDecoration(
     render({ message }) {
       if (!message.id || !controller.isSelected(message.id)) return undefined;
 
-      return <SelectedMessageIndicator />;
+      return <SelectedMessageIndicator locale={locale} translations={translations} />;
     },
   };
 }
 
 function createMessageAction(
   controller: ConsoleSelectionController,
+  locale?: string,
+  translations?: AddonTranslations,
 ): ConsoleMessageAction<ReactNode> {
   return {
     id: `${CONSOLE_SELECTION_ADDON_ID}:toggle`,
-    label: "Toggle selection",
-    ariaLabel: "Toggle message selection",
+    label: resolveAddonMessages(locale, translations).selected,
+    ariaLabel: resolveAddonMessages(locale, translations).selectedMessage,
     visible({ message }) {
       return Boolean(message.id);
     },
@@ -236,7 +245,7 @@ export function createConsoleSelectionAddon(
         if (withDecoration) {
           decorationRegistration = host.extensions.register(
             consoleExtensionPoints.messageDecoration,
-            createDecoration(controller),
+            createDecoration(controller, options.locale, options.translations),
             { id: `${CONSOLE_SELECTION_ADDON_ID}:selected` },
           );
         }
@@ -244,7 +253,7 @@ export function createConsoleSelectionAddon(
         if (withMessageAction) {
           actionRegistration = host.extensions.register(
             consoleExtensionPoints.messageAction,
-            createMessageAction(controller),
+            createMessageAction(controller, options.locale, options.translations),
             { id: `${CONSOLE_SELECTION_ADDON_ID}:toggle` },
           );
         }

@@ -1,3 +1,6 @@
+import type { AddonTranslations } from "./localization";
+export { resolveAddonMessages as resolveConsoleSearchMessages } from "./localization";
+export type { AddonTranslations as ConsoleSearchTranslations } from "./localization";
 import { createElement } from "react";
 import {
   consoleExtensionPoints,
@@ -111,7 +114,7 @@ function visibleTerminalText(value: string): string {
   );
 }
 
-export function createConsoleSearchAddon(): ConsoleAddon & {
+export function createConsoleSearchAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon & {
   controller: ConsoleSearchController;
 } {
   let data: ConsoleDataService | undefined;
@@ -252,7 +255,7 @@ export function createConsoleSearchAddon(): ConsoleAddon & {
       const panel: ConsolePanelElement = {
         id: CONSOLE_SEARCH_ADDON_ID + ":controls",
         placement: "before-output",
-        render: () => createElement(ConsoleSearchControls, { controller }),
+        render: () => createElement(ConsoleSearchControls, { controller, ...options }),
       };
       host.extensions.register(consoleExtensionPoints.panelElement, panel, {
         id: panel.id,

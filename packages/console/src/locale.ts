@@ -1,28 +1,3 @@
-import addonEn from "./locales/addons/en.json";
-import addonEs from "./locales/addons/es.json";
-import addonFr from "./locales/addons/fr.json";
-
-export type ConsoleAddonMessages = typeof addonEn;
-export type ConsoleAddonTranslations = Partial<ConsoleAddonMessages>;
-const addonLocales: Record<string, ConsoleAddonTranslations> = {
-  en: addonEn, es: addonEs, fr: addonFr,
-};
-
-/** Addon chrome translation with fallback and optional custom dictionary. */
-export function resolveConsoleAddonMessages(locale = "en", overrides?: ConsoleAddonTranslations): ConsoleAddonMessages {
-  const tag = locale.replace(/_/g, "-").toLowerCase();
-  return {
-    ...addonEn,
-    ...(addonLocales[tag] ?? addonLocales[tag.split("-")[0]!] ?? {}),
-    ...overrides,
-  };
-}
-
-export function useConsoleAddonMessages(overrides?: ConsoleAddonTranslations): ConsoleAddonMessages {
-  const context = useConsoleLocale();
-  return resolveConsoleAddonMessages(context.locale, overrides);
-}
-
 import { createContext, useContext } from "react";
 import type { ConsoleTranslations } from "./localization";
 

@@ -1,4 +1,4 @@
-import { useConsoleAddonMessages } from "@moyarich/console";
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 import { useId, useMemo, useSyncExternalStore } from "react";
 import type { ConsoleMessageData } from "@moyarich/console-core";
 import {
@@ -45,9 +45,11 @@ export function ConsoleFilteringControls({
   sources,
   className = "",
   style,
+  locale = "en",
+  translations,
 }: ConsoleFilteringControlsProps) {
   const state = useFilteringState(controller);
-  const t = useConsoleAddonMessages();
+  const t = resolveAddonMessages(locale, translations);
   const methodPopoverId = useId();
   const availableSources = useMemo(
     () => normalizeSources(messages, sources),

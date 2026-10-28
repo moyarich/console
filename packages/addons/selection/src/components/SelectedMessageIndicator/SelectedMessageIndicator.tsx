@@ -1,7 +1,7 @@
-import { useConsoleAddonMessages } from "@moyarich/console";
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 /** Default selection indicator. No stylesheet or addon runtime required. */
-export function SelectedMessageIndicator() {
-  const t = useConsoleAddonMessages();
+export function SelectedMessageIndicator({ locale = "en", translations }: { locale?: string; translations?: AddonTranslations } = {}) {
+  const t = resolveAddonMessages(locale, translations);
   return (
     <span
       aria-label={t.selectedMessage}

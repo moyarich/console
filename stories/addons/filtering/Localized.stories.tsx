@@ -10,7 +10,7 @@ const entries: ConsoleMessageData[] = [
 
 function LocalizedFiltering() {
   const [locale, setLocale] = useState("es-MX");
-  const addon = useMemo(() => createConsoleFilteringAddon(), []);
+  const addon = useMemo(() => createConsoleFilteringAddon({ controls: { locale } }), [locale]);
   return <div style={{ display: "grid", gap: 12, width: 760, maxWidth: "95vw" }}>
     <label>Locale{" "}
       <select value={locale} onChange={(event) => setLocale(event.target.value)}>

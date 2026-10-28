@@ -1,12 +1,16 @@
-import { useConsoleAddonMessages } from "@moyarich/console";
+import { resolveAddonMessages, type AddonTranslations } from "../../localization";
 import { useSyncExternalStore } from "react";
 import type { ConsoleSearchController } from "../../index";
 import "./ConsoleSearchControls.css";
 
 export function ConsoleSearchControls({
   controller,
+  locale = "en",
+  translations,
 }: {
   controller: ConsoleSearchController;
+  locale?: string;
+  translations?: AddonTranslations;
 }) {
   const state = useSyncExternalStore(
     controller.subscribe,
@@ -14,7 +18,7 @@ export function ConsoleSearchControls({
     controller.getState,
   );
   const count = state.matches.length;
-  const t = useConsoleAddonMessages();
+  const t = resolveAddonMessages(locale, translations);
   return (
     <section className="console-search-controls" aria-label={t.search}>
       <label>
