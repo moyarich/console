@@ -1,5 +1,6 @@
 import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
 import type { HighlighterCore } from "shiki";
+import { useMDXComponents } from "@mdx-js/react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import remarkGfm from "remark-gfm";
@@ -176,6 +177,7 @@ function MarkdownCode({ className, children, ...props }: ComponentProps<"code">)
 /** Renders one Markdown string using the same GFM dialect used for detection. */
 export function MarkdownValue({ text }: { text: string }): ReactNode {
   const tree = markdownRenderer.runSync(markdownRenderer.parse(text));
+  const mdxComponents = useMDXComponents();
 
   return (
     <div className="console-markdown-value">
@@ -184,8 +186,10 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
         jsx,
         jsxs,
         components: {
+          ...mdxComponents,
+          // Never allow a provider override to bypass URL validation.
           a: MarkdownLink,
-          code: MarkdownCode,
+          code: mdxComponents.code ?? MarkdownCode,
         },
       })}
     </div>
