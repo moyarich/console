@@ -1,3 +1,6 @@
+import { resolveAddonMessages, type AddonTranslations } from "./localization";
+export { resolveAddonMessages } from "./localization";
+export type { AddonTranslations } from "./localization";
 import {
   consoleExtensionPoints,
   consoleServices,
@@ -105,6 +108,8 @@ export interface ConsoleDiagnosticsActionsOptions {
 }
 
 export interface ConsoleDiagnosticsAddonOptions {
+  locale?: string;
+  translations?: AddonTranslations;
   actions?: ConsoleDiagnosticsActionsOptions;
   /** Base filename used by download actions. @default "console-diagnostics" */
   fileName?: string;
@@ -330,7 +335,10 @@ export function createConsoleDiagnosticsAddon(
   const {
     actions: { copyJson = true, downloadJson = true } = {},
     fileName = "console-diagnostics",
+    locale = "en",
+    translations,
   } = options;
+  const labels = resolveAddonMessages(locale, translations);
 
   return {
     id: CONSOLE_DIAGNOSTICS_ADDON_ID,
@@ -344,7 +352,7 @@ export function createConsoleDiagnosticsAddon(
       if (copyJson) {
         const action: ConsolePanelAction = {
           id: actionIds.copyJson,
-          label: "Copy diagnostics JSON",
+          label: labels.copy,
           disabled,
           onSelect: () => service.copyJson(),
         };
@@ -352,7 +360,7 @@ export function createConsoleDiagnosticsAddon(
         registerPanelAction(host, action);
         registerContextMenuAction(host, {
           id: actionIds.copyJson,
-          label: "Copy diagnostics JSON",
+          label: labels.copy,
           visible: (context) => context.kind === "console",
           disabled,
           onSelect: () => service.copyJson(),
@@ -362,7 +370,7 @@ export function createConsoleDiagnosticsAddon(
       if (downloadJson) {
         registerPanelAction(host, {
           id: actionIds.downloadJson,
-          label: "Download diagnostics JSON",
+          label: labels.download,
           disabled,
           onSelect: () => service.downloadJson({ fileName }),
         });
