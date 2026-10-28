@@ -611,6 +611,7 @@ function ConsoleFrame({
       )}
 
       <ConsoleContextMenu
+        translations={strings}
         mode={mode}
         hasMessages={hasMessages}
         actions={contextMenuActions}
