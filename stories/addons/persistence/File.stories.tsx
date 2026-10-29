@@ -6,8 +6,13 @@ import {
   stringifyConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
+const initialMessages: ConsoleMessageData[] = [
+  { id: "file-welcome", method: "info", depth: 0, data: ["Persistence example ready"] },
+  { id: "file-sample", method: "log", depth: 0, data: ["Initial sample message"] },
+];
+
 function FileExample() {
-  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
+  const [messages, setMessages] = useState<ConsoleMessageData[]>(() => [...initialMessages]);
   const [status, setStatus] = useState(
     "Records append to logs/persistence/events.ndjson in local Storybook.",
   );
