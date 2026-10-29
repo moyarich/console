@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, type ConsoleMessageData } from "@moyarich/console";
+import { Console, useConsoleMessages, type ConsoleMessageData } from "@moyarich/console";
 import {
   createConsolePersistenceAddon,
   type ConsolePersistenceRecord,
@@ -15,7 +15,7 @@ function MemoryExample() {
   const [records, setRecords] = useState<readonly ConsolePersistenceRecord[]>(
     [],
   );
-  const [messages, setMessages] = useState<ConsoleMessageData[]>(() => [...initialMessages]);
+  const { messages, events } = useConsoleMessages({ initialMessages });
   const addon = useMemo(
     () =>
       createConsolePersistenceAddon({
@@ -33,15 +33,12 @@ function MemoryExample() {
   );
 
   const add = () =>
-    setMessages((current) => [
-      ...current,
-      {
-        id: `event-${current.length}`,
-        method: "log",
-        depth: 0,
-        data: [`Persisted message ${current.length + 1}`],
-      },
-    ]);
+    events.emit("message", {
+          id: `event-${messages.length}`,
+          method: "log",
+          depth: 0,
+          data: [`Persisted message ${messages.length + 1}`],
+        });
 
   return (
     <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>
