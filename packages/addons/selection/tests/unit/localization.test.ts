@@ -3,11 +3,17 @@ import { resolveAddonMessages } from "../../src/localization";
 
 describe("selection addon localization", () => {
   it("uses the addon's own dictionaries with regional fallback", () => {
-    expect(resolveAddonMessages("es-MX")).toMatchObject(resolveAddonMessages("es"));
-    expect(resolveAddonMessages("fr-CA")).toMatchObject(resolveAddonMessages("fr"));
+    expect(resolveAddonMessages("es-MX")).toMatchObject(
+      resolveAddonMessages("es"),
+    );
+    expect(resolveAddonMessages("fr-CA")).toMatchObject(
+      resolveAddonMessages("fr"),
+    );
   });
   it("uses English fallback and supports independent overrides", () => {
     expect(resolveAddonMessages("zz")).toEqual(resolveAddonMessages("en"));
-    expect(resolveAddonMessages("en", { selected: "Chosen" }).selected).toBe("Chosen");
+    expect(resolveAddonMessages("en", { selected: "Chosen" }).selected).toBe(
+      "Chosen",
+    );
   });
 });

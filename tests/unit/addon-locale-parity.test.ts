@@ -61,7 +61,10 @@ const dictionaries = [
   ["selection", en9, es9, fr9, pt9],
   ["xterm", en10, es10, fr10, pt10],
 ] as const;
-const tokens = (text: string) => [...text.matchAll(/\\{[a-zA-Z][a-zA-Z0-9]*\\}/g)].map(match => match[0]).sort();
+const tokens = (text: string) =>
+  [...text.matchAll(/\\{[a-zA-Z][a-zA-Z0-9]*\\}/g)]
+    .map((match) => match[0])
+    .sort();
 
 describe("localized addon dictionaries", () => {
   for (const [name, en, es, fr, pt] of dictionaries) {
@@ -69,10 +72,18 @@ describe("localized addon dictionaries", () => {
       const source = en as Record<string, string>;
       for (const translated of [es, fr, pt]) {
         const dictionary = translated as Record<string, string>;
-        expect(Object.keys(dictionary).sort()).toEqual(Object.keys(source).sort());
+        expect(Object.keys(dictionary).sort()).toEqual(
+          Object.keys(source).sort(),
+        );
         for (const key of Object.keys(source)) {
-          expect(dictionary[key]!.trim(), `${name}.${key} should not be empty`).not.toBe("");
-          expect(tokens(dictionary[key]!), `${name}.${key} placeholders`).toEqual(tokens(source[key]!));
+          expect(
+            dictionary[key]!.trim(),
+            `${name}.${key} should not be empty`,
+          ).not.toBe("");
+          expect(
+            tokens(dictionary[key]!),
+            `${name}.${key} placeholders`,
+          ).toEqual(tokens(source[key]!));
         }
       }
     });

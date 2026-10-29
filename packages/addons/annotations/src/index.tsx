@@ -280,7 +280,11 @@ export function createConsoleAnnotationsAddon(
         if (withBookmarkAction) {
           actionRegistration = host.extensions.register(
             consoleExtensionPoints.messageAction,
-            createBookmarkAction(controller, options.locale, options.translations),
+            createBookmarkAction(
+              controller,
+              options.locale,
+              options.translations,
+            ),
             { id: `${CONSOLE_ANNOTATIONS_ADDON_ID}:bookmark` },
           );
         }

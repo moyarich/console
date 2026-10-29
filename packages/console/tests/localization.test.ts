@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { englishConsoleMessages, resolveConsoleMessages } from "../src/localization";
+import {
+  englishConsoleMessages,
+  resolveConsoleMessages,
+} from "../src/localization";
 
 describe("console localization", () => {
   it("defaults to English", () => {
@@ -13,7 +16,11 @@ describe("console localization", () => {
     expect(resolveConsoleMessages("de-DE")).toEqual(englishConsoleMessages);
   });
   it("applies overrides after locale fallback", () => {
-    expect(resolveConsoleMessages("es", { clear: "Borrar" }).clear).toBe("Borrar");
-    expect(resolveConsoleMessages("es", { clear: "Borrar" }).actions).toBe("Acciones de la consola");
+    expect(resolveConsoleMessages("es", { clear: "Borrar" }).clear).toBe(
+      "Borrar",
+    );
+    expect(resolveConsoleMessages("es", { clear: "Borrar" }).actions).toBe(
+      "Acciones de la consola",
+    );
   });
 });

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createConsoleFormatters, resolveConsoleDirection } from "../src/locale";
+import {
+  createConsoleFormatters,
+  resolveConsoleDirection,
+} from "../src/locale";
 import { consoleLocales, resolveConsoleMessages } from "../src/localization";
 
 describe("console internationalization and localization", () => {
@@ -18,7 +21,9 @@ describe("console internationalization and localization", () => {
   it("formats localized values without modifying source data", () => {
     const source = 1234.5;
     const formatters = createConsoleFormatters("de-DE");
-    expect(formatters.number(source)).toBe(new Intl.NumberFormat("de-DE").format(source));
+    expect(formatters.number(source)).toBe(
+      new Intl.NumberFormat("de-DE").format(source),
+    );
     expect(source).toBe(1234.5);
   });
 });

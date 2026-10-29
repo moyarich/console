@@ -1,4 +1,9 @@
-import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from "react";
 import type { HighlighterCore } from "shiki";
 import { useMDXComponents } from "@mdx-js/react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
@@ -87,10 +92,14 @@ export function hasMarkdown(text: string): boolean {
 function isSafeHref(href: string | undefined): boolean {
   if (!href) return false;
   const normalized = href.trim();
-  if (!normalized || [...normalized].some((char) => {
-    const code = char.charCodeAt(0);
-    return code <= 31 || code === 127;
-  })) return false;
+  if (
+    !normalized ||
+    [...normalized].some((char) => {
+      const code = char.charCodeAt(0);
+      return code <= 31 || code === 127;
+    })
+  )
+    return false;
 
   return (
     (normalized.startsWith("#") && !normalized.startsWith("##")) ||
@@ -107,8 +116,17 @@ function MarkdownLink({ href, ...props }: ComponentProps<"a">): ReactNode {
 
 /** Load Shiki once and share its language grammars across code fences. */
 const supportedLanguages = [
-  "bash", "css", "html", "javascript", "json", "markdown",
-  "python", "sh", "tsx", "typescript", "yaml",
+  "bash",
+  "css",
+  "html",
+  "javascript",
+  "json",
+  "markdown",
+  "python",
+  "sh",
+  "tsx",
+  "typescript",
+  "yaml",
 ] as const;
 
 const aliases: Record<string, (typeof supportedLanguages)[number]> = {
@@ -124,12 +142,19 @@ type HighlightedLine = { content: string; color?: string }[];
 let highlighterPromise: Promise<HighlighterCore> | undefined;
 function getHighlighter(): Promise<HighlighterCore> {
   highlighterPromise ??= import("shiki").then(({ createHighlighter }) =>
-    createHighlighter({ themes: ["github-dark"], langs: [...supportedLanguages] }),
+    createHighlighter({
+      themes: ["github-dark"],
+      langs: [...supportedLanguages],
+    }),
   );
   return highlighterPromise;
 }
 
-function MarkdownCode({ className, children, ...props }: ComponentProps<"code">): ReactNode {
+function MarkdownCode({
+  className,
+  children,
+  ...props
+}: ComponentProps<"code">): ReactNode {
   const language = /(?:^|\\s)language-([\\w+#.-]+)/.exec(className ?? "")?.[1];
   const code = typeof children === "string" ? children : undefined;
   const normalizedLanguage = language
@@ -140,9 +165,14 @@ function MarkdownCode({ className, children, ...props }: ComponentProps<"code">)
   useEffect(() => {
     let active = true;
     setTokens(null);
-    if (!code || !normalizedLanguage ||
-        !supportedLanguages.some((lang) => lang === normalizedLanguage)) {
-      return () => { active = false; };
+    if (
+      !code ||
+      !normalizedLanguage ||
+      !supportedLanguages.some((lang) => lang === normalizedLanguage)
+    ) {
+      return () => {
+        active = false;
+      };
     }
     void getHighlighter()
       .then((highlighter) => {
@@ -155,16 +185,25 @@ function MarkdownCode({ className, children, ...props }: ComponentProps<"code">)
       .catch(() => {
         if (active) setTokens(null);
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [code, normalizedLanguage]);
 
   return (
-    <code {...props} className={className} data-language={language} data-highlighted={tokens ? "true" : undefined}>
+    <code
+      {...props}
+      className={className}
+      data-language={language}
+      data-highlighted={tokens ? "true" : undefined}
+    >
       {tokens
         ? tokens.map((line, lineIndex) => (
             <Fragment key={lineIndex}>
               {line.map((token, index) => (
-                <span key={index} style={{ color: token.color }}>{token.content}</span>
+                <span key={index} style={{ color: token.color }}>
+                  {token.content}
+                </span>
               ))}
               {lineIndex < tokens.length - 1 ? "\n" : null}
             </Fragment>
@@ -189,7 +228,12 @@ export function MarkdownValue({ text }: { text: string }): ReactNode {
           ...mdxComponents,
           a: (props: ComponentProps<"a">) => {
             const Link = mdxComponents.a ?? MarkdownLink;
-            return <Link {...props} href={isSafeHref(props.href) ? props.href : undefined} />;
+            return (
+              <Link
+                {...props}
+                href={isSafeHref(props.href) ? props.href : undefined}
+              />
+            );
           },
           code: mdxComponents.code ?? MarkdownCode,
         },
