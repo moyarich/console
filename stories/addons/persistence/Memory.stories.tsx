@@ -6,11 +6,16 @@ import {
   type ConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
+const initialMessages: ConsoleMessageData[] = [
+  { id: "memory-welcome", method: "info", depth: 0, data: ["Persistence example ready"] },
+  { id: "memory-sample", method: "log", depth: 0, data: ["Initial sample message"] },
+];
+
 function MemoryExample() {
   const [records, setRecords] = useState<readonly ConsolePersistenceRecord[]>(
     [],
   );
-  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
+  const [messages, setMessages] = useState<ConsoleMessageData[]>(() => [...initialMessages]);
   const addon = useMemo(
     () =>
       createConsolePersistenceAddon({
