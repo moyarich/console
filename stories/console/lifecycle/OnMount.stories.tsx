@@ -57,7 +57,7 @@ function MountCallbackExample() {
             messages={["Console mounted successfully"]}
           />
         ) : (
-          <Console onMount={onMount} messages={messages} />
+          <Console onMount={alternateCallback ? onMountReplacement : onMount} showHeader={!presentation} messages={messages} />
         ))}
       <output aria-label="Mount events">{events.join(", ")}</output>
     </div>
