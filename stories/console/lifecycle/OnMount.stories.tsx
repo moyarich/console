@@ -1,9 +1,18 @@
 import { useCallback, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, type ConsoleHandle, type ConsoleMode } from "@moyarich/console";
+import {
+  Console,
+  type ConsoleHandle,
+  type ConsoleMode,
+} from "@moyarich/console";
 
 const messages = [
-  { id: "mounted", method: "info" as const, depth: 0, data: ["Console mounted successfully"] },
+  {
+    id: "mounted",
+    method: "info" as const,
+    depth: 0,
+    data: ["Console mounted successfully"],
+  },
 ];
 
 function MountCallbackExample() {
@@ -21,14 +30,24 @@ function MountCallbackExample() {
       <button type="button" onClick={() => setMounted((current) => !current)}>
         {mounted ? "Unmount Console" : "Mount Console"}
       </button>
-      <button type="button" onClick={() => setMode((current) => current === "console" ? "terminal" : "console")}>
+      <button
+        type="button"
+        onClick={() =>
+          setMode((current) => (current === "console" ? "terminal" : "console"))
+        }
+      >
         Switch mode
       </button>
-      {mounted && (mode === "terminal" ? (
-        <Console mode="terminal" onMount={onMount} messages={["Console mounted successfully"]} />
-      ) : (
-        <Console onMount={onMount} messages={messages} />
-      ))}
+      {mounted &&
+        (mode === "terminal" ? (
+          <Console
+            mode="terminal"
+            onMount={onMount}
+            messages={["Console mounted successfully"]}
+          />
+        ) : (
+          <Console onMount={onMount} messages={messages} />
+        ))}
       <output aria-label="Mount events">{events.join(", ")}</output>
     </div>
   );

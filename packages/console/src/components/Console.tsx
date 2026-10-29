@@ -702,11 +702,18 @@ function ConsoleFrame({
 }
 
 /** A committed source-reference change triggers a notification, not a callback identity change. */
-function useInputChange<T>(value: T, callback: ((value: T) => void) | undefined): void {
+function useInputChange<T>(
+  value: T,
+  callback: ((value: T) => void) | undefined,
+): void {
   const callbackRef = useRef(callback);
   // Keep the latest handler without making replacement a notification trigger.
-  useEffect(() => { callbackRef.current = callback; });
-  useEffect(() => { callbackRef.current?.(value); }, [value]);
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
+  useEffect(() => {
+    callbackRef.current?.(value);
+  }, [value]);
 }
 
 /** Renders structured console messages and custom message/value renderers. */
