@@ -7,17 +7,43 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: all, package directory, or package name
-        type: string
+        description: Select a publishable workspace package
+        type: choice
         required: true
         default: all
+        options:
+          - all
+          - packages/addons/animation
+          - packages/addons/annotations
+          - packages/addons/console-feed
+          - packages/addons/data-export
+          - packages/addons/diagnostics
+          - packages/addons/filtering
+          - packages/addons/imperative-scrolling
+          - packages/addons/links
+          - packages/addons/markdown
+          - packages/addons/metadata
+          - packages/addons/navigation
+          - packages/addons/persistence
+          - packages/addons/process-state
+          - packages/addons/resizable
+          - packages/addons/search
+          - packages/addons/selection
+          - packages/addons/session
+          - packages/addons/xterm
+          - packages/console
+          - packages/console-core
       dist-path:
-        description: "Distribution path template. Supports {packageDir}, {package}, {packageName}, {workspace}; blank uses repository configuration or {packageDir}/dist."
+        description:
+          "Distribution path template. Supports {packageDir}, {package},
+          {packageName}, {workspace}; blank uses repository configuration or
+          {packageDir}/dist."
         type: string
         default: ""
       build-command:
-        description: Build command override (for example npm run build:cli); 
-          empty uses the selected workspace build
+        description:
+          Build command override (for example npm run build:cli); empty uses
+          the selected workspace build
         type: string
         default: ""
       install-command:
@@ -58,8 +84,7 @@ jobs:
     name: Discover workspace packages
     permissions:
       contents: read
-    uses: 
-      moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_discover-packages.yml@main
     with:
       packages-directory: packages
       use-workspaces: true
@@ -111,8 +136,7 @@ jobs:
       matrix: ${{ fromJSON(needs.select-packages.outputs.matrix) }}
     permissions:
       contents: write
-    uses: 
-      moyarich/reusable-workflows/.github/workflows/reusable_self-heal-dist.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_self-heal-dist.yml@main
     with:
       dist-path: ${{ matrix.distTemplate }}
       build-command: ${{ matrix.buildCommand }}
@@ -123,7 +147,8 @@ jobs:
       artifact-name: ${{ format('dist-{0}', matrix.artifactSuffix) }}
       node-version: "24"
       repair: true
-      commit: ${{ inputs.commit && !inputs.dry-run && needs.select-packages.outputs.single-package == 'true' }}
+      commit: ${{ inputs.commit && !inputs.dry-run &&
+        needs.select-packages.outputs.single-package == 'true' }}
       target-branch: ${{ github.ref_name }}
       expected-sha: ${{ github.sha }}
       checkout-sha: ${{ github.sha }}

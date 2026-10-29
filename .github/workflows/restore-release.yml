@@ -1,8 +1,8 @@
 name: Restore Release
 
 run-name: >-
-  Restore release · ${{ inputs.package }} · ${{ inputs.restore-source }} · dry-run=${{
-  inputs.dry-run }}
+  Restore release · ${{ inputs.package }} · ${{ inputs.restore-source }} ·
+  dry-run=${{ inputs.dry-run }}
 
 on:
   workflow_dispatch:
@@ -14,16 +14,34 @@ on:
         default: all
         options:
           - all
-          - packages/example
+          - packages/addons/animation
+          - packages/addons/annotations
+          - packages/addons/console-feed
+          - packages/addons/data-export
+          - packages/addons/diagnostics
+          - packages/addons/filtering
+          - packages/addons/imperative-scrolling
+          - packages/addons/links
+          - packages/addons/markdown
+          - packages/addons/metadata
+          - packages/addons/navigation
+          - packages/addons/persistence
+          - packages/addons/process-state
+          - packages/addons/resizable
+          - packages/addons/search
+          - packages/addons/selection
+          - packages/addons/session
+          - packages/addons/xterm
+          - packages/console
+          - packages/console-core
       target-branch:
         description: Branch used to resolve the package path and changelog
         required: true
         default: main
         type: string
       restore-source:
-        description:
-          "Historical source: commit:<sha>, tag:<tag>, run:<id>, artifact:<id>,
-          or github-url:<supported GitHub URL>"
+        description: "Historical source: commit:<sha>, tag:<tag>, run:<id>,
+          artifact:<id>, or github-url:<supported GitHub URL>"
         required: true
         type: string
       match-mode:
@@ -40,8 +58,7 @@ on:
         default: ""
         type: string
       skip-finalized:
-        description: Skip finalized releases without modifying them (for bulk
-          live recovery)
+        description: Skip finalized releases without modifying them (for bulk live recovery)
         required: true
         default: false
         type: boolean
