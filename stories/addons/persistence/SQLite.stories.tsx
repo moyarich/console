@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import initSqlJs, { type Database } from "sql.js";
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url";
-import { Console, type ConsoleMessageData } from "@moyarich/console";
+import { Console, useConsoleMessages, type ConsoleMessageData } from "@moyarich/console";
 import { createConsolePersistenceAddon } from "@moyarich/console-addon-persistence";
 
 const initialMessages: ConsoleMessageData[] = [
@@ -14,7 +14,7 @@ function SQLiteExample() {
   const database = useRef<Database | null>(null);
   const [ready, setReady] = useState(false);
   const [rows, setRows] = useState(0);
-  const [messages, setMessages] = useState<ConsoleMessageData[]>(() => [...initialMessages]);
+  const { messages, events } = useConsoleMessages({ initialMessages });
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
@@ -91,15 +91,12 @@ function SQLiteExample() {
     [],
   );
   const add = () =>
-    setMessages((current) => [
-      ...current,
-      {
-        id: `sqlite-${current.length}`,
-        method: "info",
-        depth: 0,
-        data: [`SQLite event ${current.length + 1}`],
-      },
-    ]);
+    events.emit("message", {
+          id: `sqlite-${messages.length}`,
+          method: "info",
+          depth: 0,
+          data: [`SQLite event ${messages.length + 1}`],
+        });
   return (
     <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>
       <button type="button" disabled={!ready} onClick={add}>
