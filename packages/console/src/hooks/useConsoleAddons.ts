@@ -89,6 +89,7 @@ export function useConsoleAddons(
 
   const manager = useMemo(() => createManager(mode), [mode]);
   const loadedRef = useRef(new Map<string, ConsoleAddon>());
+  const failedRef = useRef(new Map<string, ConsoleAddon>());
   const readyRef = useRef(onAddonsReady);
   const errorRef = useRef(onAddonError);
   readyRef.current = onAddonsReady;
@@ -134,9 +135,12 @@ export function useConsoleAddons(
       activeAddons.map((addon) => [addon.id.trim(), addon]),
     );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
+    for (const [id, addon] of failedRef.current) {
+      if (nextById.get(id) !== addon) failedRef.current.delete(id);
+    }
     const changed =
       currentEntries.some(([id, addon]) => nextById.get(id) !== addon) ||
-      activeAddons.some((addon) => loadedRef.current.get(addon.id.trim()) !== addon) ||
+      activeAddons.some((addon) => loadedRef.current.get(addon.id.trim()) !== addon && failedRef.current.get(addon.id.trim()) !== addon) ||
       !initializedManagers.current.has(manager);
     if (!changed) return;
 
@@ -155,10 +159,15 @@ export function useConsoleAddons(
     for (const addon of activeAddons) {
       const id = addon.id.trim();
       if (loadedRef.current.get(id) === addon) continue;
+      if (failedRef.current.get(id) === addon) {
+        succeeded = false;
+        continue;
+      }
       try {
         manager.load(addon);
         loadedRef.current.set(id, addon);
       } catch (error) {
+        failedRef.current.set(id, addon);
         succeeded = false;
         reportError(error, id, "activate");
       }
@@ -177,6 +186,7 @@ export function useConsoleAddons(
     () => () => {
       const loadedIds = Array.from(loadedRef.current.keys()).reverse();
       loadedRef.current.clear();
+      failedRef.current.clear();
       initializedManagers.current.delete(manager);
       for (const id of loadedIds) {
         try {
