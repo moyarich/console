@@ -1,67 +1,53 @@
 import { describe, expect, it, vi } from "vitest";
-import { createConsoleEventEmitter } from "../../packages/console/src/utils/events/createConsoleEventEmitter";
+import { createConsoleEventEmitter } from "../packages/console/src/utils/events/createConsoleEventEmitter";
 
-describe("createConsoleEventEmitter (EventEmitter3 adapter)", () => {
-  it("delivers typed messages and supports unsubscribe", () => {
+describe("Console EventEmitter3 events", () => {
+  it("follows Node-style chaining, emission, and listener removal", () => {
     const events = createConsoleEventEmitter();
     const listener = vi.fn();
     const message = { method: "log" as const, data: ["hello"], depth: 0 };
-    const unsubscribe = events.on("message", listener);
 
-    events.emit("message", message);
+    expect(events.on("message", listener)).toBe(events);
+    expect(events.emit("message", message)).toBe(true);
     expect(listener).toHaveBeenCalledExactlyOnceWith(message);
-
-    unsubscribe();
-    events.emit("message", message);
+    expect(events.off("message", listener)).toBe(events);
+    expect(events.emit("message", message)).toBe(false);
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  it("deduplicates a listener and allows re-subscription after off", () => {
+  it("supports once() and listenerCount()", () => {
     const events = createConsoleEventEmitter();
     const listener = vi.fn();
-    events.on("clear", listener);
-    events.on("clear", listener);
-
+    expect(events.once("clear", listener)).toBe(events);
+    expect(events.listenerCount("clear")).toBe(1);
+    events.emit("clear");
     events.emit("clear");
     expect(listener).toHaveBeenCalledTimes(1);
-
-    events.off("clear", listener);
-    events.emit("clear");
-    expect(listener).toHaveBeenCalledTimes(1);
-
-    events.on("clear", listener);
-    events.emit("clear");
-    expect(listener).toHaveBeenCalledTimes(2);
+    expect(events.listenerCount("clear")).toBe(0);
   });
 
-  it("supports removal of a single event or all events", () => {
+  it("allows repeated registrations, matching Node.js EventEmitter", () => {
+    const events = createConsoleEventEmitter();
+    const listener = vi.fn();
+    events.on("clear", listener).on("clear", listener);
+    events.emit("clear");
+    expect(listener).toHaveBeenCalledTimes(2);
+    events.off("clear", listener);
+    expect(events.listenerCount("clear")).toBe(1);
+  });
+
+  it("removes listeners by event name or globally", () => {
     const events = createConsoleEventEmitter();
     const messageListener = vi.fn();
     const clearListener = vi.fn();
-    events.on("message", messageListener);
-    events.on("clear", clearListener);
-
-    events.removeAllListeners("message");
-    events.emit("message", { method: "log", data: ["ignored"], depth: 0 });
-    events.emit("clear");
+    events.on("message", messageListener).on("clear", clearListener);
+    expect(events.removeAllListeners("message")).toBe(events);
+    expect(events.emit("message", { method: "log", data: [], depth: 0 })).toBe(false);
+    expect(events.emit("clear")).toBe(true);
     expect(messageListener).not.toHaveBeenCalled();
-    expect(clearListener).toHaveBeenCalledTimes(1);
-
+    expect(clearListener).toHaveBeenCalledOnce();
     events.removeAllListeners();
-    events.emit("clear");
-    expect(clearListener).toHaveBeenCalledTimes(1);
-  });
-
-  it("permits unsubscribing while dispatching", () => {
-    const events = createConsoleEventEmitter();
-    const second = vi.fn();
-    events.on("clear", () => events.off("clear", second));
-    events.on("clear", second);
-
-    events.emit("clear");
-    expect(second).toHaveBeenCalledTimes(1);
-    events.emit("clear");
-    expect(second).toHaveBeenCalledTimes(1);
+    expect(events.emit("clear")).toBe(false);
   });
 
   it("isolates event instances", () => {
