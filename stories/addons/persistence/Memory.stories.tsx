@@ -1,14 +1,28 @@
 import { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, useConsoleMessages, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  useConsoleMessages,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import {
   createConsolePersistenceAddon,
   type ConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
 const initialMessages: ConsoleMessageData[] = [
-  { id: "memory-welcome", method: "info", depth: 0, data: ["Persistence example ready"] },
-  { id: "memory-sample", method: "log", depth: 0, data: ["Initial sample message"] },
+  {
+    id: "memory-welcome",
+    method: "info",
+    depth: 0,
+    data: ["Persistence example ready"],
+  },
+  {
+    id: "memory-sample",
+    method: "log",
+    depth: 0,
+    data: ["Initial sample message"],
+  },
 ];
 
 function MemoryExample() {
@@ -34,11 +48,11 @@ function MemoryExample() {
 
   const add = () =>
     events.emit("message", {
-          id: `event-${messages.length}`,
-          method: "log",
-          depth: 0,
-          data: [`Persisted message ${messages.length + 1}`],
-        });
+      id: `event-${messages.length}`,
+      method: "log",
+      depth: 0,
+      data: [`Persisted message ${messages.length + 1}`],
+    });
 
   return (
     <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>

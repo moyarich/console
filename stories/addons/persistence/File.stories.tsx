@@ -1,14 +1,28 @@
 import { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, useConsoleMessages, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  useConsoleMessages,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import {
   createConsolePersistenceAddon,
   stringifyConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
 const initialMessages: ConsoleMessageData[] = [
-  { id: "file-welcome", method: "info", depth: 0, data: ["Persistence example ready"] },
-  { id: "file-sample", method: "log", depth: 0, data: ["Initial sample message"] },
+  {
+    id: "file-welcome",
+    method: "info",
+    depth: 0,
+    data: ["Persistence example ready"],
+  },
+  {
+    id: "file-sample",
+    method: "log",
+    depth: 0,
+    data: ["Initial sample message"],
+  },
 ];
 
 function FileExample() {
@@ -52,11 +66,11 @@ function FileExample() {
         type="button"
         onClick={() =>
           events.emit("message", {
-          id: `file-${messages.length}`,
-          method: "log",
-          depth: 0,
-          data: [`File event ${messages.length + 1}`],
-        })
+            id: `file-${messages.length}`,
+            method: "log",
+            depth: 0,
+            data: [`File event ${messages.length + 1}`],
+          })
         }
       >
         Write file log
