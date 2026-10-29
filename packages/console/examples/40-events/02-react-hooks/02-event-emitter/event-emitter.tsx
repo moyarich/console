@@ -10,18 +10,19 @@ export default function EventEmitterExample() {
   const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
 
   useEffect(() => {
-    const offMessage = runtime.events.on("message", (message) => {
+    const onMessage = (message: ConsoleMessageData) => {
       setMessages((current) => {
         const next = [...current, message];
         return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
       });
-    });
-
-    const offClear = runtime.events.on("clear", () => setMessages([]));
+    };
+    const onClear = () => setMessages([]);
+    runtime.events.on("message", onMessage);
+    runtime.events.on("clear", onClear);
 
     return () => {
-      offMessage();
-      offClear();
+      runtime.events.off("message", onMessage);
+      runtime.events.off("clear", onClear);
     };
   }, [runtime]);
 
