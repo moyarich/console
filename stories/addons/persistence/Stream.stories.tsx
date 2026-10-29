@@ -6,8 +6,13 @@ import {
   stringifyConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
+const initialMessages: ConsoleMessageData[] = [
+  { id: "stream-welcome", method: "info", depth: 0, data: ["Persistence example ready"] },
+  { id: "stream-sample", method: "log", depth: 0, data: ["Initial sample message"] },
+];
+
 function StreamExample() {
-  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
+  const [messages, setMessages] = useState<ConsoleMessageData[]>(() => [...initialMessages]);
   const [output, setOutput] = useState("");
   const addon = useMemo(() => {
     const stream = new WritableStream<string>({
