@@ -9,7 +9,11 @@ async function story(page: import("@playwright/test").Page, name: string) {
     entries: Record<string, { id: string; title: string; name: string; type: string }>;
   };
   const entry = Object.values(index.entries).find(
-    (item) => item.type === "story" && item.title === "Addons/Persistence" && item.name.toLowerCase() === name,
+    (item) => item.type === "story" &&
+      (item.title === "Addons/Persistence" ||
+        item.title.startsWith("Addons/Persistence/")) &&
+      (item.name.toLowerCase() === name ||
+        item.title.split("/").at(-1)?.toLowerCase() === name),
   );
   expect(entry, `Missing Storybook persistence story: ${name}`).toBeDefined();
   return `/iframe.html?id=${entry!.id}&viewMode=story`;
