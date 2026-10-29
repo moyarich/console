@@ -38,3 +38,17 @@ test("addon disposal errors are isolated and reported without ready notification
   await page.getByRole("button", { name: "Toggle disposal addon" }).click();
   await expect(output).toHaveText("console:example | console:example,disposal | error:disposal:dispose:Error: disposal failed");
 });
+
+test("scoped lifecycle observer receives activation and disposal errors exactly once", async ({ page }) => {
+  await page.goto("/iframe.html?id=console-lifecycle--addon-events&viewMode=story");
+  const scoped = page.getByLabel("Scoped addon errors");
+  await expect(scoped).toBeEmpty();
+  await page.getByRole("button", { name: "Toggle failing addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed");
+  await page.getByRole("button", { name: "Replace addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed");
+  await page.getByRole("button", { name: "Toggle failing addon" }).click();
+  await page.getByRole("button", { name: "Toggle disposal addon" }).click();
+  await page.getByRole("button", { name: "Toggle disposal addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed | addon-dispose:disposal:Error: disposal failed");
+});
