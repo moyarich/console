@@ -49,6 +49,7 @@ on:
 permissions:
   contents: write
   pull-requests: read
+  packages: read
 jobs:
   dispatch-input-summary:
     name: "job: Workflow parameters"
