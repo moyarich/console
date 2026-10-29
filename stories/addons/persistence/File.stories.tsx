@@ -1,13 +1,32 @@
 import { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  useConsoleMessages,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import {
   createConsolePersistenceAddon,
   stringifyConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
+const initialMessages: ConsoleMessageData[] = [
+  {
+    id: "file-welcome",
+    method: "info",
+    depth: 0,
+    data: ["Persistence example ready"],
+  },
+  {
+    id: "file-sample",
+    method: "log",
+    depth: 0,
+    data: ["Initial sample message"],
+  },
+];
+
 function FileExample() {
-  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
+  const { messages, events } = useConsoleMessages({ initialMessages });
   const [status, setStatus] = useState(
     "Records append to logs/persistence/events.ndjson in local Storybook.",
   );
@@ -46,15 +65,12 @@ function FileExample() {
       <button
         type="button"
         onClick={() =>
-          setMessages((current) => [
-            ...current,
-            {
-              id: `file-${current.length}`,
-              method: "log",
-              depth: 0,
-              data: [`File event ${current.length + 1}`],
-            },
-          ])
+          events.emit("message", {
+            id: `file-${messages.length}`,
+            method: "log",
+            depth: 0,
+            data: [`File event ${messages.length + 1}`],
+          })
         }
       >
         Write file log

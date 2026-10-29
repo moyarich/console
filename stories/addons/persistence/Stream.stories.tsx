@@ -1,13 +1,32 @@
 import { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Console, type ConsoleMessageData } from "@moyarich/console";
+import {
+  Console,
+  useConsoleMessages,
+  type ConsoleMessageData,
+} from "@moyarich/console";
 import {
   createConsolePersistenceAddon,
   stringifyConsolePersistenceRecord,
 } from "@moyarich/console-addon-persistence";
 
+const initialMessages: ConsoleMessageData[] = [
+  {
+    id: "stream-welcome",
+    method: "info",
+    depth: 0,
+    data: ["Persistence example ready"],
+  },
+  {
+    id: "stream-sample",
+    method: "log",
+    depth: 0,
+    data: ["Initial sample message"],
+  },
+];
+
 function StreamExample() {
-  const [messages, setMessages] = useState<ConsoleMessageData[]>([]);
+  const { messages, events } = useConsoleMessages({ initialMessages });
   const [output, setOutput] = useState("");
   const addon = useMemo(() => {
     const stream = new WritableStream<string>({
@@ -39,15 +58,12 @@ function StreamExample() {
       <button
         type="button"
         onClick={() =>
-          setMessages((current) => [
-            ...current,
-            {
-              id: `stream-${current.length}`,
-              method: "log",
-              depth: 0,
-              data: [`Stream event ${current.length + 1}`],
-            },
-          ])
+          events.emit("message", {
+            id: `stream-${messages.length}`,
+            method: "log",
+            depth: 0,
+            data: [`Stream event ${messages.length + 1}`],
+          })
         }
       >
         Write stream
