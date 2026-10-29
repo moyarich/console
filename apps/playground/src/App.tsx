@@ -94,6 +94,14 @@ export function App() {
           </Link>
 
           <div className="topbar-actions">
+            <nav aria-label="Site navigation">
+              <a
+                className="topbar-link"
+                href={`${import.meta.env.BASE_URL}storybook/`}
+              >
+                Storybook
+              </a>
+            </nav>
             <div
               className="theme-switcher"
               role="group"

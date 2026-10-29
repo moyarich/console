@@ -34,7 +34,7 @@ function ConsoleMethodStory() {
 }
 
 const meta = {
-  title: "Console/Console methods",
+  title: "Console/Methods",
   component: ConsoleMethodStory,
 } satisfies Meta<typeof ConsoleMethodStory>;
 

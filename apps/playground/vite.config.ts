@@ -8,8 +8,8 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
-import { sqliteSearchPlugin } from "./vite-sqlite-plugin";
-import { generateRegistryImports } from "./generateRegistryImports";
+import { sqliteSearchPlugin } from "./vite-sqlite-plugin/index.ts";
+import { generateRegistryImports } from "./generateRegistryImports.ts";
 
 generateRegistryImports();
 const search = sqliteSearchPlugin();
@@ -20,10 +20,46 @@ function workspaceSource(path: string) {
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/",
+  server: {
+    port: Number(process.env.DEV_PORT ?? 5173),
+    strictPort: true,
+    proxy: {
+      // Storybook's manager channel and bootstrap modules use root-absolute URLs.
+      "/storybook-server-channel": {
+        target: `http://127.0.0.1:${process.env.STORYBOOK_DEV_PORT ?? 6007}`,
+        ws: true,
+      },
+      "/vite-inject-mocker-entry.js": {
+        target: `http://127.0.0.1:${process.env.STORYBOOK_DEV_PORT ?? 6007}`,
+      },
+      "/@id/__x00__virtual:/@storybook": {
+        target: `http://127.0.0.1:${process.env.STORYBOOK_DEV_PORT ?? 6007}`,
+      },
+      "/storybook": {
+        target: `http://127.0.0.1:${process.env.STORYBOOK_DEV_PORT ?? 6007}`,
+        ws: true,
+        rewrite: (path) =>
+          path.startsWith("/storybook/hmr")
+            ? path
+            : path.replace(/^\/storybook/, "") || "/",
+      },
+    },
+  },
   worker: {
     format: "es",
   },
   plugins: [
+    {
+      name: "storybook-dev-redirect",
+      configureServer(server) {
+        server.middlewares.use((request, response, next) => {
+          const url = new URL(request.url ?? "/", "http://localhost");
+          if (url.pathname !== "/storybook") return next();
+          response.writeHead(302, { Location: `/storybook/${url.search}` });
+          response.end();
+        });
+      },
+    },
     search.plugin,
     {
       enforce: "pre",

@@ -78,7 +78,7 @@ function DefaultConsoleMessage({
   detectLinks = true,
   linkProviders,
 }: ConsoleMessageProps) {
-  const style = { paddingLeft: 14 + message.depth * 16 };
+  const style = { paddingInlineStart: 14 + message.depth * 16 };
   const MessageIcon = MESSAGE_ICONS[message.method] ?? Terminal;
   const icon = onExpandAll ? (
     <button

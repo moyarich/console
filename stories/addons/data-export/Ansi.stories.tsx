@@ -25,7 +25,7 @@ const processors: ConsoleProcessOutputProcessor[] = [
 ];
 
 const meta = {
-  title: "Console/Addons/Data export/ANSI",
+  title: "Addons/Data Export",
   component: Console,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Console>;
@@ -52,6 +52,6 @@ function AnsiDataExportStory() {
   );
 }
 
-export const Default: Story = {
+export const Ansi: Story = {
   render: () => <AnsiDataExportStory />,
 };

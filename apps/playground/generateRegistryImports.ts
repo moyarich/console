@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { relative, resolve, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import registry from "./registry.config";
+import registry from "./registry.config.ts";
 
 /** Emit static import.meta.glob arguments required by Vite. */
 export function generateRegistryImports(): void {

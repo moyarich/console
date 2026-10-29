@@ -2,7 +2,7 @@ import { Console, type ConsoleTerminalModeProps } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-  title: "Console/ANSI Process Output",
+  title: "Console/Terminal",
   component: Console,
   args: {
     mode: "terminal",

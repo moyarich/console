@@ -46,6 +46,14 @@ function configurePlaygroundWorkers() {
   configureWorkerFactory({
     workerLoaders: {
       ...defineDefaultWorkerLoaders(),
+      editorWorkerService: () =>
+        new Worker(
+          new URL(
+            "@codingame/monaco-vscode-editor-api/esm/vs/editor/editor.worker.js",
+            import.meta.url,
+          ),
+          { type: "module" },
+        ),
       css: () =>
         new Worker(
           new URL(

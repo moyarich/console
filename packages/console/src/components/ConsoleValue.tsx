@@ -97,7 +97,7 @@ function renderPrimitive(
 
   if (typeof value === "string")
     return (
-      <span className="console-string">
+      <span className="console-string" dir="auto">
         "
         <ConsoleLinkedText
           text={value}
@@ -145,7 +145,7 @@ function ConsoleObjectValue({
 
   const nextAncestors = new Set(ancestors);
   nextAncestors.add(value);
-  const entries = objectEntries(value);
+  const entries = isOpen ? objectEntries(value) : [];
   const depth = ancestors.size;
 
   return (
@@ -181,7 +181,9 @@ function ConsoleObjectValue({
             </>
           )}
           <span className="console-object-type">{objectLabel(value)}</span>
-          <span className="console-object-preview">{preview(value)}</span>
+          {!isOpen && (
+            <span className="console-object-preview">{preview(value)}</span>
+          )}
         </summary>
 
         <button
@@ -321,7 +323,7 @@ export function ConsoleValue({
 }: ConsoleValueProps) {
   const renderDefault = () =>
     valueDisplay === "string" ? (
-      <span className="console-string">
+      <span className="console-string" dir="auto">
         <ConsoleLinkedText
           text={stringifyConsoleValue(value)}
           context={{

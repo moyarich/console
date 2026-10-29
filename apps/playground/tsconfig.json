@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "types": ["vite/client"],
     "paths": {
       "@moyarich/console": ["../../packages/console/src/index.ts"],

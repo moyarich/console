@@ -2,7 +2,7 @@ import { Console, type ConsoleMessageModeProps } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-  title: "Console/Console",
+  title: "Console/Messages",
   component: Console,
   args: {
     onClear: () => undefined,

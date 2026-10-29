@@ -275,6 +275,27 @@
   }
 
   .console-filtering-method-menu {
-    margin-right: auto;
+    margin-inline-end: auto;
+  }
+}
+
+@container console (max-width: 640px) {
+  .console-filtering-controls {
+    flex-wrap: wrap;
+    border-radius: 22px;
+    padding: 8px 10px 10px 14px;
+  }
+
+  .console-filtering-search-input {
+    flex-basis: calc(100% - 12px);
+  }
+
+  .console-filtering-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .console-filtering-method-menu {
+    margin-inline-end: auto;
   }
 }

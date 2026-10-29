@@ -6,10 +6,37 @@ import { persistenceLogsPlugin } from "./persistence-logs";
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(ts|tsx)"],
   framework: "@storybook/react-vite",
-  addons: [],
+  addons: ["@storybook/addon-vitest"],
   viteFinal: (config) =>
     mergeConfig(config, {
+      ...(process.env.STORYBOOK_BASE_PATH
+        ? { base: process.env.STORYBOOK_BASE_PATH }
+        : {}),
+      ...(process.env.STORYBOOK_UNIFIED_DEV
+        ? {
+            server: {
+              ws: {
+                clientPort: Number(process.env.DEV_PORT ?? 5173),
+                path: "/hmr",
+              },
+            },
+          }
+        : {}),
       esbuild: { jsx: "automatic" },
+      build: {
+        rolldownOptions: {
+          onwarn(warning, warn) {
+            // Storybook is browser-only: dependency RSC boundaries do not apply.
+            if (
+              warning.code === "MODULE_LEVEL_DIRECTIVE" &&
+              warning.message.includes('"use client"') &&
+              warning.message.includes("node_modules/")
+            )
+              return;
+            warn(warning);
+          },
+        },
+      },
       plugins: [persistenceLogsPlugin()],
       worker: {
         format: "es",
@@ -18,28 +45,100 @@ const config: StorybookConfig = {
         dedupe: ["vscode"],
         alias: [
           {
+            find: "@moyarich/console-addon-animation",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/animation/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-metadata",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/metadata/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-navigation",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/navigation/src/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-session",
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/session/src/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
+            find: "@moyarich/console-addon-links",
+            replacement: fileURLToPath(
+              new URL("../packages/addons/links/src/index.ts", import.meta.url),
+            ),
+          },
+          {
             find: "@moyarich/console-addon-process-state",
-            replacement: fileURLToPath(new URL("../packages/addons/process-state/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/process-state/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-search",
-            replacement: fileURLToPath(new URL("../packages/addons/search/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/search/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-selection",
-            replacement: fileURLToPath(new URL("../packages/addons/selection/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/selection/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-annotations",
-            replacement: fileURLToPath(new URL("../packages/addons/annotations/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/annotations/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-console-feed",
-            replacement: fileURLToPath(new URL("../packages/addons/console-feed/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/console-feed/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-xterm",
-            replacement: fileURLToPath(new URL("../packages/addons/xterm/src/index.tsx", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/xterm/src/index.tsx",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-core",
@@ -82,7 +181,12 @@ const config: StorybookConfig = {
           },
           {
             find: "@moyarich/console-addon-persistence",
-            replacement: fileURLToPath(new URL("../packages/addons/persistence/src/index.ts", import.meta.url)),
+            replacement: fileURLToPath(
+              new URL(
+                "../packages/addons/persistence/src/index.ts",
+                import.meta.url,
+              ),
+            ),
           },
           {
             find: "@moyarich/console-addon-markdown",

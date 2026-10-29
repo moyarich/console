@@ -6,11 +6,21 @@
   max-width: 100%;
   line-height: 1.55;
   overflow-wrap: break-word;
-  font-family: var(--console-font-family, ui-monospace, SFMono-Regular, Consolas, monospace);
+  font-family: var(
+    --console-font-family,
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace
+  );
 }
 
-.console-markdown-value > :first-child { margin-top: 0; }
-.console-markdown-value > :last-child { margin-bottom: 0; }
+.console-markdown-value > :first-child {
+  margin-top: 0;
+}
+.console-markdown-value > :last-child {
+  margin-bottom: 0;
+}
 
 .console-markdown-value :is(h1, h2, h3, h4, h5, h6) {
   margin: 1.1em 0 0.45em;
@@ -18,33 +28,72 @@
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
-.console-markdown-value h1 { font-size: 1.45em; padding-bottom: 0.25em; border-bottom: 1px solid var(--markdown-border); }
-.console-markdown-value h2 { font-size: 1.25em; padding-bottom: 0.2em; border-bottom: 1px solid var(--markdown-border); }
-.console-markdown-value h3 { font-size: 1.12em; }
-.console-markdown-value :is(h4, h5, h6) { font-size: 1em; }
+.console-markdown-value h1 {
+  font-size: 1.45em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--markdown-border);
+}
+.console-markdown-value h2 {
+  font-size: 1.25em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid var(--markdown-border);
+}
+.console-markdown-value h3 {
+  font-size: 1.12em;
+}
+.console-markdown-value :is(h4, h5, h6) {
+  font-size: 1em;
+}
 
-.console-markdown-value :is(p, ul, ol, blockquote, pre, table, hr) { margin: 0.7em 0; }
-.console-markdown-value :is(ul, ol) { padding-left: 1.6em; }
-.console-markdown-value li { padding-left: 0.15em; margin: 0.2em 0; }
-.console-markdown-value li > p { margin: 0.2em 0; }
-.console-markdown-value li::marker { color: var(--markdown-muted); }
-.console-markdown-value li.task-list-item { list-style: none; }
-.console-markdown-value .contains-task-list { list-style: none; }
+.console-markdown-value :is(p, ul, ol, blockquote, pre, table, hr) {
+  margin: 0.7em 0;
+}
+.console-markdown-value :is(ul, ol) {
+  padding-inline-start: 1.6em;
+}
+.console-markdown-value li {
+  padding-inline-start: 0.15em;
+  margin: 0.2em 0;
+}
+.console-markdown-value li > p {
+  margin: 0.2em 0;
+}
+.console-markdown-value li::marker {
+  color: var(--markdown-muted);
+}
+.console-markdown-value li.task-list-item {
+  list-style: none;
+}
+.console-markdown-value .contains-task-list {
+  list-style: none;
+}
 .console-markdown-value input[type="checkbox"] {
   margin: 0 0.45em 0 -1.35em;
   vertical-align: middle;
   accent-color: var(--console-accent-color, currentColor);
 }
 .console-markdown-value blockquote {
-  margin-left: 0;
+  margin-inline-start: 0;
   padding: 0.15em 1em;
-  border-left: 3px solid var(--markdown-border);
+  border-inline-start: 3px solid var(--markdown-border);
   color: var(--markdown-muted);
 }
-.console-markdown-value blockquote > :first-child { margin-top: 0; }
-.console-markdown-value blockquote > :last-child { margin-bottom: 0; }
+.console-markdown-value blockquote > :first-child {
+  margin-top: 0;
+}
+.console-markdown-value blockquote > :last-child {
+  margin-bottom: 0;
+}
 .console-markdown-value code,
-.console-markdown-value pre { font-family: var(--console-font-family, ui-monospace, SFMono-Regular, Consolas, monospace); }
+.console-markdown-value pre {
+  font-family: var(
+    --console-font-family,
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace
+  );
+}
 .console-markdown-value :not(pre) > code {
   padding: 0.1em 0.35em;
   border-radius: 4px;
@@ -69,7 +118,9 @@
   white-space: pre;
   font-size: 0.95em;
 }
-.console-markdown-value pre:has(code[class*="language-"]) { padding-top: 1.85em; }
+.console-markdown-value pre:has(code[class*="language-"]) {
+  padding-top: 1.85em;
+}
 .console-markdown-value pre code[class*="language-"]::before {
   content: attr(data-language);
   position: absolute;
@@ -96,16 +147,41 @@
   text-align: start;
   vertical-align: top;
 }
-.console-markdown-value th { font-weight: 700; background: var(--markdown-surface); }
-.console-markdown-value tbody tr:nth-child(even) { background: color-mix(in srgb, currentColor 3%, transparent); }
-.console-markdown-value a { color: var(--console-link-color, inherit); text-decoration: underline; text-underline-offset: 0.18em; overflow-wrap: anywhere; }
-.console-markdown-value a:hover { text-decoration-thickness: 2px; }
-.console-markdown-value :is(a, input):focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
-.console-markdown-value hr { border: 0; border-top: 1px solid var(--markdown-border); }
-.console-markdown-value :is(img, video) { max-width: 100%; height: auto; }
-.console-markdown-value del { color: var(--markdown-muted); }
+.console-markdown-value th {
+  font-weight: 700;
+  background: var(--markdown-surface);
+}
+.console-markdown-value tbody tr:nth-child(even) {
+  background: color-mix(in srgb, currentColor 3%, transparent);
+}
+.console-markdown-value a {
+  color: var(--console-link-color, inherit);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  overflow-wrap: anywhere;
+}
+.console-markdown-value a:hover {
+  text-decoration-thickness: 2px;
+}
+.console-markdown-value :is(a, input):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.console-markdown-value hr {
+  border: 0;
+  border-top: 1px solid var(--markdown-border);
+}
+.console-markdown-value :is(img, video) {
+  max-width: 100%;
+  height: auto;
+}
+.console-markdown-value del {
+  color: var(--markdown-muted);
+}
 @media (forced-colors: active) {
-  .console-markdown-value :is(pre, blockquote, th, td) { border-color: CanvasText; }
+  .console-markdown-value :is(pre, blockquote, th, td) {
+    border-color: CanvasText;
+  }
 }
 
 /* Shiki's github-dark token colors need a dark code surface in every host theme. */

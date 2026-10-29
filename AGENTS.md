@@ -204,3 +204,9 @@ Remember that these are separate concerns:
 - **Runnable-example runtime registration** lets browser-compiled example source import that addon.
 
 If the runtime registry already supports the addon but Vite reports `failed to resolve import` from `compileExampleSource.ts`, fix the workspace source alias rather than the runtime whitelist.
+
+## Storybook stories
+
+- Keep exactly one story export per `.stories.tsx` file.
+- Keep each story self-contained: define its sample data, addon setup, and demo components in that file.
+- Avoid shared story fixtures or imports of demo implementations from other examples. Import production components and package APIs directly.

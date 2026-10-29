@@ -1,7 +1,7 @@
 import { sentenceCase } from "change-case";
 import type { ComponentType } from "react";
 import type { Toc } from "@stefanprobst/rehype-extract-toc";
-import { parsePageMeta, type PageMeta } from "./pageMetadata";
+import { parsePageMeta, type PageMeta } from "./pageMetadata.ts";
 
 export interface MdxPageModule {
   default: ComponentType;

@@ -1,6 +1,13 @@
 import { ConsoleTextHighlightContext } from "../textHighlights";
-import { resolveConsoleMessages, type ConsoleTranslations } from "../localization";
-import { ConsoleLocaleContext, resolveConsoleDirection, type ConsoleDirection } from "../locale";
+import {
+  resolveConsoleMessages,
+  type ConsoleTranslations,
+} from "../localization";
+import {
+  ConsoleLocaleContext,
+  resolveConsoleDirection,
+  type ConsoleDirection,
+} from "../locale";
 import { Copy, MoreHorizontal, SquareTerminal, Trash2 } from "lucide-react";
 import {
   useCallback,
@@ -105,6 +112,10 @@ interface ConsoleSharedProps {
   translations?: ConsoleTranslations;
   /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
   virtualize?: boolean;
+  /** Wrap long output lines or preserve them with horizontal scrolling. @default "wrap"
+   * Applies to the built-in output; custom renderers may manage their own layout.
+   */
+  outputOverflow?: "wrap" | "scroll";
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
@@ -400,6 +411,7 @@ function ConsoleFrame({
   emptyMessage,
   className = "",
   style,
+  outputOverflow = "wrap",
   hasMessages,
   isEmpty,
   scrollKey,
@@ -411,7 +423,10 @@ function ConsoleFrame({
   emptyStateRenderers,
   keyboardShortcuts,
 }: ConsoleFrameProps) {
-  const strings = useMemo(() => resolveConsoleMessages(locale, translations), [locale, translations]);
+  const strings = useMemo(
+    () => resolveConsoleMessages(locale, translations),
+    [locale, translations],
+  );
   const resolvedTitle = title ?? strings.title;
   const resolvedDirection = resolveConsoleDirection(locale, dir);
   const actionsPopoverId = useId();
@@ -485,6 +500,7 @@ function ConsoleFrame({
       className={`console console-panel ${className}`.trim()}
       style={style}
       data-console-mode={mode}
+      data-console-output-overflow={outputOverflow}
       lang={locale}
       dir={resolvedDirection}
       tabIndex={keyboardShortcuts?.length ? 0 : undefined}
@@ -936,8 +952,16 @@ function ConsoleMessageMode({
     <ConsoleFrame
       {...frameProps}
       mode="console"
-      subtitle={subtitle ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).consoleSubtitle}
-      emptyMessage={emptyMessage ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).emptyConsole}
+      subtitle={
+        subtitle ??
+        resolveConsoleMessages(frameProps.locale, frameProps.translations)
+          .consoleSubtitle
+      }
+      emptyMessage={
+        emptyMessage ??
+        resolveConsoleMessages(frameProps.locale, frameProps.translations)
+          .emptyConsole
+      }
       hasMessages={messages.length > 0}
       isEmpty={visibleMessages.length === 0 && !hasCustomOutput}
       scrollKey={visibleMessages}
@@ -1072,8 +1096,16 @@ function ConsoleTerminalMode({
     <ConsoleFrame
       {...frameProps}
       mode="terminal"
-      subtitle={subtitle ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).terminalSubtitle}
-      emptyMessage={emptyMessage ?? resolveConsoleMessages(frameProps.locale, frameProps.translations).emptyTerminal}
+      subtitle={
+        subtitle ??
+        resolveConsoleMessages(frameProps.locale, frameProps.translations)
+          .terminalSubtitle
+      }
+      emptyMessage={
+        emptyMessage ??
+        resolveConsoleMessages(frameProps.locale, frameProps.translations)
+          .emptyTerminal
+      }
       hasMessages={messages.length > 0}
       isEmpty={resolvedEntries.length === 0 && !hasCustomOutput}
       scrollKey={resolvedEntries}
@@ -1125,14 +1157,20 @@ export function Console({ ref, ...props }: ConsoleProps) {
     null;
 
   return (
-    <ConsoleLocaleContext.Provider value={{ locale: props.locale ?? "en", dir: props.dir, translations: props.translations }}>
-    <ConsoleTextHighlightContext.Provider value={highlightProvider}>
-      {props.mode === "terminal" ? (
-        <ConsoleTerminalMode {...props} {...resolvedProps} />
-      ) : (
-        <ConsoleMessageMode {...props} {...resolvedProps} />
-      )}
-    </ConsoleTextHighlightContext.Provider>
+    <ConsoleLocaleContext.Provider
+      value={{
+        locale: props.locale ?? "en",
+        dir: props.dir,
+        translations: props.translations,
+      }}
+    >
+      <ConsoleTextHighlightContext.Provider value={highlightProvider}>
+        {props.mode === "terminal" ? (
+          <ConsoleTerminalMode {...props} {...resolvedProps} />
+        ) : (
+          <ConsoleMessageMode {...props} {...resolvedProps} />
+        )}
+      </ConsoleTextHighlightContext.Provider>
     </ConsoleLocaleContext.Provider>
   );
 }

@@ -1,4 +1,4 @@
-import type { MdxSectionItem } from "../content/mdxSection";
+import type { MdxSectionItem } from "../content/mdxSection.ts";
 
 export function words(text: string): string[] {
   return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];

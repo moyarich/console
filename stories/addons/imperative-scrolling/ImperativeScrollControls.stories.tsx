@@ -22,7 +22,7 @@ const messages: ConsoleMessageData[] = Array.from(
 );
 
 const meta = {
-  title: "Console/Console",
+  title: "Addons/Imperative Scrolling",
   component: Console,
   parameters: {
     layout: "centered",

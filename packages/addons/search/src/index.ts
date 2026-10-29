@@ -114,7 +114,9 @@ function visibleTerminalText(value: string): string {
   );
 }
 
-export function createConsoleSearchAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon & {
+export function createConsoleSearchAddon(
+  options: { locale?: string; translations?: AddonTranslations } = {},
+): ConsoleAddon & {
   controller: ConsoleSearchController;
 } {
   let data: ConsoleDataService | undefined;
@@ -176,7 +178,12 @@ export function createConsoleSearchAddon(options: { locale?: string; translation
           match.text === activeMatch.text &&
           match.start === activeMatch.start,
       );
-      state = { ...state, ...result, activeIndex: nextIndex };
+      state = {
+        ...state,
+        ...result,
+        error: result.error,
+        activeIndex: nextIndex,
+      };
       emit();
     },
     next() {
@@ -255,7 +262,8 @@ export function createConsoleSearchAddon(options: { locale?: string; translation
       const panel: ConsolePanelElement = {
         id: CONSOLE_SEARCH_ADDON_ID + ":controls",
         placement: "before-output",
-        render: () => createElement(ConsoleSearchControls, { controller, ...options }),
+        render: () =>
+          createElement(ConsoleSearchControls, { controller, ...options }),
       };
       host.extensions.register(consoleExtensionPoints.panelElement, panel, {
         id: panel.id,

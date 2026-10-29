@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 
 const story = (id: string) => `/iframe.html?id=${id}&viewMode=story`;
 
-test("Console language switch keeps original log payload and updates translated chrome", async ({ page }) => {
-  await page.goto(story("console-internationalization--locales"));
+test("Console language switch keeps original log payload and updates translated chrome", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-console--locales"));
   const locale = page.getByLabel("Locale");
   const consoleRoot = page.locator(".console-panel");
 
@@ -22,61 +24,114 @@ test("Console language switch keeps original log payload and updates translated 
   await expect(page.getByText("Application started")).toBeVisible();
 
   await page.getByLabel("Override action labels").check();
-  await expect(page.getByRole("button", { name: "My custom actions" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "My custom actions" }),
+  ).toBeVisible();
 });
 
-test("custom JSON translations are applied without changing messages", async ({ page }) => {
-  await page.goto(story("console-internationalization--custom-json"));
+test("custom JSON translations are applied without changing messages", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-console--custom-json"));
   await expect(page.locator(".console-panel")).toHaveAttribute("lang", "de-DE");
-  await expect(page.getByText("This log payload remains unchanged.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Konsolenaktionen" })).toBeVisible();
+  await expect(
+    page.getByText("This log payload remains unchanged."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Konsolenaktionen" }),
+  ).toBeVisible();
 });
 
-test("RTL direction and Arabic labels are applied to the console", async ({ page }) => {
-  await page.goto(story("console-internationalization--rtl"));
+test("RTL direction and Arabic labels are applied to the console", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-console--rtl"));
   const root = page.locator(".console-panel");
   await expect(root).toHaveAttribute("lang", "ar-EG");
   await expect(root).toHaveAttribute("dir", "rtl");
   await expect(page.getByText("مرحبا بالعالم")).toBeVisible();
+  await expect(page.getByText("سجل الرسائل ونتائج التشغيل")).toBeVisible();
+  const actions = page.getByRole("button", {
+    name: "إجراءات وحدة التحكم",
+    exact: true,
+  });
+  const heading = page.getByRole("heading", {
+    name: "وحدة التحكم",
+    exact: true,
+  });
+  const actionBox = await actions.boundingBox();
+  const headingBox = await heading.boundingBox();
+  expect(actionBox!.x + actionBox!.width).toBeLessThan(headingBox!.x);
+  // RTL applies to the console chrome; log content remains readable.
+  await expect(root).toHaveCSS("direction", "rtl");
+  await expect(page.getByText("مرحبا بالعالم")).toBeVisible();
+  await actions.click();
+  await expect(page.locator(".console-actions-popover")).toBeVisible();
 });
 
-test("filtering addon switches independently and preserves output", async ({ page }) => {
-  await page.goto(story("console-addons-filtering--localized"));
+test("filtering addon switches independently and preserves output", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-addons-filtering--localized"));
   const locale = page.getByLabel("Locale");
-  await expect(page.getByRole("search", { name: "Filtros de la consola" })).toBeVisible();
+  await expect(
+    page.getByRole("search", { name: "Filtros de la consola" }),
+  ).toBeVisible();
   await locale.selectOption("en-US");
-  await expect(page.getByRole("search", { name: "Console filters" })).toBeVisible();
+  await expect(
+    page.getByRole("search", { name: "Console filters" }),
+  ).toBeVisible();
   await locale.selectOption("fr-CA");
-  await expect(page.getByRole("search", { name: "Filtres de la console" })).toBeVisible();
+  await expect(
+    page.getByRole("search", { name: "Filtres de la console" }),
+  ).toBeVisible();
   await locale.selectOption("pt-BR");
-  await expect(page.getByRole("search", { name: "Filtros do console" })).toBeVisible();
+  await expect(
+    page.getByRole("search", { name: "Filtros do console" }),
+  ).toBeVisible();
   await expect(page.getByText("Request complete")).toBeVisible();
 });
 
-test("search addon switches labels and keeps original messages", async ({ page }) => {
-  await page.goto(story("console-addons-search--localized"));
+test("search addon switches labels and keeps original messages", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-addons-search--localized"));
   const locale = page.getByLabel("Addon language");
-  await expect(page.getByRole("region", { name: "Buscar en la consola" })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Buscar en la consola" }),
+  ).toBeVisible();
   await locale.selectOption("en");
-  await expect(page.getByRole("region", { name: "Console search" })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Console search" }),
+  ).toBeVisible();
   await locale.selectOption("fr-CA");
-  await expect(page.getByRole("region", { name: "Recherche dans la console" })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Recherche dans la console" }),
+  ).toBeVisible();
   await locale.selectOption("pt-PT");
-  await expect(page.getByRole("region", { name: "Pesquisar no console" })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Pesquisar no console" }),
+  ).toBeVisible();
   await expect(page.getByText("Searchable message")).toBeVisible();
 });
 
 test("export addon updates action labels across locales", async ({ page }) => {
-  await page.goto(story("console-addons-data-export--localized"));
+  await page.goto(story("internationalization-addons-data-export--localized"));
   const locale = page.getByLabel("Addon language");
-  await expect(page.getByText("Open actions to see localized export commands")).toBeVisible();
+  await expect(
+    page.getByText("Open actions to see localized export commands"),
+  ).toBeVisible();
   await locale.selectOption("fr-CA");
-  await expect(page.getByText("Open actions to see localized export commands")).toBeVisible();
+  await expect(
+    page.getByText("Open actions to see localized export commands"),
+  ).toBeVisible();
   await expect(page.locator(".console-panel")).toHaveAttribute("lang", "fr-CA");
 });
 
-test("Console en, es and fr show their own translated action labels", async ({ page }) => {
-  await page.goto(story("console-internationalization--locales"));
+test("Console en, es and fr show their own translated action labels", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-console--locales"));
   const locale = page.getByLabel("Locale");
   const cases = [
     { locale: "en", actions: "Console actions" },
@@ -86,14 +141,21 @@ test("Console en, es and fr show their own translated action labels", async ({ p
   ];
   for (const entry of cases) {
     await locale.selectOption(entry.locale);
-    await expect(page.locator(".console-panel")).toHaveAttribute("lang", entry.locale);
-    await expect(page.getByRole("button", { name: entry.actions })).toBeVisible();
+    await expect(page.locator(".console-panel")).toHaveAttribute(
+      "lang",
+      entry.locale,
+    );
+    await expect(
+      page.getByRole("button", { name: entry.actions }),
+    ).toBeVisible();
     await expect(page.getByText("Application started")).toBeVisible();
   }
 });
 
-test("filtering addon en, es, fr and pt translate options while preserving logs", async ({ page }) => {
-  await page.goto(story("console-addons-filtering--localized"));
+test("filtering addon en, es, fr and pt translate options while preserving logs", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-addons-filtering--localized"));
   const locale = page.getByLabel("Locale");
   for (const entry of [
     { locale: "en-US", name: "Console filters" },
@@ -107,8 +169,10 @@ test("filtering addon en, es, fr and pt translate options while preserving logs"
   }
 });
 
-test("search addon en, es, fr and pt translate independently", async ({ page }) => {
-  await page.goto(story("console-addons-search--localized"));
+test("search addon en, es, fr and pt translate independently", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-addons-search--localized"));
   const locale = page.getByLabel("Addon language");
   for (const entry of [
     { locale: "en", name: "Console search" },
@@ -122,8 +186,10 @@ test("search addon en, es, fr and pt translate independently", async ({ page }) 
   }
 });
 
-test("localized filtering controls retain filter state across language changes", async ({ page }) => {
-  await page.goto(story("console-addons-filtering--localized"));
+test("localized filtering controls retain filter state across language changes", async ({
+  page,
+}) => {
+  await page.goto(story("internationalization-addons-filtering--localized"));
   const locale = page.getByLabel("Locale");
   const filter = page.getByRole("search", { name: "Filtros de la consola" });
   const input = filter.getByRole("searchbox");
@@ -132,13 +198,21 @@ test("localized filtering controls retain filter state across language changes",
   await expect(page.getByText("Request complete")).toHaveCount(0);
 
   await locale.selectOption("fr-CA");
-  const translatedFilter = page.getByRole("search", { name: "Filtres de la console" });
-  await expect(translatedFilter.getByRole("searchbox")).toHaveValue("Request failed");
+  const translatedFilter = page.getByRole("search", {
+    name: "Filtres de la console",
+  });
+  await expect(translatedFilter.getByRole("searchbox")).toHaveValue(
+    "Request failed",
+  );
   await expect(page.getByText("Request failed")).toBeVisible();
   await expect(page.getByText("Request complete")).toHaveCount(0);
 
   await locale.selectOption("pt-BR");
-  await expect(page.getByRole("search", { name: "Filtros do console" }).getByRole("searchbox")).toHaveValue("Request failed");
+  await expect(
+    page
+      .getByRole("search", { name: "Filtros do console" })
+      .getByRole("searchbox"),
+  ).toHaveValue("Request failed");
 });
 
 for (const addon of [
@@ -153,14 +227,20 @@ for (const addon of [
   "xterm",
 ]) {
   test(`${addon} addon Storybook locale smoke check`, async ({ page }) => {
-    await page.goto(story(`console-addons-${addon}--localized`));
+    await page.goto(story(`internationalization-addons-${addon}--localized`));
     const select = page.getByLabel("Addon language");
     await expect(select).toBeVisible();
     await select.selectOption("en");
     await expect(page.locator(".console-panel")).toHaveAttribute("lang", "en");
     await select.selectOption("fr-CA");
-    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "fr-CA");
+    await expect(page.locator(".console-panel")).toHaveAttribute(
+      "lang",
+      "fr-CA",
+    );
     await select.selectOption("pt-BR");
-    await expect(page.locator(".console-panel")).toHaveAttribute("lang", "pt-BR");
+    await expect(page.locator(".console-panel")).toHaveAttribute(
+      "lang",
+      "pt-BR",
+    );
   });
 }

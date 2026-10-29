@@ -71,16 +71,16 @@
 .console-resizable-frame[data-console-resize-direction="inline"],
 .console-resizable-frame[data-console-resize-direction="both"] {
   width: var(--_console-resizable-width);
-  min-width: var(--_console-resizable-min-width);
-  max-width: var(--_console-resizable-max-width);
+  min-width: min(100%, var(--_console-resizable-min-width));
+  max-width: min(100%, var(--_console-resizable-max-width));
 }
 
 .console-resizable-frame[data-console-resize-direction="vertical"],
 .console-resizable-frame[data-console-resize-direction="block"],
 .console-resizable-frame[data-console-resize-direction="both"] {
   height: var(--_console-resizable-height);
-  min-height: var(--_console-resizable-min-height);
-  max-height: var(--_console-resizable-max-height);
+  min-height: min(100%, var(--_console-resizable-min-height));
+  max-height: min(100%, var(--_console-resizable-max-height));
 }
 
 .console-resizable-frame-content {
