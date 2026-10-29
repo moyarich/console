@@ -7,10 +7,25 @@ function AddonEventsExample() {
   const [replace, setReplace] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const [scopedErrors, setScopedErrors] = useState<string[]>([]);
+  const [subscriptions, setSubscriptions] = useState<string[]>([]);
   const [failing, setFailing] = useState(false);
   const [disposalFails, setDisposalFails] = useState(false);
-  const first = useMemo<ConsoleAddon>(() => ({ id: "example", activate: () => () => {} }), []);
-  const replacement = useMemo<ConsoleAddon>(() => ({ id: "example", activate: () => () => {} }), []);
+  const first = useMemo<ConsoleAddon>(() => ({ id: "example", activate: (host) => {
+    const subscription = host.services.subscribe(() => {});
+    setSubscriptions((current) => [...current, "first:subscribe"]);
+    return () => {
+      subscription.dispose();
+      setSubscriptions((current) => [...current, "first:dispose"]);
+    };
+  } }), []);
+  const replacement = useMemo<ConsoleAddon>(() => ({ id: "example", activate: (host) => {
+    const subscription = host.services.subscribe(() => {});
+    setSubscriptions((current) => [...current, "replacement:subscribe"]);
+    return () => {
+      subscription.dispose();
+      setSubscriptions((current) => [...current, "replacement:dispose"]);
+    };
+  } }), []);
   const failingAddon = useMemo<ConsoleAddon>(() => ({ id: "failing", activate: () => { throw new Error("activation failed"); } }), []);
   const disposalAddon = useMemo<ConsoleAddon>(() => ({ id: "disposal", activate: () => () => { throw new Error("disposal failed"); } }), []);
   const addons = [replace ? replacement : first, ...(failing ? [failingAddon] : []), ...(disposalFails ? [disposalAddon] : [])];
@@ -34,6 +49,7 @@ function AddonEventsExample() {
       />
       <output aria-label="Addon lifecycle events">{events.join(" | ")}</output>
       <output aria-label="Scoped addon errors">{scopedErrors.join(" | ")}</output>
+      <output aria-label="Addon subscriptions">{subscriptions.join(" | ")}</output>
     </div>
   );
 }
