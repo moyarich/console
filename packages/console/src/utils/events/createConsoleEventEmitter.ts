@@ -34,14 +34,11 @@ export interface ConsoleEventEmitter {
  * Preserves the public unsubscribe-returning `on` contract.
  */
 export function createConsoleEventEmitter(): ConsoleEventEmitter {
-  const emitter = new EventEmitter<{
-    message: (message: ConsoleMessageData) => void;
-    clear: () => void;
-  }>();
+  const emitter = new EventEmitter();
 
   // The existing API treats repeated registration of the same listener as one
   // subscription. Keep that contract when delegating to EventEmitter3.
-  const listeners = new Map<ConsoleEventName, Set<Function>>();
+  const listeners = new Map<ConsoleEventName, Set<(...args: unknown[]) => void>>();
 
   const on: ConsoleEventEmitter["on"] = (type, listener) => {
     let registered = listeners.get(type);
@@ -49,15 +46,15 @@ export function createConsoleEventEmitter(): ConsoleEventEmitter {
       registered = new Set();
       listeners.set(type, registered);
     }
-    if (!registered.has(listener)) {
-      registered.add(listener);
+    if (!registered.has(listener as (...args: unknown[]) => void)) {
+      registered.add(listener as (...args: unknown[]) => void);
       emitter.on(type, listener);
     }
     return () => off(type, listener);
   };
 
   const off: ConsoleEventEmitter["off"] = (type, listener) => {
-    listeners.get(type)?.delete(listener);
+    listeners.get(type)?.delete(listener as (...args: unknown[]) => void);
     emitter.off(type, listener);
   };
 
