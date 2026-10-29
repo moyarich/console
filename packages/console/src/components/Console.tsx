@@ -1216,7 +1216,7 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
     } catch (error) {
       notifyError(error, { phase: "callback" });
     }
-  }, [mode]);
+  }, [mode, notifyError]);
 
   const readyCallbackRef = useRef(props.onReady);
   readyCallbackRef.current = props.onReady;
