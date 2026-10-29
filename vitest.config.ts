@@ -62,6 +62,7 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          name: "unit",
           environment: "node",
           include: [
             "tests/**/*.test.ts",
