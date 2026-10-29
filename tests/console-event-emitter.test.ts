@@ -32,8 +32,11 @@ describe("Console EventEmitter3 events", () => {
     events.on("clear", listener).on("clear", listener);
     events.emit("clear");
     expect(listener).toHaveBeenCalledTimes(2);
-    events.off("clear", listener);
-    expect(events.listenerCount("clear")).toBe(1);
+    // EventEmitter3 removes every matching registration for the same function.
+    expect(events.off("clear", listener)).toBe(events);
+    expect(events.listenerCount("clear")).toBe(0);
+    expect(events.emit("clear")).toBe(false);
+    expect(listener).toHaveBeenCalledTimes(2);
   });
 
   it("removes listeners by event name or globally", () => {

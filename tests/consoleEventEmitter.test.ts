@@ -34,12 +34,13 @@ describe("createConsoleEventEmitter", () => {
     expect(listener).toHaveBeenCalledWith();
   });
 
-  it("returns an unsubscribe function from on", () => {
+  it("returns the emitter from on and removes via off", () => {
     const events = createConsoleEventEmitter();
     const listener = vi.fn();
-    const off = events.on("message", listener);
+    const subscription = events.on("message", listener);
 
-    off();
+    expect(subscription).toBe(events);
+    events.off("message", listener);
     events.emit("message", message);
 
     expect(listener).not.toHaveBeenCalled();
