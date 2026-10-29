@@ -25,15 +25,12 @@ on:
       - .github/workflows/reset-release.yml
       - .github/workflows/sync-release-package-choices.yml
 
-permissions:
-  contents: write
-  packages: read
+permissions: {}
 
 jobs:
   sync:
     permissions:
       contents: write
-      packages: read
 
     uses: moyarich/reusable-workflows/.github/workflows/reusable_sync-release-package-choices.yml@main
 
