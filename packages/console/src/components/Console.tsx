@@ -120,6 +120,8 @@ interface ConsoleSharedProps {
   outputOverflow?: "wrap" | "scroll";
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
+  /** Called after mounting with the imperative Console handle. May return unmount cleanup. */
+  onMount?: (handle: ConsoleHandle) => void | (() => void);
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
@@ -1134,7 +1136,7 @@ function ConsoleTerminalMode({
  * Set `mode="terminal"` for terminal-style entries; omit `mode` (or use
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
-export function Console({ ref, ...props }: ConsoleProps) {
+export function Console({ ref, onMount, ...props }: ConsoleProps) {
   const mode: ConsoleMode = props.mode === "terminal" ? "terminal" : "console";
   const surfaceRef = useRef<HTMLDivElement>(null);
   const viewport = useMemo(
@@ -1144,6 +1146,11 @@ export function Console({ ref, ...props }: ConsoleProps) {
   const data = useMemo(() => createConsoleDataController(mode), [mode]);
 
   useImperativeHandle(ref, () => viewport, [viewport]);
+
+  // Keep callback updates current without repeating the mount notification.
+  const onMountRef = useRef(onMount);
+  onMountRef.current = onMount;
+  useEffect(() => onMountRef.current?.(viewport), [viewport]);
 
   const addonExtensions = useConsoleAddons(
     props.addons,
