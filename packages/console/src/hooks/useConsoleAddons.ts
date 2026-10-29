@@ -63,6 +63,8 @@ export function useConsoleAddons(
   data: ConsoleDataService,
   onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void,
   onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void,
+  onReadyGeneration?: () => void,
+  onLifecycleError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   const disabledIds = useMemo(
@@ -92,6 +94,10 @@ export function useConsoleAddons(
   const failedRef = useRef(new Map<string, ConsoleAddon>());
   const readyRef = useRef(onAddonsReady);
   const errorRef = useRef(onAddonError);
+  const generationRef = useRef(onReadyGeneration);
+  const lifecycleErrorRef = useRef(onLifecycleError);
+  generationRef.current = onReadyGeneration;
+  lifecycleErrorRef.current = onLifecycleError;
   readyRef.current = onAddonsReady;
   errorRef.current = onAddonError;
   const reportError = useCallback(
@@ -100,6 +106,11 @@ export function useConsoleAddons(
         errorRef.current?.(error, addonId, phase);
       } catch {
         // Observer failures cannot interrupt addon cleanup.
+      }
+      try {
+        lifecycleErrorRef.current?.(error, addonId, phase);
+      } catch {
+        // Lifecycle error observers must not interrupt cleanup.
       }
     },
     [],
@@ -184,6 +195,7 @@ export function useConsoleAddons(
       } catch {
         // Client callbacks cannot invalidate a completed reconciliation.
       }
+      generationRef.current?.();
     }
   }, [activeAddons, manager, mode, reportError]);
 

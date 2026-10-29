@@ -77,6 +77,7 @@ import { useConsoleAddons } from "../hooks/useConsoleAddons";
 import {
   createConsoleDataController,
   type ConsoleDataController,
+  type ConsoleDataSnapshot,
 } from "../data";
 import {
   createConsoleViewportController,
@@ -128,6 +129,10 @@ interface ConsoleSharedProps {
   onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void;
   /** Reports caught synchronous addon activation or disposal errors. */
   onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void;
+  /** Fires after a successful synchronous addon generation and the first mode snapshot publication. Does not await async persistence. */
+  onReady?: (context: { handle: ConsoleHandle; mode: ConsoleMode; snapshot: ConsoleDataSnapshot }) => void;
+  /** Reports caught synchronous Console lifecycle errors; not render failures or async rejections. */
+  onError?: (error: unknown, context: { phase: "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback"; addonId?: string }) => void;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
@@ -1173,7 +1178,29 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
   // Keep callback updates current without repeating the mount notification.
   const onMountRef = useRef(onMount);
   onMountRef.current = onMount;
-  useEffect(() => onMountRef.current?.(viewport), [viewport]);
+  const errorCallbackRef = useRef(props.onError);
+  errorCallbackRef.current = props.onError;
+  const notifyError = useCallback((error: unknown, context: { phase: "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback"; addonId?: string }) => {
+    try {
+      errorCallbackRef.current?.(error, context);
+    } catch {
+      // Never recursively report a failure in the error observer.
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      const cleanup = onMountRef.current?.(viewport);
+      return () => {
+        try {
+          cleanup?.();
+        } catch (error) {
+          notifyError(error, { phase: "mount" });
+        }
+      };
+    } catch (error) {
+      notifyError(error, { phase: "mount" });
+    }
+  }, [viewport, notifyError]);
 
   // A new mode owns a fresh data controller; child effects publish its snapshot
   // before this parent effect reports the committed mode transition.
@@ -1184,8 +1211,22 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
     const previous = committedMode.current;
     if (previous === mode) return;
     committedMode.current = mode;
-    onModeChangeRef.current?.(mode, previous);
-  }, [mode]);
+    try {
+      onModeChangeRef.current?.(mode, previous);
+    } catch (error) {
+      notifyError(error, { phase: "callback" });
+    }
+  }, [mode, notifyError]);
+
+  const readyCallbackRef = useRef(props.onReady);
+  readyCallbackRef.current = props.onReady;
+  const emitReady = useCallback(() => {
+    try {
+      readyCallbackRef.current?.({ handle: viewport, mode, snapshot: data.getSnapshot() });
+    } catch (error) {
+      notifyError(error, { phase: "ready" });
+    }
+  }, [viewport, mode, data, notifyError]);
 
   const addonExtensions = useConsoleAddons(
     props.addons,
@@ -1195,6 +1236,8 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
     data,
     props.onAddonsReady,
     props.onAddonError,
+    emitReady,
+    (error, addonId, phase) => notifyError(error, { phase: phase === "activate" ? "addon-activate" : "addon-dispose", addonId }),
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
