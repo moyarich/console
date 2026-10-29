@@ -1,3 +1,4 @@
+import EventEmitter from "eventemitter3";
 import type { ConsoleMessageData } from "../../types";
 
 /** Event names emitted by the in-memory console event bus. */
@@ -29,66 +30,54 @@ export interface ConsoleEventEmitter {
 }
 
 /**
- * Creates an isolated typed event emitter for console message and clear events.
- *
- * Listener iteration uses a snapshot so listeners may safely unsubscribe while
- * an event is being delivered.
+ * Creates an isolated typed event emitter backed by EventEmitter3.
+ * Preserves the public unsubscribe-returning `on` contract.
  */
 export function createConsoleEventEmitter(): ConsoleEventEmitter {
-  const listeners = new Map<
-    ConsoleEventName,
-    Set<(...args: unknown[]) => void>
-  >();
+  const emitter = new EventEmitter<{
+    message: (message: ConsoleMessageData) => void;
+    clear: () => void;
+  }>();
 
-  const getListeners = (type: ConsoleEventName) => {
-    let eventListeners = listeners.get(type);
-
-    if (!eventListeners) {
-      eventListeners = new Set();
-      listeners.set(type, eventListeners);
-    }
-
-    return eventListeners;
-  };
+  // The existing API treats repeated registration of the same listener as one
+  // subscription. Keep that contract when delegating to EventEmitter3.
+  const listeners = new Map<ConsoleEventName, Set<Function>>();
 
   const on: ConsoleEventEmitter["on"] = (type, listener) => {
-    const eventListeners = getListeners(type);
-    eventListeners.add(listener as (...args: unknown[]) => void);
-
-    return () => {
-      eventListeners.delete(listener as (...args: unknown[]) => void);
-    };
+    let registered = listeners.get(type);
+    if (!registered) {
+      registered = new Set();
+      listeners.set(type, registered);
+    }
+    if (!registered.has(listener)) {
+      registered.add(listener);
+      emitter.on(type, listener);
+    }
+    return () => off(type, listener);
   };
 
   const off: ConsoleEventEmitter["off"] = (type, listener) => {
-    listeners.get(type)?.delete(listener as (...args: unknown[]) => void);
+    listeners.get(type)?.delete(listener);
+    emitter.off(type, listener);
   };
 
   const emit: ConsoleEventEmitter["emit"] = (type, ...args) => {
-    const eventListeners = listeners.get(type);
-
-    if (!eventListeners) {
-      return;
-    }
-
-    for (const listener of Array.from(eventListeners)) {
-      listener(...args);
+    if (type === "message") {
+      emitter.emit("message", args[0] as ConsoleMessageData);
+    } else {
+      emitter.emit("clear");
     }
   };
 
   const removeAllListeners = (type?: ConsoleEventName) => {
     if (type) {
       listeners.delete(type);
-      return;
+      emitter.removeAllListeners(type);
+    } else {
+      listeners.clear();
+      emitter.removeAllListeners();
     }
-
-    listeners.clear();
   };
 
-  return {
-    on,
-    off,
-    emit,
-    removeAllListeners,
-  };
+  return { on, off, emit, removeAllListeners };
 }
