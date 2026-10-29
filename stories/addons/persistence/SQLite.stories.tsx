@@ -127,7 +127,7 @@ function SQLiteExample() {
   );
 }
 const meta = {
-  title: "Addons/Persistence",
+  title: "Addons/Persistence/SQLite",
   component: SQLiteExample,
 } satisfies Meta<typeof SQLiteExample>;
 export default meta;

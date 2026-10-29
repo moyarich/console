@@ -80,7 +80,7 @@ function StreamExample() {
 }
 
 const meta = {
-  title: "Addons/Persistence",
+  title: "Addons/Persistence/Stream",
   component: StreamExample,
 } satisfies Meta<typeof StreamExample>;
 export default meta;

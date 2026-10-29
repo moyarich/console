@@ -81,7 +81,7 @@ function FileExample() {
   );
 }
 const meta = {
-  title: "Addons/Persistence",
+  title: "Addons/Persistence/File",
   component: FileExample,
 } satisfies Meta<typeof FileExample>;
 export default meta;

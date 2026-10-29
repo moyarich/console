@@ -122,6 +122,8 @@ interface ConsoleSharedProps {
   ref?: Ref<ConsoleHandle | null>;
   /** Called after mounting with the imperative Console handle. May return unmount cleanup. */
   onMount?: (handle: ConsoleHandle) => void | (() => void);
+  /** Fires after a committed mode transition and its data snapshot publication; not on initial mount. */
+  onModeChange?: (next: ConsoleMode, previous: ConsoleMode) => void;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
@@ -1153,7 +1155,7 @@ function ConsoleTerminalMode({
  * Set `mode="terminal"` for terminal-style entries; omit `mode` (or use
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
-export function Console({ ref, onMount, ...props }: ConsoleProps) {
+export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) {
   const mode: ConsoleMode = props.mode === "terminal" ? "terminal" : "console";
   const surfaceRef = useRef<HTMLDivElement>(null);
   const viewport = useMemo(
@@ -1168,6 +1170,18 @@ export function Console({ ref, onMount, ...props }: ConsoleProps) {
   const onMountRef = useRef(onMount);
   onMountRef.current = onMount;
   useEffect(() => onMountRef.current?.(viewport), [viewport]);
+
+  // A new mode owns a fresh data controller; child effects publish its snapshot
+  // before this parent effect reports the committed mode transition.
+  const committedMode = useRef(mode);
+  const onModeChangeRef = useRef(onModeChange);
+  onModeChangeRef.current = onModeChange;
+  useEffect(() => {
+    const previous = committedMode.current;
+    if (previous === mode) return;
+    committedMode.current = mode;
+    onModeChangeRef.current?.(mode, previous);
+  }, [mode]);
 
   const addonExtensions = useConsoleAddons(
     props.addons,
