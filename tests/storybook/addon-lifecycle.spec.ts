@@ -25,7 +25,9 @@ test("addon activation errors do not report ready and healthy addons remain acti
   await expect(output).not.toContainText("console:example | console:example");
 
   await page.getByRole("button", { name: "Replace addon" }).click();
-  await expect(output).toContainText("console:example | error:failing:activate:Error: activation failed | error:failing:activate:Error: activation failed");
+  await expect(output).toHaveText("console:example | error:failing:activate:Error: activation failed");
+  await page.getByRole("button", { name: "Toggle failing addon" }).click();
+  await expect(output).toHaveText("console:example | error:failing:activate:Error: activation failed | console:example");
 });
 
 test("addon disposal errors are isolated and reported without ready notification", async ({ page }) => {
