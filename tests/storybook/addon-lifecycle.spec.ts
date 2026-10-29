@@ -52,3 +52,15 @@ test("scoped lifecycle observer receives activation and disposal errors exactly 
   await page.getByRole("button", { name: "Toggle disposal addon" }).click();
   await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed | addon-dispose:disposal:Error: disposal failed");
 });
+
+test("addon-owned service subscriptions are cleaned up on disable and identity replacement", async ({ page }) => {
+  await page.goto("/iframe.html?id=console-lifecycle--addon-events&viewMode=story");
+  const subscriptions = page.getByLabel("Addon subscriptions");
+  await expect(subscriptions).toHaveText("first:subscribe");
+  await page.getByRole("button", { name: "Toggle addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose");
+  await page.getByRole("button", { name: "Toggle addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose | first:subscribe");
+  await page.getByRole("button", { name: "Replace addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose | first:subscribe | first:dispose | replacement:subscribe");
+});
