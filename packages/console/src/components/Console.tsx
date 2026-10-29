@@ -1189,7 +1189,14 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
   }, []);
   useEffect(() => {
     try {
-      return onMountRef.current?.(viewport);
+      const cleanup = onMountRef.current?.(viewport);
+      return () => {
+        try {
+          cleanup?.();
+        } catch (error) {
+          notifyError(error, { phase: "mount" });
+        }
+      };
     } catch (error) {
       notifyError(error, { phase: "mount" });
     }
