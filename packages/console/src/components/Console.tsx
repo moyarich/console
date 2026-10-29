@@ -176,7 +176,7 @@ export interface ConsoleMessageModeProps extends ConsoleSharedProps {
   messages?: ConsoleMessageData[];
   /** Optional runtime error appended as a synthetic error message. */
   error?: string;
-  /** Observes the unfiltered source message collection. */
+  /** Observes initial and replaced unfiltered source messages, before synthetic errors. */
   onMessagesChange?: (messages: readonly ConsoleMessageData[]) => void;
   /** Controls which structured messages are visible. */
   filter?: ConsoleMessageFilter;
@@ -192,6 +192,8 @@ export interface ConsoleTerminalModeProps extends ConsoleSharedProps {
   mode: "terminal";
   /** ANSI-aware stdout/stderr entries or raw strings to render. */
   messages?: readonly (ConsoleStdoutEntry | string)[];
+  /** Observes the initial and subsequently replaced raw terminal input (before parsing). */
+  onOutputChange?: (entries: readonly (ConsoleStdoutEntry | string)[]) => void;
   /** Parse complete JSON object/array lines into structured value inspectors. */
   parseStructuredOutput?: boolean;
   /** Ordered raw control parsers applied before line normalization. */
@@ -699,6 +701,21 @@ function ConsoleFrame({
   );
 }
 
+/** A committed source-reference change triggers a notification, not a callback identity change. */
+function useInputChange<T>(
+  value: T,
+  callback: ((value: T) => void) | undefined,
+): void {
+  const callbackRef = useRef(callback);
+  // Keep the latest handler without making replacement a notification trigger.
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
+  useEffect(() => {
+    callbackRef.current?.(value);
+  }, [value]);
+}
+
 /** Renders structured console messages and custom message/value renderers. */
 function ConsoleMessageMode({
   output,
@@ -826,9 +843,7 @@ function ConsoleMessageMode({
     Map<ConsoleMessageData, number>
   >(() => new Map());
 
-  useEffect(() => {
-    onMessagesChange?.(sourceMessages);
-  }, [onMessagesChange, sourceMessages]);
+  useInputChange(sourceMessages, onMessagesChange);
 
   const hasExpandableValues = visibleMessages.some(
     (message) =>
@@ -985,6 +1000,7 @@ function ConsoleMessageMode({
 /** Renders ANSI-aware process output with optional structured parsing. */
 function ConsoleTerminalMode({
   messages = EMPTY_TERMINAL_OUTPUT,
+  onOutputChange,
   parseStructuredOutput = false,
   processControlParsers,
   processors,
@@ -1024,6 +1040,7 @@ function ConsoleTerminalMode({
     [messages, resolvedProcessControlParsers, resolvedProcessors],
   );
   const resolvedEntries = resolvedProcessOutput.entries;
+  useInputChange(messages, onOutputChange);
 
   useEffect(() => {
     data.setSnapshot({
