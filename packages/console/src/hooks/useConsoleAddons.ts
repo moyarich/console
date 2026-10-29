@@ -135,10 +135,15 @@ export function useConsoleAddons(
       activeAddons.map((addon) => [addon.id.trim(), addon]),
     );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
+    let failedSetChanged = false;
     for (const [id, addon] of failedRef.current) {
-      if (nextById.get(id) !== addon) failedRef.current.delete(id);
+      if (nextById.get(id) !== addon) {
+        failedRef.current.delete(id);
+        failedSetChanged = true;
+      }
     }
     const changed =
+      failedSetChanged ||
       currentEntries.some(([id, addon]) => nextById.get(id) !== addon) ||
       activeAddons.some((addon) => loadedRef.current.get(addon.id.trim()) !== addon && failedRef.current.get(addon.id.trim()) !== addon) ||
       !initializedManagers.current.has(manager);
