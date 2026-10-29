@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   consoleCapabilities,
   consoleServices,
@@ -93,9 +93,16 @@ export function useConsoleAddons(
   const errorRef = useRef(onAddonError);
   readyRef.current = onAddonsReady;
   errorRef.current = onAddonError;
-  const reportError = (error: unknown, addonId: string, phase: "activate" | "dispose") => {
-    try { errorRef.current?.(error, addonId, phase); } catch { /* Observer errors cannot interrupt addon cleanup. */ }
-  };
+  const reportError = useCallback(
+    (error: unknown, addonId: string, phase: "activate" | "dispose") => {
+      try {
+        errorRef.current?.(error, addonId, phase);
+      } catch {
+        // Observer failures cannot interrupt addon cleanup.
+      }
+    },
+    [],
+  );
   const [, setRevision] = useState(0);
   const initializedManagers = useRef(new WeakSet<ConsoleAddonManager>());
 
@@ -164,7 +171,7 @@ export function useConsoleAddons(
         // Client callbacks cannot invalidate a completed reconciliation.
       }
     }
-  }, [activeAddons, manager, mode]);
+  }, [activeAddons, manager, mode, reportError]);
 
   useEffect(
     () => () => {
@@ -179,7 +186,7 @@ export function useConsoleAddons(
         }
       }
     },
-    [manager],
+    [manager, reportError],
   );
 
   return manager.extensions;
