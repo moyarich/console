@@ -19,6 +19,10 @@ function DataEventsExample() {
   const [output, setOutput] = useState(initialOutput);
   const [events, setEvents] = useState<string[]>([]);
   const [decorated, setDecorated] = useState(false);
+  const [modeTransitions, setModeTransitions] = useState<string[]>([]);
+  const onModeChange = useCallback((next: "console" | "terminal", previous: "console" | "terminal") => {
+    setModeTransitions((current) => [...current, `${previous}->${next}`]);
+  }, []);
   const onMessagesChange = useCallback(
     (next: readonly ConsoleMessageData[]) => {
       setEvents((current) => [...current, `messages:${next.length}`]);
@@ -77,6 +81,7 @@ function DataEventsExample() {
         <Console
           messages={messages}
           onMessagesChange={onMessagesChange}
+          onModeChange={onModeChange}
           showHeader={!decorated}
           error={decorated ? "Presentation error" : undefined}
         />
@@ -85,9 +90,11 @@ function DataEventsExample() {
           mode="terminal"
           messages={output}
           onOutputChange={onOutputChange}
+          onModeChange={onModeChange}
           showHeader={!decorated}
         />
       )}
+      <output aria-label="Mode transition events">{modeTransitions.join(", ")}</output>
       <output aria-label="Data lifecycle events">{events.join(", ")}</output>
     </div>
   );
