@@ -149,12 +149,12 @@ export function useConsoleMessages({
   );
 
   useEffect(() => {
-    const offMessage = events.on("message", handleMessage);
-    const offClear = events.on("clear", handleClear);
+    events.on("message", handleMessage);
+    events.on("clear", handleClear);
 
     return () => {
-      offMessage();
-      offClear();
+      events.off("message", handleMessage);
+      events.off("clear", handleClear);
     };
   }, [events, handleMessage, handleClear]);
 
