@@ -124,6 +124,10 @@ interface ConsoleSharedProps {
   onMount?: (handle: ConsoleHandle) => void | (() => void);
   /** Fires after a committed mode transition and its data snapshot publication; not on initial mount. */
   onModeChange?: (next: ConsoleMode, previous: ConsoleMode) => void;
+  /** Fires after successful synchronous reconciliation of enabled addons. */
+  onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void;
+  /** Reports caught synchronous addon activation or disposal errors. */
+  onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
@@ -1189,6 +1193,8 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
     mode,
     viewport,
     data,
+    props.onAddonsReady,
+    props.onAddonError,
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 
