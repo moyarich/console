@@ -50,6 +50,7 @@ Use the console-compatible producer from event handlers or runtime callbacks to 
 - [Console examples and guides](packages/console/examples/page.mdx)
 - [High-volume output accessibility](packages/console/examples/36-high-volume-accessibility/page.mdx)
 - [Virtualized output guide](packages/console/examples/38-virtualization/page.mdx)
+- [Console lifecycle callback contracts](docs/console-lifecycle.md)
 
 ## Packages and addons
 
