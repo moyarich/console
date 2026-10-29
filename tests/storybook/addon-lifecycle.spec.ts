@@ -38,3 +38,29 @@ test("addon disposal errors are isolated and reported without ready notification
   await page.getByRole("button", { name: "Toggle disposal addon" }).click();
   await expect(output).toHaveText("console:example | console:example,disposal | error:disposal:dispose:Error: disposal failed");
 });
+
+test("scoped lifecycle observer receives activation and disposal errors exactly once", async ({ page }) => {
+  await page.goto("/iframe.html?id=console-lifecycle--addon-events&viewMode=story");
+  const scoped = page.getByLabel("Scoped addon errors");
+  await expect(scoped).toBeEmpty();
+  await page.getByRole("button", { name: "Toggle failing addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed");
+  await page.getByRole("button", { name: "Replace addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed");
+  await page.getByRole("button", { name: "Toggle failing addon" }).click();
+  await page.getByRole("button", { name: "Toggle disposal addon" }).click();
+  await page.getByRole("button", { name: "Toggle disposal addon" }).click();
+  await expect(scoped).toHaveText("addon-activate:failing:Error: activation failed | addon-dispose:disposal:Error: disposal failed");
+});
+
+test("addon-owned service subscriptions are cleaned up on disable and identity replacement", async ({ page }) => {
+  await page.goto("/iframe.html?id=console-lifecycle--addon-events&viewMode=story");
+  const subscriptions = page.getByLabel("Addon subscriptions");
+  await expect(subscriptions).toHaveText("first:subscribe");
+  await page.getByRole("button", { name: "Toggle addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose");
+  await page.getByRole("button", { name: "Toggle addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose | first:subscribe");
+  await page.getByRole("button", { name: "Replace addon" }).click();
+  await expect(subscriptions).toHaveText("first:subscribe | first:dispose | first:subscribe | first:dispose | replacement:subscribe");
+});
