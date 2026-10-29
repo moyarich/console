@@ -4,6 +4,7 @@ import "./preview.css";
 const preview: Preview = {
   parameters: {
     layout: "padded",
+    controls: { expanded: true },
     options: {
       storySort: { order: ["Console", "Addons", "Internationalization"] },
     },

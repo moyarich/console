@@ -44,12 +44,12 @@ const tqdmChunks: ConsoleStdoutEntry[] = [
   },
 ];
 
-function LiveTqdmRedrawStory() {
-  const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
+function LiveTqdmRedrawStory(args: ConsoleTerminalModeProps) {
+  const [messages, setMessages] = useState<(ConsoleStdoutEntry | string)[]>([]);
   const [run, setRun] = useState(0);
 
   useEffect(() => {
-    setMessages([]);
+    setMessages([...(args.messages ?? [])]);
 
     let index = 0;
     const timer = window.setInterval(() => {
@@ -65,7 +65,7 @@ function LiveTqdmRedrawStory() {
     }, 450);
 
     return () => window.clearInterval(timer);
-  }, [run]);
+  }, [run, args.messages]);
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -75,14 +75,7 @@ function LiveTqdmRedrawStory() {
         </button>
       </div>
 
-      <Console
-        mode="terminal"
-        title="Live tqdm-style redraw"
-        subtitle="Each leading carriage return replaces the current logical line"
-        messages={messages}
-        onClear={() => setMessages([])}
-        style={{ height: 360, minHeight: 240, maxHeight: 640 }}
-      />
+      <Console {...args} messages={messages} onClear={() => setMessages([])} />
     </div>
   );
 }
@@ -108,8 +101,23 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const LiveTqdmRedraw: Story = {
-  render: () => <LiveTqdmRedrawStory />,
+  render: (args) => <LiveTqdmRedrawStory {...args} />,
   args: {
+    title: "Live tqdm-style redraw",
+    subtitle: "Each leading carriage return replaces the current logical line",
+    showHeader: true,
+    autoScroll: true,
+    outputOverflow: "wrap",
     messages: [],
+  },
+  argTypes: {
+    outputOverflow: { control: "select", options: ["wrap", "scroll"] },
+    messages: {
+      control: "object",
+      description:
+        "Initial output. Editing this restarts the stream with these messages.",
+    },
+    onClear: { control: false },
+    mode: { control: false },
   },
 };
