@@ -5,18 +5,20 @@ import { Console, type ConsoleAddon } from "@moyarich/console";
 function ReadyEventsExample() {
   const [terminal, setTerminal] = useState(false);
   const [enabled, setEnabled] = useState(true);
+  const [presentation, setPresentation] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const addon = useMemo<ConsoleAddon>(() => ({ id: "healthy", activate: () => () => {} }), []);
   return (
     <div>
       <button type="button" onClick={() => setTerminal((v) => !v)}>Switch mode</button>
       <button type="button" onClick={() => setEnabled((v) => !v)}>Toggle addon</button>
+      <button type="button" onClick={() => setPresentation((v) => !v)}>Toggle presentation</button>
       {terminal ? (
-        <Console mode="terminal" messages={["hello"]} addons={[addon]} disabledAddonIds={enabled ? [] : ["healthy"]}
+        <Console mode="terminal" messages={["hello"]} showHeader={!presentation} addons={[addon]} disabledAddonIds={enabled ? [] : ["healthy"]}
           onReady={({ mode, snapshot }) => setEvents((current) => [...current, `ready:${mode}:${snapshot.mode}`])}
           onError={(error, { phase }) => setEvents((current) => [...current, `error:${phase}:${String(error)}`])} />
       ) : (
-        <Console messages={[]} addons={[addon]} disabledAddonIds={enabled ? [] : ["healthy"]}
+        <Console messages={[]} showHeader={!presentation} addons={[addon]} disabledAddonIds={enabled ? [] : ["healthy"]}
           onReady={({ mode, snapshot }) => setEvents((current) => [...current, `ready:${mode}:${snapshot.mode}`])}
           onError={(error, { phase }) => setEvents((current) => [...current, `error:${phase}:${String(error)}`])} />
       )}
