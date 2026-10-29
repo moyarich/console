@@ -104,23 +104,25 @@ export type ConsoleMessageFilter = CoreConsoleMessageFilter;
 
 /** Props shared by structured and terminal console modes. */
 interface ConsoleSharedProps {
-  /** BCP 47 locale for built-in console UI strings. @default "en" */
+  /** BCP 47 locale for built-in console UI strings. @default en */
   locale?: string;
-  /** Writing direction for localized UI; auto resolves from locale. */
+  /** Writing direction for localized UI; auto resolves from locale. @default auto */
   dir?: ConsoleDirection | "auto";
   /** Override any built-in localized UI labels. */
   translations?: ConsoleTranslations;
   /** Virtualize structured rows to reduce mounted DOM work for large logs. @default false */
   virtualize?: boolean;
-  /** Wrap long output lines or preserve them with horizontal scrolling. @default "wrap"
+  /**
+   * Wrap long output lines or preserve them with horizontal scrolling.
    * Applies to the built-in output; custom renderers may manage their own layout.
+   * @default wrap
    */
   outputOverflow?: "wrap" | "scroll";
   /** Imperative navigation ref for the mounted console viewport. */
   ref?: Ref<ConsoleHandle | null>;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
-  /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default "off" */
+  /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
   announcementMode?: "off" | "polite" | "assertive";
   /** Accessible name for the output log; defaults to the console title. */
   outputLabel?: string;
@@ -136,7 +138,7 @@ interface ConsoleSharedProps {
   panelActions?: readonly ConsolePanelAction[];
   /** Host-defined actions available from the right-click context menu. */
   contextMenuActions?: readonly ConsoleContextMenuAction[];
-  /** Header title. @default "Console" */
+  /** Header title. @default Console */
   title?: string;
   /** Optional header subtitle. Mode-specific defaults are used when omitted. */
   subtitle?: string;
@@ -150,7 +152,7 @@ interface ConsoleSharedProps {
   outputRenderers?: readonly ConsoleOutputRenderer[];
   /** Custom renderers for values displayed by either console mode. */
   valueRenderers?: readonly ConsoleValueRenderer[];
-  /** Built-in value display strategy for structured messages. @default "structured" */
+  /** Built-in value display strategy for structured messages. @default structured */
   valueDisplay?: ConsoleValueDisplay;
   /** @deprecated Automatic detection is provided by @moyarich/console-addon-links. */
   detectLinks?: boolean;

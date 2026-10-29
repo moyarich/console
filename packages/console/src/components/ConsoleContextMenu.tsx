@@ -130,7 +130,10 @@ export function ConsoleContextMenu({
   onClear,
 }: ConsoleContextMenuProps) {
   const localeOptions = useConsoleLocale();
-  const direction = resolveConsoleDirection(localeOptions.locale, localeOptions.dir);
+  const direction = resolveConsoleDirection(
+    localeOptions.locale,
+    localeOptions.dir,
+  );
   const targetRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const focusOriginRef = useRef<HTMLElement | null>(null);

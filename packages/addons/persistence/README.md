@@ -6,15 +6,17 @@ Destination-agnostic persistence for structured console messages and raw termina
 import { createConsolePersistenceAddon } from "@moyarich/console-addon-persistence";
 
 const addon = createConsolePersistenceAddon({
-  adapters: [{
-    async write(records) {
-      await fetch("/api/logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(records),
-      });
+  adapters: [
+    {
+      async write(records) {
+        await fetch("/api/logs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(records),
+        });
+      },
     },
-  }],
+  ],
 });
 ```
 

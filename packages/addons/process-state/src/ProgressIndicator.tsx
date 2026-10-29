@@ -1,4 +1,7 @@
-import { resolveProcessStateMessages, type ProcessStateTranslations } from "./localization";
+import {
+  resolveProcessStateMessages,
+  type ProcessStateTranslations,
+} from "./localization";
 import { useSyncExternalStore, type CSSProperties } from "react";
 import type { ProcessStateController } from "./index";
 import "./ProgressIndicator.css";

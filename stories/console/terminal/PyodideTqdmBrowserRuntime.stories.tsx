@@ -1,6 +1,6 @@
 import type { ConsoleTerminalModeProps } from "@moyarich/console";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Console, type ConsoleStdoutEntry } from "@moyarich/console";
 import "@moyarich/console/styles.css";
 
@@ -85,8 +85,17 @@ await run_tqdm_demo()
 
 type RunStatus = "idle" | "loading" | "running" | "done" | "error";
 
-function PyodideTqdmProgressExample() {
+function PyodideTqdmProgressExample(args: ConsoleTerminalModeProps) {
   const [messages, setMessages] = useState<ConsoleStdoutEntry[]>([]);
+  useEffect(() => {
+    setMessages(
+      (args.messages ?? []).map((entry) =>
+        typeof entry === "string"
+          ? { data: entry, stream: "stdout" as const }
+          : entry,
+      ),
+    );
+  }, [args.messages]);
   const [status, setStatus] = useState<RunStatus>("idle");
   const runIdRef = useRef(0);
 
@@ -157,14 +166,7 @@ function PyodideTqdmProgressExample() {
         </button>
       </div>
 
-      <Console
-        mode="terminal"
-        title="Pyodide + tqdm"
-        subtitle="Live tqdm carriage-return writes streamed directly into the console"
-        messages={messages}
-        style={{ height: 420, minHeight: 240, maxHeight: 720 }}
-        onClear={() => setMessages([])}
-      />
+      <Console {...args} messages={messages} onClear={() => setMessages([])} />
     </div>
   );
 }
@@ -190,8 +192,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const PyodideTqdmBrowserRuntime: Story = {
-  render: () => <PyodideTqdmProgressExample />,
+  render: (args) => <PyodideTqdmProgressExample {...args} />,
   args: {
+    title: "Pyodide + tqdm",
+    subtitle:
+      "Live tqdm carriage-return writes streamed directly into the console",
+    style: { height: 420, minHeight: 240, maxHeight: 720 },
     messages: [],
+  },
+  argTypes: {
+    messages: { control: "object" },
+    onClear: { control: false },
+    mode: { control: false },
   },
 };

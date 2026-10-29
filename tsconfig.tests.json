@@ -30,6 +30,7 @@
     "packages/addons/links/src",
     "packages/addons/selection/src",
     "packages/addons/resizable/src",
+    "packages/console/src",
     "packages/console-core/src"
   ]
 }

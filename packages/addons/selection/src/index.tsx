@@ -193,7 +193,9 @@ function createDecoration(
     render({ message }) {
       if (!message.id || !controller.isSelected(message.id)) return undefined;
 
-      return <SelectedMessageIndicator locale={locale} translations={translations} />;
+      return (
+        <SelectedMessageIndicator locale={locale} translations={translations} />
+      );
     },
   };
 }
@@ -206,7 +208,8 @@ function createMessageAction(
   return {
     id: `${CONSOLE_SELECTION_ADDON_ID}:toggle`,
     label: resolveAddonMessages(locale, translations).toggleSelection,
-    ariaLabel: resolveAddonMessages(locale, translations).toggleMessageSelection,
+    ariaLabel: resolveAddonMessages(locale, translations)
+      .toggleMessageSelection,
     visible({ message }) {
       return Boolean(message.id);
     },
@@ -253,7 +256,11 @@ export function createConsoleSelectionAddon(
         if (withMessageAction) {
           actionRegistration = host.extensions.register(
             consoleExtensionPoints.messageAction,
-            createMessageAction(controller, options.locale, options.translations),
+            createMessageAction(
+              controller,
+              options.locale,
+              options.translations,
+            ),
             { id: `${CONSOLE_SELECTION_ADDON_ID}:toggle` },
           );
         }

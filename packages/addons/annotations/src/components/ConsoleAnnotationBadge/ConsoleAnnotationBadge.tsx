@@ -1,4 +1,7 @@
-import { resolveAddonMessages, type AddonTranslations } from "../../localization";
+import {
+  resolveAddonMessages,
+  type AddonTranslations,
+} from "../../localization";
 import { useSyncExternalStore } from "react";
 import type {
   ConsoleAnnotation,
@@ -33,7 +36,11 @@ export function ConsoleAnnotationBadge({
   if (annotations.length === 0) return null;
 
   const label = annotations
-    .map((annotation) => annotation.label ?? (annotation.id === "bookmark" ? labels.bookmark : annotation.id))
+    .map(
+      (annotation) =>
+        annotation.label ??
+        (annotation.id === "bookmark" ? labels.bookmark : annotation.id),
+    )
     .join(", ");
 
   return (

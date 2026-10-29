@@ -1,4 +1,7 @@
-import { resolveDataExportMessages, type DataExportTranslations } from "./localization";
+import {
+  resolveDataExportMessages,
+  type DataExportTranslations,
+} from "./localization";
 export { resolveDataExportMessages } from "./localization";
 export type { DataExportTranslations } from "./localization";
 import Anser from "anser";

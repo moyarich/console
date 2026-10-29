@@ -39,7 +39,9 @@ The renderer reads component mappings from `@mdx-js/react` through `useMDXCompon
 ```tsx
 import { MDXProvider } from "@mdx-js/react";
 
-<MDXProvider components={{ h2: (props) => <h2 {...props} className="my-heading" /> }}>
+<MDXProvider
+  components={{ h2: (props) => <h2 {...props} className="my-heading" /> }}
+>
   <Console messages={messages} addons={addons} />
 </MDXProvider>;
 ```

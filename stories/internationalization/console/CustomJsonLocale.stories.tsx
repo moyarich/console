@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Console } from "@moyarich/console";
-import de from "../../packages/console/src/locales/en.json";
+import de from "../../../packages/console/src/locales/en.json";
 
 /** External JSON dictionaries can override just the labels an app needs. */
 function CustomJsonLocale() {

@@ -21,16 +21,21 @@ export const consoleFeedOutputRenderer: ConsoleOutputRenderer = {
   },
 };
 
-export function createConsoleFeedAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon {
+export function createConsoleFeedAddon(
+  options: { locale?: string; translations?: AddonTranslations } = {},
+): ConsoleAddon {
   return {
     id: CONSOLE_FEED_ADDON_ID,
     activate(host) {
       host.extensions.register(
         consoleExtensionPoints.outputRenderer,
-        { ...consoleFeedOutputRenderer, render(context) {
-          if (context.mode !== "console") return undefined;
-          return <ConsoleFeed messages={context.messages} {...options} />;
-        } },
+        {
+          ...consoleFeedOutputRenderer,
+          render(context) {
+            if (context.mode !== "console") return undefined;
+            return <ConsoleFeed messages={context.messages} {...options} />;
+          },
+        },
         {
           id: `${CONSOLE_FEED_ADDON_ID}:output-renderer`,
         },

@@ -1,12 +1,20 @@
 import { fileURLToPath } from "node:url";
 import { mergeConfig } from "vite";
 import type { StorybookConfig } from "@storybook/react-vite";
-import { persistenceLogsPlugin } from "./persistence-logs";
+import { persistenceLogsPlugin } from "./persistence-logs.ts";
 
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(ts|tsx)"],
   framework: "@storybook/react-vite",
   addons: ["@storybook/addon-vitest"],
+  typescript: {
+    reactDocgen: "react-docgen-typescript",
+    reactDocgenTypescriptOptions: {
+      tsconfigPath: fileURLToPath(new URL("./tsconfig.json", import.meta.url)),
+      shouldExtractLiteralValuesFromEnum: true,
+      shouldRemoveUndefinedFromOptional: true,
+    },
+  },
   viteFinal: (config) =>
     mergeConfig(config, {
       ...(process.env.STORYBOOK_BASE_PATH

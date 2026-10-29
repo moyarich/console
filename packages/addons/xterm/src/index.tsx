@@ -18,16 +18,21 @@ export const xtermOutputRenderer: ConsoleOutputRenderer = {
   },
 };
 
-export function createConsoleXtermAddon(options: { locale?: string; translations?: AddonTranslations } = {}): ConsoleAddon {
+export function createConsoleXtermAddon(
+  options: { locale?: string; translations?: AddonTranslations } = {},
+): ConsoleAddon {
   return {
     id: CONSOLE_XTERM_ADDON_ID,
     activate(host) {
       host.extensions.register(
         consoleExtensionPoints.outputRenderer,
-        { ...xtermOutputRenderer, render(context) {
-          if (context.mode !== "terminal") return undefined;
-          return <XtermOutput entries={context.entries} {...options} />;
-        } },
+        {
+          ...xtermOutputRenderer,
+          render(context) {
+            if (context.mode !== "terminal") return undefined;
+            return <XtermOutput entries={context.entries} {...options} />;
+          },
+        },
         {
           id: `${CONSOLE_XTERM_ADDON_ID}:output-renderer`,
         },
