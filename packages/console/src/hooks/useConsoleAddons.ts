@@ -61,6 +61,8 @@ export function useConsoleAddons(
   mode: ConsoleMode,
   viewport: ConsoleViewportService,
   data: ConsoleDataService,
+  onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void,
+  onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   const disabledIds = useMemo(
@@ -87,7 +89,15 @@ export function useConsoleAddons(
 
   const manager = useMemo(() => createManager(mode), [mode]);
   const loadedRef = useRef(new Map<string, ConsoleAddon>());
+  const readyRef = useRef(onAddonsReady);
+  const errorRef = useRef(onAddonError);
+  readyRef.current = onAddonsReady;
+  errorRef.current = onAddonError;
+  const reportError = (error: unknown, addonId: string, phase: "activate" | "dispose") => {
+    try { errorRef.current?.(error, addonId, phase); } catch { /* Observer errors cannot interrupt addon cleanup. */ }
+  };
   const [, setRevision] = useState(0);
+  const initializedManagers = useRef(new WeakSet<ConsoleAddonManager>());
 
   useEffect(() => {
     const subscription = manager.extensions.subscribe(() => {
@@ -117,32 +127,56 @@ export function useConsoleAddons(
       activeAddons.map((addon) => [addon.id.trim(), addon]),
     );
     const currentEntries = Array.from(loadedRef.current.entries()).reverse();
+    const changed =
+      currentEntries.some(([id, addon]) => nextById.get(id) !== addon) ||
+      activeAddons.some((addon) => loadedRef.current.get(addon.id.trim()) !== addon) ||
+      !initializedManagers.current.has(manager);
+    if (!changed) return;
 
+    let succeeded = true;
     for (const [id, current] of currentEntries) {
       if (nextById.get(id) === current) continue;
-
-      manager.unload(id);
       loadedRef.current.delete(id);
+      try {
+        manager.unload(id);
+      } catch (error) {
+        succeeded = false;
+        reportError(error, id, "dispose");
+      }
     }
 
     for (const addon of activeAddons) {
       const id = addon.id.trim();
-      const current = loadedRef.current.get(id);
-
-      if (current === addon) continue;
-
-      manager.load(addon);
-      loadedRef.current.set(id, addon);
+      if (loadedRef.current.get(id) === addon) continue;
+      try {
+        manager.load(addon);
+        loadedRef.current.set(id, addon);
+      } catch (error) {
+        succeeded = false;
+        reportError(error, id, "activate");
+      }
     }
-  }, [activeAddons, manager]);
+    initializedManagers.current.add(manager);
+    if (succeeded) {
+      try {
+        readyRef.current?.({ mode, addonIds: activeAddons.map((addon) => addon.id.trim()) });
+      } catch {
+        // Client callbacks cannot invalidate a completed reconciliation.
+      }
+    }
+  }, [activeAddons, manager, mode]);
 
   useEffect(
     () => () => {
       const loadedIds = Array.from(loadedRef.current.keys()).reverse();
       loadedRef.current.clear();
-
+      initializedManagers.current.delete(manager);
       for (const id of loadedIds) {
-        manager.unload(id);
+        try {
+          manager.unload(id);
+        } catch (error) {
+          reportError(error, id, "dispose");
+        }
       }
     },
     [manager],
