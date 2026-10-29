@@ -6,6 +6,7 @@ function AddonEventsExample() {
   const [enabled, setEnabled] = useState(true);
   const [replace, setReplace] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
+  const [scopedErrors, setScopedErrors] = useState<string[]>([]);
   const [failing, setFailing] = useState(false);
   const [disposalFails, setDisposalFails] = useState(false);
   const first = useMemo<ConsoleAddon>(() => ({ id: "example", activate: () => () => {} }), []);
@@ -29,8 +30,10 @@ function AddonEventsExample() {
         onAddonError={(error, id, phase) =>
           setEvents((current) => [...current, `error:${id}:${phase}:${String(error)}`])
         }
+        onError={(error, context) => setScopedErrors((current) => [...current, `${context.phase}:${context.addonId}:${String(error)}`])}
       />
       <output aria-label="Addon lifecycle events">{events.join(" | ")}</output>
+      <output aria-label="Scoped addon errors">{scopedErrors.join(" | ")}</output>
     </div>
   );
 }
