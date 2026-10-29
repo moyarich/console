@@ -68,7 +68,7 @@ function MemoryExample() {
   );
 }
 const meta = {
-  title: "Addons/Persistence",
+  title: "Addons/Persistence/Memory",
   component: MemoryExample,
 } satisfies Meta<typeof MemoryExample>;
 export default meta;
