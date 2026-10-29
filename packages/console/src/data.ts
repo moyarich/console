@@ -1,3 +1,4 @@
+import EventEmitter from "eventemitter3";
 import type { ConsoleDisposable } from "./addons";
 import type {
   ConsoleProcessControlEvent,
@@ -76,7 +77,8 @@ export function createConsoleDataController(
   mode: ConsoleMode,
 ): ConsoleDataController {
   let snapshot = createEmptySnapshot(mode);
-  const listeners = new Set<() => void>();
+  // Every Console owns a distinct emitter; no events leak across instances.
+  const events = new EventEmitter<{ change: () => void }>();
 
   return {
     getSnapshot() {
@@ -87,21 +89,16 @@ export function createConsoleDataController(
       if (snapshot === nextSnapshot) return;
       snapshot = nextSnapshot;
 
-      for (const listener of listeners) {
-        try {
-          listener();
-        } catch {
-          // Data observers must not break console rendering.
-        }
-      }
+      // Snapshot observers are decoupled from the producer via EventEmitter3.
+      events.emit("change");
     },
 
     subscribe(listener) {
-      listeners.add(listener);
+      events.on("change", listener);
 
       return {
         dispose() {
-          listeners.delete(listener);
+          events.off("change", listener);
         },
       };
     },
