@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Updated the required peer dependency range for `@moyarich/console-core` from `^0.1.0` to `^0.2.0`.
+- Requires `@moyarich/console-core` version `0.2.x` (peer dependency `^0.2.0`); applications using `0.1.x` must upgrade the host package alongside this addon.
 
 ## 0.1.0
 
