@@ -14,6 +14,10 @@ Bring browser-style `console.*` messages, inspectable JavaScript values, and ANS
 
 Console handles presentation and message transport; your application remains in control of runtime execution and lifecycle.
 
+## Release preparation
+
+The workspace's pending `0.2.0` release is prepared in [PR #225](https://github.com/moyarich/console/pull/225). It updates the versions of `@moyarich/console`, `@moyarich/console-core`, and first-party addons together, including their internal dependency ranges. This is a proposed release, not evidence that the packages have already been published. Review each package's `CHANGELOG.md` before merging; GitHub releases and package-registry publishing are separate steps.
+
 ## Installation
 
 ```bash
