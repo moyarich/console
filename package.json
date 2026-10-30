@@ -31,7 +31,8 @@
     "pack:packages": "npm run build:packages && node scripts/run-addon-workspaces.mjs pack && npm pack --workspace @moyarich/console-core --dry-run && npm pack --workspace @moyarich/console --dry-run",
     "test:browser": "playwright test",
     "build:pages": "node scripts/build-pages.mjs",
-    "dev:playground": "npm run dev --workspace @moyarich/console-playground"
+    "dev:playground": "npm run dev --workspace @moyarich/console-playground",
+    "test:storybook": "playwright test --config playwright.storybook.config.ts"
   },
   "engines": {
     "node": ">=24"
