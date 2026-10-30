@@ -2,10 +2,9 @@
 
 ## 0.2.0
 
-### Release preparation
+### Changed
 
-- Prepare this package for the coordinated `0.2.0` workspace release.
-- Align applicable internal workspace dependency and peer dependency ranges with version `0.2.0`.
+- Aligned session snapshot and restore helpers with the updated Console host dependency and event contracts.
 
 ## 0.1.0
 
