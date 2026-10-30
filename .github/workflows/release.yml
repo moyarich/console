@@ -1,11 +1,10 @@
 name: Release package
 
 run-name: >-
-  Release · ${{ inputs.package }} · ${{ inputs.version-mode }}${{
-  inputs.version-mode == 'bump' && format(':{0}', inputs.version-bump) ||
-  inputs.version-mode == 'exact' && format(':{0}', inputs.exact-version) || ''
-  }} · ${{ inputs.draft && 'draft' || 'published' }} · dry-run=${{
-  inputs.dry-run }}
+  Release · ${{ inputs.package }} · ${{ inputs.version-mode }}${{ inputs.version-mode
+  == 'bump' && format(':{0}', inputs.version-bump) || inputs.version-mode == 'exact'
+  && format(':{0}', inputs.exact-version) || '' }} · ${{ inputs.draft && 'draft' ||
+  'published' }} · dry-run=${{ inputs.dry-run }}
 
 on:
   workflow_dispatch:
@@ -70,9 +69,7 @@ on:
         required: false
         default: ""
       commit-version-changes:
-        description:
-          Commit prepared versions and lockfile to the selected branch before
-          release
+        description: Commit prepared versions and lockfile to the selected branch before release
         type: boolean
         required: true
         default: false
