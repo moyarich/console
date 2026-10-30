@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React console and ANSI process-output UI with capture, object inspection, serialization, and iframe/WebSocket transports.",
   "license": "MIT",
   "type": "module",
@@ -45,7 +45,7 @@
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
   },
   "dependencies": {
-    "@moyarich/console-core": "0.1.0",
+    "@moyarich/console-core": "0.2.0",
     "anser": "^2.3.5",
     "lucide-react": "^1.47.0",
     "eventemitter3": "^5.0.1"
