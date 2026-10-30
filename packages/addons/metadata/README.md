@@ -20,6 +20,8 @@ const addons = [createConsoleMetadataAddon()];
 <Console messages={messages} addons={addons} />;
 ```
 
+For localized timestamps, pass a BCP 47 `locale` in the addon options, such as `createConsoleMetadataAddon({ mode: "relative", locale: "pt-BR" })`. Relative timestamps use `Intl.RelativeTimeFormat`; absolute timestamps use the same locale. The `formatTimestamp` option can override the displayed time.
+
 The addon is optional and can be combined with other Console addons. The host application remains responsible for supplying and retaining messages.
 
 ## Learn more
