@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Localized the resize controls, including Portuguese translations.
 - Updated the required peer dependency range for `@moyarich/console-core` from `^0.1.0` to `^0.2.0`.
 
 ## 0.1.0
