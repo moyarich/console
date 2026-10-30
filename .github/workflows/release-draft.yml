@@ -71,6 +71,11 @@ on:
         required: false
         default: ""
         type: string
+      changed-packages-only:
+        description: Skip tagged packages without implementation changes when drafting all
+        required: true
+        default: true
+        type: boolean
       dry-run:
         description: Preview without creating or modifying release drafts
         required: true
@@ -114,6 +119,7 @@ jobs:
       ignored-paths-json: '[".github/workflows/release-draft.yml"]'
       package: ${{ github.event_name == 'workflow_dispatch' && inputs.package ||
         'all' }}
+      changed-packages-only: ${{ github.event_name == 'workflow_dispatch' && inputs.changed-packages-only || false }}
       event-name: ${{ github.event_name }}
       before-sha: ${{ github.event.before || '' }}
       after-sha: ${{ github.sha }}
