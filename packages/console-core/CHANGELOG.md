@@ -2,10 +2,10 @@
 
 ## 0.2.0
 
-### Release preparation
+### Changed
 
-- Prepare this package for the coordinated `0.2.0` workspace release.
-- Align applicable internal workspace dependency and peer dependency ranges with version `0.2.0`.
+- Aligned addon lifecycle, event, and service contracts with Console's EventEmitter3-based notifications.
+- Expanded integration coverage for addon activation, readiness, cleanup, and error isolation.
 
 ## 0.1.0
 
