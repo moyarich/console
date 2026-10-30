@@ -17,6 +17,8 @@ export interface ConsoleMetadataOptions {
   timestamp?: boolean;
   /** Timestamp formatting mode. @default "absolute" */
   mode?: TimestampMode;
+  /** BCP 47 locale for timestamps (for example, en, es, fr, pt-BR, pt-PT). */
+  locale?: string;
   /** Reference time in milliseconds for deterministic relative formatting. */
   now?: () => number;
   /** Override the default timestamp formatting. */
@@ -27,15 +29,19 @@ export function formatMetadataTimestamp(
   timestamp: number,
   mode: TimestampMode = "absolute",
   now: number = Date.now(),
+  locale?: string,
 ): string {
   if (!Number.isFinite(timestamp)) return "";
-  if (mode === "absolute") return new Date(timestamp).toLocaleString();
-  const seconds = Math.round((now - timestamp) / 1000);
-  if (seconds < 0) return "in " + Math.abs(seconds) + "s";
-  if (seconds < 60) return seconds + "s ago";
-  if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
-  if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
-  return Math.floor(seconds / 86400) + "d ago";
+  if (mode === "absolute") return new Date(timestamp).toLocaleString(locale);
+  const seconds = Math.round((timestamp - now) / 1000);
+  const abs = Math.abs(seconds);
+  const unit: Intl.RelativeTimeFormatUnit =
+    abs < 60 ? "second" : abs < 3600 ? "minute" : abs < 86400 ? "hour" : "day";
+  const divisor = unit === "second" ? 1 : unit === "minute" ? 60 : unit === "hour" ? 3600 : 86400;
+  return new Intl.RelativeTimeFormat(locale, { numeric: "always", style: "short" }).format(
+    Math.trunc(seconds / divisor),
+    unit,
+  );
 }
 
 export function getMetadataLabels(
@@ -50,7 +56,7 @@ export function getMetadataLabels(
   const timestamp =
     typeof time === "number" && Number.isFinite(time)
       ? (options.formatTimestamp?.(time, mode) ??
-        formatMetadataTimestamp(time, mode, options.now?.() ?? Date.now()))
+        formatMetadataTimestamp(time, mode, options.now?.() ?? Date.now(), options.locale))
       : undefined;
   return {
     source: typeof source === "string" && source.trim() ? source : undefined,
