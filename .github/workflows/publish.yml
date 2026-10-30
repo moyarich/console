@@ -1,9 +1,9 @@
 name: Publish npm package
 
 run-name: >-
-  Publish · ${{ inputs.package }} · ${{ inputs.registry }} · ${{
-  inputs.version-mode }}${{ inputs.version-mode == 'exact' && format(':{0}',
-  inputs.exact-version) || '' }} · dry-run=${{ inputs.dry-run }}
+  Publish · ${{ inputs.package }} · ${{ inputs.registry }} · ${{ inputs.version-mode
+  }}${{ inputs.version-mode == 'exact' && format(':{0}', inputs.exact-version) ||
+  '' }} · dry-run=${{ inputs.dry-run }}
 
 on:
   workflow_dispatch:
@@ -25,35 +25,22 @@ on:
         default: all
         options:
           - all
-          - packages/addons/animation
-          - packages/addons/annotations
-          - packages/addons/console-feed
-          - packages/addons/data-export
-          - packages/addons/diagnostics
-          - packages/addons/filtering
-          - packages/addons/imperative-scrolling
-          - packages/addons/links
-          - packages/addons/markdown
-          - packages/addons/metadata
-          - packages/addons/navigation
-          - packages/addons/persistence
-          - packages/addons/process-state
-          - packages/addons/resizable
-          - packages/addons/search
-          - packages/addons/selection
-          - packages/addons/session
-          - packages/addons/xterm
-          - packages/console
-          - packages/console-core
+          - "packages/example"
       registry:
-        description: Publish destination
+        description: Registry alias (npm, github, all, or a configured registry)
         required: true
         default: npm
-        type: choice
-        options:
-          - npm
-          - github
-          - all
+        type: string
+      registries-file:
+        description: Optional caller repository registry YAML location
+        required: false
+        default: ""
+        type: string
+      registry-url:
+        description: Optional HTTPS registry URL override
+        required: false
+        default: ""
+        type: string
       version-mode:
         description: Publish manifest version or an exact version
         required: true
@@ -81,7 +68,8 @@ on:
         default: true
         type: boolean
       tag:
-        description: npm distribution tag (leave empty to use the resolved default)
+        description: npm distribution tag (leave empty to use the resolved
+          default)
         required: false
         default: ""
         type: string
@@ -106,6 +94,8 @@ jobs:
       workspace-tools-source: ${{ inputs.workspace-tools-source }}
       package: ${{ inputs.package }}
       registry: ${{ inputs.registry }}
+      registries-file: ${{ inputs.registries-file }}
+      registry-url: ${{ inputs.registry-url }}
       version-mode: ${{ inputs.version-mode }}
       exact-version: ${{ inputs.exact-version }}
       verify-git-tag: ${{ inputs.verify-git-tag }}
@@ -114,3 +104,4 @@ jobs:
       tag: ${{ inputs.tag }}
     secrets:
       npm-token: ${{ secrets._NPM_TOKEN }}
+      custom-registry-token: ${{ secrets._CUSTOM_REGISTRY_TOKEN }}
