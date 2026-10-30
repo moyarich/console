@@ -57,3 +57,7 @@ Review the [changelog](./CHANGELOG.md) for changes by version and [package metad
 ## License
 
 MIT
+
+## Version compatibility
+
+For the proposed `0.2.0` workspace release, use this addon's `0.2.0` version alongside compatible `0.2.0` Console packages as declared in its [`package.json`](./package.json). See the [`CHANGELOG.md`](./CHANGELOG.md) for release history.
