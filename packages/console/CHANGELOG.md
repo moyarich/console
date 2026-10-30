@@ -7,7 +7,8 @@
 - Added public lifecycle callbacks for mount, data changes, committed mode transitions, readiness, and scoped errors.
 - Adopted EventEmitter3-compatible event APIs with isolated event channels for each Console instance.
 - Improved addon activation failure handling and lifecycle cleanup, with Storybook regression coverage.
-- Improved structured/terminal output behavior, responsive wrapping, and scrolling.
+- Support responsive wrapping and scrolling in structured and terminal output.
+- Localize built-in Console controls and let applications switch between supported languages or supply custom translations.
 
 ## 0.1.0
 
