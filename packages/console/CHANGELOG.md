@@ -2,10 +2,12 @@
 
 ## 0.2.0
 
-### Release preparation
+### Changed
 
-- Prepare this package for the coordinated `0.2.0` workspace release.
-- Align applicable internal workspace dependency and peer dependency ranges with version `0.2.0`.
+- Added public lifecycle callbacks for mount, data changes, committed mode transitions, readiness, and scoped errors.
+- Adopted EventEmitter3-compatible event APIs with isolated event channels for each Console instance.
+- Improved addon activation failure handling and lifecycle cleanup, with Storybook regression coverage.
+- Improved structured/terminal output behavior, responsive wrapping, and scrolling.
 
 ## 0.1.0
 
