@@ -1,7 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("mode transition callback only fires for committed mode switches", async ({ page }) => {
-  await page.goto("/iframe.html?id=console-lifecycle--data-events&viewMode=story");
+test("mode transition callback only fires for committed mode switches", async ({
+  page,
+}) => {
+  await page.goto(
+    "/iframe.html?id=console-lifecycle--data-events&viewMode=story",
+  );
   const transitions = page.getByLabel("Mode transition events");
   await expect(transitions).toBeEmpty();
 

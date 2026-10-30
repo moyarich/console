@@ -46,8 +46,15 @@ function MountCallbackExample() {
       >
         Switch mode
       </button>
-      <button type="button" onClick={() => setAlternateCallback((value) => !value)}>Replace callback</button>
-      <button type="button" onClick={() => setPresentation((value) => !value)}>Toggle presentation</button>
+      <button
+        type="button"
+        onClick={() => setAlternateCallback((value) => !value)}
+      >
+        Replace callback
+      </button>
+      <button type="button" onClick={() => setPresentation((value) => !value)}>
+        Toggle presentation
+      </button>
       {mounted &&
         (mode === "terminal" ? (
           <Console
@@ -57,7 +64,11 @@ function MountCallbackExample() {
             messages={["Console mounted successfully"]}
           />
         ) : (
-          <Console onMount={alternateCallback ? onMountReplacement : onMount} showHeader={!presentation} messages={messages} />
+          <Console
+            onMount={alternateCallback ? onMountReplacement : onMount}
+            showHeader={!presentation}
+            messages={messages}
+          />
         ))}
       <output aria-label="Mount events">{events.join(", ")}</output>
     </div>
