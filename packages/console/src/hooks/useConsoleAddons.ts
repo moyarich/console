@@ -61,10 +61,21 @@ export function useConsoleAddons(
   mode: ConsoleMode,
   viewport: ConsoleViewportService,
   data: ConsoleDataService,
-  onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void,
-  onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void,
+  onAddonsReady?: (context: {
+    mode: ConsoleMode;
+    addonIds: readonly string[];
+  }) => void,
+  onAddonError?: (
+    error: unknown,
+    addonId: string,
+    phase: "activate" | "dispose",
+  ) => void,
   onReadyGeneration?: () => void,
-  onLifecycleError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void,
+  onLifecycleError?: (
+    error: unknown,
+    addonId: string,
+    phase: "activate" | "dispose",
+  ) => void,
 ): ConsoleExtensionRegistry {
   const addonList = addons ?? EMPTY_ADDONS;
   const disabledIds = useMemo(
@@ -156,7 +167,11 @@ export function useConsoleAddons(
     const changed =
       failedSetChanged ||
       currentEntries.some(([id, addon]) => nextById.get(id) !== addon) ||
-      activeAddons.some((addon) => loadedRef.current.get(addon.id.trim()) !== addon && failedRef.current.get(addon.id.trim()) !== addon) ||
+      activeAddons.some(
+        (addon) =>
+          loadedRef.current.get(addon.id.trim()) !== addon &&
+          failedRef.current.get(addon.id.trim()) !== addon,
+      ) ||
       !initializedManagers.current.has(manager);
     if (!changed) return;
 
@@ -191,7 +206,10 @@ export function useConsoleAddons(
     initializedManagers.current.add(manager);
     if (succeeded) {
       try {
-        readyRef.current?.({ mode, addonIds: activeAddons.map((addon) => addon.id.trim()) });
+        readyRef.current?.({
+          mode,
+          addonIds: activeAddons.map((addon) => addon.id.trim()),
+        });
       } catch {
         // Client callbacks cannot invalidate a completed reconciliation.
       }

@@ -45,7 +45,9 @@ describe("Console EventEmitter3 events", () => {
     const clearListener = vi.fn();
     events.on("message", messageListener).on("clear", clearListener);
     expect(events.removeAllListeners("message")).toBe(events);
-    expect(events.emit("message", { method: "log", data: [], depth: 0 })).toBe(false);
+    expect(events.emit("message", { method: "log", data: [], depth: 0 })).toBe(
+      false,
+    );
     expect(events.emit("clear")).toBe(true);
     expect(messageListener).not.toHaveBeenCalled();
     expect(clearListener).toHaveBeenCalledOnce();

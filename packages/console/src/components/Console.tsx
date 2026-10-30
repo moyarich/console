@@ -126,13 +126,31 @@ interface ConsoleSharedProps {
   /** Fires after a committed mode transition and its data snapshot publication; not on initial mount. */
   onModeChange?: (next: ConsoleMode, previous: ConsoleMode) => void;
   /** Fires after successful synchronous reconciliation of enabled addons. */
-  onAddonsReady?: (context: { mode: ConsoleMode; addonIds: readonly string[] }) => void;
+  onAddonsReady?: (context: {
+    mode: ConsoleMode;
+    addonIds: readonly string[];
+  }) => void;
   /** Reports caught synchronous addon activation or disposal errors. */
-  onAddonError?: (error: unknown, addonId: string, phase: "activate" | "dispose") => void;
+  onAddonError?: (
+    error: unknown,
+    addonId: string,
+    phase: "activate" | "dispose",
+  ) => void;
   /** Fires after a successful synchronous addon generation and the first mode snapshot publication. Does not await async persistence. */
-  onReady?: (context: { handle: ConsoleHandle; mode: ConsoleMode; snapshot: ConsoleDataSnapshot }) => void;
+  onReady?: (context: {
+    handle: ConsoleHandle;
+    mode: ConsoleMode;
+    snapshot: ConsoleDataSnapshot;
+  }) => void;
   /** Reports caught synchronous Console lifecycle errors; not render failures or async rejections. */
-  onError?: (error: unknown, context: { phase: "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback"; addonId?: string }) => void;
+  onError?: (
+    error: unknown,
+    context: {
+      phase:
+        "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback";
+      addonId?: string;
+    },
+  ) => void;
   /** Called by the built-in clear action. Omit to disable clear behavior. */
   onClear?: () => void;
   /** Screen-reader announcement policy. Off avoids announcing each streamed entry. @default off */
@@ -1164,7 +1182,12 @@ function ConsoleTerminalMode({
  * Set `mode="terminal"` for terminal-style entries; omit `mode` (or use
  * `"console"`) for structured {@link ConsoleMessageData} messages.
  */
-export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) {
+export function Console({
+  ref,
+  onMount,
+  onModeChange,
+  ...props
+}: ConsoleProps) {
   const mode: ConsoleMode = props.mode === "terminal" ? "terminal" : "console";
   const surfaceRef = useRef<HTMLDivElement>(null);
   const viewport = useMemo(
@@ -1180,13 +1203,23 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
   onMountRef.current = onMount;
   const errorCallbackRef = useRef(props.onError);
   errorCallbackRef.current = props.onError;
-  const notifyError = useCallback((error: unknown, context: { phase: "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback"; addonId?: string }) => {
-    try {
-      errorCallbackRef.current?.(error, context);
-    } catch {
-      // Never recursively report a failure in the error observer.
-    }
-  }, []);
+  const notifyError = useCallback(
+    (
+      error: unknown,
+      context: {
+        phase:
+          "mount" | "ready" | "addon-activate" | "addon-dispose" | "callback";
+        addonId?: string;
+      },
+    ) => {
+      try {
+        errorCallbackRef.current?.(error, context);
+      } catch {
+        // Never recursively report a failure in the error observer.
+      }
+    },
+    [],
+  );
   useEffect(() => {
     try {
       const cleanup = onMountRef.current?.(viewport);
@@ -1222,7 +1255,11 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
   readyCallbackRef.current = props.onReady;
   const emitReady = useCallback(() => {
     try {
-      readyCallbackRef.current?.({ handle: viewport, mode, snapshot: data.getSnapshot() });
+      readyCallbackRef.current?.({
+        handle: viewport,
+        mode,
+        snapshot: data.getSnapshot(),
+      });
     } catch (error) {
       notifyError(error, { phase: "ready" });
     }
@@ -1237,7 +1274,11 @@ export function Console({ ref, onMount, onModeChange, ...props }: ConsoleProps) 
     props.onAddonsReady,
     props.onAddonError,
     emitReady,
-    (error, addonId, phase) => notifyError(error, { phase: phase === "activate" ? "addon-activate" : "addon-dispose", addonId }),
+    (error, addonId, phase) =>
+      notifyError(error, {
+        phase: phase === "activate" ? "addon-activate" : "addon-dispose",
+        addonId,
+      }),
   );
   const resolvedProps = { addonExtensions, data, surfaceRef, viewport };
 

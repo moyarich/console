@@ -18,7 +18,9 @@ test("Console invokes onMount once, cleans up on unmount, and supports both mode
   await expect(events).toHaveText("mounted, unmounted, mounted");
 });
 
-test("mount callback replacement and presentation rerenders do not replay the mount lifecycle", async ({ page }) => {
+test("mount callback replacement and presentation rerenders do not replay the mount lifecycle", async ({
+  page,
+}) => {
   await page.goto("/iframe.html?id=console-lifecycle--on-mount&viewMode=story");
   const events = page.getByLabel("Mount events");
   await expect(events).toHaveText("mounted");
