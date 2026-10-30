@@ -2,10 +2,9 @@
 
 ## 0.2.0
 
-### Release preparation
+### Changed
 
-- Prepare this package for the coordinated `0.2.0` workspace release.
-- Align applicable internal workspace dependency and peer dependency ranges with version `0.2.0`.
+- Integrated Console persistence examples with per-instance EventEmitter3 data notifications and seeded default messages; improved memory, stream, file, and SQLite Storybook demonstrations.
 
 ## 0.1.0
 
