@@ -1,0 +1,33 @@
+name: CI / npm package lint
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - "apps/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".npmrc"
+      - ".github/workflows/ci_npm-package-lint.yml"
+  pull_request:
+    paths:
+      - "packages/**"
+      - "apps/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".npmrc"
+      - ".github/workflows/ci_npm-package-lint.yml"
+  workflow_dispatch:
+    inputs:
+      checkout-sha:
+        description: Exact commit SHA to validate
+        type: string
+        required: false
+        default: ""
+permissions:
+  contents: read
+jobs:
+  npm-package-lint:
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_ci_npm-package-lint.yml@e818a2fafa4fafdd34105ebdc98fea5a1bf8e769
+    with:
+      checkout-sha: ${{ inputs.checkout-sha }}
