@@ -15,11 +15,14 @@ const src = join(root, "src");
 if (!existsSync(dir)) throw new Error("Build output dist/ is missing");
 
 let count = 0;
-function fixImports(content, extension) {
+function fixImports(content, extension, file) {
   return content
     .replace(/^import\s+["'][^"']+\.css["'];?\s*$/gm, "")
     .replace(/(["'])(\.\.?\/[^"'\n]+)\1/g, (match, quote, specifier) => {
       if (/\.(?:js|jsx|mjs|cjs|json|css|wasm)$/.test(specifier)) return match;
+      const target = join(dirname(file), specifier);
+      if (existsSync(join(target, "index.d.ts")))
+        return quote + specifier + "/index" + extension + quote;
       return quote + specifier + extension + quote;
     });
 }
@@ -32,10 +35,10 @@ function walk(folder) {
       rmSync(file);
     } else if (entry.name.endsWith(".d.ts")) {
       const content = readFileSync(file, "utf8");
-      writeFileSync(file, fixImports(content, ".js"));
+      writeFileSync(file, fixImports(content, ".js", file));
       writeFileSync(
         file.replace(/\.d\.ts$/, ".d.cts"),
-        fixImports(content, ".cjs"),
+        fixImports(content, ".cjs", file),
       );
       count++;
     }
