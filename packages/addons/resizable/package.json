@@ -17,12 +17,10 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    },
-    "./styles.css": "./src/styles.css"
+    }
   },
   "files": [
-    "dist",
-    "src/styles.css"
+    "dist"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
