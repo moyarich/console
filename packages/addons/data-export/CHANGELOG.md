@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+### Changed
+
+- Added localization coverage for export controls across supported languages, including Portuguese.
+- Updated the required `@moyarich/console-core` peer dependency to `^0.2.0`.
+
 ## 0.1.0
 
 ### Added

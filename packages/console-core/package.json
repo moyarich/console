@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core addon SDK and runtime contracts for @moyarich/console hosts and addons.",
   "license": "MIT",
   "type": "module",
@@ -9,9 +9,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -21,7 +26,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && tsc -p tsconfig.build.json && node ../../scripts/prepare-cjs-types.mjs",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
@@ -48,5 +53,8 @@
     "typescript"
   ],
   "publisher": "moyarich",
-  "author": "Moya Richards"
+  "author": "Moya Richards",
+  "engines": {
+    "node": ">=24"
+  }
 }

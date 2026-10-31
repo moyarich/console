@@ -2,11 +2,17 @@
 
 Select Console messages. Select message IDs individually or in visible ranges, with optional message actions and decorations.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-selection
+npm install @moyarich/console @moyarich/console-addon-selection react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

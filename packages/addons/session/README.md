@@ -2,11 +2,17 @@
 
 Save and restore Console sessions. Work with versioned snapshots of structured messages and terminal entries, including dropped-history counts.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-session
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console@^0.2.0`.
 
 ## Quick start
 

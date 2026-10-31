@@ -2,11 +2,17 @@
 
 Animate console and terminal entries. Fade, slide, reveal, and sequencing effects; the original output renderer still handles links and values.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-animation
+npm install @moyarich/console @moyarich/console-addon-animation react motion
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`, `motion@^12.0.0`.
 
 ## Quick start
 

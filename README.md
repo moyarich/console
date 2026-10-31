@@ -4,6 +4,8 @@ A React console toolkit for **capturing and displaying runtime output**.
 
 Bring browser-style `console.*` messages, inspectable JavaScript values, and ANSI-formatted process output into your application. Console works well in code playgrounds, developer tools, embedded previews, and applications connected to remote runtimes.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Features
 
 - **Structured messages:** Render familiar console levels and inspect JavaScript values.
@@ -20,7 +22,22 @@ Console handles presentation and message transport; your application remains in 
 npm install @moyarich/console
 ```
 
-Requires React 18 or newer. The package includes TypeScript declarations and loads its core stylesheet automatically.
+Requires React 18 or newer. If your application does not already include React, install it too:
+
+```bash
+npm install react react-dom
+```
+
+The package includes TypeScript declarations and loads its core stylesheet automatically.
+
+### GitHub Packages setup
+
+For installations from GitHub Packages, configure the scope and authenticate with a GitHub personal access token that has `read:packages` access:
+
+```bash
+npm config set @moyarich:registry https://npm.pkg.github.com
+npm login --scope=@moyarich --registry=https://npm.pkg.github.com
+```
 
 ## Quick start
 
@@ -71,6 +88,7 @@ Console is a family of independently installable packages. Start with `@moyarich
 | `@moyarich/console-addon-markdown`             | Render GitHub Flavored Markdown                             |
 | `@moyarich/console-addon-metadata`             | Display message metadata                                    |
 | `@moyarich/console-addon-navigation`           | Navigate between messages                                   |
+| `@moyarich/console-addon-persistence`          | Save output through configurable persistence adapters       |
 | `@moyarich/console-addon-process-state`        | Represent process execution state                           |
 | `@moyarich/console-addon-resizable`            | Resize the console frame                                    |
 | `@moyarich/console-addon-search`               | Search console output                                       |

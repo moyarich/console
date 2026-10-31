@@ -2,6 +2,20 @@
 
 Destination-agnostic persistence for structured console messages and raw terminal entries.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
+## Install
+
+```bash
+npm install @moyarich/console @moyarich/console-addon-persistence
+```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
+
+## Quick start
+
 ```ts
 import { createConsolePersistenceAddon } from "@moyarich/console-addon-persistence";
 

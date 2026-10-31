@@ -2,11 +2,17 @@
 
 Add scrolling and focus controls. Provide actions to move to the first or latest output and focus the viewport.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-imperative-scrolling
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 

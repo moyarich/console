@@ -2,11 +2,17 @@
 
 Track terminal process progress. Interpret OSC progress, working directory, command lifecycle, and notifications without requiring xterm.js.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-process-state
+npm install @moyarich/console @moyarich/console-addon-process-state react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

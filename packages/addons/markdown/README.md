@@ -2,11 +2,17 @@
 
 Render Markdown in Console values. Render detected GitHub Flavored Markdown inside structured messages; ordinary strings remain plain text.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-markdown
+npm install @moyarich/console @moyarich/console-addon-markdown react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 
