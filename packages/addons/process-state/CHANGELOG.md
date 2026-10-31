@@ -3,6 +3,7 @@
 ## 0.2.0
 
 ### Changed
+
 - Localized process-state indicators for the supported Console languages, including English, Spanish, French, and Portuguese variants.
 - Updated the required `@moyarich/console-core` peer dependency to `^0.2.0`.
 

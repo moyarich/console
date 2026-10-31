@@ -8,6 +8,10 @@ Navigate errors and warnings. Jump between visible errors and warnings, or annot
 npm install @moyarich/console @moyarich/console-addon-navigation
 ```
 
+## Compatibility
+
+Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+
 ## Quick start
 
 ```tsx

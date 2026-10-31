@@ -8,6 +8,10 @@ Render terminal output with xterm.js. Use xterm.js for ANSI/VT terminal renderin
 npm install @moyarich/console @moyarich/console-addon-xterm
 ```
 
+## Compatibility
+
+Version 0.2.0 requires `@moyarich/console-core@^0.2.0`, `@moyarich/console@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+
 ## Quick start
 
 ```tsx

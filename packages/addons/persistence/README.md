@@ -2,6 +2,12 @@
 
 Destination-agnostic persistence for structured console messages and raw terminal entries.
 
+## Compatibility
+
+Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade directly installed core SDK and Console host packages from 0.1.x to compatible 0.2.x versions alongside the addon.
+
+## Quick start
+
 ```ts
 import { createConsolePersistenceAddon } from "@moyarich/console-addon-persistence";
 

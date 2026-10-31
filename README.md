@@ -43,6 +43,14 @@ export function AppConsole() {
 
 Use the console-compatible producer from event handlers or runtime callbacks to add messages, and `<Console />` to display them.
 
+## Upgrading to 0.2.0
+
+Upgrade Console and its addons together. Console 0.2.0 depends on `@moyarich/console-core@0.2.0`; addons require `^0.2.0` of their declared Console or core peer dependencies. These ranges exclude 0.1.x.
+
+All 18 addons are included in this release preparation. Animation, Links, Navigation, and Session receive compatibility updates because their host or core dependencies changed. See each package's `CHANGELOG.md` for its feature changes and upgrade requirements.
+
+The release adds Console lifecycle callbacks, isolated EventEmitter3 notifications, localized controls, richer Markdown rendering, persistence adapters, and locale-aware metadata timestamps. See the [Console changelog](packages/console/CHANGELOG.md) and [core changelog](packages/console-core/CHANGELOG.md).
+
 ## Explore
 
 **[Interactive playground and documentation](https://moyarich.github.io/console/)** — browse runnable examples, API reference, rendering modes, customization, and addons.
@@ -71,6 +79,7 @@ Console is a family of independently installable packages. Start with `@moyarich
 | `@moyarich/console-addon-markdown`             | Render GitHub Flavored Markdown                             |
 | `@moyarich/console-addon-metadata`             | Display message metadata                                    |
 | `@moyarich/console-addon-navigation`           | Navigate between messages                                   |
+| `@moyarich/console-addon-persistence`          | Save output through configurable persistence adapters       |
 | `@moyarich/console-addon-process-state`        | Represent process execution state                           |
 | `@moyarich/console-addon-resizable`            | Resize the console frame                                    |
 | `@moyarich/console-addon-search`               | Search console output                                       |

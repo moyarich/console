@@ -8,6 +8,10 @@ Bookmark and annotate messages. Annotations use stable message IDs and are store
 npm install @moyarich/console @moyarich/console-addon-annotations
 ```
 
+## Compatibility
+
+Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+
 ## Quick start
 
 ```tsx

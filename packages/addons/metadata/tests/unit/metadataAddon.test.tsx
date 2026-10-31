@@ -63,19 +63,48 @@ describe("optional metadata addon", () => {
   });
 
   it("formats deterministic relative timestamps", () => {
-    expect(formatMetadataTimestamp(1000, "relative", 6000, "en")).toBe(new Intl.RelativeTimeFormat("en", { numeric: "always", style: "short" }).format(-5, "second"));
-    expect(formatMetadataTimestamp(6000, "relative", 1000, "en")).toBe(new Intl.RelativeTimeFormat("en", { numeric: "always", style: "short" }).format(5, "second"));
+    expect(formatMetadataTimestamp(1000, "relative", 6000, "en")).toBe(
+      new Intl.RelativeTimeFormat("en", {
+        numeric: "always",
+        style: "short",
+      }).format(-5, "second"),
+    );
+    expect(formatMetadataTimestamp(6000, "relative", 1000, "en")).toBe(
+      new Intl.RelativeTimeFormat("en", {
+        numeric: "always",
+        style: "short",
+      }).format(5, "second"),
+    );
   });
 
-  it.each(["en", "es", "fr", "pt-BR", "pt-PT"])("formats relative timestamps for %s", (locale) => {
-    const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "always", style: "short" });
-    expect(formatMetadataTimestamp(1000, "relative", 301000, locale)).toBe(formatter.format(-5, "minute"));
-    expect(formatMetadataTimestamp(301000, "relative", 1000, locale)).toBe(formatter.format(5, "minute"));
-    expect(formatMetadataTimestamp(1000, "absolute", 301000, locale)).toBe(new Date(1000).toLocaleString(locale));
-    expect(getMetadataLabels({ mode: "console", message, index: 0, renderDefault: fallback }, {
-      locale, mode: "relative", now: () => 301000,
-    }).timestamp).toBe(formatter.format(-5, "minute"));
-  });
+  it.each(["en", "es", "fr", "pt-BR", "pt-PT"])(
+    "formats relative timestamps for %s",
+    (locale) => {
+      const formatter = new Intl.RelativeTimeFormat(locale, {
+        numeric: "always",
+        style: "short",
+      });
+      expect(formatMetadataTimestamp(1000, "relative", 301000, locale)).toBe(
+        formatter.format(-5, "minute"),
+      );
+      expect(formatMetadataTimestamp(301000, "relative", 1000, locale)).toBe(
+        formatter.format(5, "minute"),
+      );
+      expect(formatMetadataTimestamp(1000, "absolute", 301000, locale)).toBe(
+        new Date(1000).toLocaleString(locale),
+      );
+      expect(
+        getMetadataLabels(
+          { mode: "console", message, index: 0, renderDefault: fallback },
+          {
+            locale,
+            mode: "relative",
+            now: () => 301000,
+          },
+        ).timestamp,
+      ).toBe(formatter.format(-5, "minute"));
+    },
+  );
 
   it("registers a removable entry decorator and does not change source", () => {
     const contributions: unknown[] = [];

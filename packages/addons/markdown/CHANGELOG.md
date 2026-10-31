@@ -3,11 +3,18 @@
 ## 0.2.0
 
 ### Added
+
 - Render GitHub Flavored Markdown with headings, task lists, blockquotes, links, code fences, and tables while preserving plain-text output for ordinary messages.
 - Highlight fenced code using Shiki, with a plain-text fallback for unsupported languages and theme-aware contrast.
 - Support MDXProvider component overrides and sanitize rendered links.
+
 ### Fixed
+
 - Preserve fenced-code whitespace, highlighted line breaks, and horizontally scrollable tables in narrow consoles.
+
+### Changed
+
+- Requires `@moyarich/console-core@^0.2.0`; upgrade the host and directly installed core SDK from 0.1.x alongside this addon.
 
 ## 0.1.0
 
