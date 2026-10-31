@@ -9,7 +9,6 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/index.tsx",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
@@ -62,5 +61,9 @@
     "console",
     "addon",
     "xterm"
-  ]
+  ],
+  "homepage": "https://moyarich.github.io/console/",
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  }
 }
