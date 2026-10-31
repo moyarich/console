@@ -2,9 +2,15 @@
 
 Destination-agnostic persistence for structured console messages and raw terminal entries.
 
-## Compatibility
+## Install
 
-Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade directly installed core SDK and Console host packages from 0.1.x to compatible 0.2.x versions alongside the addon.
+```bash
+npm install @moyarich/console @moyarich/console-addon-persistence
+```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 

@@ -16,8 +16,17 @@ Console handles presentation and message transport; your application remains in 
 
 ## Installation
 
+Packages are published to GitHub Packages. Configure the scope before installing:
+
 ```bash
-npm install @moyarich/console
+npm config set @moyarich:registry https://npm.pkg.github.com
+npm login --scope=@moyarich --registry=https://npm.pkg.github.com
+```
+
+Authenticate with a GitHub personal access token that has `read:packages` access, then install:
+
+```bash
+npm install @moyarich/console react react-dom
 ```
 
 Requires React 18 or newer. The package includes TypeScript declarations and loads its core stylesheet automatically.
@@ -42,14 +51,6 @@ export function AppConsole() {
 ```
 
 Use the console-compatible producer from event handlers or runtime callbacks to add messages, and `<Console />` to display them.
-
-## Upgrading to 0.2.0
-
-Upgrade Console and its addons together. Console 0.2.0 depends on `@moyarich/console-core@0.2.0`; addons require `^0.2.0` of their declared Console or core peer dependencies. These ranges exclude 0.1.x.
-
-All 18 addons are included in this release preparation. Animation, Links, Navigation, and Session receive compatibility updates because their host or core dependencies changed. See each package's `CHANGELOG.md` for its feature changes and upgrade requirements.
-
-The release adds Console lifecycle callbacks, isolated EventEmitter3 notifications, localized controls, richer Markdown rendering, persistence adapters, and locale-aware metadata timestamps. See the [Console changelog](packages/console/CHANGELOG.md) and [core changelog](packages/console-core/CHANGELOG.md).
 
 ## Explore
 

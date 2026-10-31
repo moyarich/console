@@ -5,12 +5,12 @@ Display source and timestamps. Show optional source labels and absolute or relat
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-metadata
+npm install @moyarich/console @moyarich/console-addon-metadata react
 ```
 
-## Compatibility
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
 
-Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

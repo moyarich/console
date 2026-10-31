@@ -5,12 +5,12 @@ Render Markdown in Console values. Render detected GitHub Flavored Markdown insi
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-markdown
+npm install @moyarich/console @moyarich/console-addon-markdown react
 ```
 
-## Compatibility
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
 
-Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

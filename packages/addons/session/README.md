@@ -8,9 +8,9 @@ Save and restore Console sessions. Work with versioned snapshots of structured m
 npm install @moyarich/console @moyarich/console-addon-session
 ```
 
-## Compatibility
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
 
-Version 0.2.0 requires `@moyarich/console@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+Required peer dependencies: `@moyarich/console@^0.2.0`.
 
 ## Quick start
 

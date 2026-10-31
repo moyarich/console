@@ -8,9 +8,9 @@ Add scrolling and focus controls. Provide actions to move to the first or latest
 npm install @moyarich/console @moyarich/console-addon-imperative-scrolling
 ```
 
-## Compatibility
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
 
-Version 0.2.0 requires `@moyarich/console-core@^0.2.0`. Upgrade the Console host and any directly installed core SDK to compatible 0.2.x versions when upgrading this addon from 0.1.x.
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 
