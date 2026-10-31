@@ -15,20 +15,35 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./styles.css": "./src/styles.css",
     "./utils/console": {
-      "types": "./dist/utils/console/index.d.ts",
-      "import": "./dist/utils/console/index.js",
-      "require": "./dist/utils/console/index.cjs"
+      "import": {
+        "types": "./dist/utils/console/index.d.ts",
+        "default": "./dist/utils/console/index.js"
+      },
+      "require": {
+        "types": "./dist/utils/console/index.d.cts",
+        "default": "./dist/utils/console/index.cjs"
+      }
     },
     "./utils/terminal": {
-      "types": "./dist/utils/terminal/index.d.ts",
-      "import": "./dist/utils/terminal/index.js",
-      "require": "./dist/utils/terminal/index.cjs"
+      "import": {
+        "types": "./dist/utils/terminal/index.d.ts",
+        "default": "./dist/utils/terminal/index.js"
+      },
+      "require": {
+        "types": "./dist/utils/terminal/index.d.cts",
+        "default": "./dist/utils/terminal/index.cjs"
+      }
     }
   },
   "files": [
@@ -39,7 +54,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "vite build && vite build --config vite.utils-console.config.ts && vite build --config vite.utils-terminal.config.ts && tsc -p tsconfig.build.json",
+    "build": "vite build && vite build --config vite.utils-console.config.ts && vite build --config vite.utils-terminal.config.ts && tsc -p tsconfig.build.json && node ../../scripts/prepare-cjs-types.mjs",
     "typecheck": "tsc --noEmit",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
     "postpack": "node -e \"require('node:fs').rmSync('README.md', { force: true })\""
