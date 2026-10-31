@@ -113,5 +113,15 @@
   "author": "Moya Richards",
   "engines": {
     "node": ">=24"
+  },
+  "typesVersions": {
+    "*": {
+      "utils/console": [
+        "dist/utils/console/index.d.ts"
+      ],
+      "utils/terminal": [
+        "dist/utils/terminal/index.d.ts"
+      ]
+    }
   }
 }
