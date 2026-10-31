@@ -95,5 +95,8 @@
     "typescript"
   ],
   "publisher": "moyarich",
-  "author": "Moya Richards"
+  "author": "Moya Richards",
+  "engines": {
+    "node": ">=24"
+  }
 }
