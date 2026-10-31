@@ -17,7 +17,8 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "files": [
     "dist"
@@ -26,7 +27,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json && node ../../../scripts/prepare-cjs-types.mjs",
+    "build": "vite build && tsc -p tsconfig.build.json && node ../../../scripts/prepare-cjs-types.mjs && node ../../../scripts/prepare-addon-styles.mjs",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -59,7 +60,8 @@
   "sideEffects": [
     "./src/ProgressIndicator.css",
     "./dist/index.js",
-    "./dist/index.cjs"
+    "./dist/index.cjs",
+    "./dist/styles.css"
   ],
   "publisher": "moyarich",
   "author": "Moya Richards",
