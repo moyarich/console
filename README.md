@@ -16,20 +16,26 @@ Console handles presentation and message transport; your application remains in 
 
 ## Installation
 
-Packages are published to GitHub Packages. Configure the scope before installing:
+```bash
+npm install @moyarich/console
+```
+
+Requires React 18 or newer. If your application does not already include React, install it too:
+
+```bash
+npm install react react-dom
+```
+
+The package includes TypeScript declarations and loads its core stylesheet automatically.
+
+### GitHub Packages setup
+
+For installations from GitHub Packages, configure the scope and authenticate with a GitHub personal access token that has `read:packages` access:
 
 ```bash
 npm config set @moyarich:registry https://npm.pkg.github.com
 npm login --scope=@moyarich --registry=https://npm.pkg.github.com
 ```
-
-Authenticate with a GitHub personal access token that has `read:packages` access, then install:
-
-```bash
-npm install @moyarich/console react react-dom
-```
-
-Requires React 18 or newer. The package includes TypeScript declarations and loads its core stylesheet automatically.
 
 ## Quick start
 
