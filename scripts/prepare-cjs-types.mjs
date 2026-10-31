@@ -19,5 +19,6 @@ function walk(folder) {
   }
 }
 walk(dir);
-if (count === 0) throw new Error("No TypeScript declaration files found in dist/");
+if (count === 0)
+  throw new Error("No TypeScript declaration files found in dist/");
 console.log(`Prepared ${count} CommonJS declaration file(s)`);
