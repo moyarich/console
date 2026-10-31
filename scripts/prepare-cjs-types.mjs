@@ -19,8 +19,7 @@ function fixImports(content, extension) {
   return content
     .replace(/^import\s+["'][^"']+\.css["'];?\s*$/gm, "")
     .replace(/(["'])(\.\.?\/[^"'\n]+)\1/g, (match, quote, specifier) => {
-      if (/\.(?:js|jsx|mjs|cjs|json|css|wasm)$/.test(specifier))
-        return match;
+      if (/\.(?:js|jsx|mjs|cjs|json|css|wasm)$/.test(specifier)) return match;
       return quote + specifier + extension + quote;
     });
 }
