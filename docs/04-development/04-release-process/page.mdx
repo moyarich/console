@@ -1,76 +1,64 @@
 ---
 title: Release Process
-description: Draft and publish Console packages independently.
+description: Prepare package releases, review and merge an approved release PR, draft GitHub Releases, and publish separately.
 ---
 
 # Release process
 
-Each publishable workspace under `packages/*` owns its release identity, public changelog, documentation, and examples.
+Each publishable package in the npm workspaces has its own version, changelog, and release identity. Preparing and approving a release is separate from publishing its npm package.
 
-A package release uses:
-
-```text
-package directory + package.json version
-        ↓
-packages/<path>@<version> Git tag
-        ↓
-<package-name> v<version> GitHub Release
-```
-
-Examples:
+## Release lifecycle
 
 ```text
-packages/console-core@0.1.0
-packages/console@0.1.0
-packages/addons/filtering@0.1.0
+Prepare release PR (release/prepare-*)
+    ↓ review changes and required CI
+Merge approved PR into main
+    ↓ release-approved-pr.yml runs
+Verify approved release preparation and package matrix
+    ↓ create or update GitHub Release drafts
+Review drafts
+    ↓ separately start a publishing workflow when ready
+Publish npm packages (manual, explicit action)
 ```
 
-## Draft releases
+**Merging a release-preparation PR only prepares GitHub Release drafts. It does not publish npm packages or automatically finalize GitHub Releases.**
 
-`.github/workflows/release-drafter.yml` watches changes under `packages/**`.
+## Prepare a release PR
 
-Only changed publishable packages are selected. Each selected package:
+Use the repository's release-preparation workflow to select publishable packages and prepare their versions, changelogs, and related package changes in a `release/prepare-*` pull request targeting `main`.
 
-1. reads its own `package.json`
-2. reads the matching version section from its own `CHANGELOG.md`
-3. creates or updates that package's GitHub Release draft
-4. keeps unrelated package changes out of the draft
+Review the selected package list, dependency changes, changelog entries, and CI status before merging. Packages not approved in the preparation PR are not implicitly added to the release.
 
-The public draft body is sourced from the package changelog. Commit messages, CI changes, repository moves, and implementation-only refactors are not used as release notes.
+## After the approved PR is merged
 
-## Publish a package
+`.github/workflows/release-approved-pr.yml` runs on closed pull requests targeting `main` when **all** of the following are true:
 
-Run **Release package** manually with a package name or directory. Dry run is enabled by default.
+- The PR was **merged**, not merely closed.
+- The PR branch belongs to this repository.
+- The source branch name starts with `release/prepare-`.
 
-The workflow:
+It invokes `moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@main` with `dry-run: false`.
 
-```text
-resolve one package
-→ npm ci
-→ lint / format / typecheck
-→ Vitest
-→ Vite build for the target package
-→ npm pack --dry-run
-→ resolve package changelog notes
-→ ensure matching GitHub Release draft
-→ create package-scoped Git tag
-→ publish the package
-→ verify registry availability
-→ publish that package's GitHub Release
-```
+The shared workflow then:
 
-Packages can therefore release independently instead of requiring the entire Console package family to share one release event.
+1. **Verifies** that the merged PR qualifies as an approved release preparation and satisfies the configured required-workflow checks.
+2. **Plans** and validates the approved package names, workspace directories, and versions. A missing or invalid package matrix stops the process.
+3. **Drafts** a GitHub Release for each approved package using its package-specific version, tag, and changelog.
 
-## Public release-note boundary
+Draft jobs run with `fail-fast: false` and `max-parallel: 1`; errors in one draft do not automatically cancel the other draft jobs, but the overall workflow reports failures.
 
-Package `CHANGELOG.md` files contain only end-user package capabilities and behavior.
+The draft process **does not publish to npm**. The npm publishing workflow is separate and must be explicitly run.
 
-Good release-note content includes:
+## Review and publish packages separately
 
-- public APIs and components
-- addon capabilities
-- rendering behavior
-- transport behavior
-- user-visible fixes and compatibility changes
+Review the package-specific GitHub Release drafts and their changelog-based notes before publishing.
 
-Keep repository layout changes, CI implementation, build-tool migrations, documentation restructuring, and other implementation-only work in pull requests and Development documentation.
+When ready, use **Publish npm package** (`.github/workflows/publish.yml`) via GitHub Actions **Run workflow**. Select the package or `all`, the registry, and other inputs. Its `dry-run` input defaults to `true`; explicitly disable dry run only when a real publish is intended. That workflow uses `reusable_bulk-npm-publish.yml@main`.
+
+The independent **Release package** workflow (`.github/workflows/release.yml`) is also manually dispatched and defaults to `draft: true` and `dry-run: true`. It is not part of the post-merge approved-release workflow.
+
+## Package identity and release notes
+
+Use each package's `package.json` version and package-specific `CHANGELOG.md` as the source of its published version and public release notes. GitHub Release drafts are not a substitute for publishing an npm package.
+
+Public release notes should describe user-visible API changes, addon features, rendering behavior, fixes, and compatibility. Keep internal CI changes, repository moves, and build tooling details in pull requests and development documentation.
