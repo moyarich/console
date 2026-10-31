@@ -2,6 +2,8 @@
 
 Copy and download Console data. Export retained or visible entries as text or JSON using built-in panel and context actions.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

@@ -2,6 +2,8 @@
 
 Search and highlight output. Find text matches, move between occurrences, and use optional controls and an observable controller.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

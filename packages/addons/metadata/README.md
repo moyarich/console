@@ -2,6 +2,8 @@
 
 Display source and timestamps. Show optional source labels and absolute or relative timestamps beside output entries.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

@@ -2,6 +2,8 @@
 
 Select Console messages. Select message IDs individually or in visible ranges, with optional message actions and decorations.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

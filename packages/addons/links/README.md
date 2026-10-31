@@ -2,6 +2,8 @@
 
 Make web URLs interactive. Detect safe HTTP and HTTPS links in structured or terminal output through Console's link-provider extension.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

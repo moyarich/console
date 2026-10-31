@@ -2,6 +2,8 @@
 
 Inspect the Console output pipeline. Produce JSON reports of retained and visible output; terminal reports include raw, normalized, and processed entries.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

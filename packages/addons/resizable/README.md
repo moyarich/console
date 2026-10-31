@@ -2,6 +2,8 @@
 
 Resize the Console panel. Add configurable resize handles, sizing limits, and resize callbacks without changing output behavior.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

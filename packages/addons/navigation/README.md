@@ -2,6 +2,8 @@
 
 Navigate errors and warnings. Jump between visible errors and warnings, or annotated messages when annotations are enabled.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

@@ -2,6 +2,8 @@
 
 Save and restore Console sessions. Work with versioned snapshots of structured messages and terminal entries, including dropped-history counts.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

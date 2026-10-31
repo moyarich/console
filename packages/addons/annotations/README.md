@@ -2,6 +2,8 @@
 
 Bookmark and annotate messages. Annotations use stable message IDs and are stored independently of the source messages. A controller supports custom interfaces.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

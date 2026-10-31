@@ -4,6 +4,8 @@ A React console toolkit for **capturing and displaying runtime output**.
 
 Bring browser-style `console.*` messages, inspectable JavaScript values, and ANSI-formatted process output into your application. Console works well in code playgrounds, developer tools, embedded previews, and applications connected to remote runtimes.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Features
 
 - **Structured messages:** Render familiar console levels and inspect JavaScript values.

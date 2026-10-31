@@ -2,6 +2,8 @@
 
 Filter structured Console messages. Filter by message level, source, or text using built-in controls or an observable headless controller.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

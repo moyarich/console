@@ -2,6 +2,8 @@
 
 Animate console and terminal entries. Fade, slide, reveal, and sequencing effects; the original output renderer still handles links and values.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

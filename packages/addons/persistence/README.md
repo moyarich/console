@@ -2,6 +2,8 @@
 
 Destination-agnostic persistence for structured console messages and raw terminal entries.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

@@ -2,6 +2,8 @@
 
 Display messages in a feed layout. The feed renderer adds readable severity labels without mutating the input messages. It targets structured Console output.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

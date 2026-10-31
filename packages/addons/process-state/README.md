@@ -2,6 +2,8 @@
 
 Track terminal process progress. Interpret OSC progress, working directory, command lifecycle, and notifications without requiring xterm.js.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash

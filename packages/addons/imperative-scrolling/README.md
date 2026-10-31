@@ -2,6 +2,8 @@
 
 Add scrolling and focus controls. Provide actions to move to the first or latest output and focus the viewport.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
