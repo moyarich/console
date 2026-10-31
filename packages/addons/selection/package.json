@@ -53,5 +53,8 @@
   ],
   "publisher": "moyarich",
   "author": "Moya Richards",
+  "engines": {
+    "node": ">=24"
+  },
   "private": false
 }
