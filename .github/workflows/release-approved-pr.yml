@@ -8,8 +8,45 @@ on:
 permissions: {}
 
 jobs:
+  release-input-summary:
+    name: Approved release inputs
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release/prepare-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Summarize release inputs
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          APPROVED_WORKFLOW: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@main
+          EXPECTED_BASE: main
+          DRY_RUN: "false"
+        run: |
+          {
+            echo "## Approved release inputs"
+            echo
+            echo "| Input | Value |"
+            echo "| --- | --- |"
+            echo "| Pull request | [#${PR_NUMBER}](${PR_URL}) |"
+            echo "| Title | ${PR_TITLE//|/\\|} |"
+            echo "| Source branch | \`${PR_HEAD}\` |"
+            echo "| Expected base | \`${EXPECTED_BASE}\` |"
+            echo "| Actual base | \`${PR_BASE}\` |"
+            echo "| Merge commit | \`${MERGE_SHA}\` |"
+            echo "| Reusable workflow | \`${APPROVED_WORKFLOW}\` |"
+            echo "| Dry run | \`${DRY_RUN}\` |"
+            echo
+            echo "The reusable workflow verifies the merged package selection and writes draft-release summaries in its own jobs."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   approved-release:
     name: Verify and release approved packages
+    needs: release-input-summary
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release/prepare-') }}
     permissions:
       contents: write
@@ -18,7 +55,7 @@ jobs:
       actions: write
       statuses: read
       pull-requests: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@fix/remove-release-ci-history-20261102
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@main
     with:
       expected-base: main
       dry-run: false
