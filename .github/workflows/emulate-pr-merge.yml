@@ -31,10 +31,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: moyarich/github_emulator
-          ref: feat/emulate-pr-merge-flow-20261031
+          ref: main
           persist-credentials: false
       - name: Emulate Console release PR merge
-        uses: moyarich/github_emulator@feat/emulate-pr-merge-flow-20261031
+        uses: moyarich/github_emulator@main
         with:
           repository: moyarich/console
           pr-number: ${{ github.event.pull_request.number || inputs.pr-number }}
