@@ -56,7 +56,7 @@ jobs:
           echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "merge-sha=$(jq -r '.merge_commit_sha' "$RUNNER_TEMP/approved-pr.json")" >> "$GITHUB_OUTPUT"
           {
-            echo "PR_TITLE=$(jq -r '.title' "$RUNNER_TEMP/approved-pr.json")"
+            echo "PR_TITLE=$(jq -r '.title | gsub("[\\r\\n]"; " ")' "$RUNNER_TEMP/approved-pr.json")"
             echo "PR_URL=$(jq -r '.html_url' "$RUNNER_TEMP/approved-pr.json")"
             echo "PR_HEAD=$(jq -r '.head.ref' "$RUNNER_TEMP/approved-pr.json")"
             echo "PR_BASE=$(jq -r '.base.ref' "$RUNNER_TEMP/approved-pr.json")"
@@ -67,7 +67,7 @@ jobs:
           PR_NUMBER: ${{ steps.selected.outputs.pr-number }}
           APPROVED_WORKFLOW: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@main
           EXPECTED_BASE: main
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run == true }}
         run: |
           {
             echo "## Approved release inputs"
@@ -108,6 +108,6 @@ jobs:
     with:
       expected-base: main
       pr-number: ${{ github.event_name == 'workflow_dispatch' && inputs.pr-number || '' }}
-      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
+      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run == true }}
     secrets:
       npm-token: ${{ secrets._NPM_TOKEN }}
