@@ -37,11 +37,18 @@ export function formatMetadataTimestamp(
   const abs = Math.abs(seconds);
   const unit: Intl.RelativeTimeFormatUnit =
     abs < 60 ? "second" : abs < 3600 ? "minute" : abs < 86400 ? "hour" : "day";
-  const divisor = unit === "second" ? 1 : unit === "minute" ? 60 : unit === "hour" ? 3600 : 86400;
-  return new Intl.RelativeTimeFormat(locale, { numeric: "always", style: "short" }).format(
-    Math.trunc(seconds / divisor),
-    unit,
-  );
+  const divisor =
+    unit === "second"
+      ? 1
+      : unit === "minute"
+        ? 60
+        : unit === "hour"
+          ? 3600
+          : 86400;
+  return new Intl.RelativeTimeFormat(locale, {
+    numeric: "always",
+    style: "short",
+  }).format(Math.trunc(seconds / divisor), unit);
 }
 
 export function getMetadataLabels(
@@ -56,7 +63,12 @@ export function getMetadataLabels(
   const timestamp =
     typeof time === "number" && Number.isFinite(time)
       ? (options.formatTimestamp?.(time, mode) ??
-        formatMetadataTimestamp(time, mode, options.now?.() ?? Date.now(), options.locale))
+        formatMetadataTimestamp(
+          time,
+          mode,
+          options.now?.() ?? Date.now(),
+          options.locale,
+        ))
       : undefined;
   return {
     source: typeof source === "string" && source.trim() ? source : undefined,

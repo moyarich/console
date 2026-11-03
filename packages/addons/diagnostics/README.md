@@ -2,11 +2,17 @@
 
 Inspect the Console output pipeline. Produce JSON reports of retained and visible output; terminal reports include raw, normalized, and processed entries.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-diagnostics
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 

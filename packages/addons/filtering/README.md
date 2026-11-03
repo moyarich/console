@@ -2,11 +2,17 @@
 
 Filter structured Console messages. Filter by message level, source, or text using built-in controls or an observable headless controller.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-filtering
+npm install @moyarich/console @moyarich/console-addon-filtering react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

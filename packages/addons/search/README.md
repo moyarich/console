@@ -2,11 +2,17 @@
 
 Search and highlight output. Find text matches, move between occurrences, and use optional controls and an observable controller.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-search
+npm install @moyarich/console @moyarich/console-addon-search react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

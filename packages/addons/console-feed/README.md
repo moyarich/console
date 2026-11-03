@@ -2,11 +2,17 @@
 
 Display messages in a feed layout. The feed renderer adds readable severity labels without mutating the input messages. It targets structured Console output.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
-npm install @moyarich/console @moyarich/console-addon-console-feed
+npm install @moyarich/console @moyarich/console-addon-console-feed react
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`, `@moyarich/console@^0.2.0`, `react@>=18`.
 
 ## Quick start
 

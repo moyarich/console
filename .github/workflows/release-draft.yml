@@ -72,7 +72,7 @@ on:
         default: ""
         type: string
       changed-packages-only:
-        description: Skip tagged packages without implementation changes when drafting all
+        description: Skip unchanged tagged packages when drafting all
         required: true
         default: true
         type: boolean

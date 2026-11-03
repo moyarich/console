@@ -2,11 +2,17 @@
 
 Navigate errors and warnings. Jump between visible errors and warnings, or annotated messages when annotations are enabled.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-navigation
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 
