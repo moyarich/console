@@ -27,14 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Check out emulator implementation
-        uses: actions/checkout@v4
-        with:
-          repository: moyarich/github_emulator
-          ref: main
-          persist-credentials: false
       - name: Emulate Console release PR merge
-        uses: moyarich/github_emulator@main
+        uses: moyarich/github_emulator/actions@feat/emulate-pr-merge-flow-20261031
         with:
           repository: moyarich/console
           pr-number: ${{ github.event.pull_request.number || inputs.pr-number }}
