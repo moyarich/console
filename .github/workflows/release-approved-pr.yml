@@ -4,6 +4,12 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: 'Merged release preparation PR number (for example, 225)'
+        required: true
+        type: string
 
 permissions: {}
 
