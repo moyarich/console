@@ -1,12 +1,16 @@
 name: Restore Release
 
 run-name: >-
-  Restore release · ${{ inputs.package }} · ${{ inputs.restore-source }} ·
-  dry-run=${{ inputs.dry-run }}
+  Restore release · ${{ inputs.package }} · ${{ inputs.restore-source }} · dry-run=${{
+  inputs.dry-run }}
 
 on:
   workflow_dispatch:
     inputs:
+      show-input-summary:
+        description: Show workflow input parameters
+        type: boolean
+        default: true
       package:
         description: Select a publishable workspace package
         required: true
@@ -14,34 +18,16 @@ on:
         default: all
         options:
           - all
-          - packages/addons/animation
-          - packages/addons/annotations
-          - packages/addons/console-feed
-          - packages/addons/data-export
-          - packages/addons/diagnostics
-          - packages/addons/filtering
-          - packages/addons/imperative-scrolling
-          - packages/addons/links
-          - packages/addons/markdown
-          - packages/addons/metadata
-          - packages/addons/navigation
-          - packages/addons/persistence
-          - packages/addons/process-state
-          - packages/addons/resizable
-          - packages/addons/search
-          - packages/addons/selection
-          - packages/addons/session
-          - packages/addons/xterm
-          - packages/console
-          - packages/console-core
+          - packages/example
       target-branch:
         description: Branch used to resolve the package path and changelog
         required: true
         default: main
         type: string
       restore-source:
-        description: "Historical source: commit:<sha>, tag:<tag>, run:<id>,
-          artifact:<id>, or github-url:<supported GitHub URL>"
+        description:
+          "Historical source: commit:<sha>, tag:<tag>, run:<id>, artifact:<id>,
+          or github-url:<supported GitHub URL>"
         required: true
         type: string
       match-mode:
@@ -58,7 +44,8 @@ on:
         default: ""
         type: string
       skip-finalized:
-        description: Skip finalized releases without modifying them (for bulk live recovery)
+        description: Skip finalized releases without modifying them (for bulk
+          live recovery)
         required: true
         default: false
         type: boolean
@@ -72,12 +59,14 @@ permissions: {}
 
 jobs:
   dispatch-input-summary:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.show-input-summary }}
     name: "job: Workflow parameters"
     permissions:
       contents: read
     uses: moyarich/reusable-workflows/.github/workflows/reusable_dispatch-input-summary.yml@main
     with:
       parameters-json: ${{ toJSON(inputs) }}
+      exclude-inputs: '["show-input-summary"]'
       heading: "restore release · Dispatch parameters"
   restore:
     permissions:
