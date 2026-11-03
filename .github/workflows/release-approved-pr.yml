@@ -18,7 +18,7 @@ jobs:
       actions: write
       statuses: read
       pull-requests: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_approved-release.yml@fix/remove-release-ci-history-20261102
     with:
       expected-base: main
       dry-run: false
