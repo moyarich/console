@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+### Changed
+
+- Aligned addon lifecycle, event, and service contracts with Console's EventEmitter3-based notifications.
+- Expanded integration coverage for addon activation, readiness, cleanup, and error isolation.
+
 ## 0.1.0
 
 ### Added

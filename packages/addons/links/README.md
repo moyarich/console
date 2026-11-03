@@ -2,11 +2,17 @@
 
 Make web URLs interactive. Detect safe HTTP and HTTPS links in structured or terminal output through Console's link-provider extension.
 
+[Documentation and live examples](https://moyarich.github.io/console/)
+
 ## Install
 
 ```bash
 npm install @moyarich/console @moyarich/console-addon-links
 ```
+
+Configure the `@moyarich` scope and authenticate with GitHub Packages as described in the [installation guide](../../../README.md#installation).
+
+Required peer dependencies: `@moyarich/console-core@^0.2.0`.
 
 ## Quick start
 

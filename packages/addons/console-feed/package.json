@@ -1,6 +1,6 @@
 {
   "name": "@moyarich/console-addon-console-feed",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Optional feed-style renderer for structured Console messages",
   "license": "MIT",
   "type": "module",
@@ -9,11 +9,16 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/index.tsx",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "files": [
     "dist"
@@ -22,17 +27,17 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && tsc -p tsconfig.build.json && node ../../../scripts/prepare-cjs-types.mjs && node ../../../scripts/prepare-addon-styles.mjs",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@moyarich/console-core": "^0.1.0",
-    "@moyarich/console": "^0.1.0",
+    "@moyarich/console-core": "^0.2.0",
+    "@moyarich/console": "^0.2.0",
     "react": ">=18"
   },
   "devDependencies": {
-    "@moyarich/console-core": "0.1.0",
-    "@moyarich/console": "0.1.0",
+    "@moyarich/console-core": "0.2.0",
+    "@moyarich/console": "0.2.0",
     "@types/react": "^19.1.12",
     "react": "^19.2.7",
     "typescript": "^5.9.2",
@@ -47,14 +52,22 @@
     "./src/index.tsx",
     "./src/ConsoleFeed.css",
     "./dist/index.js",
-    "./dist/index.cjs"
+    "./dist/index.cjs",
+    "./dist/styles.css"
   ],
   "publisher": "moyarich",
   "author": "Moya Richards",
+  "engines": {
+    "node": ">=24"
+  },
   "private": false,
   "keywords": [
     "console",
     "addon",
     "console-feed"
-  ]
+  ],
+  "homepage": "https://moyarich.github.io/console/",
+  "bugs": {
+    "url": "https://github.com/moyarich/console/issues"
+  }
 }
