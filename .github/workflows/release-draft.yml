@@ -113,7 +113,7 @@ jobs:
     needs: discover-packages
     permissions:
       contents: read
-    uses: moyarich/reusable-workflows/.github/workflows/reusable_select-release-packages.yml@main
+    uses: moyarich/reusable-workflows/.github/workflows/reusable_release-select-packages.yml@main
     with:
       packages-json: ${{ needs.discover-packages.outputs.packages }}
       ignored-paths-json: '[".github/workflows/release-draft.yml"]'
