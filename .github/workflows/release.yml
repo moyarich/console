@@ -121,6 +121,7 @@ jobs:
     permissions:
       actions: read
       contents: write
+      packages: read
       pull-requests: read
     uses: moyarich/reusable-workflows/.github/workflows/reusable_release-workspace-package.yml@main
     with:
